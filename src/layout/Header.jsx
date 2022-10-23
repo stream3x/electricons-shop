@@ -254,7 +254,7 @@ export default function Header(props) {
                 >
                   {settings.map((setting) => (
                     <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
+                      <Typography align="center">{setting}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
@@ -293,7 +293,7 @@ export default function Header(props) {
                     >
                       {settings.map((setting, index) => (
                         <MenuItem key={setting + index} onClick={handleCloseUserMenu}>
-                          <Typography textAlign="center">
+                          <Typography align="center">
                           {setting}
                           </Typography>
                         </MenuItem>

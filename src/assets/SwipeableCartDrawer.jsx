@@ -38,15 +38,15 @@ export default function SwipeableCartDrawer({cart}) {
       <Box
         sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 300, flexGrow: 1 }}
         role="presentation"
-        onClick={toggleDrawer(anchor, false)}
-        onKeyDown={toggleDrawer(anchor, false)}
       >
         <Box sx={{display: 'flex', alignItems: 'center', p: 1}}>
-          <CloseIcon />
-          <Typography gutterBottom variant="h6" component="h6" textAlign="left" color="secondary" sx={{flex: 1, alignItems: 'center', mb: 0, textAlign: 'center'}}>
+          <IconButton onClick={toggleDrawer(anchor, false)}>
+            <CloseIcon />
+          </IconButton>
+          <Typography gutterBottom variant="h6" component="h6" color="secondary" sx={{flex: 1, alignItems: 'center', mb: 0, textAlign: 'center'}}>
             Shoping Cart
           </Typography>
-          <Typography gutterBottom variant="h6" component="h6" textAlign="left" color="secondary.lightGrey" sx={{textAlign: 'center', mb: 0, px: 1}}>
+          <Typography gutterBottom variant="h6" component="h6" color="secondary.lightGrey" sx={{textAlign: 'center', mb: 0, px: 1}}>
             {cart.cartItems.length}
           </Typography>
         </Box>
@@ -68,16 +68,16 @@ export default function SwipeableCartDrawer({cart}) {
               src="/images/empty_cart.png"
               alt="cart is empty"
             />
-            <Typography gutterBottom variant="h6" component="h6" textAlign="left" color="secondary.lightGrey" sx={{textAlign: 'center', mb: 0, px: 1}}>
-              Cart is Empty
+            <Typography gutterBottom variant="h6" component="h6" color="secondary.lightGrey" sx={{textAlign: 'center', mb: 0, px: 1}}>
+              Cart is Empty <RecentActorsTwoTone />
             </Typography>
           </Box>
         </Box>
         : 
         <List>
           {cart.cartItems.map((item, index) => (
-            <React.Fragment key={item}>
-              <ListItem  disablePadding >
+            <React.Fragment key={item._id}>
+              <ListItem disablePadding >
                 <Grid container space={2}>
                   <Grid item xs={3}>
                     <Box
@@ -95,22 +95,20 @@ export default function SwipeableCartDrawer({cart}) {
                     />
                   </Grid>
                   <Grid item xs={6}>
-                    <Typography gutterBottom variant="p" component="h5" textAlign="left" color="secondary" sx={{flex: 1}}>
+                    <Typography gutterBottom variant="p" component="h5" align="left" color="secondary" sx={{flex: 1}}>
                       {item.title}
                     </Typography>
-                    <Typography gutterBottom variant="caption" component="p" textAlign="left" color="secondary" sx={{flex: 1}}>
-                      QTY:
+                    <Typography gutterBottom variant="caption" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      QTY: {item.quantity}
                     </Typography>
-                    <Typography gutterBottom variant="h6" component="h6" textAlign="left" color="primary" sx={{flex: 1}}>
+                    <Typography gutterBottom variant="h6" component="h6" align="left" color="primary" sx={{flex: 1}}>
                       {item.price}
                     </Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <ListItemButton>
-                      <ListItemIcon sx={{textAlign: 'center'}}>
-                        <DeleteForeverIcon />
-                      </ListItemIcon>
-                    </ListItemButton>
+                    <IconButton sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                      <DeleteForeverIcon />
+                    </IconButton>
                   </Grid>
                 </Grid>
               </ListItem>
@@ -127,22 +125,22 @@ export default function SwipeableCartDrawer({cart}) {
             <List sx={{ flexGrow: 0 }}>
               <Box sx={{ p: 2 }}>
               {['Sub Total', 'Shipping', 'Total'].map((text, index) => (
-                <React.Fragment>
-                <ListItem key={text + index} disablePadding>
+                <React.Fragment key={text}>
+                <ListItem disablePadding>
                     <ListItemText sx={{textAlign: 'left'}} primary={text} />
                     <ListItemText sx={{textAlign: 'right'}} primary="N/A" />
                 </ListItem>
                 <Divider />
                 </React.Fragment>
-                  ))}
+              ))}
               </Box>
             </List>
           </Box>
           <Box sx={{display: 'flex'}}>
-            <Link sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center' }} href="/cart" passHref>
+            <Link sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center' }} href="/cart" onClick={toggleDrawer(anchor, false)}>
               <Typography component="span">View Cart</Typography>
             </Link>
-            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center' }} href="/checkout" passHref>
+            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center' }} href="/checkout" onClick={toggleDrawer(anchor, false)}>
               <Typography component="span">Checkout</Typography>
             </Link>
           </Box>

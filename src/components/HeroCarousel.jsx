@@ -31,10 +31,9 @@ function TabPanel(props) {
   );
 }
 
-export default function HeroCarousel({data}) {
+export default function HeroCarousel({ data }) {
   const { product } = data;
   const { category_products } = category;
- 
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = category_products.length;

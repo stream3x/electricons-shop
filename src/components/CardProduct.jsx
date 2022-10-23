@@ -30,17 +30,17 @@ export default function CardProduct({products, step}) {
                     <CardContent>
                       {
                         product.inStock > 0 ? 
-                       ( <Typography color="primary" gutterBottom variant="caption" component="p" textAlign="center">
+                       ( <Typography color="primary" gutterBottom variant="caption" component="p" align="center">
                         Na stanju
                         </Typography>) :
-                       ( <Typography color="secondary" gutterBottom variant="caption" component="p" textAlign="center">
+                       ( <Typography color="secondary" gutterBottom variant="caption" component="p" align="center">
                         nije na stanju
                         </Typography>)
                       }
-                      <Typography gutterBottom variant="h6" component="h3" textAlign="center">
+                      <Typography gutterBottom variant="h6" component="h3" align="center">
                       {product.title}
                       </Typography>
-                      <Typography textAlign="center" variant="body2" color="text.secondary">
+                      <Typography align="center" variant="body2" color="text.secondary">
                         {product.shortDescription}
                       </Typography>
                       <Box
@@ -51,9 +51,9 @@ export default function CardProduct({products, step}) {
                         >
                         <Rating size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
                       </Box>
-                      <Typography textAlign="center" component="h3" variant="h6" color="secondary">
+                      <Typography align="center" component="h3" variant="h6" color="secondary">
                         {product.price}
-                        <Typography textAlign="rigth" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
+                        <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
                           <del>{product.oldPrice && product.oldPrice}</del>
                         </Typography>
                       </Typography>

@@ -74,7 +74,7 @@ export default function DropdownMenu(props) {
         <MenuItem>
           <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-            component="nav"
+            component="ul"
             aria-labelledby="nested-list-subheader"
             subheader={
               <ListSubheader component="div" id="nested-list-subheader">
@@ -85,49 +85,50 @@ export default function DropdownMenu(props) {
           {
             category_products.map((item, index) => (
               item ? (
-                <Accordion
-                  elevation={0}
-                  TransitionProps={{ unmountOnExit: true }}
-                  key={index}
-                  expanded={expanded === item.title}
-                  onChange={handleChange(item.title)}
-                  >
-                  <AccordionSummary
-                    expandIcon={<ExpandMore />}
-                    aria-controls={`${item.title} controls`}
-                    id={`${item.title} panel`}
-                  >
-                  <Link href={item.categoryUrl} underline="hover" sx={{display: 'flex'}}>
-                    <Avatar alt={item.title} src={item.avatar} /> 
-                    <Typography color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-                      {item.title}
-                    </Typography>
-                  </Link>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{position: 'absolute', left: '100%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', paddingBottom: '8px', marginLeft: '8px'}}>
-                    <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <Link href={item.categoryUrl} underline="hover" sx={{display: 'flex'}}>
-                        <Typography color="secondary" component="h5" variant="p">
+                  <Accordion
+                    elevation={0}
+                    TransitionProps={{ unmountOnExit: true }}
+                    key={index}
+                    component="li"
+                    expanded={expanded === item.title}
+                    onChange={handleChange(item.title)}
+                    >
+                    <AccordionSummary
+                      expandIcon={<ExpandMore />}
+                      aria-controls={`${item.title} controls`}
+                      id={`${item.title} panel`}
+                    >
+                    <Link href={item.categoryUrl} underline="hover" sx={{display: 'flex'}}>
+                      <Avatar alt={item.title} src={item.avatar} /> 
+                      <Typography color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
                         {item.title}
-                        </Typography>
-                      </Link>
-                    </Grid>
-                  {
-                    products.map((sub, index) => (
-                      sub.category === item.category &&
-                        <Grid key={index} item xs={4}>
-                          <Link href={`${sub.slug}`} underline="hover" sx={{display: 'flex'}}>
-                            <Typography color="secondary.lightGrey" component="h6" variant="p">
-                            {sub.title}
-                            </Typography>
-                          </Link>
-                        </Grid>
-                    ))
-                  }
-                    </Grid>
-                  </AccordionDetails>                  
-                </Accordion>
+                      </Typography>
+                    </Link>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{position: 'absolute', left: '100%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', paddingBottom: '8px', marginLeft: '8px'}}>
+                      <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <Link href={item.categoryUrl} underline="hover" sx={{display: 'flex'}}>
+                          <Typography color="secondary" component="h5" variant="p">
+                          {item.title}
+                          </Typography>
+                        </Link>
+                      </Grid>
+                    {
+                      products.map((sub, index) => (
+                        sub.category === item.category &&
+                          <Grid key={index} item xs={4}>
+                            <Link href={`${sub.slug}`} underline="hover" sx={{display: 'flex'}}>
+                              <Typography color="secondary.lightGrey" component="h6" variant="p">
+                              {sub.title}
+                              </Typography>
+                            </Link>
+                          </Grid>
+                      ))
+                    }
+                      </Grid>
+                    </AccordionDetails>                  
+                  </Accordion>
               ) : (
                 <Accordion
                   elevation={0}

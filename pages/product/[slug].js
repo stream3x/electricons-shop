@@ -84,7 +84,8 @@ color: theme.palette.text.secondary,
 
 export default function SingleProduct(props) {
   const { product } = props;
-  const { dispatch } = React.useContext(Store);
+  const { state, dispatch } = React.useContext(Store);
+  const { cart } = state;
 
   if(!product) {
     return (
@@ -110,7 +111,7 @@ export default function SingleProduct(props) {
   async function addToCardHandler() {
     const { data } = await axios.get(`/api/products/${product._id}`)
     if(data.inStock <= 0) {
-      console.log('Sorry Product is out of stock');
+      console.log('Sorry Product is out of stock')
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 }});
@@ -128,7 +129,7 @@ export default function SingleProduct(props) {
         <Grid xs={12} md={6}>
           <Item>
             <Box sx={{ flexGrow: 0, my: 1, display: 'flex'  }}>
-              <Typography gutterBottom variant="h6" component="h1" textAlign="left" color="secondary" sx={{flex: 1}}>
+              <Typography gutterBottom variant="h6" component="h1" align="left" color="secondary" sx={{flex: 1}}>
                 {product.title}
               </Typography>
               <Box
@@ -146,30 +147,30 @@ export default function SingleProduct(props) {
               />
             </Box>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
-              <Rating textAlign="center" size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
+              <Rating align="center" size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
               <Link href="#reviews">
-                <Typography gutterBottom variant="p" component="span" textAlign="left" color="secondary" sx={{marginLeft: 1}}>
+                <Typography align="center" gutterBottom variant="p" component="span" color="secondary" sx={{marginLeft: 1}}>
                   Reviews ({product.reviews})
                 </Typography>
               </Link>
             </Box>
           </Item>
           <Item>
-            <Typography textAlign="left" component="h3" variant="h5" color="primary">
+            <Typography align="left" component="h3" variant="h5" color="primary">
               {product.price}
-              <Typography textAlign="rigth" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
+              <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
                 <del>{product.oldPrice && product.oldPrice}</del>
               </Typography>
             </Typography>
           </Item>
           <Item>
-            <Typography textAlign="left" component="p" variant="p" color="secondary.lightGray">
+            <Typography align="left" component="p" variant="p" color="secondary.lightGray">
               {product.description}
             </Typography>
           </Item>
           <Item>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
-                <Typography gutterBottom variant="p" component="span" textAlign="left" color="secondary" sx={{marginLeft: 1}}>
+                <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
                 Quantity :
                 </Typography>
                 <CountQuantity />
@@ -177,7 +178,7 @@ export default function SingleProduct(props) {
           </Item>
           <Item>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
-              <AddToCartButton onClick={addToCardHandler} variant="contained" startIcon={<CartIcon />}>
+              <AddToCartButton onClick={addToCardHandler} variant={ product.inStock !== 0 ? "variant" : "disabled"} startIcon={<CartIcon />}>
                 Add To Cart
               </AddToCartButton>
             </Box>  

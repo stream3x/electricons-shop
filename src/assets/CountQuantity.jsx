@@ -4,18 +4,29 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { styled } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import axios from 'axios';
+import { Store } from '../utils/Store';
 
-export default function CountQuantity() {
-  const [count, setCount] = React.useState(1);
+export default function CountQuantity({size, maxItem, quantityItem, item}) {
+  const { state, dispatch } = React.useContext(Store);
+  const [count, setCount] = React.useState(quantityItem);
   const min = 1;
-  const max = 100;
-  const handleChange = (event) => {
-    const value = Math.max(min, Math.min(max, Number(event.target.value)));
-    setCount(value);
+  const max = maxItem;
+
+  const handleChange = async (item, quantity) => {
+    const { data } = await axios.get(`/api/products/${item._id}`)
+    if(data.inStock <= 0) {
+      console.log('Sorry Product is out of stock')
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity }});
+    const value = Math.max(min, Math.min(max, Number(quantity)));
+    setCount(value)
   };
+
+  console.log(item.quantity)
 
   return (
     <Box
@@ -31,29 +42,31 @@ export default function CountQuantity() {
         },
       }}
     >
-      <div>
+      <Box>
         <FormControl sx={{ width: '7ch', ml: 2 }}>
-          <OutlinedInput sx={{height: '2em', borderColor: 'secondary.lightGray'}} value={count} onChange={handleChange}/>
+          <OutlinedInput sx={{height: size ? '1.75em' : '2em'}} value={quantityItem} onChange={(e) => handleChange(item, e.target.value)}/>
         </FormControl>
         <ButtonGroup>
           <Button
+          size={size}
             aria-label="reduce"
             onClick={() => {
-              setCount(Math.max(count - 1, 1));
+              setCount(Math.max(count - 1, 1))
             }}
           >
             <RemoveIcon fontSize="small" />
           </Button>
           <Button
+            size={size}
             aria-label="increase"
             onClick={() => {
-              setCount(count + 1);
+              setCount(Math.min(count + 1, max))
             }}
           >
             <AddIcon fontSize="small" />
           </Button>
         </ButtonGroup>
-      </div>
+      </Box>
     </Box>
   );
 }
