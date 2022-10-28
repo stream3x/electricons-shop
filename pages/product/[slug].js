@@ -85,7 +85,7 @@ color: theme.palette.text.secondary,
 export default function SingleProduct(props) {
   const { product } = props;
   const { state, dispatch } = React.useContext(Store);
-  const { cart } = state;
+  const { cart: {cartItems} } = state;
 
   if(!product) {
     return (
@@ -173,7 +173,11 @@ export default function SingleProduct(props) {
                 <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
                 Quantity :
                 </Typography>
-                <CountQuantity />
+                {
+                  cartItems.map(item => item._id === product._id && (
+                    <CountQuantity maxItem={item.inStock} quantityItem={item.quantity} item={item}/>
+                  ))
+                }
             </Box>  
           </Item>
           <Item>

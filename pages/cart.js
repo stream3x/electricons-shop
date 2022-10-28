@@ -18,7 +18,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
  function Cart() {
   const { state } = useContext(Store)
-  const { cart:{cartItems} } = state;
+  const { cart: {cartItems} } = state;
 
   return (
     <Box sx={{ my: 4 }}>

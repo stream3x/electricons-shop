@@ -1,25 +1,31 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CloseIcon from '@mui/icons-material/Close';
 import { Badge, Grid, IconButton, Typography } from '@mui/material';
 import theme from '../theme';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { RecentActorsTwoTone } from '@mui/icons-material';
 import Link from '../Link';
+import { Store } from '../utils/Store';
 
 export default function SwipeableCartDrawer({cart}) {
   const [state, setState] = React.useState({
     right: false
   });
+  const { dispatch } = React.useContext(Store);
+
+  function removeItemHandler(item) {
+    dispatch({ type: 'CART_REMOVE_ITEM', payload: item})
+  }
+
+  const subTotal = cart.cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const tax = 33.33;
+  const shipping = 5;
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -69,7 +75,7 @@ export default function SwipeableCartDrawer({cart}) {
               alt="cart is empty"
             />
             <Typography gutterBottom variant="h6" component="h6" color="secondary.lightGrey" sx={{textAlign: 'center', mb: 0, px: 1}}>
-              Cart is Empty <RecentActorsTwoTone />
+              Cart is Empty
             </Typography>
           </Box>
         </Box>
@@ -79,7 +85,7 @@ export default function SwipeableCartDrawer({cart}) {
             <React.Fragment key={item._id}>
               <ListItem disablePadding >
                 <Grid container space={2}>
-                  <Grid item xs={3}>
+                  <Grid item xs={3} sx={{display: 'flex', alignItems: 'center'}}>
                     <Box
                       component="img"
                       sx={{
@@ -106,7 +112,7 @@ export default function SwipeableCartDrawer({cart}) {
                     </Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <IconButton sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                    <IconButton onClick={() => removeItemHandler(item)} sx={{display: 'flex', justifyContent: 'flex-end'}}>
                       <DeleteForeverIcon />
                     </IconButton>
                   </Grid>
@@ -124,11 +130,26 @@ export default function SwipeableCartDrawer({cart}) {
           <Box>
             <List sx={{ flexGrow: 0 }}>
               <Box sx={{ p: 2 }}>
-              {['Sub Total', 'Shipping', 'Total'].map((text, index) => (
+              {['Sub Total', 'Tax', 'Shipping', 'Total'].map((text, index) => (
                 <React.Fragment key={text}>
                 <ListItem disablePadding>
                     <ListItemText sx={{textAlign: 'left'}} primary={text} />
-                    <ListItemText sx={{textAlign: 'right'}} primary="N/A" />
+                    {
+                      text[index] === text[0] &&
+                      <ListItemText sx={{textAlign: 'right'}} primary={`$${subTotal}`} />
+                    }
+                    {
+                      text[index] === text[1] &&
+                      <ListItemText sx={{textAlign: 'right'}} primary={`${tax}%`} />
+                    }
+                    {
+                      text[index] === text[2] &&
+                      <ListItemText sx={{textAlign: 'right'}} primary={`$${shipping}`} />
+                    }
+                    {
+                      text[index] === text[3] &&
+                      <ListItemText sx={{textAlign: 'right'}} primary={`$${(subTotal + shipping + (subTotal * tax / 100)).toFixed(2)}`} />
+                    }
                 </ListItem>
                 <Divider />
                 </React.Fragment>

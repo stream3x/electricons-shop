@@ -23,6 +23,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import { Button, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Link from '../Link';
+import { Store } from '../utils/Store';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -40,6 +41,7 @@ function descendingComparator(a, b, orderBy) {
     return 1;
   }
   return 0;
+  
 }
 
 function getComparator(order, orderBy) {
@@ -70,7 +72,7 @@ const headCells = [
     label: 'Product',
   },
   {
-    id: 'name',
+    id: 'title',
     numeric: false,
     disablePadding: false,
     label: 'Name',
@@ -112,7 +114,7 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              'aria-label': 'select all',
             }}
           />
         </TableCell>
@@ -151,8 +153,14 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
+
+
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected, dispatch, selectedItems } = props;
+
+  function removeItemHandler(item) {
+    dispatch({ type: 'CART_REMOVE_ITEM', payload: item})
+  }
 
   return (
     <Toolbar
@@ -167,7 +175,7 @@ function EnhancedTableToolbar(props) {
     >
       {numSelected > 0 && (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: '1 1 100%', textAlign: 'left' }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -178,7 +186,7 @@ function EnhancedTableToolbar(props) {
 
       {numSelected > 0 && (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={() => removeItemHandler(selectedItems)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -193,11 +201,13 @@ EnhancedTableToolbar.propTypes = {
 
 export default function CartTable({ cartItems }) {
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
+  const [selectedItems, setSelectedItems] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const { dispatch } = React.useContext(Store);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -207,31 +217,43 @@ export default function CartTable({ cartItems }) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = cartItems.map((n) => n.name);
+      const newSelected = cartItems.map((n) => n.title);
+      const newSelectedItems = cartItems.map((n) => n);
       setSelected(newSelected);
+      setSelectedItems(newSelectedItems);
       return;
     }
     setSelected([]);
+    setSelectedItems([]);
+    
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (event, name, item) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
+    let newSelectedItems = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
+       newSelectedItems = newSelectedItems.concat(selectedItems, item);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
+      newSelectedItems = newSelectedItems.concat(selectedItems.slice(1));
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelectedItems = newSelectedItems.concat(selectedItems.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
         selected.slice(selectedIndex + 1),
       );
+      newSelectedItems = newSelectedItems.concat(
+        selectedItems.slice(0, selectedIndex),
+        selectedItems.slice(selectedIndex + 1)
+        );
     }
-
     setSelected(newSelected);
+    setSelectedItems(newSelectedItems);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -271,7 +293,11 @@ export default function CartTable({ cartItems }) {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+         numSelected={selected.length}
+         dispatch={dispatch}
+         selectedItems={selectedItems}
+         />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -300,13 +326,13 @@ export default function CartTable({ cartItems }) {
                       hover
                       key={row._id}
                     >
-                       <TableCell 
-                        onClick={(event) => handleClick(event, row.title)}
+                       <TableCell
+                        onClick={(event) => handleClick(event, row.title, row)}
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
                         selected={isItemSelected}
-                       padding="checkbox"
+                        padding="checkbox"
                        >
                         <Checkbox
                           color="primary"

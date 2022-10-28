@@ -19,6 +19,18 @@ function reducer(state, action) {
       Cookies.set('cartItems', JSON.stringify(cartItems));
       return { ...state, cart: { ...state.cart, cartItems }};
     }
+    case 'CART_REMOVE_ITEM': {
+      if(action.payload.length > 0) {
+        const arr = action.payload.map(a => a._id);
+        const cartItems = state.cart.cartItems.filter( item => !arr.includes(item._id));
+        Cookies.set('cartItems', JSON.stringify(cartItems));
+        return { ...state, cart: { ...state.cart, cartItems }};
+      }else {
+        const cartItems = state.cart.cartItems.filter(item => item._id !== action.payload._id);
+        Cookies.set('cartItems', JSON.stringify(cartItems));
+        return { ...state, cart: { ...state.cart, cartItems }};
+      }
+    }
     default:
       return state;
   }

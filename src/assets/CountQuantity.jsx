@@ -11,7 +11,6 @@ import { Store } from '../utils/Store';
 
 export default function CountQuantity({size, maxItem, quantityItem, item}) {
   const { state, dispatch } = React.useContext(Store);
-  const [count, setCount] = React.useState(quantityItem);
   const min = 1;
   const max = maxItem;
 
@@ -21,12 +20,27 @@ export default function CountQuantity({size, maxItem, quantityItem, item}) {
       console.log('Sorry Product is out of stock')
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity }});
-    const value = Math.max(min, Math.min(max, Number(quantity)));
-    setCount(value)
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity: quantity < 1 ? Math.max(quantity, min) : Math.min(quantity, max) }});
+    
   };
 
-  console.log(item.quantity)
+  async function incrementItem(item) {
+    const { data } = await axios.get(`/api/products/${item._id}`)
+    if(data.inStock <= 0) {
+      console.log('Sorry Product is out of stock')
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity: Math.min(item.quantity + 1, max) }});
+  }
+
+  async function decrementItem(item) {
+    const { data } = await axios.get(`/api/products/${item._id}`)
+    if(data.inStock <= 0) {
+      console.log('Sorry Product is out of stock')
+      return;
+    }
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity: Math.max(item.quantity - 1, 1) }});
+  }
 
   return (
     <Box
@@ -51,7 +65,7 @@ export default function CountQuantity({size, maxItem, quantityItem, item}) {
           size={size}
             aria-label="reduce"
             onClick={() => {
-              setCount(Math.max(count - 1, 1))
+              decrementItem(item)
             }}
           >
             <RemoveIcon fontSize="small" />
@@ -60,7 +74,7 @@ export default function CountQuantity({size, maxItem, quantityItem, item}) {
             size={size}
             aria-label="increase"
             onClick={() => {
-              setCount(Math.min(count + 1, max))
+              incrementItem(item)
             }}
           >
             <AddIcon fontSize="small" />
