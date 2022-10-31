@@ -10,6 +10,10 @@ import CardProduct from "./CardProduct";
 import { IconButton } from "@mui/material";
 import category from "../utils/category";
 import Link from '../Link';
+import SwipeableViews from "react-swipeable-views";
+import { autoPlay } from 'react-swipeable-views-utils';
+
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,6 +50,10 @@ export default function HeroCarousel({ data }) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const handleStepChange = (step) => {
+    setActiveStep(step);
+  };
+
   return (
     <Box sx={{ maxWidth: "100%", flexGrow: 1 }}>
       <Paper
@@ -68,6 +76,11 @@ export default function HeroCarousel({ data }) {
         <Typography variant="h" component="h1">{category_products[activeStep].title}</Typography>
       </Box>
       </Paper>
+      <AutoPlaySwipeableViews
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+        index={activeStep}
+        onChangeIndex={handleStepChange}
+      >
         {
           category_products.map((step, index) => (
             <TabPanel key={step.title} value={activeStep} index={index} dir={theme.direction}>
@@ -75,6 +88,7 @@ export default function HeroCarousel({ data }) {
             </TabPanel>
           ))
         }
+      </AutoPlaySwipeableViews>
       <MobileStepper
         steps={maxSteps}
         position="static"

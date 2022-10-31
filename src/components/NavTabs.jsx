@@ -2,37 +2,45 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Link from '../Link';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 function LinkTab(props) {
-  return (
-    <NextLink href={props.href} passHref>
+  return (    
       <Tab
         component="a"
         sx={{ textTransform: 'capitalize' }}
         onClick={(event) => {
           event.preventDefault();
         }}
+        selected={props.value}
+        href={props.path}
+        value={props.value}
         {...props}
       />
-    </NextLink>
   );
 }
 
 export default function NavTabs(props) {
+  // const navTabActive = Cookies.get('nav-tab-active') ? JSON.parse(Cookies.get('nav-tab-active')) : 0
+  const router = useRouter();
   const { pages } = props;
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
+    router.push(pages[newValue].link);
+  }; 
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '100%' }}>
+    <Box component="nav" sx={{ width: '100%', maxWidth: '100%' }}>
       <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="nav tabs pages">
         {
           pages.map((page, index)=> (
-            <LinkTab label={page.name} key={page.name + index} href={page.link}/>
+            <LinkTab key={page.link} value={index} label={page.name} path={page.link}/>
+            
           ))
         }
       </Tabs>

@@ -22,22 +22,23 @@ import { styled, alpha } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { Divider, Grid, Link } from '@mui/material';
-import NextLink from 'next/link';
+import { Divider, Grid } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import BusinessIcon from '@mui/icons-material/Business';
 import RssFeedIcon from '@mui/icons-material/RssFeed';
 import theme from '../theme';
 import Logo from '../assets/Logo';
-import NavTabs from '../assets/NavTabs';
+import NavTabs from '../components/NavTabs';
 import MenuIcon from '@mui/icons-material/Menu';
-import DropdownMenu from '../assets/DropdownMenu';
+import DropdownMenu from '../components/DropdownMenu';
 import { useRouter } from 'next/router';
 import { Store } from '../utils/Store';
-import SwipeableCartDrawer from '../assets/SwipeableCartDrawer';
+import SwipeableCartDrawer from '../components/SwipeableCartDrawer';
+import Link from '../Link';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
-const settings = ['Profile', 'Logout'];
+const loged = ['Profile', 'Logout'];
+const logedout = ['Login', 'Sign in'];
 const pages = [{name:'Home', link: '/'}, {name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
 
 const Search = styled('div')(({ theme }) => ({
@@ -145,6 +146,7 @@ export default function Header(props) {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
+  const user = {name: "Жикица", image: '/'}
 
   const handleClick = (event) => {
     setAnchorElDropdown(event.currentTarget);
@@ -217,7 +219,6 @@ export default function Header(props) {
                 {pagesTop.map((page) => (
                   <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}}}>
                   {page.icon}
-                    <NextLink href={page.link} passHref>
                       <Link
                         href={page.link}
                         underline="hover"
@@ -225,20 +226,19 @@ export default function Header(props) {
                       >
                       {page.name}
                       </Link>
-                    </NextLink>
                     <Divider variant="middle" orientation="vertical" flexItem />
                   </Box>
                 ))}
               </Box>
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
+              <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex'} }}>
+                <Tooltip title="Open user menu">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar sx={{ width: 30, height: 30 }} alt="Milan" src="/static/images/avatar/2.jpg" />
+                    <Avatar sx={{ width: 30, height: 30 }} alt={user ?user.name : ''} src={user ? user.image : ''} />
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
+                  sx={{ mt: '45px', display: { xs: 'none', md: 'flex' } }}
+                  id="menu-user"
                   anchorEl={anchorElUser}
                   anchorOrigin={{
                     vertical: 'top',
@@ -252,11 +252,37 @@ export default function Header(props) {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography align="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
+                {
+                  !user ?
+                  (
+                    <Box>
+                      <MenuItem>
+                        <Link href="/user/${id}">
+                          {loged[0]}
+                        </Link>
+                      </MenuItem>
+                      <MenuItem>
+                        <Link href="/user/logout">
+                          {loged[1]}
+                        </Link>
+                      </MenuItem>
+                    </Box>
+
+                  ) : (
+                    <Box>
+                      <MenuItem>
+                        <Link href="/login">
+                          {logedout[0]}
+                        </Link>
+                      </MenuItem>
+                      <MenuItem>
+                        <Link href="/signin">
+                          {logedout[1]}
+                        </Link>
+                      </MenuItem>
+                    </Box>
+                  )
+                }
                 </Menu>
               </Box>
             </Toolbar>
@@ -270,13 +296,13 @@ export default function Header(props) {
                 </Grid>
                 <Grid item xs={3} md={9} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'end' }}>
                   <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
-                    <Tooltip title="Open settings">
+                    <Tooltip title="Open user menu">
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt="Milan" src="/static/images/avatar/2.jpg" />
+                        <Avatar alt={user ? user.name : ''} src={user ? user.image : ''} />
                       </IconButton>
                     </Tooltip>
                     <Menu
-                      sx={{ mt: '45px' }}
+                      sx={{ mt: '45px', display: { xs: 'flex', md: 'none' } }}
                       id="menu-appbar"
                       anchorEl={anchorElUser}
                       anchorOrigin={{
@@ -291,13 +317,37 @@ export default function Header(props) {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      {settings.map((setting, index) => (
-                        <MenuItem key={setting + index} onClick={handleCloseUserMenu}>
-                          <Typography align="center">
-                          {setting}
-                          </Typography>
-                        </MenuItem>
-                      ))}
+                      {
+                        !user ?
+                        (
+                          <Box>
+                            <MenuItem>
+                              <Link href="/user/${id}">
+                                {loged[0]}
+                              </Link>
+                            </MenuItem>
+                            <MenuItem>
+                              <Link href="/user/logout">
+                                {loged[1]}
+                              </Link>
+                            </MenuItem>
+                          </Box>
+      
+                        ) : (
+                          <Box>
+                            <MenuItem>
+                              <Link href="/login">
+                                {logedout[0]}
+                              </Link>
+                            </MenuItem>
+                            <MenuItem>
+                              <Link href="/signin">
+                                {logedout[1]}
+                              </Link>
+                            </MenuItem>
+                          </Box>
+                        )
+                      }
                     </Menu>
                   </Box>     
                 </Grid>

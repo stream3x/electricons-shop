@@ -42,7 +42,7 @@ export default function SwipeableCartDrawer({cart}) {
   const list = (anchor) => (
     <React.Fragment>
       <Box
-        sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 300, flexGrow: 1 }}
+        sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 300, flexGrow: 2 }}
         role="presentation"
       >
         <Box sx={{display: 'flex', alignItems: 'center', p: 1}}>
@@ -59,7 +59,7 @@ export default function SwipeableCartDrawer({cart}) {
         <Divider />
       {
         cart.cartItems.length === 0 ?
-        <Box sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', height: '90%'}}>
+        <Box sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'center', height: '100%'}}>
           <Box sx={{width: '100%'}}>
             <Box
               component="img"
@@ -80,7 +80,7 @@ export default function SwipeableCartDrawer({cart}) {
           </Box>
         </Box>
         : 
-        <List>
+        <List sx={{ overflowY: 'auto'}}>
           {cart.cartItems.map((item, index) => (
             <React.Fragment key={item._id}>
               <ListItem disablePadding >
@@ -111,8 +111,8 @@ export default function SwipeableCartDrawer({cart}) {
                       {item.price}
                     </Typography>
                   </Grid>
-                  <Grid item xs={3}>
-                    <IconButton onClick={() => removeItemHandler(item)} sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                  <Grid item xs={3} sx={{ display: 'flex' }}>
+                    <IconButton onClick={() => removeItemHandler(item)} sx={{ margin: 'auto' }}>
                       <DeleteForeverIcon />
                     </IconButton>
                   </Grid>
@@ -128,41 +128,35 @@ export default function SwipeableCartDrawer({cart}) {
         cart.cartItems.length !== 0 &&
         <React.Fragment>
           <Box>
-            <List sx={{ flexGrow: 0 }}>
-              <Box sx={{ p: 2 }}>
-              {['Sub Total', 'Tax', 'Shipping', 'Total'].map((text, index) => (
+            <List sx={{ flexGrow: 1, p: 2 }}>
+              {['Sub Total', 'Tax', 'Total'].map((text, index) => (
                 <React.Fragment key={text}>
-                <ListItem disablePadding>
-                    <ListItemText sx={{textAlign: 'left'}} primary={text} />
-                    {
-                      text[index] === text[0] &&
-                      <ListItemText sx={{textAlign: 'right'}} primary={`$${subTotal}`} />
-                    }
-                    {
-                      text[index] === text[1] &&
-                      <ListItemText sx={{textAlign: 'right'}} primary={`${tax}%`} />
-                    }
-                    {
-                      text[index] === text[2] &&
-                      <ListItemText sx={{textAlign: 'right'}} primary={`$${shipping}`} />
-                    }
-                    {
-                      text[index] === text[3] &&
-                      <ListItemText sx={{textAlign: 'right'}} primary={`$${(subTotal + shipping + (subTotal * tax / 100)).toFixed(2)}`} />
-                    }
-                </ListItem>
-                <Divider />
+                  <ListItem disablePadding>
+                      <ListItemText sx={{textAlign: 'left'}} primary={text} />
+                      {
+                        text[index] === text[0] &&
+                        <ListItemText sx={{textAlign: 'right'}} primary={`$${subTotal}`} />
+                      }
+                      {
+                        text[index] === text[1] &&
+                        <ListItemText sx={{textAlign: 'right'}} primary={`${tax}%`} />
+                      }
+                      {
+                        text[index] === text[2] &&
+                        <ListItemText sx={{textAlign: 'right'}} primary={`$${(subTotal + (subTotal * tax / 100)).toFixed(2)}`} />
+                      }
+                  </ListItem>
+                  <Divider />
                 </React.Fragment>
               ))}
-              </Box>
             </List>
           </Box>
-          <Box sx={{display: 'flex'}}>
-            <Link sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center' }} href="/cart" onClick={toggleDrawer(anchor, false)}>
-              <Typography component="span">View Cart</Typography>
+          <Box sx={{ display: 'flex', flexGrow: 0, width: '100%', '& > a': { flex: 1, textDecoration: 'none!important' } }}>
+            <Link sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', '&:hover': { textDecoration: 'none!important'}, display: 'flex', flexGrow: 1, textAlign: 'center' }} href="/cart" onClick={toggleDrawer(anchor, false)} passHref>
+              <Typography sx={{ display: 'block', height: '100%', margin: 'auto' }} component="p">View Cart</Typography>
             </Link>
-            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center' }} href="/checkout" onClick={toggleDrawer(anchor, false)}>
-              <Typography component="span">Checkout</Typography>
+            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center', display: 'flex', '&:hover': { textDecoration: 'none!important'} }} href="/checkout" onClick={toggleDrawer(anchor, false)}>
+              <Typography sx={{ display: 'block', height: '100%', margin: 'auto' }} component="span">Checkout</Typography>
             </Link>
           </Box>
         </React.Fragment>

@@ -20,6 +20,16 @@ import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import axios from 'axios';
 import { Store } from '../../src/utils/Store';
+import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
+import GoogleIcon from '@mui/icons-material/Google';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import StoreIcon from '@mui/icons-material/Store';
+import GppGoodIcon from '@mui/icons-material/GppGood';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
+import ProductTabs from '../../src/components/ProductTabs';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -33,6 +43,15 @@ export async function getServerSideProps(context) {
     },
   }
 };
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.default,
+  border: 'thin solid lightGrey',
+  borderLeft: '3px solid black',
+  marginLeft: '10px',
+}));
 
 const AddToCartButton = styled(Button)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
@@ -48,8 +67,21 @@ const AddToCartButton = styled(Button)(({ theme }) => ({
 }));
 
 const ActionButtons = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-  backgroundColor: theme.palette.secondary.main,
+  color: theme.palette.secondary.main,
+  backgroundColor: theme.palette.badge.bgd,
+  marginRight: 10,
+  '&:hover': {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.main,
+  },
+  [theme.breakpoints.down('sm')]: {
+    display: 'none'
+  },
+}));
+
+const ShareButtons = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.secondary.lightGrey,
+  backgroundColor: theme.palette.badge.bgd,
   marginRight: 10,
   '&:hover': {
     color: theme.palette.primary.contrastText,
@@ -171,6 +203,19 @@ export default function SingleProduct(props) {
           <Item>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
                 <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
+                  Avalability: 
+                </Typography>
+                <LabelButton startIcon={<TapAndPlayIcon />}>
+                  online shoping
+                </LabelButton>
+                <LabelButton startIcon={<StoreIcon />}>
+                  store shoping
+                </LabelButton>
+            </Box>  
+          </Item>
+          <Item>
+            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
+                <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
                 Quantity :
                 </Typography>
                 {
@@ -181,26 +226,79 @@ export default function SingleProduct(props) {
             </Box>  
           </Item>
           <Item>
-            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
-              <AddToCartButton onClick={addToCardHandler} variant={ product.inStock !== 0 ? "variant" : "disabled"} startIcon={<CartIcon />}>
-                Add To Cart
-              </AddToCartButton>
-            </Box>  
+            <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'  }}>
+              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, display: 'flex', alignItems: 'center' }}>
+              {
+                product.inStock !== 0 ? 
+                <AddToCartButton onClick={addToCardHandler} variant="variant" startIcon={<CartIcon />}>
+                  Add To Cart
+                </AddToCartButton>
+                :
+                <AddToCartButton sx={{cursor: 'no-drop'}} variant="variant" startIcon={<RemoveShoppingCartIcon />}>
+                  no Stock
+                </AddToCartButton>
+              }
+              </Box>
+              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 65%'}, my: 1, display: 'flex', alignItems: 'center' }}>
+                <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
+                  <ActionButtons color="secondary" aria-label="add-to-wishlist" size="small">
+                    <Wishlist fontSize="inherit" />
+                  </ActionButtons>
+                </LightTooltip>
+                <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
+                  Add to wishlist
+                </Typography>
+                <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
+                  <ActionButtons aria-label="add-to-compare" size="small">
+                    <CompareIcon fontSize="inherit" />
+                  </ActionButtons>
+                </LightTooltip>
+                <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
+                  Add to comparasion
+                </Typography>
+              </Box>
+            </Box>
           </Item>
           <Item>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
+              <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
+                Share on:
+              </Typography>
               <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
-                <ActionButtons aria-label="add-to-wishlist" size="small">
-                  <Wishlist fontSize="inherit" />
-                </ActionButtons>
+                <ShareButtons aria-label="add-to-wishlist" size="medium">
+                  <FacebookRoundedIcon fontSize="inherit" />
+                </ShareButtons>
               </LightTooltip>
               <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
-                <ActionButtons aria-label="add-to-compare" size="small">
-                  <CompareIcon fontSize="inherit" />
-                </ActionButtons>
+                <ShareButtons aria-label="add-to-compare" size="medium">
+                  <GoogleIcon fontSize="inherit" />
+                </ShareButtons>
+              </LightTooltip>
+              <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
+                <ShareButtons aria-label="add-to-compare" size="medium">
+                  <TwitterIcon fontSize="inherit" />
+                </ShareButtons>
               </LightTooltip>
             </Box>
           </Item>
+          <Item>
+            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
+                <LabelButton startIcon={<LocalShippingIcon />}>
+                  Delivery policy
+                </LabelButton>
+                <LabelButton startIcon={<GppGoodIcon />}>
+                  Security Policy
+                </LabelButton>
+                <LabelButton startIcon={<CreditCardIcon />}>
+                  Security Payment
+                </LabelButton>
+            </Box>  
+          </Item>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid xs={12}>
+          <ProductTabs product={product} />
         </Grid>
       </Grid>
     </Box>

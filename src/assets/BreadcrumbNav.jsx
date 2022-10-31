@@ -44,20 +44,20 @@ const Page = () => {
 export default function BreadcrumbNav({productData}) {
 
   return (
-    <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{my: 4}}>
+    <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{my: 4, 'a' : { textDecoration: 'none'}}}>
       <Link
-        underline="hover"
+        underline="none"
         sx={{ display: 'flex', alignItems: 'center' }}
-        color="inherit"
+        color="primary"
         href="/"
       >
         <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
         Home
       </Link>
       <Link
-        underline="hover"
+        underline="none"
         sx={{ display: 'flex', alignItems: 'center' }}
-        color="inherit"
+        color="primary"
         href={productData.categoryUrl}
       >
         {productData.category}

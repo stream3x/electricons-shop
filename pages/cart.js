@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material'
-import CartTable from '../src/assets/CartTable'
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
-import CartTotal from '../src/assets/CartTotal';
+import CartTotal from '../src/components/CartTotal';
 import { useContext } from 'react';
 import { Store } from '../src/utils/Store';
 import dynamic from 'next/dynamic';
+import CheckoutStepper from '../src/components/CheckoutStepper';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -22,18 +22,15 @@ const Item = styled(Paper)(({ theme }) => ({
 
   return (
     <Box sx={{ my: 4 }}>
-      <Typography component="h1" variant="h6">
-        SHOPPING CART
-      </Typography>
       <Grid container space={2}>
         <Grid xs={12} md={8}>
           <Item elevation={0}>
-            <CartTable cartItems={cartItems} />
+            <CheckoutStepper cartItems={cartItems}/>
           </Item>
         </Grid>
         <Grid xs={12} md={4}>
           <Item elevation={0}>
-            <CartTotal />
+            <CartTotal cartItems={cartItems}/>
           </Item>
         </Grid>
       </Grid>

@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
-import CountQuantity from './CountQuantity';
+import CountQuantity from '../assets/CountQuantity';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { Button, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -173,7 +173,7 @@ function EnhancedTableToolbar(props) {
         }),
       }}
     >
-      {numSelected > 0 && (
+      {numSelected > 0 ? (
         <Typography
           sx={{ flex: '1 1 100%', textAlign: 'left' }}
           color="inherit"
@@ -182,7 +182,11 @@ function EnhancedTableToolbar(props) {
         >
           {numSelected} selected
         </Typography>
-      )}
+      ) : 
+        <Typography component="h1" variant="h6">
+          Shoping cart
+        </Typography>
+      }
 
       {numSelected > 0 && (
         <Tooltip title="Delete">
@@ -368,7 +372,9 @@ export default function CartTable({ cartItems }) {
                           {row.title}
                         </Link>
                       </TableCell>
-                      <TableCell color='primary' align="right">{row.price}</TableCell>
+                      <TableCell color='primary' align="right">
+                        {row.price}
+                      </TableCell>
                       <TableCell align="right">
                         <CountQuantity item={row} quantityItem={row.quantity} maxItem={row.inStock} size="small"/>
                       </TableCell>

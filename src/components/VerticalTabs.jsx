@@ -4,6 +4,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
+import SwipeableViews from 'react-swipeable-views';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -42,9 +43,14 @@ export default function VerticalTabs({productData}) {
   const theme = useTheme();
   const maxSteps = productData.images.length;
   const [value, setValue] = React.useState(0);
+  const [activeStep, setActiveStep] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleStepChange = (step) => {
+    setActiveStep(step);
   };
 
   return (
@@ -66,25 +72,32 @@ export default function VerticalTabs({productData}) {
         ))
       }
       </Tabs>
+      <SwipeableViews
+      axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+      index={value}
+      onChangeIndex={handleStepChange}
+      style={{width: "100%", overflow: 'hidden'}}
+      >
       {
         productData.images.map((img, index) => (
-            <TabPanel key={img.image} value={value} index={index} style={{width: "100%"}}>
-            <Box
-              component="img"
-              sx={{
-                height: 200,
-                display: 'block',
-                maxWidth: 400,
-                overflow: 'hidden',
-                width: 'auto',
-                margin: 'auto'
-              }}
-              src={img.image}
-              alt={productData.title}
-            />
-            </TabPanel>
+          <TabPanel key={img.image} value={value} index={index} sx={{width: "100%"}}>
+              <Box
+                component="img"
+                sx={{
+                  height: 200,
+                  display: 'block',
+                  maxWidth: 400,
+                  overflow: 'hidden',
+                  width: 'auto',
+                  margin: 'auto'
+                }}
+                src={img.image}
+                alt={productData.title}
+              />
+          </TabPanel>
           ))
-        }
+      }
+      </SwipeableViews>
     </Box>
   );
 }

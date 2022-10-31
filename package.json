@@ -24,7 +24,9 @@
     "next-connect": "latest",
     "prop-types": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-swipeable-views": "^0.14.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "eslint": "latest",
