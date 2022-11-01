@@ -1,4 +1,22 @@
+import bcrypt from 'bcryptjs';
+
 const data = {
+  users: [
+    {
+      name: 'Sinan',
+      email: 'sinan.sakic@gmail.com',
+      password: bcrypt.hashSync('Sinana123'),
+      isAdmin: false,
+      image: '/images/sinan.jpeg'
+    },
+    {
+      name: 'Milan',
+      email: 'super.admin@gmail.com',
+      password: bcrypt.hashSync('Dmdevelo123'),
+      isAdmin: true,
+      image: '/images/admin.jpg'
+    }
+  ],
   products: [
     {
       title: "AMD Ryzen 53500",

@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '../src/Link';
+import axios from 'axios';
 
 function Copyright(props) {
   return (
@@ -29,13 +30,20 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function LogIn() {
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    try {
+      const formOutput = new FormData(event.currentTarget);
+      const formData = {
+        email: formOutput.get('email'),
+        password: formOutput.get('password'),
+      }
+      const { data } = await axios.post('/api/users/login', formData);
+      console.log('success login')
+    } catch (error) {
+      console.log(error.response.data ? error.response.data.message : error);
+    }
+   
   };
 
   return (

@@ -165,6 +165,7 @@ export default function Header(props) {
 
   const openDropdown = Boolean(anchorElDropdown);
   const isMenuOpen = Boolean(anchorEl);
+  const isMenuUserOpen = Boolean(anchorElUser);
 
   const handleCartOpen = (event) => {
     setCartAnchorEl(event.currentTarget);
@@ -244,24 +245,23 @@ export default function Header(props) {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  keepMounted
                   transformOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
                   }}
-                  open={Boolean(anchorElUser)}
+                  open={isMenuUserOpen}
                   onClose={handleCloseUserMenu}
                 >
                 {
                   !user ?
                   (
                     <Box>
-                      <MenuItem>
+                      <MenuItem onClick={handleCloseUserMenu}>
                         <Link href="/user/${id}">
                           {loged[0]}
                         </Link>
                       </MenuItem>
-                      <MenuItem>
+                      <MenuItem onClick={handleCloseUserMenu}>
                         <Link href="/user/logout">
                           {loged[1]}
                         </Link>
@@ -270,12 +270,12 @@ export default function Header(props) {
 
                   ) : (
                     <Box>
-                      <MenuItem>
+                      <MenuItem onClick={handleCloseUserMenu}>
                         <Link href="/login">
                           {logedout[0]}
                         </Link>
                       </MenuItem>
-                      <MenuItem>
+                      <MenuItem onClick={handleCloseUserMenu}>
                         <Link href="/signin">
                           {logedout[1]}
                         </Link>
@@ -309,24 +309,23 @@ export default function Header(props) {
                         vertical: 'top',
                         horizontal: 'right',
                       }}
-                      keepMounted
                       transformOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
                       }}
-                      open={Boolean(anchorElUser)}
+                      open={isMenuUserOpen}
                       onClose={handleCloseUserMenu}
                     >
                       {
                         !user ?
                         (
                           <Box>
-                            <MenuItem>
+                            <MenuItem onClick={handleCloseUserMenu}>
                               <Link href="/user/${id}">
                                 {loged[0]}
                               </Link>
                             </MenuItem>
-                            <MenuItem>
+                            <MenuItem onClick={handleCloseUserMenu}>
                               <Link href="/user/logout">
                                 {loged[1]}
                               </Link>
@@ -335,12 +334,12 @@ export default function Header(props) {
       
                         ) : (
                           <Box>
-                            <MenuItem>
+                            <MenuItem onClick={handleCloseUserMenu}>
                               <Link href="/login">
                                 {logedout[0]}
                               </Link>
                             </MenuItem>
-                            <MenuItem>
+                            <MenuItem onClick={handleCloseUserMenu}>
                               <Link href="/signin">
                                 {logedout[1]}
                               </Link>
