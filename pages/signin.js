@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useContext, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,6 +12,17 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useRouter } from 'next/router';
+import { Store } from '../src/utils/Store';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import { FormControl, InputLabel } from '@mui/material';
+import FormHelperText from '@mui/material/FormHelperText';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 function Copyright(props) {
   return (
@@ -29,14 +40,50 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+  const router = useRouter();
+  const { redirect } = router.query;
+  const { state, dispatch } = useContext(Store);
+  const { userInfo } = state;
+  const [confirmPassword, setConfirmPassword] = useState({
+    showPassword: false,
+    confirmError: false
+  })
+
+  const handleClickShowPassword = () => {
+    setConfirmPassword({
+      showPassword: !confirmPassword.showPassword,
     });
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const formOutput = new FormData(event.currentTarget);
+      const formData = {
+        name: formOutput.get('name'),
+        email: formOutput.get('email'),
+        password: formOutput.get('password'),
+      }
+      if(formData.password !== formOutput.get('password-confirmed')) {
+        setConfirmPassword({
+          confirmError: !confirmPassword.confirmError,
+        });
+        return
+      }
+      setConfirmPassword({
+        confirmError: false,
+      });
+      const { data } = await axios.post('/api/users/register', formData);
+      dispatch({ type: 'USER_LOGIN', payload: data});
+      Cookies.set('userInfo', JSON.stringify(data));
+      router.back();
+      console.log('success login')
+    } catch (error) {
+      console.log(error.response ? error.response.data : error);
+    }
+   
+  };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -58,25 +105,15 @@ export default function SignIn() {
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="name"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id="name"
+                  label="Name"
                   autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -99,6 +136,38 @@ export default function SignIn() {
                   id="password"
                   autoComplete="new-password"
                 />
+                {
+                  confirmPassword.confirmError &&
+                  <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                }
+              </Grid>
+              <Grid item xs={12}>
+              <FormControl sx={{ width: '100%' }} variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
+                <OutlinedInput
+                  required
+                  fullWidth
+                  name="password-confirmed"
+                  label="Confirm Password"
+                  type={confirmPassword.showPassword ? 'text' : 'password'}
+                  id="password-confirm"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {confirmPassword.showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+                {
+                  confirmPassword.confirmError &&
+                  <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                }
+              </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
@@ -117,8 +186,8 @@ export default function SignIn() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Sign in
+                <Link href='/login'variant="body2">
+                  Already have an account? Login
                 </Link>
               </Grid>
             </Grid>

@@ -34,7 +34,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function LogIn() {
+export default function ForgotPassword() {
   const router = useRouter();
   const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
@@ -63,11 +63,7 @@ export default function LogIn() {
       dispatch({ type: 'USER_LOGIN', payload: data});
       Cookies.set('userInfo', JSON.stringify(data));
       setSnack({ ...snack, message: 'success login', severity: 'success' });
-      if(router.back() === '/cart') {
-        router.back()
-      }else {
-        router.push('/');
-      }
+      router.back();
     } catch (error) {
       if(error.response.data.type === 'all') {
         setErrors({ ...errors, email: error.response.data.type === 'all', password: error.response.data.type === 'all' })
@@ -94,7 +90,7 @@ export default function LogIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Login
+            Forgot Password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             <TextField
@@ -112,39 +108,15 @@ export default function LogIn() {
               errors.email && 
               <FormHelperText error>{snack.message}</FormHelperText>
             }
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              error={errors.password}
-            />
-            {
-              errors.password && 
-              <FormHelperText error>{snack.message}</FormHelperText>
-            }
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Reset password
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href='/forgot-password' variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
                 <Link href='/singin' variant="body2">
                   {"Don't have an account? Sign Up"}

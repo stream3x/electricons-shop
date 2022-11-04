@@ -1,6 +1,8 @@
 import { Box, Button, Typography } from "@mui/material";
 import Link from "../src/Link";
 import ReplyIcon from '@mui/icons-material/Reply';
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 const statusCodes = {
   400: 'Bad Request',
@@ -18,14 +20,20 @@ function getInitialProps( req, res) {
 
 export default function Custom404() {
   const status = getInitialProps();
+  const router = useRouter();
+  const [backPath, setBackPath] = useState('/');
+
+  const handleBackPath = () => {
+    setBackPath(router.back())
+  }
 
   return (
       <Box sx={{ my: 4, textAlign: 'center' }}>
         <Typography sx={{p: 4}} variant="h3" component="h1" gutterBottom>
           {status.statusCode} | {statusCodes[status.statusCode]}
         </Typography>
-        <Link href="/">
-          <Button size="large" variant="contained" startIcon={<ReplyIcon />}>
+        <Link href={backPath}>
+          <Button onClick={handleBackPath} size="large" variant="contained" startIcon={<ReplyIcon />}>
             back to shop
           </Button>
         </Link>

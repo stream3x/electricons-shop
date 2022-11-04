@@ -35,9 +35,11 @@ import { useRouter } from 'next/router';
 import { Store } from '../utils/Store';
 import SwipeableCartDrawer from '../components/SwipeableCartDrawer';
 import Link from '../Link';
+import Cookies from 'js-cookie';
+import Snackbars from '../assets/Snackbars';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
-const loged = ['Profile', 'Logout'];
+const loged = ['Profile', 'admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [{name:'Home', link: '/'}, {name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
 
@@ -145,8 +147,11 @@ export default function Header(props) {
   const [anchorElDropdown, setAnchorElDropdown] = React.useState(null);
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { cart } = state;
-  const user = {name: "Жикица", image: '/'}
+  const { cart, userInfo } = state;
+  const [snack, setSnack] = useState({
+    message: '',
+    severity: ''
+  })
 
   const handleClick = (event) => {
     setAnchorElDropdown(event.currentTarget);
@@ -162,6 +167,14 @@ export default function Header(props) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleLogout = (e) => {
+    setAnchorElUser(null);
+    setSnack({ ...snack, message: 'successfully logged out', severity: 'success' });
+    dispatch({ type: 'USER_LOGOUT'})
+    Cookies.remove('userInfo');
+    router.push('/');
+  }
 
   const openDropdown = Boolean(anchorElDropdown);
   const isMenuOpen = Boolean(anchorEl);
@@ -208,7 +221,7 @@ export default function Header(props) {
       window.removeEventListener("scroll", toggleVisibility);
     };
   }, []);
-
+  
   return (
     <React.Fragment>
       <CssBaseline />
@@ -232,9 +245,9 @@ export default function Header(props) {
                 ))}
               </Box>
               <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex'} }}>
-                <Tooltip title="Open user menu">
+                <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar sx={{ width: 30, height: 30 }} alt={user ?user.name : ''} src={user ? user.image : ''} />
+                    <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -253,18 +266,24 @@ export default function Header(props) {
                   onClose={handleCloseUserMenu}
                 >
                 {
-                  !user ?
+                  userInfo ?
                   (
                     <Box>
                       <MenuItem onClick={handleCloseUserMenu}>
-                        <Link href="/user/${id}">
+                        <Link href={`/user/${userInfo._id}`}>
                           {loged[0]}
                         </Link>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseUserMenu}>
-                        <Link href="/user/logout">
+                      {
+                        userInfo.isAdmin &&
+                        <MenuItem onClick={handleCloseUserMenu}>
+                        <Link href={`/admin/${userInfo._id}`}>
                           {loged[1]}
                         </Link>
+                      </MenuItem>
+                      }
+                      <MenuItem onClick={handleLogout}>
+                          {loged[2]}
                       </MenuItem>
                     </Box>
 
@@ -298,7 +317,7 @@ export default function Header(props) {
                   <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
                     <Tooltip title="Open user menu">
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt={user ? user.name : ''} src={user ? user.image : ''} />
+                        <Avatar alt={userInfo ? userInfo.name : ''} src={userInfo? userInfo.image : ''} />
                       </IconButton>
                     </Tooltip>
                     <Menu
@@ -317,7 +336,7 @@ export default function Header(props) {
                       onClose={handleCloseUserMenu}
                     >
                       {
-                        !user ?
+                        userInfo ?
                         (
                           <Box>
                             <MenuItem onClick={handleCloseUserMenu}>
@@ -409,6 +428,7 @@ export default function Header(props) {
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
+      <Snackbars snack={snack}/>
     </React.Fragment>
   )
 }

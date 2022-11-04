@@ -20,10 +20,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
 import CountQuantity from '../assets/CountQuantity';
 import ReplyIcon from '@mui/icons-material/Reply';
-import { Button, Grid } from '@mui/material';
+import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Link from '../Link';
 import { Store } from '../utils/Store';
+import { useRouter } from 'next/router';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -34,6 +35,18 @@ const Item = styled(Paper)(({ theme }) => ({
   }));
 
 function descendingComparator(a, b, orderBy) {
+  
+  if(a[orderBy] === undefined) {
+    const subB = Number(b.price.replace(/[^0-9.-]+/g,"")) * b.quantity;
+    const subA = Number(a.price.replace(/[^0-9.-]+/g,"")) * a.quantity;
+    console.log(subA > subB)
+    if (subB < subA) {
+      return -1;
+    }
+    if (subB > subA) {
+      return 1;
+    }
+  }
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -91,7 +104,7 @@ const headCells = [
   },
   {
     id: 'subtotal',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'Subtotal',
   },
@@ -212,11 +225,13 @@ export default function CartTable({ cartItems }) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const { dispatch } = React.useContext(Store);
+  const router = useRouter()
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+    console.log(property)
   };
 
   const handleSelectAllClick = (event) => {
@@ -285,11 +300,9 @@ export default function CartTable({ cartItems }) {
         <Typography gutterBottom variant="h6" component="h3" textAlign="center">
           There are no items in your cart
         </Typography>
-        <Link href="/">
-          <Button variant="contained" startIcon={<ReplyIcon />}>
-            back to shop
-          </Button>
-        </Link>
+        <Button onClick={()=> router.back()} variant="contained" startIcon={<ReplyIcon />}>
+          back to shop
+        </Button>
       </Box>
     )
   }
@@ -324,6 +337,7 @@ export default function CartTable({ cartItems }) {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.title);
                   const labelId = `enhanced-table-checkbox-${index}`;
+                  const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
 
                   return (
                     <TableRow
@@ -378,8 +392,8 @@ export default function CartTable({ cartItems }) {
                       <TableCell align="right">
                         <CountQuantity item={row} quantityItem={row.quantity} maxItem={row.inStock} size="small"/>
                       </TableCell>
-                      <TableCell align="center">
-                        ${(Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity)}
+                      <TableCell align="right">
+                        {subtotal}
                       </TableCell>
                     </TableRow>
                   );

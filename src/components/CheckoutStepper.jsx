@@ -101,36 +101,36 @@ export default function CheckoutStepper(props) {
             </Box>
             {activeStep !== steps.length &&
               <Box>
-              <Box>
-              {
-                steps[activeStep] === 'Cart' &&
-                <CartTable cartItems={cartItems} />
-              }
-              </Box>
-              <Box>
-              {
-                steps[activeStep] === 'Personal info' &&
-                <Typography>Personal information</Typography>
-              }
-              </Box>
-              <Box>
-              {
-                steps[activeStep] === 'Addresses' &&
-                <Typography>Adresses</Typography>
-              }
-              </Box>
-              <Box>
-              {
-                steps[activeStep] === 'Shipping method' &&
-                <Typography>Shipping method</Typography>
-              }
-              </Box>
-              <Box>
-              {
-                steps[activeStep] === 'Payment' &&
-                <Typography>Payment</Typography>
-              }
-              </Box>
+                <Box>
+                {
+                  steps[activeStep] === 'Cart' &&
+                  <CartTable cartItems={cartItems} />
+                }
+                </Box>
+                <Box>
+                {
+                  steps[activeStep] === 'Personal info' &&
+                  <Typography>Personal information</Typography>
+                }
+                </Box>
+                <Box>
+                {
+                  steps[activeStep] === 'Addresses' &&
+                  <Typography>Adresses</Typography>
+                }
+                </Box>
+                <Box>
+                {
+                  steps[activeStep] === 'Shipping method' &&
+                  <Typography>Shipping method</Typography>
+                }
+                </Box>
+                <Box>
+                {
+                  steps[activeStep] === 'Payment' &&
+                  <Typography>Payment</Typography>
+                }
+                </Box>
               </Box>
             }
           </React.Fragment>

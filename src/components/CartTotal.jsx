@@ -19,9 +19,10 @@ const bull = (
 export default function CartTotal(props) {
   const { cartItems } = props;
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
-  console.log(cartItems);
+
   const shipping = 50;
   const total = subTotal + shipping;
+  
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card cartItems={cartItems} variant="outlined">
@@ -36,7 +37,7 @@ export default function CartTotal(props) {
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">shipping: </Typography>
-            <Typography variant={!shipping ? "h6" : "p"} component="span">{!shipping ? `$${shipping}` : 'Free'}</Typography>
+            <Typography variant={shipping ? "h6" : "p"} component="span">{shipping ? `$${shipping}` : 'Free'}</Typography>
           </Typography>
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
