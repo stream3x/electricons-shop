@@ -309,7 +309,7 @@ export default function CartTable({ cartItems }) {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper elevation={0} sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar
          numSelected={selected.length}
          dispatch={dispatch}

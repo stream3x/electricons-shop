@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -16,7 +16,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import Wishlist from '@mui/icons-material/FavoriteBorderOutlined';
-import MoreIcon from '@mui/icons-material/MoreVert';
 import CompareIcon from '@mui/icons-material/RepeatOutlined';
 import { styled, alpha } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
@@ -41,7 +40,7 @@ import Snackbars from '../assets/Snackbars';
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
 const loged = ['Profile', 'admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
-const pages = [{name:'Home', link: '/'}, {name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
+const pages = [{name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',

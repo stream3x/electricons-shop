@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
+import theme from '../theme';
 
 const bull = (
   <Box

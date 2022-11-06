@@ -1,13 +1,13 @@
 import { createTheme } from '@mui/material/styles';
-import { red, blue, grey } from '@mui/material/colors';
+import { red, grey, cyan } from '@mui/material/colors';
 
 // Create a theme instance.
 const theme = createTheme({
   palette: {
     primary: {
-      main: blue[500],
+      main: cyan[500],
       contrastText: grey[50],
-      borderColor: blue[500]
+      borderColor: cyan[500]
     },
     secondary: {
       main: grey[900],
@@ -30,6 +30,11 @@ const theme = createTheme({
     error: {
       main: red.A400,
     },
+    transitions: {
+      duration: {
+        leavingScreen: 5000
+      }
+    }
   },
 });
 

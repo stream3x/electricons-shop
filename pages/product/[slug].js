@@ -41,8 +41,8 @@ export async function getServerSideProps(context) {
     props: {
       product: db.convertDocToObject(product),
     },
-  }
-};
+  };
+}
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,

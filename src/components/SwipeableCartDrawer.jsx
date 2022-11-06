@@ -20,7 +20,7 @@ export default function SwipeableCartDrawer({cart}) {
   const { dispatch } = React.useContext(Store);
 
   function removeItemHandler(item) {
-    dispatch({ type: 'CART_REMOVE_ITEM', payload: item})
+    dispatch({ type: 'CART_REMOVE_ITEM', payload: item});
   }
 
   const subTotal = cart.cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
