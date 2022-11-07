@@ -26,11 +26,10 @@ export default function Snackbars(props) {
 
   React.useEffect(() => {
     setOpen(true);
-    console.log(open)
     return () => {
       setOpen(false);
     }
-  }, [message !== '']);
+  }, [message]);
 
   const messageSnack = (
     <Typography variant="p" color={theme.palette.primary.main}>

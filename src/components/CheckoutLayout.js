@@ -2,11 +2,11 @@ import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
-import CartTotal from '../../src/components/CartTotal';
+import CartTotal from './CartTotal';
 import { useContext } from 'react';
-import { Store } from '../../src/utils/Store';
+import { Store } from '../utils/Store';
 import dynamic from 'next/dynamic';
-import CheckoutStepper from '../../src/components/CheckoutStepper';
+import CheckoutStepper from './CheckoutStepper';
 import { useRouter } from 'next/router';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -17,7 +17,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
   }));
 
- function Checkout() {
+ function CheckoutLayout({ children }) {
   const { state } = useContext(Store);
   const { cart: {cartItems} } = state;
 
@@ -26,7 +26,7 @@ const Item = styled(Paper)(({ theme }) => ({
       <Grid container space={2}>
         <Grid xs={12} lg={8}>
           <Item elevation={0}>
-            <CheckoutStepper cartItems={cartItems}/>
+            { children }
           </Item>
         </Grid>
         <Grid xs={12} lg={4}>
@@ -39,4 +39,4 @@ const Item = styled(Paper)(({ theme }) => ({
   )
 }
 
-export default dynamic(() => Promise.resolve(Checkout), { ssr: false });
+export default dynamic(() => Promise.resolve(CheckoutLayout), { ssr: false });

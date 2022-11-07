@@ -11,21 +11,22 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Link from '../../src/Link';
 import axios from 'axios';
+import { Store } from '../../src/utils/Store';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Snackbars from '../../src/assets/Snackbars';
 import FormHelperText from '@mui/material/FormHelperText';
 import { Divider } from '@mui/material';
 import theme from '../../src/theme';
-import { Store } from '../../src/utils/Store';
 import CheckoutLayout from '../../src/components/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
 
-export default function PersonalInfo() {
+export default function Addresses() {
   const router = useRouter();
   const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
-  const { userInfo, cart: {cartItems} } = state;
+  const { cart: {cartItems} } = state;
+  const { userInfo } = state;
   const [willLogin, setWillLogin] = useState(false);
   const [snack, setSnack] = useState({
     message: '',
@@ -35,10 +36,6 @@ export default function PersonalInfo() {
     email: false,
     password: false
   });
-
-  function loginHandler() {
-    setWillLogin(prev => !prev);
-  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -68,33 +65,13 @@ export default function PersonalInfo() {
       setSnack({ ...snack, message: error ? error.response.data.message : error, severity: error.response.data.severity });
     }
   };
-  
+
   return (
     <CheckoutLayout>
-      <CheckoutStepper activeStep={0} />
+      <CheckoutStepper activeStep={1} />
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xl">
           <CssBaseline />
-          {
-            !userInfo &&
-            <Grid container sx={{ m: 2, boxSizing: 'border-box' }}>
-              <Grid item xs={6} sm={3} sx={{ display: 'flex', justifyContent: 'flex-end', boxSizing: 'border-box' }}>
-                <Button onClick={loginHandler} sx={{ color: theme.palette.secondary.main }}>
-                  <Typography variant="p">
-                    Order as a guest
-                  </Typography>
-                </Button>
-              </Grid>
-              <Divider variant="middle" orientation="vertical" flexItem />
-              <Grid item xs={6} sm={3} sx={{ display: 'flex', justifyContent: 'flex-start', boxSizing: 'border-box' }}>
-                <Button onClick={loginHandler} sx={{ color: theme.palette.main }}>
-                  <Typography variant="p">
-                    Click here to login
-                  </Typography>
-                </Button>
-              </Grid>
-            </Grid>
-          }
           <Box
             sx={{
               marginTop: 2,
@@ -212,6 +189,11 @@ export default function PersonalInfo() {
                 <Grid item xs>
                   <Link href='/forgot-password' variant="body2">
                     Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link href='/singin' variant="body2">
+                    {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
               </Grid>

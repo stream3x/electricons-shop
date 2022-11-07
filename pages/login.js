@@ -18,6 +18,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Snackbars from '../src/assets/Snackbars';
 import FormHelperText from '@mui/material/FormHelperText';
+import theme from '../src/theme';
 
 function Copyright(props) {
   return (
@@ -32,14 +33,10 @@ function Copyright(props) {
   );
 }
 
-const theme = createTheme();
-
 export default function LogIn() {
   const router = useRouter();
   const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
-  const { cart: {cartItems} } = state;
-  const { userInfo } = state;
   const [snack, setSnack] = useState({
     message: '',
     severity: ''

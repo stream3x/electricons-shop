@@ -6,10 +6,10 @@ import CartTotal from '../src/components/CartTotal';
 import { useContext } from 'react';
 import { Store } from '../src/utils/Store';
 import dynamic from 'next/dynamic';
-import CheckoutStepper from '../src/components/CheckoutStepper';
 import { useRouter } from 'next/router';
 import CartTable from '../src/components/CartTable';
 import Link from '../src/Link';
+import theme from '../src/theme';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -35,11 +35,13 @@ const Item = styled(Paper)(({ theme }) => ({
           <Item elevation={0}>
             <CartTotal cartItems={cartItems}/>
           </Item>
-          <Link noLinkStyle={false} href="/checkout" sx={{ }}>
-            <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
-              <Typography variant="body">Checkout</Typography>
-            </Button>
-          </Link>
+          <Item elevation={0}>
+            <Link noLinkStyle={false} href="/checkout" sx={{ }}>
+              <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
+                <Typography variant="body">Checkout</Typography>
+              </Button>
+            </Link>
+          </Item>
         </Grid>
       </Grid>
     </Box>

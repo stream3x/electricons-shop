@@ -18,6 +18,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Snackbars from '../src/assets/Snackbars';
 import FormHelperText from '@mui/material/FormHelperText';
+import theme from '../src/theme';
 
 function Copyright(props) {
   return (
@@ -31,8 +32,6 @@ function Copyright(props) {
     </Typography>
   );
 }
-
-const theme = createTheme();
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -118,7 +117,7 @@ export default function ForgotPassword() {
             </Button>
             <Grid container>
               <Grid item>
-                <Link href='/singin' variant="body2">
+                <Link href='/signin' variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

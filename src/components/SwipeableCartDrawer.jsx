@@ -155,7 +155,7 @@ export default function SwipeableCartDrawer({cart}) {
             <Link sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', '&:hover': { textDecoration: 'none!important'}, display: 'flex', flexGrow: 1, textAlign: 'center' }} href="/cart" onClick={toggleDrawer(anchor, false)} passHref>
               <Typography sx={{ display: 'block', height: '100%', margin: 'auto' }} component="p">View Cart</Typography>
             </Link>
-            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center', display: 'flex', '&:hover': { textDecoration: 'none!important'} }} href="/checkout" onClick={toggleDrawer(anchor, false)}>
+            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center', display: 'flex', '&:hover': { textDecoration: 'none!important'} }} href="/checkout/personal-info" onClick={toggleDrawer(anchor, false)}>
               <Typography sx={{ display: 'block', height: '100%', margin: 'auto' }} component="span">Checkout</Typography>
             </Link>
           </Box>

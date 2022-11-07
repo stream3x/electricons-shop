@@ -23,6 +23,7 @@ import { FormControl, InputLabel } from '@mui/material';
 import FormHelperText from '@mui/material/FormHelperText';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import theme from '../src/theme';
 
 function Copyright(props) {
   return (
@@ -36,8 +37,6 @@ function Copyright(props) {
     </Typography>
   );
 }
-
-const theme = createTheme();
 
 export default function SignIn() {
   const router = useRouter();
