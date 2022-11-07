@@ -6,7 +6,6 @@ import CartTotal from '../src/components/CartTotal';
 import { useContext } from 'react';
 import { Store } from '../src/utils/Store';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
 import CartTable from '../src/components/CartTable';
 import Link from '../src/Link';
 import theme from '../src/theme';
@@ -36,7 +35,7 @@ const Item = styled(Paper)(({ theme }) => ({
             <CartTotal cartItems={cartItems}/>
           </Item>
           <Item elevation={0}>
-            <Link noLinkStyle={false} href="/checkout" sx={{ }}>
+            <Link noLinkStyle={false} href="/checkout/personal-info" sx={{ }}>
               <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
                 <Typography variant="body">Checkout</Typography>
               </Button>

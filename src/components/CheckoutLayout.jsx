@@ -6,8 +6,6 @@ import CartTotal from './CartTotal';
 import { useContext } from 'react';
 import { Store } from '../utils/Store';
 import dynamic from 'next/dynamic';
-import CheckoutStepper from './CheckoutStepper';
-import { useRouter } from 'next/router';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',

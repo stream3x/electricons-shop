@@ -12,6 +12,7 @@ import category from "../utils/category";
 import Link from '../Link';
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from 'react-swipeable-views-utils';
+import dynamic from 'next/dynamic';
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -35,7 +36,7 @@ function TabPanel(props) {
   );
 }
 
-export default function HeroCarousel({ data }) {
+function HeroCarousel({ data }) {
   const { product } = data;
   const { category_products } = category;
   const theme = useTheme();
@@ -116,3 +117,5 @@ export default function HeroCarousel({ data }) {
     </Box>
   );
 }
+
+export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: false });
