@@ -152,7 +152,7 @@ const data = {
     },
     {
       title: "Lenovo laptop",
-      images: [{image: "/images/acer-laptop.png"}],
+      images: [{image: "/images/lenovo-laptop.jpg"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Tip procesora: Ryzen 5 Model procesora: Ryzen 3500, Radni takt procesora: 3.6 GHz, Chipset matične ploče: B450, Memorija: 16 GB, Tip hard diska: SSD Kapacitet hard diska: 500 GB, Grafička kartica: Nvidia, Model grafičke kartice: NVD RTX 3050, Memorija grafičke kartice: 8GB GDDR6",
       rating: 2,
@@ -168,7 +168,7 @@ const data = {
     },
     {
       title: "Toshiba Satellite",
-      images: [{image: "/images/acer-laptop.png"}, {image: "/images/notebook-dell.jpeg"}],
+      images: [{image: "/images/laptopAvatar.jpg"}, {image: "/images/notebook-dell.jpeg"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Tip procesora: Ryzen 5 Model procesora: Ryzen 3500, Radni takt procesora: 3.6 GHz, Chipset matične ploče: B450, Memorija: 16 GB, Tip hard diska: SSD Kapacitet hard diska: 500 GB, Grafička kartica: Nvidia, Model grafičke kartice: NVD RTX 3050, Memorija grafičke kartice: 8GB GDDR6",
       rating: 4,

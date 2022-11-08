@@ -8,7 +8,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import Link from '../../src/Link';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -20,6 +20,12 @@ import theme from '../../src/theme';
 import { Store } from '../../src/utils/Store';
 import CheckoutLayout from '../../src/components/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
+import { FormControl, InputLabel } from '@mui/material';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function PersonalInfo() {
   const router = useRouter();
@@ -35,10 +41,49 @@ export default function PersonalInfo() {
     email: false,
     password: false
   });
+  const [confirmPassword, setConfirmPassword] = useState({
+    showPassword: false,
+    confirmError: false
+  })
 
   function loginHandler() {
     setWillLogin(prev => !prev);
   }
+
+  const handleClickShowPassword = () => {
+    setConfirmPassword({
+      showPassword: !confirmPassword.showPassword,
+    });
+  };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    try {
+      const formOutput = new FormData(event.currentTarget);
+      const formData = {
+        name: formOutput.get('first-name'),
+        email: formOutput.get('email'),
+        password: formOutput.get('password'),
+      }
+      if(formData.password !== formOutput.get('password-confirmed')) {
+        setConfirmPassword({
+          confirmError: !confirmPassword.confirmError,
+        });
+        return
+      }
+      setConfirmPassword({
+        confirmError: false,
+      });
+      const { data } = await axios.post('/api/users/register', formData);
+      dispatch({ type: 'USER_LOGIN', payload: data});
+      Cookies.set('userInfo', JSON.stringify(data));
+      router.back();
+      console.log('success login')
+    } catch (error) {
+      console.log(error.response ? error.response.data : error);
+    }
+   
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -54,11 +99,8 @@ export default function PersonalInfo() {
       dispatch({ type: 'USER_LOGIN', payload: data});
       Cookies.set('userInfo', JSON.stringify(data));
       setSnack({ ...snack, message: 'success login', severity: 'success' });
-      if(router.back() === '/cart') {
-        router.back()
-      }else {
-        router.push('/');
-      }
+      router.push('/checkout/addresses');
+      setWillLogin(false);
     } catch (error) {
       if(error.response.data.type === 'all') {
         setErrors({ ...errors, email: error.response.data.type === 'all', password: error.response.data.type === 'all' })
@@ -68,32 +110,28 @@ export default function PersonalInfo() {
       setSnack({ ...snack, message: error ? error.response.data.message : error, severity: error.response.data.severity });
     }
   };
-  
+
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={0} />
       <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xl">
+        <Container component="div" maxWidth="xl">
           <CssBaseline />
           {
             !userInfo &&
-            <Grid container sx={{ m: 2, boxSizing: 'border-box' }}>
-              <Grid item xs={6} sm={3} sx={{ display: 'flex', justifyContent: 'flex-end', boxSizing: 'border-box' }}>
-                <Button onClick={loginHandler} sx={{ color: theme.palette.secondary.main }}>
-                  <Typography variant="p">
-                    Order as a guest
-                  </Typography>
-                </Button>
-              </Grid>
+            <Box sx={{display: 'flex', flexWrap: 'wrap', mt: 5 }}>
+              <Button onClick={loginHandler} sx={{ color: theme.palette.secondary.main }}>
+                <Typography variant="p">
+                  Order as a guest
+                </Typography>
+              </Button>
               <Divider variant="middle" orientation="vertical" flexItem />
-              <Grid item xs={6} sm={3} sx={{ display: 'flex', justifyContent: 'flex-start', boxSizing: 'border-box' }}>
-                <Button onClick={loginHandler} sx={{ color: theme.palette.main }}>
-                  <Typography variant="p">
-                    Click here to login
-                  </Typography>
-                </Button>
-              </Grid>
-            </Grid>
+              <Button onClick={loginHandler} sx={{ color: theme.palette.main }}>
+                <Typography variant="p">
+                  Click here to login
+                </Typography>
+              </Button>
+            </Box>
           }
           <Box
             sx={{
@@ -105,10 +143,11 @@ export default function PersonalInfo() {
           >
           {
             !willLogin && 
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-              <Box sx={{  display: 'flex', justifyContent: 'space-between', '& .MuiTextField-root': { width: '25ch' } }}>
+            <Box component="form" onSubmit={handleRegister} noValidate sx={{ mt: 1, width: '100%' }}>
+              <Box sx={{  display: 'flex', justifyContent: 'space-between', '& .MuiTextField-root': { width: '100%' } }}>
                 <TextField
                   margin="normal"
+                  fullWidth
                   required
                   id="first-name"
                   label="First name"
@@ -124,6 +163,7 @@ export default function PersonalInfo() {
                 }
                 <TextField
                   margin="normal"
+                  fullWidth
                   required
                   name="last-name"
                   label="Last name"
@@ -153,6 +193,65 @@ export default function PersonalInfo() {
                 errors.email && 
                 <FormHelperText error>{snack.message}</FormHelperText>
               }
+              <Typography sx={{pt: 3}} align="left" variant='h6' component="p">
+                Create an account (optional)
+                <Typography variant='caption' component="p">And save time on your next order!</Typography>
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="password"
+                    label="Password (optional)"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                  />
+                  {
+                    confirmPassword.confirmError &&
+                    <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                  }
+                </Grid>
+                <Grid item xs={12}>
+                <FormControl sx={{ width: '100%' }} variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    name="password-confirmed"
+                    label="Confirm Password"
+                    type={confirmPassword.showPassword ? 'text' : 'password'}
+                    id="password-confirm"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {confirmPassword.showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                  {
+                    confirmPassword.confirmError &&
+                    <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                  }
+                </FormControl>
+                </Grid>
+                <Grid align="left" item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  label="Receive offers from our partners"
+                />
+              </Grid>
+              <Grid align="left" item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  label="I agree to the terms and conditions and the privacy policy"
+                />
+              </Grid>
+              </Grid>
               <Button
                 type="submit"
                 fullWidth
@@ -196,20 +295,22 @@ export default function PersonalInfo() {
                 errors.password && 
                 <FormHelperText error>{snack.message}</FormHelperText>
               }
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              <Grid align="left" item xs={12}>
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                />
+              </Grid>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                Login
               </Button>
               <Grid container>
-                <Grid item xs>
+                <Grid align="left" item xs>
                   <Link href='/forgot-password' variant="body2">
                     Forgot password?
                   </Link>
