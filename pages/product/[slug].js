@@ -213,8 +213,10 @@ export default function SingleProduct(props) {
                 </LabelButton>
             </Box>  
           </Item>
-          <Item>
-            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
+          {
+            cartItems.length !== 0 && cartItems.find(item => item._id === product._id) &&
+            <Item>
+              <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
                 <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
                 Quantity :
                 </Typography>
@@ -223,8 +225,9 @@ export default function SingleProduct(props) {
                     <CountQuantity maxItem={item.inStock} quantityItem={item.quantity} item={item}/>
                   ))
                 }
-            </Box>  
-          </Item>
+              </Box>  
+            </Item>
+          }
           <Item>
             <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'  }}>
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, display: 'flex', alignItems: 'center' }}>

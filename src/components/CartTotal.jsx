@@ -7,6 +7,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
 import theme from '../theme';
+import Collapse from '@mui/material/Collapse';
+import Link from '../Link';
 
 const bull = (
   <Box
@@ -20,6 +22,11 @@ const bull = (
 export default function CartTotal(props) {
   const { cartItems } = props;
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   const shipping = 50;
   const total = subTotal + shipping;
@@ -47,8 +54,37 @@ export default function CartTotal(props) {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small">Show Deatalis</Button>
+          <Button onClick={handleExpandClick} size="small">Show Deatalis</Button>
         </CardActions>
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          {
+            cartItems.map(row => (
+              <Box key={row._id} sx={{display: 'flex', alignItems: 'center', width: '100%'}}>
+                <Box sx={{width: '100px'}}>
+                  <Box
+                    component="img"
+                    sx={{
+                      height: 70,
+                      display: 'block',
+                      maxWidth: 100,
+                      overflow: 'hidden',
+                      width: 'auto',
+                      margin: '5px auto'
+                    }}
+                    src={row.images[0].image}
+                    alt={row.title}
+                  />
+                </Box>
+                <Link href={`/product/${row.slug}`} passHref>
+                  <Typography>{row.title}</Typography>
+                </Link>
+                <Typography sx={{p: 1}}>{`x ${row.quantity}`}</Typography>
+              </Box>
+            ))
+          }
+        </CardContent>
+      </Collapse>
       </Card>
     </Box>
   );

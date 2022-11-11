@@ -24,7 +24,7 @@ handler.post(async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       image: user.image
-    })
+    });
   await db.disconnect();
 });
 

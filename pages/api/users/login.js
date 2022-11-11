@@ -20,16 +20,16 @@ handler.post(async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       image: user.image
-    })
+    });
   }else {
     if(req.body.email === '' && req.body.password === '') {
-      console.log(res.status(401).send({ message: "Please fill the fields", severity: "error", type: 'all'  }))
+      console.log(res.status(401).send({ message: "Please fill the fields", severity: "error", type: 'all'  }));
     }else if(req.body.email === '' && req.body.password !== '') {
-      console.log(res.status(401).send({ message: "Please fill the email", severity: "error", type: 'email' }))
+      console.log(res.status(401).send({ message: "Please fill the email", severity: "error", type: 'email' }));
     }else if(req.body.email !== '' && req.body.password === '') {
-      console.log(res.status(401).send({ message: "Please fill the password", severity: "error", type: 'password' }))
+      console.log(res.status(401).send({ message: "Please fill the password", severity: "error", type: 'password' }));
     }else if(!pattern.test(req.body.email)) {
-      console.log(res.status(401).send({ message: "email is not valid", severity: "error", type: 'email' }))
+      console.log(res.status(401).send({ message: "email is not valid", severity: "error", type: 'email' }));
     }else {
       res.status(401).send({ message: "Invalid email or password", severity: 'error', type: 'all' });
     }
