@@ -50,6 +50,7 @@ function HeroCarousel({ data }) {
   const singleMaxSteps = filtered.length;
   const [stopSwipe, setStopSwipe] = useState(false);
   const matches = useMediaQuery('(min-width: 900px)');
+  
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };

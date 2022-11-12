@@ -236,7 +236,7 @@ export default function SingleProduct(props) {
                 </AddToCartButton>
               }
               </Box>
-              <Box sx={{ flex: {xs: '0 0 80%', sm: '0 0 100%', lg: '0 0 65%'}, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 65%'}, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                 <Box sx={{display: 'flex', justifyContent: 'left', width: {xs: '100%', sm: 'auto'}, mb: {xs: 2, sm: 0}}}>
                   <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
                     <ActionButtons color="secondary" aria-label="add-to-wishlist" size="small">

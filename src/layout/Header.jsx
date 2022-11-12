@@ -21,7 +21,7 @@ import { styled, alpha } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import { Divider, Grid } from '@mui/material';
+import { Divider, Grid, useMediaQuery } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import BusinessIcon from '@mui/icons-material/Business';
 import RssFeedIcon from '@mui/icons-material/RssFeed';
@@ -144,6 +144,7 @@ export default function Header(props) {
   const [cartAnchorEl, setCartAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = React.useState(null);
+  const matches = useMediaQuery('(min-width: 900px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart, userInfo } = state;
@@ -224,7 +225,7 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible ? 'translateY(-147px)' : 'translateY(0px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms' }} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : 'translateY(0px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms' }} elevation={isVisible ? 4 : 0} color="default">
           <Container>
           <CssBaseline />
             <Toolbar sx={{ display: { xs: 'none', md: 'flex' } }}>

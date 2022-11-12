@@ -43,6 +43,7 @@ function a11yProps(index) {
 export default function VerticalTabs({productData}) {
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  const [activeStep, setActiveStep] = React.useState(0);
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event, newValue) => {
@@ -75,13 +76,13 @@ export default function VerticalTabs({productData}) {
       <SwipeableViews
       axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
       index={value}
-      onChangeIndex={handleStepChange}
+      onChangeIndex={handleChange}
       style={{width: "100%", overflow: 'hidden'}}
       enableMouseEvents
       >
       {
         productData.images.map((img, index) => (
-          <TabPanel key={img.image} value={value} index={index} sx={{width: "100%"}}>
+          <TabPanel key={img.image} value={value} index={index}>
               <Box
                 component="img"
                 sx={{
