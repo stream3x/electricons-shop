@@ -11,7 +11,7 @@ export default function Layout({ children }) {
     <CssBaseline />
       <Header />
       <Container fixed>
-        <Box component="main" sx={{ border: '1px dashed grey', height: '100vh', mt: '8.5em' }}>
+        <Box component="main" sx={{ border: '1px dashed grey', height: '100%', mt: '8.5em' }}>
           {children}
         </Box>
       </Container>

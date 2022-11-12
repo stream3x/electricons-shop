@@ -14,7 +14,7 @@ export default function CardProduct({products, step}) {
     {
       products.map(product => (
         product.inWidget === 'hero' && product.category === step.category &&
-          <Grid key={product.title} item xs={12} md={4}>
+          <Grid key={product.title} item xs={12} md={4} >
               <Card sx={{ width: "100%", height: "100%" }}>
                   <CardActionArea>
                     <Link href={`/product/${product.slug}`}>

@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import SwipeableViews from 'react-swipeable-views';
+import { useMediaQuery } from '@mui/material';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -41,9 +42,8 @@ function a11yProps(index) {
 
 export default function VerticalTabs({productData}) {
   const theme = useTheme();
-  const maxSteps = productData.images.length;
   const [value, setValue] = React.useState(0);
-  const [activeStep, setActiveStep] = React.useState(0);
+  const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -55,10 +55,10 @@ export default function VerticalTabs({productData}) {
 
   return (
     <Box
-      sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 240,  width: '100%'}}
+      sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 240,  width: '100%', flexWrap: {xs: 'wrap', sm: 'nowrap'}}}
     >
       <Tabs
-        orientation="vertical"
+        orientation={matches && "vertical"}
         variant="scrollable"
         value={value}
         onChange={handleChange}
@@ -77,6 +77,7 @@ export default function VerticalTabs({productData}) {
       index={value}
       onChangeIndex={handleStepChange}
       style={{width: "100%", overflow: 'hidden'}}
+      enableMouseEvents
       >
       {
         productData.images.map((img, index) => (
@@ -84,7 +85,7 @@ export default function VerticalTabs({productData}) {
               <Box
                 component="img"
                 sx={{
-                  height: 200,
+                  height: {xs: 140, sm: 200},
                   display: 'block',
                   maxWidth: 400,
                   overflow: 'hidden',

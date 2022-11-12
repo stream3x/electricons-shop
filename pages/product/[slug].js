@@ -73,10 +73,7 @@ const ActionButtons = styled(IconButton)(({ theme }) => ({
   '&:hover': {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.main,
-  },
-  [theme.breakpoints.down('sm')]: {
-    display: 'none'
-  },
+  }
 }));
 
 const ShareButtons = styled(IconButton)(({ theme }) => ({
@@ -86,10 +83,7 @@ const ShareButtons = styled(IconButton)(({ theme }) => ({
   '&:hover': {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.primary.main,
-  },
-  [theme.breakpoints.down('sm')]: {
-    display: 'none'
-  },
+  }
 }));
 
 const LightTooltip = styled(({ className, ...props }) => (
@@ -201,15 +195,15 @@ export default function SingleProduct(props) {
             </Typography>
           </Item>
           <Item>
-            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
-                <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
+            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'  }}>
+                <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1, width: {xs: '100%', sm: 'auto'}}}>
                   Avalability: 
                 </Typography>
-                <LabelButton startIcon={<TapAndPlayIcon />}>
-                  online shoping
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<TapAndPlayIcon />}>
+                  online shopping
                 </LabelButton>
-                <LabelButton startIcon={<StoreIcon />}>
-                  store shoping
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<StoreIcon />}>
+                  store shopping
                 </LabelButton>
             </Box>  
           </Item>
@@ -229,36 +223,40 @@ export default function SingleProduct(props) {
             </Item>
           }
           <Item>
-            <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'  }}>
+            <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: {xs: 'center', sm: 'normal'} }}>
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, display: 'flex', alignItems: 'center' }}>
               {
                 product.inStock !== 0 ? 
-                <AddToCartButton onClick={addToCardHandler} variant="variant" startIcon={<CartIcon />}>
+                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} onClick={addToCardHandler} variant="variant" startIcon={<CartIcon />}>
                   Add To Cart
                 </AddToCartButton>
                 :
-                <AddToCartButton sx={{cursor: 'no-drop'}} variant="variant" startIcon={<RemoveShoppingCartIcon />}>
+                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} sx={{cursor: 'no-drop'}} variant="variant" startIcon={<RemoveShoppingCartIcon />}>
                   no Stock
                 </AddToCartButton>
               }
               </Box>
-              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 65%'}, my: 1, display: 'flex', alignItems: 'center' }}>
-                <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
-                  <ActionButtons color="secondary" aria-label="add-to-wishlist" size="small">
-                    <Wishlist fontSize="inherit" />
-                  </ActionButtons>
-                </LightTooltip>
-                <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
-                  Add to wishlist
-                </Typography>
-                <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
-                  <ActionButtons aria-label="add-to-compare" size="small">
-                    <CompareIcon fontSize="inherit" />
-                  </ActionButtons>
-                </LightTooltip>
-                <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
-                  Add to comparasion
-                </Typography>
+              <Box sx={{ flex: {xs: '0 0 80%', sm: '0 0 100%', lg: '0 0 65%'}, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                <Box sx={{display: 'flex', justifyContent: 'left', width: {xs: '100%', sm: 'auto'}, mb: {xs: 2, sm: 0}}}>
+                  <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
+                    <ActionButtons color="secondary" aria-label="add-to-wishlist" size="small">
+                      <Wishlist fontSize="inherit" />
+                    </ActionButtons>
+                  </LightTooltip>
+                  <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
+                    Add to wishlist
+                  </Typography>
+                </Box>
+                <Box sx={{display: 'flex', justifyContent: 'left',width: {xs: '100%', sm: 'auto'}}}>
+                  <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
+                    <ActionButtons aria-label="add-to-compare" size="small">
+                      <CompareIcon fontSize="inherit" />
+                    </ActionButtons>
+                  </LightTooltip>
+                  <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
+                    Add to comparasion
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Item>
@@ -285,22 +283,20 @@ export default function SingleProduct(props) {
             </Box>
           </Item>
           <Item>
-            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
-                <LabelButton startIcon={<LocalShippingIcon />}>
+            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<LocalShippingIcon />}>
                   Delivery policy
                 </LabelButton>
-                <LabelButton startIcon={<GppGoodIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<GppGoodIcon />}>
                   Security Policy
                 </LabelButton>
-                <LabelButton startIcon={<CreditCardIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<CreditCardIcon />}>
                   Security Payment
                 </LabelButton>
             </Box>  
           </Item>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <ProductTabs product={product} />
         </Grid>
       </Grid>
