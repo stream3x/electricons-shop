@@ -25,7 +25,6 @@ export default function DropdownMenu(props) {
   const { openDropdown, anchorElDropdown , handleCloseDropdown, isVisible } = props;
   const { products } = data;
   const { category_products } = category;
-  const [open, setOpen] = React.useState(false);
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {

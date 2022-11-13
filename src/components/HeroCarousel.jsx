@@ -44,10 +44,10 @@ function HeroCarousel({ data }) {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = category_products.length;
-  const filtered = product.filter(obj => {
+  const filtered = product && product.filter(obj => {
     return obj.inWidget === 'hero';
   });
-  const singleMaxSteps = filtered.length;
+  const singleMaxSteps = filtered && filtered.length;
   const [stopSwipe, setStopSwipe] = useState(false);
   const matches = useMediaQuery('(min-width: 900px)');
   
@@ -77,7 +77,7 @@ function HeroCarousel({ data }) {
             enableMouseEvents
           >
             {
-              filtered.map((prod, index) => (
+              filtered && filtered.map((prod, index) => (
                 Math.abs(activeStep - index) <= 2 &&
                 <SingleCardProduct key={prod.title} product={prod} />
               ))
@@ -122,7 +122,7 @@ function HeroCarousel({ data }) {
           }}
         >
         <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center' }}>
-        <Link href={category_products[activeStep].categoryUrl}>
+        <Link href={category_products && category_products[activeStep ? activeStep : 0].categoryUrl}>
           <Typography color="primary" variant="caption">
             {category_products[activeStep].title}
           </Typography>
@@ -175,4 +175,4 @@ function HeroCarousel({ data }) {
   );
 }
 
-export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: true });
+export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: false });

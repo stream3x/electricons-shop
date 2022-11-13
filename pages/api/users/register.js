@@ -13,7 +13,9 @@ handler.post(async (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password),
     isAdmin: false,
-    image: ''
+    image: '',
+    birthday: req.body.birthday,
+    newsletter: req.body.newsletter,
   });
   const user = await newUser.save();
     const token = signToken(user);
@@ -23,7 +25,9 @@ handler.post(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      image: user.image
+      image: user.image,
+      birthday: user.birthday,
+      newsletter: user.newsletter,
     });
   await db.disconnect();
 });

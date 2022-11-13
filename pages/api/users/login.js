@@ -19,7 +19,9 @@ handler.post(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      image: user.image
+      image: user.image,
+      birthday: user.birthday,
+      newsletter: user.newsletter
     });
   }else {
     if(req.body.email === '' && req.body.password === '') {

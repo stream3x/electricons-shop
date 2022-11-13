@@ -26,13 +26,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useEffect } from 'react';
 
 export default function PersonalInfo() {
   const router = useRouter();
   const [checkedPolicy, setCheckedPolicy] = React.useState(false);
   const [checkedNewsletter, setCheckedNewsletter] = React.useState(false);
-  console.log(checkedNewsletter)
   const { state, dispatch } = useContext(Store);
   const { userInfo, cart: {cartItems} } = state;
   const [willLogin, setWillLogin] = useState(false);
@@ -77,7 +75,7 @@ export default function PersonalInfo() {
       setWillRegister(() => true);
     }
   };
-
+console.log(userInfo)
   const handleSubmit = async (event) => {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
@@ -87,7 +85,6 @@ export default function PersonalInfo() {
         birthday: formOutput.get('birthday'),
         newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : ''
       };
-      console.log(formData.newsletter)
       setConfirmPassword({
         confirmError: false,
       });
@@ -105,7 +102,6 @@ export default function PersonalInfo() {
       }
       console.log(formOutput.get('first-name') === '')
       setErrors({ ...errors, firstName: false, lastName: false, email: false });
-      // const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'PERSONAL_INFO', payload: formData});
       Cookies.set('personalInfo', JSON.stringify(formData));
       router.push('/checkout/addresses');
@@ -132,14 +128,16 @@ export default function PersonalInfo() {
       setConfirmPassword({
         confirmError: false,
       });
-      // const { data } = await axios.post('/api/users/register', formData);
-      // dispatch({ type: 'USER_LOGIN', payload: data});
-      // Cookies.set('userInfo', JSON.stringify(data));
-      // router.back();
-      console.log('success login');
+      const { data } = await axios.post('/api/users/register', formData);
+      dispatch({ type: 'USER_LOGIN', payload: data});
+      setSnack({ ...snack, message: 'success register', severity: 'success' });
+      Cookies.set('userInfo', JSON.stringify(data));
+      router.push('/checkout/addresses');
+      console.log('success register');
       console.log(formData);
     } catch (error) {
       console.log(error.response ? error.response.data : error);
+      setSnack({ ...snack, message: error ? error.response.data.message : error, severity: error.response.data.severity });
     }
    
   };
@@ -259,7 +257,7 @@ export default function PersonalInfo() {
                 margin="normal"
                 type="date"
                 openTo="day"
-                defaultValue="09/29/1984"
+                defaultValue={userInfo ? userInfo.birthday : "09/29/1984"}
                 disable={userInfo ? true : false}
                 fullWidth
                 id="date"

@@ -1,14 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import CssBaseline from '@mui/material/CssBaseline';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Fab from '@mui/material/Fab';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
@@ -35,7 +31,8 @@ import { Store } from '../utils/Store';
 import SwipeableCartDrawer from '../components/SwipeableCartDrawer';
 import Link from '../Link';
 import Cookies from 'js-cookie';
-import Snackbars from '../assets/Snackbars';
+import SwipeableNavDrawer from '../components/SwipeableNavDrawer';
+
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
 const loged = ['Profile', 'admin', 'Logout'];
@@ -102,44 +99,8 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-function ScrollTop(props) {
-  const { children, window } = props;
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
-  const trigger = useScrollTrigger({
-    target: window ? window() : undefined,
-    disableHysteresis: true,
-    threshold: 50,
-  });
-
-  const handleClick = (event) => {
-    const anchor = (event.target.ownerDocument || document).querySelector(
-      '#back-to-top-anchor',
-    );
-
-    if (anchor) {
-      anchor.scrollIntoView({
-        block: 'center',
-      });
-    }
-  };
-
-  return (
-    <Fade in={trigger}>
-      <Box
-        onClick={handleClick}
-        role="presentation"
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-      >
-        {children}
-      </Box>
-    </Fade>
-  );
-}
-
 export default function Header(props) {
-  const [isVisible, setIsVisible] = useState('');
+  const { isVisible } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [cartAnchorEl, setCartAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -210,17 +171,7 @@ export default function Header(props) {
     </Menu>
   );
   
-  function toggleVisibility() {
-    const visibleBtn = window.scrollY;
-    visibleBtn > 50 ? setIsVisible(prev => prev = true) : setIsVisible(prev => prev = false);
-  }
-
-  useEffect(() => {
-    window.addEventListener('scroll', toggleVisibility);
-    return () => {
-      window.removeEventListener("scroll", toggleVisibility);
-    };
-  }, []);
+ 
   
   return (
     <React.Fragment>
@@ -277,10 +228,10 @@ export default function Header(props) {
                       {
                         userInfo.isAdmin &&
                         <MenuItem onClick={handleCloseUserMenu}>
-                        <Link href={`/admin/${userInfo._id}`}>
-                          {loged[1]}
-                        </Link>
-                      </MenuItem>
+                          <Link href={`/admin/${userInfo._id}`}>
+                            {loged[1]}
+                          </Link>
+                        </MenuItem>
                       }
                       <MenuItem onClick={handleLogout}>
                           {loged[2]}
@@ -315,9 +266,9 @@ export default function Header(props) {
                 </Grid>
                 <Grid item xs={3} md={9} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'end' }}>
                   <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
-                    <Tooltip title="Open user menu">
+                    <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt={userInfo ? userInfo.name : ''} src={userInfo? userInfo.image : ''} />
+                        <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
                       </IconButton>
                     </Tooltip>
                     <Menu
@@ -344,10 +295,16 @@ export default function Header(props) {
                                 {loged[0]}
                               </Link>
                             </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
-                              <Link href="/user/logout">
+                            {
+                              userInfo.isAdmin &&
+                              <MenuItem onClick={handleCloseUserMenu}>
+                              <Link href={`/admin/${userInfo._id}`}>
                                 {loged[1]}
                               </Link>
+                            </MenuItem>
+                            }
+                            <MenuItem onClick={handleLogout}>
+                                {loged[2]}
                             </MenuItem>
                           </Box>
       
@@ -373,21 +330,28 @@ export default function Header(props) {
             </Toolbar>
             <Toolbar>
               <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%', postion: 'relative' }}>
-                <Tooltip title="Dropdown menu">
-                  <IconButton
-                    onClick={handleClick}
-                    size="small"
-                    sx={{ ml: 2 }}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                </Tooltip>
-                <DropdownMenu
-                openDropdown={openDropdown}
-                anchorElDropdown={anchorElDropdown}
-                handleCloseDropdown={handleCloseDropdown}
-                isVisible={isVisible}
-                />
+                {
+                  matches ? 
+                  <React.Fragment>
+                    <Tooltip title="Dropdown menu">
+                      <IconButton
+                        onClick={handleClick}
+                        size="small"
+                        sx={{ ml: 2 }}
+                      >
+                        <MenuIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <DropdownMenu
+                    openDropdown={openDropdown}
+                    anchorElDropdown={anchorElDropdown}
+                    handleCloseDropdown={handleCloseDropdown}
+                    isVisible={isVisible}
+                    />
+                  </React.Fragment>
+                  :
+                  <SwipeableNavDrawer />
+                }
                 <Search>
                   <SearchIconWrapper>
                     <SearchIcon />
@@ -419,16 +383,10 @@ export default function Header(props) {
                 </Box>
               </Box>
             </Toolbar>
-          </Container> 
+          </Container>
         </AppBar>
         {renderMenu}
-      <Toolbar id="back-to-top-anchor" />
-      <ScrollTop {...props}>
-        <Fab size="small" aria-label="scroll back to top">
-          <KeyboardArrowUpIcon />
-        </Fab>
-      </ScrollTop>
-      <Snackbars snack={snack}/>
+        <Toolbar id="back-to-top-anchor" />
     </React.Fragment>
   )
 }

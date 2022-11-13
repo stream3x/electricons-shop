@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
+import theme from '../theme';
 import SwipeableViews from 'react-swipeable-views';
 import { useMediaQuery } from '@mui/material';
 
@@ -41,7 +41,6 @@ function a11yProps(index) {
 }
 
 export default function VerticalTabs({productData}) {
-  const theme = useTheme();
   const [value, setValue] = React.useState(0);
   const [activeStep, setActiveStep] = React.useState(0);
   const matches = useMediaQuery('(min-width: 600px)');
@@ -64,7 +63,7 @@ export default function VerticalTabs({productData}) {
         value={value}
         onChange={handleChange}
         aria-label="Vertical tabs example"
-        sx={{ borderRight: 1, borderColor: 'divider', minWidth: '80px' }}
+        sx={{ borderRight: {xs: 0, sm: `thin solid ${theme.palette.secondary.borderColor}`}, minWidth: '80px' }}
       >
       {
         productData.images.map((img, index) => (

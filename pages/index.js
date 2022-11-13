@@ -4,10 +4,17 @@ import HeroCarousel from '../src/components/HeroCarousel';
 import Product from '../models/Product';
 import db from '../src/utils/db';
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   await db.connect();
   const product = await Product.find({}).lean();
   await db.disconnect();
+
+  if (!product) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
       product: product.map(db.convertDocToObject),
