@@ -13,7 +13,6 @@ import Link from '../../src/Link';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-import Snackbars from '../../src/assets/Snackbars';
 import FormHelperText from '@mui/material/FormHelperText';
 import { Divider } from '@mui/material';
 import theme from '../../src/theme';
@@ -32,13 +31,9 @@ export default function PersonalInfo() {
   const [checkedPolicy, setCheckedPolicy] = React.useState(false);
   const [checkedNewsletter, setCheckedNewsletter] = React.useState(false);
   const { state, dispatch } = useContext(Store);
-  const { userInfo, cart: {cartItems} } = state;
+  const { userInfo, snack, cart: {cartItems, personalInfo} } = state;
   const [willLogin, setWillLogin] = useState(false);
   const [willRegister, setWillRegister] = useState(false);
-  const [snack, setSnack] = useState({
-    message: '',
-    severity: ''
-  });
   const [errors, setErrors] = useState({
     name: false,
     firstName: false,
@@ -51,6 +46,9 @@ export default function PersonalInfo() {
     confirmError: false
   });
   const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+
+  const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
+  const emptyUserInfo = userInfo === null;
 
   function orderLoginHandler() {
     setWillLogin(true);
@@ -75,7 +73,7 @@ export default function PersonalInfo() {
       setWillRegister(() => true);
     }
   };
-console.log(userInfo)
+
   const handleSubmit = async (event) => {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
@@ -100,11 +98,14 @@ console.log(userInfo)
         setErrors({ ...errors, email: true });
         return;
       }
-      console.log(formOutput.get('first-name') === '')
       setErrors({ ...errors, firstName: false, lastName: false, email: false });
       dispatch({ type: 'PERSONAL_INFO', payload: formData});
       Cookies.set('personalInfo', JSON.stringify(formData));
-      router.push('/checkout/addresses');
+      if(cartItems.length !== 0) {
+        router.push('/checkout/addresses');
+      }else {
+        router.push('/');
+      }
       console.log('submit', formData);
   };
 
@@ -130,48 +131,57 @@ console.log(userInfo)
       });
       const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
-      setSnack({ ...snack, message: 'success register', severity: 'success' });
+      dispatch({ type: 'SUCCESS_REGISTER', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
-      router.push('/checkout/addresses');
-      console.log('success register');
-      console.log(formData);
+      if(cartItems.length !== 0) {
+        router.push('/checkout/addresses');
+      }else {
+        router.push('/');
+      }
+      console.log('success register', formData);
     } catch (error) {
       console.log(error.response ? error.response.data : error);
-      setSnack({ ...snack, message: error ? error.response.data.message : error, severity: error.response.data.severity });
+      dispatch({ type: 'USER_LOGIN', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
    
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    setSnack({ ...snack, message: '', severity: '' });
     setErrors({ ...errors, email: false, password: false });
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         email: formOutput.get('email'),
         password: formOutput.get('password'),
-      }
+      };
       const { data } = await axios.post('/api/users/login', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
+      dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
-      setSnack({ ...snack, message: 'success login', severity: 'success' });
-      if(cartItems) {
+      setWillLogin(false);
+      if(cartItems.length !== 0) {
         router.push('/checkout/addresses');
       }else {
         router.push('/');
       }
-      setWillLogin(false);
     } catch (error) {
       if(error.response.data.type === 'all') {
         setErrors({ ...errors, email: error.response.data.type === 'all', password: error.response.data.type === 'all' })
       }else {
         setErrors({ ...errors, email: error.response.data.type === 'email', password: error.response.data.type === 'password' })
       }
-      setSnack({ ...snack, message: error ? error.response.data.message : error, severity: error.response.data.severity });
+      dispatch({ type: 'USER_LOGIN', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
   };
 
+  const handleEdit = (e) => {
+    dispatch({ type: 'USER_LOGOUT'});
+    dispatch({ type: 'GUEST_REMOVE'});
+    Cookies.remove('userInfo');
+    Cookies.remove('perosnalInfo');
+  };
+  
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={0} />
@@ -179,7 +189,7 @@ console.log(userInfo)
         <Container component="div" maxWidth="xl">
           <CssBaseline />
           {
-            !userInfo &&
+            emptyUserInfo &&
             <Box sx={{display: 'flex', flexWrap: 'wrap', mt: 5 }}>
               <Button onClick={orderGestHandler} sx={{ color: theme.palette.secondary.main }}>
                 <Typography variant="p">
@@ -206,22 +216,38 @@ console.log(userInfo)
             !willLogin &&
             <Box component="form" onSubmit={willRegister ?handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               <Box sx={{  display: 'flex', justifyContent: 'space-between', '& .MuiTextField-root': { width: '100%' } }}>
+              {
+                emptyPersonalInfo ?
                 <TextField
                   margin="normal"
-                  defaultValue={userInfo && userInfo.name}
-                  disable={userInfo && true}
+                  defaultValue={!emptyUserInfo && userInfo.name}
+                  disabled={!emptyUserInfo && true}
                   fullWidth
                   required
                   id="first-name"
-                  label={userInfo ? "Name" : "First name"}
+                  label={!emptyUserInfo ? "Name" : "First name"}
                   name="first-name"
                   autoComplete="name"
                   error={errors.firstName}
-                  sx={{ mr: userInfo ? 0 : 1 }}
+                  sx={{ mr: !emptyUserInfo ? 0 : 1 }}
                 />
+                : 
+                <TextField
+                  margin="normal"
+                  defaultValue={!emptyPersonalInfo && personalInfo.name}
+                  disabled={!emptyPersonalInfo && true}
+                  fullWidth
+                  required
+                  id="first-name"
+                  label={!emptyPersonalInfo ? "Name" : "First name"}
+                  name="first-name"
+                  autoComplete="name"
+                  error={errors.firstName}
+                  sx={{ mr: !emptyPersonalInfo ? 0 : 1 }}
+                />
+              }
                 {
-                  !userInfo &&
-                  <React.Fragment>
+                  emptyPersonalInfo && emptyUserInfo &&
                     <TextField
                       margin="normal"
                       fullWidth
@@ -234,13 +260,15 @@ console.log(userInfo)
                       error={errors.lastName}
                       sx={{ ml: 1 }}
                     />
-                  </React.Fragment>
                 }
+                
               </Box>
-              <TextField
+              {
+                !emptyPersonalInfo ?
+                <TextField
                 margin="normal"
-                defaultValue={userInfo && userInfo.email}
-                disable={userInfo && true}
+                defaultValue={!emptyPersonalInfo && personalInfo.email}
+                disabled={!emptyPersonalInfo && true}
                 required
                 fullWidth
                 id="email"
@@ -249,34 +277,67 @@ console.log(userInfo)
                 autoComplete="email"
                 error={errors.email}
               />
+              : 
+              <TextField
+                margin="normal"
+                defaultValue={!emptyUserInfo && userInfo.email}
+                disabled={!emptyUserInfo && true}
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                error={errors.email}
+              />
+              }
               {
                 errors.email && 
                 <FormHelperText error>{snack.message ? snack.message : 'email is not valid'}</FormHelperText>
               }
-              <TextField
-                margin="normal"
-                type="date"
-                openTo="day"
-                defaultValue={userInfo ? userInfo.birthday : "09/29/1984"}
-                disable={userInfo ? true : false}
-                fullWidth
-                id="date"
-                label="Birthday (optional)"
-                name="birthday"
-                autoComplete="birthday"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
               {
-                !userInfo &&
+                !emptyPersonalInfo ?
+                <TextField
+                  margin="normal"
+                  type="date"
+                  openTo="day"
+                  defaultValue={!emptyPersonalInfo ? personalInfo.birthday : "09/29/1984"}
+                  disabled={!emptyPersonalInfo ? true : false}
+                  fullWidth
+                  id="date"
+                  label="Birthday (optional)"
+                  name="birthday"
+                  autoComplete="birthday"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                : 
+                <TextField
+                  margin="normal"
+                  type="date"
+                  openTo="day"
+                  defaultValue={!emptyUserInfo ? userInfo.birthday : "09/29/1984"}
+                  disabled={!emptyUserInfo ? true : false}
+                  fullWidth
+                  id="date"
+                  label="Birthday (optional)"
+                  name="birthday"
+                  autoComplete="birthday"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              }
+              {
+                emptyUserInfo && emptyPersonalInfo &&
                 <Typography sx={{pt: 3, pb: 2}} align="left" variant='h6' component="p">
                   Create an account (optional)
                   <Typography variant='caption' component="p">And save time on your next order!</Typography>
                 </Typography>
               }
               {
-                !userInfo &&
+                emptyUserInfo && emptyPersonalInfo &&
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextField
@@ -351,15 +412,27 @@ console.log(userInfo)
                   </Grid>
                 </Grid>
               }
-              <Button
-                type="submit"
-                disabled={!checkedPolicy}
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Continue
-              </Button>
+              {
+                emptyUserInfo && emptyPersonalInfo ?
+                <Button
+                  disabled={!checkedPolicy}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Continue
+                </Button>
+                :
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  onClick={handleEdit}
+                >
+                  Edit
+                </Button>
+              }
             </Box>
           }
           {
@@ -420,10 +493,6 @@ console.log(userInfo)
           }
           </Box>
         </Container>
-        {
-          snack.message !== '' &&
-          <Snackbars snack={snack}/>
-        }
       </ThemeProvider>
     </CheckoutLayout>
   );

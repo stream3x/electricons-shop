@@ -132,10 +132,10 @@ export default function Header(props) {
   const handleLogout = (e) => {
     setAnchorElUser(null);
     setSnack({ ...snack, message: 'successfully logged out', severity: 'success' });
-    dispatch({ type: 'USER_LOGOUT'})
+    dispatch({ type: 'USER_LOGOUT'});
     Cookies.remove('userInfo');
     router.push('/');
-  }
+  };
 
   const openDropdown = Boolean(anchorElDropdown);
   const isMenuOpen = Boolean(anchorEl);

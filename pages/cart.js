@@ -34,13 +34,16 @@ const Item = styled(Paper)(({ theme }) => ({
           <Item elevation={0}>
             <CartTotal cartItems={cartItems}/>
           </Item>
-          <Item elevation={0}>
-            <Link noLinkStyle={false} href="/checkout/personal-info" sx={{ }}>
-              <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
-                <Typography variant="body">Checkout</Typography>
-              </Button>
-            </Link>
-          </Item>
+          {
+            cartItems.length !== 0 &&
+            <Item elevation={0}>
+              <Link noLinkStyle={false} href="/checkout/personal-info">
+                <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
+                  <Typography variant="body">Checkout</Typography>
+                </Button>
+              </Link>
+            </Item>
+          }
         </Grid>
       </Grid>
     </Box>

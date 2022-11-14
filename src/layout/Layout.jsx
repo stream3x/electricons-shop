@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import Container from '@mui/material/Container'
@@ -8,6 +8,7 @@ import useScrollTrigger from '@mui/material/useScrollTrigger'
 import Fab from '@mui/material/Fab'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Fade from '@mui/material/Fade'
+import { Store } from '../utils/Store'
 
 function ScrollTop(props) {
   const { children, window } = props;
@@ -47,6 +48,7 @@ function ScrollTop(props) {
 
 export default function Layout({ children }) {
   const [isVisible, setIsVisible] = useState(false);
+  const { state: { snack } } = useContext(Store);
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
@@ -64,7 +66,7 @@ export default function Layout({ children }) {
     <React.Fragment>
     <CssBaseline />
       <Header isVisible={isVisible}/>
-      <Container fixed>
+      <Container>
         <Box component="main" sx={{ border: '1px dashed grey', height: '100%', mt: '8.5em' }}>
           {children}
         </Box>
@@ -73,6 +75,7 @@ export default function Layout({ children }) {
               <KeyboardArrowUpIcon />
             </Fab>
           </ScrollTop>
+          <Snackbars snack={snack}/>
       </Container>
     </React.Fragment>
   )
