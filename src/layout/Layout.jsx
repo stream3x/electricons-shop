@@ -9,6 +9,7 @@ import Fab from '@mui/material/Fab'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Fade from '@mui/material/Fade'
 import { Store } from '../utils/Store'
+import Footer from './Footer'
 
 function ScrollTop(props) {
   const { children, window } = props;
@@ -66,7 +67,7 @@ export default function Layout({ children }) {
     <React.Fragment>
     <CssBaseline />
       <Header isVisible={isVisible}/>
-      <Container>
+      <Container maxWidth="xl">
         <Box component="main" sx={{ border: '1px dashed grey', height: '100%', mt: '8.5em' }}>
           {children}
         </Box>
@@ -77,6 +78,7 @@ export default function Layout({ children }) {
           </ScrollTop>
           <Snackbars snack={snack}/>
       </Container>
+      <Footer />
     </React.Fragment>
   )
 }

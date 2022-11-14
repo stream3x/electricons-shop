@@ -220,7 +220,7 @@ export default function PersonalInfo() {
                 emptyPersonalInfo ?
                 <TextField
                   margin="normal"
-                  defaultValue={!emptyUserInfo && userInfo.name}
+                  defaultValue={!emptyUserInfo ? userInfo.name : ''}
                   disabled={!emptyUserInfo && true}
                   fullWidth
                   required
@@ -234,12 +234,12 @@ export default function PersonalInfo() {
                 : 
                 <TextField
                   margin="normal"
-                  defaultValue={!emptyPersonalInfo && personalInfo.name}
+                  defaultValue={!emptyPersonalInfo ? personalInfo.name : ''}
                   disabled={!emptyPersonalInfo && true}
                   fullWidth
                   required
                   id="first-name"
-                  label={!emptyPersonalInfo ? "Name" : "First name"}
+                  label={!emptyPersonalInfo ? "Name" : "First Name"}
                   name="first-name"
                   autoComplete="name"
                   error={errors.firstName}
@@ -267,7 +267,7 @@ export default function PersonalInfo() {
                 !emptyPersonalInfo ?
                 <TextField
                 margin="normal"
-                defaultValue={!emptyPersonalInfo && personalInfo.email}
+                defaultValue={!emptyPersonalInfo ? personalInfo.email : ''}
                 disabled={!emptyPersonalInfo && true}
                 required
                 fullWidth
@@ -280,7 +280,7 @@ export default function PersonalInfo() {
               : 
               <TextField
                 margin="normal"
-                defaultValue={!emptyUserInfo && userInfo.email}
+                defaultValue={!emptyUserInfo ? userInfo.email : ''}
                 disabled={!emptyUserInfo && true}
                 required
                 fullWidth
