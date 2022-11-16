@@ -7,21 +7,78 @@ import Link from '@mui/material/Link';
 import Logo from '../assets/Logo';
 import { Divider, Grid, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import InboxIcon from '@mui/icons-material/Inbox';
+import MobileBottomNav from '../assets/MobileBottomNav';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import Fab from '@mui/material/Fab';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import Fade from '@mui/material/Fade';
+import theme from '../theme';
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="text.secondary">
+    <Typography align="center" variant="body2" color="primary.contrastText">
       {'Copyright © '}
-      <Link color="inherit" href="https://electricons.vercel.app/">
+      <Link color="primary.main" href="https://electricons.vercel.app/">
         Electricons
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
+      {' - '}
+      {' Ecommerce Software By ExplodeMarket™ '}
     </Typography>
   );
 }
 
-export default function Footer() {
+function ScrollTop(props) {
+  const { children, window } = props;
+  // Note that you normally won't need to set the window ref as useScrollTrigger
+  // will default to window.
+  // This is only being set here because the demo is in an iframe.
+  const trigger = useScrollTrigger({
+    target: window ? window() : undefined,
+    disableHysteresis: true,
+    threshold: 50,
+  });
+
+  const handleClick = (event) => {
+    const anchor = (event.target.ownerDocument || document).querySelector(
+      '#back-to-top-anchor',
+    );
+
+    if (anchor) {
+      anchor.scrollIntoView({
+        block: 'center',
+      });
+    }
+  };
+
+  return (
+    <Fade in={trigger}>
+      <Box
+        onClick={handleClick}
+        role="presentation"
+        sx={{ position: 'fixed', bottom: {xs: 70, sm: 16}, right: 16 }}
+      >
+        {children}
+      </Box>
+    </Fade>
+  );
+}
+
+export default function Footer({ isVisible, setIsVisible }) {
+
+  function toggleVisibility() {
+    const visibleBtn = window.scrollY;
+    visibleBtn > 50 ? setIsVisible(() => true) : setIsVisible(() => false);
+  }
+
+  React.useEffect(() => {
+    window.addEventListener('scroll', toggleVisibility);
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+    };
+  }, []);
+
   return (
     <Box
       sx={{
@@ -46,123 +103,7 @@ export default function Footer() {
               </ListItemIcon>
               <ListItemText primary="Sent mail" />
             </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-          </List>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-          <Typography variant="h6" component="h2" gutterBottom>
-            OUR COMPANY
-          </Typography>
-          <List
-            component="ul"
-          >
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-          </List>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-          <Typography variant="h6" component="h2" gutterBottom>
-          YOUR ACCOUNT
-          </Typography>
-            <List
-              component="ul"
-            >
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-            </List>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-          <Typography variant="h6" component="h2" gutterBottom>
-          PRODUCTS
-          </Typography>
-            <List
-              component="ul"
-            >
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <InboxIcon />
-                </ListItemIcon>
-                <ListItemText primary="Sent mail" />
-              </ListItem>
+            
             </List>
           </Grid>
         </Grid>
@@ -181,20 +122,23 @@ export default function Footer() {
           px: 2,
           mt: 'auto',
           backgroundColor: (theme) =>
-            theme.palette.mode === 'light'
-              ? theme.palette.grey[200]
-              : theme.palette.grey[800],
+            theme.palette.mode === 'dark'
+              ? theme.palette.secondary.lightGrey
+              : theme.palette.secondary.main,
         }}
       >
         <Container maxWidth="xl">
           <Box sx={{display: 'flex', alignItems: 'center'}}>
             <Copyright />
-            <Typography variant="body1">
-            - Ecommerce Software By ExplodeMarket™
-            </Typography>
           </Box>
         </Container>
       </Box>
+      <ScrollTop>
+        <Fab size="small" aria-label="scroll back to top">
+          <KeyboardArrowUpIcon />
+        </Fab>
+      </ScrollTop>
+      <MobileBottomNav isVisible={isVisible}/>
     </Box>
   );
 }

@@ -7,7 +7,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CloseIcon from '@mui/icons-material/Close';
-import { Badge, Grid, IconButton, Typography } from '@mui/material';
+import { Badge, Grid, IconButton, Typography, useMediaQuery } from '@mui/material';
 import theme from '../theme';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Link from '../Link';
@@ -17,6 +17,7 @@ export default function SwipeableCartDrawer({cart}) {
   const [state, setState] = React.useState({
     right: false
   });
+  const match = useMediaQuery('(max-width: 600px)');
   const { dispatch } = React.useContext(Store);
 
   function removeItemHandler(item) {
@@ -168,6 +169,12 @@ export default function SwipeableCartDrawer({cart}) {
     <div>
       {['right'].map((anchor) => (
         <React.Fragment key={anchor}>
+        {
+          match ?
+          <Badge onClick={toggleDrawer(anchor, true)} sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={cart.cartItems.length > 0 ? cart.cartItems.length : "0"} color="secondary">
+            <CartIcon color="secondary"/>
+          </Badge>
+          :
           <IconButton
             size="large"
             edge="end"
@@ -181,6 +188,7 @@ export default function SwipeableCartDrawer({cart}) {
               <CartIcon color="secondary"/>
             </Badge>
           </IconButton>
+        }
           <SwipeableDrawer
             anchor={anchor}
             open={state[anchor]}

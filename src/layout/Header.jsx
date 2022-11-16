@@ -52,7 +52,7 @@ const Search = styled('div')(({ theme }) => ({
   marginRight: theme.spacing(2),
   marginLeft: theme.spacing(2),
   width: '100%',
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down('xs')]: {
     marginLeft: theme.spacing(3),
     width: '20ch',
   },
@@ -77,7 +77,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('xs')]: {
       width: '20ch',
     },
   },
@@ -105,14 +105,14 @@ export default function Header(props) {
   const [cartAnchorEl, setCartAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = React.useState(null);
-  const matches = useMediaQuery('(min-width: 900px)');
+  const matches = useMediaQuery('(min-width: 600px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart, userInfo } = state;
   const [snack, setSnack] = useState({
     message: '',
     severity: ''
-  })
+  });
 
   const handleClick = (event) => {
     setAnchorElDropdown(event.currentTarget);
@@ -179,8 +179,8 @@ export default function Header(props) {
         <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : 'translateY(0px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms' }} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
-            <Toolbar sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
+            <Toolbar sx={{ display: { xs: 'none', sm: 'flex' } }}>
+              <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
                 {pagesTop.map((page) => (
                   <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}}}>
                   {page.icon}
@@ -195,7 +195,7 @@ export default function Header(props) {
                   </Box>
                 ))}
               </Box>
-              <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex'} }}>
+              <Box sx={{ flexGrow: 0, display: { xs: 'none', sm: 'flex'} }}>
                 <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
@@ -258,14 +258,14 @@ export default function Header(props) {
             </Toolbar>
             <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1, }}>
               <Grid container>
-                <Grid item xs={9} md={4}>
+                <Grid item xs={9} sm={6} md={4} lg={3}>
                   <Logo sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
                 </Grid>
-                <Grid item xs={12} md={8} sx={{ display: { xs: 'none', md: 'flex', justifyContent: 'flex-end', alignItems: 'end' } }}>
+                <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
                   <NavTabs pages={pages} />
                 </Grid>
-                <Grid item xs={3} md={9} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'end' }}>
-                  <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
+                <Grid item xs={3} sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
+                  <Box sx={{ flexGrow: 0 }}>
                     <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                         <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
@@ -363,7 +363,7 @@ export default function Header(props) {
                   <StyledInputButton>Search</StyledInputButton>
                 </Search>
                 <Box sx={{ flexGrow: 1 }} />
-                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                <Box sx={{ display: { xs: 'none', sm: 'flex', md: 'flex' } }}>
                   <IconButton size="large" aria-label="show 4 new mails" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
                     <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={4} color="secondary">
                       <CompareIcon color="badge" />

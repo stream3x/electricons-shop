@@ -38,7 +38,7 @@ export default function NavTabs(props) {
   }; 
 
   return (
-    <Box component="nav" sx={{ width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center' }}>
+    <Box component="nav" sx={{ width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
       <Link href="/">
         <IconButton>
           <HomeIcon sx={{ '&:hover': { color: theme.palette.primary.main }}}/>
