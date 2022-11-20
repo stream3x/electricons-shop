@@ -17,7 +17,7 @@ export default function CountQuantity({size, maxItem, quantityItem, item}) {
   const handleChange = async (item, quantity) => {
     const { data } = await axios.get(`/api/products/${item._id}`)
     if(data.inStock <= 0) {
-      console.log('Sorry Product is out of stock')
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'product is out of stock', severity: 'warning' } });
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity: quantity < 1 ? Math.max(quantity, min) : Math.min(quantity, max) }});
@@ -27,7 +27,7 @@ export default function CountQuantity({size, maxItem, quantityItem, item}) {
   async function incrementItem(item) {
     const { data } = await axios.get(`/api/products/${item._id}`)
     if(data.inStock <= 0) {
-      console.log('Sorry Product is out of stock')
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'product is out of stock', severity: 'warning' } });
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity: Math.min(item.quantity + 1, max) }});
@@ -36,7 +36,7 @@ export default function CountQuantity({size, maxItem, quantityItem, item}) {
   async function decrementItem(item) {
     const { data } = await axios.get(`/api/products/${item._id}`)
     if(data.inStock <= 0) {
-      console.log('Sorry Product is out of stock')
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'product is out of stock', severity: 'warning' } });
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...item, quantity: Math.max(item.quantity - 1, 1) }});

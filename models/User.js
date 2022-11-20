@@ -1,4 +1,13 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
+
+const addressSchema = new mongoose.Schema(
+  {
+    address: {type: String, required: false}
+  },
+  {
+    timestamps: true
+  }
+);
 
 const userSchema = new mongoose.Schema(
   {
@@ -8,6 +17,13 @@ const userSchema = new mongoose.Schema(
     isAdmin: {type: Boolean, required: true, default: false},
     image: {type: String, required: false},
     birthday: {type: String, required: false},
+    addresses: [addressSchema],
+    phone: {type: Number, required: false},
+    country: {type: String, required: false},
+    city: {type: String, required: false},
+    postalcode: {type: Number, required: false},
+    company: {type: String, required: false},
+    vatNumber: {type: Number, required: false},
     newsletter: {type: String, required: false},
   },
   {

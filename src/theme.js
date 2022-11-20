@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { red, grey, cyan } from '@mui/material/colors';
+import { red, grey, cyan, yellow } from '@mui/material/colors';
 
 // Create a theme instance.
 const theme = createTheme({
@@ -29,6 +29,9 @@ const theme = createTheme({
     },
     error: {
       main: red.A400,
+    },
+    warning: {
+      main: yellow.A400,
     },
     transitions: {
       duration: {

@@ -21,6 +21,13 @@ handler.post(async (req, res) => {
       isAdmin: user.isAdmin,
       image: user.image,
       birthday: user.birthday,
+      addresses: user.addresses,
+      phone: user.phone,
+      country: user.country,
+      city: user.city,
+      postalcode: user.postalcode,
+      company: user.company,
+      vatNumber: user.vatNumber,
       newsletter: user.newsletter
     });
   }else {

@@ -1,21 +1,14 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import MuiAlert from '@mui/material/Alert';
-import { Grid, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Typography } from '@mui/material';
 import theme from '../theme';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
 export default function Snackbars(props) {
-  const { snack, snack: {severity}, snack: {message} } = props;
-  const [open, setOpen] = React.useState(true);
+  const { snack, snack: {message, severity} } = props;
+  const [open, setOpen] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason === 'escapeKeyDown') {
@@ -24,16 +17,16 @@ export default function Snackbars(props) {
     setOpen(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setOpen(true);
     return () => {
       setOpen(false);
-    }
+    };
   }, [message]);
 
   const messageSnack = (
-    <Typography variant="p" color={theme.palette.primary.main}>
-      Welcome to our Store
+    <Typography variant="p" color={severity === 'success' ? theme.palette.primary.main : severity === 'error' ? theme.palette.error.main : severity === 'warning' ? theme.palette.warning.main : severity}>
+      {message ? message : 'Welcome to our Store'}
     </Typography>
   )
 
@@ -50,31 +43,14 @@ export default function Snackbars(props) {
   
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
-    {
-      snack && snack.message === 'successfully logged out' ?
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={ <Typography>{ message }</Typography> }
-        action={action}
-      /> :
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-      {
-        message ?
-        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
-          <Typography>{ message }</Typography>
-        </Alert>
-        :
         <Snackbar
           sx={{ width: '100%' }}
           open={open}
           action={action}
           message={messageSnack}
         />
-      }
       </Snackbar>
-    }
     </Stack>
   );
 }

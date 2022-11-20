@@ -134,13 +134,15 @@ export default function SingleProduct(props) {
     )
   }
 
-  async function addToCardHandler() {
+  async function addToCartHandler() {
     const { data } = await axios.get(`/api/products/${product._id}`)
     if(data.inStock <= 0) {
-      console.log('Sorry Product is out of stock')
+      dispatch({ type: 'CART_ADD_ITEM', payload: { ...state.snack, message: 'Sorry Product is out of stock', severity: 'success'}});
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 }});
+    
+    dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   }
 
   return (    
@@ -227,7 +229,7 @@ export default function SingleProduct(props) {
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, display: 'flex', alignItems: 'center' }}>
               {
                 product.inStock !== 0 ? 
-                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} onClick={addToCardHandler} variant="variant" startIcon={<CartIcon />}>
+                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} onClick={addToCartHandler} variant="variant" startIcon={<CartIcon />}>
                   Add To Cart
                 </AddToCartButton>
                 :

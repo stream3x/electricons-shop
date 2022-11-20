@@ -36,8 +36,6 @@ export default function PersonalInfo() {
   const [willRegister, setWillRegister] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
-    firstName: false,
-    lastName: false,
     email: false,
     password: false
   });
@@ -78,7 +76,7 @@ export default function PersonalInfo() {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        name: formOutput.get('first-name').concat(' ').concat(formOutput.get('last-name')),
+        name: formOutput.get('name'),
         email: formOutput.get('email'),
         birthday: formOutput.get('birthday'),
         newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : ''
@@ -86,20 +84,24 @@ export default function PersonalInfo() {
       setConfirmPassword({
         confirmError: false,
       });
-      if(formOutput.get('first-name') === '') {
+      setErrors({ ...errors, name: false, firstName: false, lastName: false, email: false, password: false });
+      if(formOutput.get('name') === '') {
         setErrors({ ...errors, firstName: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
         return;
       }
-      if(formOutput.get('last-name') === '') {
-        setErrors({ ...errors, lastName: true });
-        return;
-      }
-      if(!pattern.test(formData.email)) {
+      if(!pattern.test(formData.email) && formData.email !== '') {
         setErrors({ ...errors, email: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
         return;
       }
-      setErrors({ ...errors, firstName: false, lastName: false, email: false });
+      if(formData.email === '') {
+        setErrors({ ...errors, email: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
+        return;
+      }
       dispatch({ type: 'PERSONAL_INFO', payload: formData});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
       Cookies.set('personalInfo', JSON.stringify(formData));
       if(cartItems.length !== 0) {
         router.push('/checkout/addresses');
@@ -114,7 +116,7 @@ export default function PersonalInfo() {
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        name: formOutput.get('first-name').concat(' ').concat(formOutput.get('last-name')),
+        name: formOutput.get('name'),
         email: formOutput.get('email'),
         password: formOutput.get('password'),
         birthday: formOutput.get('birthday'),
@@ -131,7 +133,7 @@ export default function PersonalInfo() {
       });
       const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
-      dispatch({ type: 'SUCCESS_REGISTER', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
       if(cartItems.length !== 0) {
         router.push('/checkout/addresses');
@@ -140,8 +142,7 @@ export default function PersonalInfo() {
       }
       console.log('success register', formData);
     } catch (error) {
-      console.log(error.response ? error.response.data : error);
-      dispatch({ type: 'USER_LOGIN', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
    
   };
@@ -157,7 +158,7 @@ export default function PersonalInfo() {
       };
       const { data } = await axios.post('/api/users/login', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
-      dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
       setWillLogin(false);
       if(cartItems.length !== 0) {
@@ -171,14 +172,13 @@ export default function PersonalInfo() {
       }else {
         setErrors({ ...errors, email: error.response.data.type === 'email', password: error.response.data.type === 'password' })
       }
-      dispatch({ type: 'USER_LOGIN', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
   };
 
-  const handleEdit = (e) => {
-    dispatch({ type: 'USER_LOGOUT'});
-    dispatch({ type: 'GUEST_REMOVE'});
-    Cookies.remove('userInfo');
+  const handleEdit = () => {
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
+    dispatch({ type: 'PEROSNAL_REMOVE'});
     Cookies.remove('perosnalInfo');
   };
   
@@ -215,21 +215,19 @@ export default function PersonalInfo() {
           {
             !willLogin &&
             <Box component="form" onSubmit={willRegister ?handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-              <Box sx={{  display: 'flex', justifyContent: 'space-between', '& .MuiTextField-root': { width: '100%' } }}>
               {
-                emptyPersonalInfo ?
+                !emptyUserInfo ?
                 <TextField
                   margin="normal"
                   defaultValue={!emptyUserInfo ? userInfo.name : ''}
                   disabled={!emptyUserInfo && true}
                   fullWidth
                   required
-                  id="first-name"
-                  label={!emptyUserInfo ? "Name" : "First name"}
-                  name="first-name"
+                  id="name"
+                  label="Name"
+                  name="name"
                   autoComplete="name"
-                  error={errors.firstName}
-                  sx={{ mr: !emptyUserInfo ? 0 : 1 }}
+                  error={errors.name}
                 />
                 : 
                 <TextField
@@ -238,31 +236,17 @@ export default function PersonalInfo() {
                   disabled={!emptyPersonalInfo && true}
                   fullWidth
                   required
-                  id="first-name"
-                  label={!emptyPersonalInfo ? "Name" : "First Name"}
-                  name="first-name"
+                  id="name"
+                  label="Name"
+                  name="name"
                   autoComplete="name"
-                  error={errors.firstName}
-                  sx={{ mr: !emptyPersonalInfo ? 0 : 1 }}
+                  error={errors.name}
                 />
               }
-                {
-                  emptyPersonalInfo && emptyUserInfo &&
-                    <TextField
-                      margin="normal"
-                      fullWidth
-                      required
-                      name="last-name"
-                      label="Last name"
-                      type="text"
-                      id="last-name"
-                      autoComplete="family-name"
-                      error={errors.lastName}
-                      sx={{ ml: 1 }}
-                    />
-                }
-                
-              </Box>
+              {
+                errors.name && 
+                <FormHelperText error>{snack.message ? snack.message : 'please fill the name'}</FormHelperText>
+              }
               {
                 !emptyPersonalInfo ?
                 <TextField

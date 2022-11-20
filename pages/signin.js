@@ -25,28 +25,19 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import theme from '../src/theme';
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://electricons.explodemarket.com">
-        Electricons
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 export default function SignIn() {
   const router = useRouter();
-  const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
+  const { snack } = state;
   const [confirmPassword, setConfirmPassword] = useState({
     showPassword: false,
     confirmError: false
   })
+  const [errors, setErrors] = useState({
+    name: false,
+    email: false,
+    password: false
+  });
 
   const handleClickShowPassword = () => {
     setConfirmPassword({
@@ -63,22 +54,29 @@ export default function SignIn() {
         email: formOutput.get('email'),
         password: formOutput.get('password'),
       }
+      if(formData.name === '' && formData.email === '') {
+        setErrors({
+          name: true,
+          email: true
+        });
+        return;
+      }
       if(formData.password !== formOutput.get('password-confirmed')) {
         setConfirmPassword({
           confirmError: !confirmPassword.confirmError,
         });
-        return
+        return;
       }
       setConfirmPassword({
         confirmError: false,
       });
       const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
       router.back();
-      console.log('success login')
     } catch (error) {
-      console.log(error.response ? error.response.data : error);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data : error, severity: "error" }});
     }
    
   };
@@ -114,6 +112,10 @@ export default function SignIn() {
                   label="Name"
                   autoFocus
                 />
+                {
+                  errors.name && 
+                  <FormHelperText error>{snack.message}</FormHelperText>
+                }
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -124,6 +126,10 @@ export default function SignIn() {
                   name="email"
                   autoComplete="email"
                 />
+                {
+                  errors.email && 
+                  <FormHelperText error>{snack.message}</FormHelperText>
+                }
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -170,6 +176,7 @@ export default function SignIn() {
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
+                  sx={{'& span': {fontSize: '12px'}}}
                   control={<Checkbox value="allowExtraEmails" color="primary" />}
                   label="I want to receive inspiration, marketing promotions and updates via email."
                 />
@@ -185,14 +192,13 @@ export default function SignIn() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href='/login'variant="body2">
+                <Link href='/login' variant="body2">
                   Already have an account? Login
                 </Link>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );

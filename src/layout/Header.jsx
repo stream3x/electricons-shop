@@ -109,10 +109,6 @@ export default function Header(props) {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart, userInfo } = state;
-  const [snack, setSnack] = useState({
-    message: '',
-    severity: ''
-  });
 
   const handleClick = (event) => {
     setAnchorElDropdown(event.currentTarget);
@@ -131,8 +127,7 @@ export default function Header(props) {
 
   const handleLogout = (e) => {
     setAnchorElUser(null);
-    setSnack({ ...snack, message: 'successfully logged out', severity: 'success' });
-    dispatch({ type: 'USER_LOGOUT'});
+    dispatch({ type: 'USER_LOGOUT', payload: { ...state.snack, message: 'successfully logedout', severity: 'success'}});
     Cookies.remove('userInfo');
     router.push('/');
   };

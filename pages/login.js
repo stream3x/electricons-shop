@@ -37,10 +37,7 @@ export default function LogIn() {
   const router = useRouter();
   const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
-  const [snack, setSnack] = useState({
-    message: '',
-    severity: ''
-  })
+  const { snack } = state;
   const [errors, setErrors] = useState({
     email: false,
     password: false
@@ -48,8 +45,6 @@ export default function LogIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setSnack({ ...snack, message: '', severity: '' });
-    setErrors({ ...errors, email: false, password: false })
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
@@ -58,8 +53,8 @@ export default function LogIn() {
       }
       const { data } = await axios.post('/api/users/login', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
-      setSnack({ ...snack, message: 'success login', severity: 'success' });
       if(router.back() === '/cart') {
         router.back()
       }else {
@@ -71,10 +66,10 @@ export default function LogIn() {
       }else {
         setErrors({ ...errors, email: error.response.data.type === 'email', password: error.response.data.type === 'password' })
       }
-      setSnack({ ...snack, message: error ? error.response.data.message : error, severity: error.response.data.severity });
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
   };
-
+console.log(snack)
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -143,7 +138,7 @@ export default function LogIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href='/singin' variant="body2">
+                <Link href='/signin' variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
@@ -152,10 +147,6 @@ export default function LogIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-      {
-        snack.message !== '' &&
-        <Snackbars snack={snack}/>
-      }
     </ThemeProvider>
   );
 }

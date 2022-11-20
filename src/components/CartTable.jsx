@@ -26,14 +26,6 @@ import Link from '../Link';
 import { Store } from '../utils/Store';
 import { useRouter } from 'next/router';
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  }));
-
 function descendingComparator(a, b, orderBy) {
   
   if(a[orderBy] === undefined) {
@@ -169,10 +161,11 @@ EnhancedTableHead.propTypes = {
 
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, dispatch, selectedItems } = props;
+  const { numSelected, dispatch, state, selectedItems } = props;
 
   function removeItemHandler(item) {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item})
+    dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'item removed', severity: 'warning' } });
   }
 
   return (
@@ -224,7 +217,7 @@ export default function CartTable({ cartItems }) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const { dispatch } = React.useContext(Store);
+  const { state, dispatch } = React.useContext(Store);
   const router = useRouter()
 
   const handleRequestSort = (event, property) => {
@@ -284,10 +277,6 @@ export default function CartTable({ cartItems }) {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -300,7 +289,7 @@ export default function CartTable({ cartItems }) {
         <Typography gutterBottom variant="h6" component="h3" textAlign="center">
           There are no items in your cart
         </Typography>
-        <Button onClick={()=> router.back()} variant="contained" startIcon={<ReplyIcon />}>
+        <Button onClick={()=> router.push('/')} variant="contained" startIcon={<ReplyIcon />}>
           back to shop
         </Button>
       </Box>
@@ -313,6 +302,7 @@ export default function CartTable({ cartItems }) {
         <EnhancedTableToolbar
          numSelected={selected.length}
          dispatch={dispatch}
+         state={state}
          selectedItems={selectedItems}
          />
         <TableContainer>
@@ -410,6 +400,7 @@ export default function CartTable({ cartItems }) {
             </TableBody>
           </Table>
         </TableContainer>
+        
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
