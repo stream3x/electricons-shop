@@ -191,16 +191,12 @@ export default function PersonalInfo() {
           {
             emptyUserInfo &&
             <Box sx={{display: 'flex', flexWrap: 'wrap', mt: 5 }}>
-              <Button onClick={orderGestHandler} sx={{ color: theme.palette.secondary.main }}>
-                <Typography variant="p">
+              <Button size="small" onClick={orderGestHandler} sx={{ color: theme.palette.secondary.main }}>
                   Order as a guest
-                </Typography>
               </Button>
               <Divider variant="middle" orientation="vertical" flexItem />
-              <Button onClick={orderLoginHandler} sx={{ color: theme.palette.main }}>
-                <Typography variant="p">
+              <Button size="small" onClick={orderLoginHandler} sx={{ color: theme.palette.main }}>
                   Click here to login
-                </Typography>
               </Button>
             </Box>
           }

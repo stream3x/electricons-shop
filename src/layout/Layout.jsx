@@ -16,7 +16,7 @@ export default function Layout({ children }) {
     <CssBaseline />
       <Header isVisible={isVisible}/>
       <Container maxWidth="xl">
-        <Box component="main" sx={{ border: '1px dashed grey', height: '100%', mt: '8.5em' }}>
+        <Box component="main" sx={{ height: '100%', mt: '10rem' }}>
           {children}
         </Box>
         <Snackbars snack={snack}/>

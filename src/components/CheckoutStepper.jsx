@@ -16,8 +16,8 @@ export default function CheckoutStepper({ activeStep = 0 }) {
   };
 
   return (
-    <Box sx={{ width: '100%', mx: {xs: 5, sm: 0} }}>
-      <Stepper activeStep={activeStep} orientation={match ? "vertical" : "horizontal"}>
+    <Box sx={{ width: '100%' }}>
+      <Stepper sx={{ mx: {xs: 5, sm: 0} }} activeStep={activeStep} orientation={match ? "vertical" : "horizontal"}>
         {steps.map((step, index) => (
           <Step sx={{ '& a': { textDecoration: 'none' }}} key={step.tab}>
             <Link noLinkStyle={false} href={{ pathname: `/checkout/${step.slug}` }} passHref>

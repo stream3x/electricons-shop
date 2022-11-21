@@ -23,7 +23,7 @@ export const NextLinkComposed = React.forwardRef(function NextLinkComposed(props
       passHref
       locale={locale}
     >
-      <Anchor ref={ref} {...other} />
+      <Anchor sx={{textDecoration: 'none'}} ref={ref} {...other} />
     </NextLink>
   );
 });
