@@ -1,180 +1,125 @@
-import { useEffect, useContext, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '../../src/Link';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useRouter } from 'next/router';
-import { Store } from '../../src/utils/Store';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { FormControl, InputLabel } from '@mui/material';
-import FormHelperText from '@mui/material/FormHelperText';
+import { ThemeProvider } from '@mui/material/styles';
+import Link from '../../src/Link';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import theme from '../../src/theme';
+import { Store } from '../../src/utils/Store';
 import CheckoutLayout from '../../src/components/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
+import { FormControl } from '@mui/material';
 
 export default function Payment() {
   const router = useRouter();
-  const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
-  const { userInfo } = state;
-  const [confirmPassword, setConfirmPassword] = useState({
-    showPassword: false,
-    confirmError: false
-  })
+  const { userInfo, snack, cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
+  const [value, setValue] = React.useState('dina-card');
 
-  const handleClickShowPassword = () => {
-    setConfirmPassword({
-      showPassword: !confirmPassword.showPassword,
-    });
+  const handleChange = (event) => {
+    setValue(event.target.value);
   };
+
+  useEffect(() => {
+    payment ? setValue(payment.paymentMethod) : setValue('dina-card')
+  }, [payment]);
+  
+
+  const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
+  const emptyAddresses = Object.keys(addresses).length === 0;
+  const emptyShipping = Object.keys(shipping).length === 0;
+  const emptyCartItems = Object.keys(cartItems).length === 0;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        name: formOutput.get('name'),
-        email: formOutput.get('email'),
-        password: formOutput.get('password'),
+        paymentMethod: formOutput.get('payment-method')
+      };
+      if(emptyCartItems) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
+        router.push('/');
+        return;
       }
-      if(formData.password !== formOutput.get('password-confirmed')) {
-        setConfirmPassword({
-          confirmError: !confirmPassword.confirmError,
-        });
-        return
+      if(emptyPersonalInfo) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the personal info step has not been completed', severity: 'warning'}});
+        router.push('/checkout/personal-info');
+        return;
       }
-      setConfirmPassword({
-        confirmError: false,
-      });
-      const { data } = await axios.post('/api/users/register', formData);
-      dispatch({ type: 'USER_LOGIN', payload: data});
-      Cookies.set('userInfo', JSON.stringify(data));
-      router.back();
-      console.log('success login')
-    } catch (error) {
-      console.log(error.response ? error.response.data : error);
-    }
-   
-  };
-
-
+      if(emptyAddresses) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the address step has not been completed', severity: 'warning'}});
+        router.push('/checkout/addresses');
+        return;
+      }
+      if(emptyShipping) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method step has not been completed', severity: 'warning'}});
+        router.push('/checkout/shipping');
+        return;
+      }
+      dispatch({ type: 'PAYMENT', payload: formData});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added payment method', severity: 'success'}});
+      Cookies.set('payment', JSON.stringify(formData));
+      
+  };  
+  console.log(emptyPersonalInfo, emptyAddresses, emptyShipping, emptyCartItems, value);
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={3} />
       <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xs">
+        <Container component="div" maxWidth="xl">
           <CssBaseline />
           <Box
             sx={{
-              marginTop: 8,
+              marginTop: 2,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
             }}
           >
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="name"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Name"
-                    autoFocus
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                  />
-                  {
-                    confirmPassword.confirmError &&
-                    <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
-                  }
-                </Grid>
-                <Grid item xs={12}>
-                <FormControl sx={{ width: '100%' }} variant="outlined">
-                  <InputLabel htmlFor="outlined-adornment-password">Confirm Password</InputLabel>
-                  <OutlinedInput
-                    required
-                    fullWidth
-                    name="password-confirmed"
-                    label="Confirm Password"
-                    type={confirmPassword.showPassword ? 'text' : 'password'}
-                    id="password-confirm"
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          edge="end"
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+                <Grid container spacing={2}>
+                  <Grid align="left" item xs={12}>
+                    <FormControl sx={{width: '100%'}}>
+                      <RadioGroup
+                        aria-labelledby="buttons-group"
+                        name="payment-method"
+                        value={value}
+                        onChange={handleChange}
                         >
-                          {confirmPassword.showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                  />
-                  {
-                    confirmPassword.confirmError &&
-                    <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
-                  }
-                </FormControl>
+                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="paycheck" control={<Radio />} label="Pay by Check" />
+                          </Box>
+                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="master-card" control={<Radio />} label="Pay by Master Card" />
+                          </Box>
+                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="dina-card" control={<Radio />} label="Pay by Dina Card" />
+                          </Box>
+                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                            <FormControlLabel sx={{width: '200px'}} value="paypal" control={<Radio />} label="PayPal" />
+                          </Box>
+                        </RadioGroup>
+                      </FormControl>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <FormControlLabel
-                    control={<Checkbox value="allowExtraEmails" color="primary" />}
-                    label="I want to receive inspiration, marketing promotions and updates via email."
-                  />
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign Up
-              </Button>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <Link href='/login'variant="body2">
-                    Already have an account? Login
-                  </Link>
-                </Grid>
-              </Grid>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Continue
+                </Button>
             </Box>
           </Box>
         </Container>

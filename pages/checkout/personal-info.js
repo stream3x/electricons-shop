@@ -25,11 +25,13 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function PersonalInfo() {
   const router = useRouter();
-  const [checkedPolicy, setCheckedPolicy] = React.useState(false);
-  const [checkedNewsletter, setCheckedNewsletter] = React.useState(false);
+  const [checkedPolicy, setCheckedPolicy] = useState(false);
+  const [checkedNewsletter, setCheckedNewsletter] = useState(false);
+  const [company, setCompany] = useState(false);
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: {cartItems, personalInfo} } = state;
   const [willLogin, setWillLogin] = useState(false);
@@ -37,7 +39,10 @@ export default function PersonalInfo() {
   const [errors, setErrors] = useState({
     name: false,
     email: false,
-    password: false
+    password: false,
+    policy: false,
+    company: false,
+    vatNumber: false
   });
   const [confirmPassword, setConfirmPassword] = useState({
     showPassword: false,
@@ -79,8 +84,12 @@ export default function PersonalInfo() {
         name: formOutput.get('name'),
         email: formOutput.get('email'),
         birthday: formOutput.get('birthday'),
-        newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : ''
+        newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
+        policy: formOutput.get('policy'),
+        company: formOutput.get('company'),
+        vatNumber: formOutput.get('vatNumber')
       };
+      
       setConfirmPassword({
         confirmError: false,
       });
@@ -100,15 +109,15 @@ export default function PersonalInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
         return;
       }
+      if(formData.policy !== 'policy') {
+        setErrors({ ...errors, policy: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'accept by checking the box', severity: 'error'}});
+        return;
+      }
       dispatch({ type: 'PERSONAL_INFO', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
       Cookies.set('personalInfo', JSON.stringify(formData));
-      if(cartItems.length !== 0) {
-        router.push('/checkout/addresses');
-      }else {
-        router.push('/');
-      }
-      console.log('submit', formData);
+      router.push('/checkout/addresses');
   };
 
   const handleRegister = async (event) => {
@@ -120,7 +129,9 @@ export default function PersonalInfo() {
         email: formOutput.get('email'),
         password: formOutput.get('password'),
         birthday: formOutput.get('birthday'),
-        newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : ''
+        newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
+        company: formOutput.get('company'),
+        vatNumber: formOutput.get('vatNumber')
       };
       if(formData.password !== formOutput.get('password-confirmed')) {
         setConfirmPassword({
@@ -310,6 +321,62 @@ export default function PersonalInfo() {
                 />
               }
               {
+                !company && !personalInfo.company &&
+                <Grid container space={2}>
+                    <Grid sx={{p: 2}} item xs={3}>
+                      <Button onClick={() => setCompany(true)} size="small" startIcon={<AddIcon />}>
+                        Add Company Info
+                      </Button>
+                    </Grid>
+                </Grid>
+              }
+              {
+                company && !personalInfo.company &&
+                <Grid container space={2}>
+                    <Grid sx={{p: 2}} item xs={3}>
+                      <Button onClick={() => setCompany(false)} size="small" startIcon={<AddIcon />}>
+                        cencel Company Info
+                      </Button>
+                    </Grid>
+                </Grid>
+              }
+              {
+                  company &&
+                  emptyPersonalInfo &&
+                  <React.Fragment>
+                  <TextField
+                      margin="normal"
+                      defaultValue={personalInfo.company ? personalInfo.company : ''}
+                      disabled={personalInfo.company && true}
+                      fullWidth
+                      required
+                      id="company"
+                      label="Company"
+                      name="company"
+                      autoComplete="company"
+                    />     
+                    {
+                      errors.company && 
+                      <FormHelperText error>{snack.message ? snack.message : 'company required'}</FormHelperText>
+                    }           
+                    <TextField
+                      margin="normal"
+                      type="number"
+                      defaultValue={personalInfo ? personalInfo.vatNumber : ''}
+                      disabled={personalInfo.vatNumber && true}
+                      fullWidth
+                      required
+                      id="vatNumber"
+                      label="VAT Number"
+                      name="vatNumber"
+                    />         
+                    {
+                      errors.vatNumber && 
+                      <FormHelperText error>{snack.message ? snack.message : 'VAT Number required'}</FormHelperText>
+                    }    
+                  </React.Fragment>
+              }
+              {
                 emptyUserInfo && emptyPersonalInfo &&
                 <Typography sx={{pt: 3, pb: 2}} align="left" variant='h6' component="p">
                   Create an account (optional)
@@ -376,12 +443,13 @@ export default function PersonalInfo() {
                     You may unsubscribe at any moment."
                   />
                   </Grid>
-                  <Grid align="left" item xs={12} sx={{ display: 'flex' }}>
+                  <Grid align="left" item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
                     <FormControlLabel
                       control={
                         <Checkbox
-                        value="policy"
+                        value={checkedPolicy ? "policy" : "not-agree"}
                         color="primary"
+                        name="policy"
                         required
                         onChange={(e) => setCheckedPolicy(e.target.checked)}
                         />
@@ -389,13 +457,18 @@ export default function PersonalInfo() {
                       label='I agree to the terms and conditions and the privacy policy'
                     />
                     <FormHelperText sx={{color: 'red'}}>*</FormHelperText>
+                    <Box sx={{width: '100%'}}>
+                      {
+                        errors.policy && 
+                        <FormHelperText error>{snack.message ? snack.message : 'accept by checking the box'}</FormHelperText>
+                      }
+                    </Box>
                   </Grid>
                 </Grid>
               }
               {
                 emptyUserInfo && emptyPersonalInfo ?
                 <Button
-                  disabled={!checkedPolicy}
                   type="submit"
                   fullWidth
                   variant="contained"

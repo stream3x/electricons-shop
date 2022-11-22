@@ -72,7 +72,7 @@ export default function Shipping() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select store', severity: 'warning'}});
         return;
       }
-      console.log(formData)
+      console.log(formData);
       // dispatch({ type: 'SHIPPING', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added shipping', severity: 'success'}});
       // Cookies.set('shipping', JSON.stringify(formData));
