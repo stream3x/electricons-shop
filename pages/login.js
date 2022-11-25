@@ -35,7 +35,6 @@ function Copyright(props) {
 
 export default function LogIn() {
   const router = useRouter();
-  const { redirect } = router.query;
   const { state, dispatch } = useContext(Store);
   const { snack } = state;
   const [errors, setErrors] = useState({
@@ -55,7 +54,7 @@ export default function LogIn() {
       dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
-      if(router.back() === '/cart') {
+      if(router.pathname === '/cart') {
         router.back()
       }else {
         router.push('/');
@@ -69,7 +68,7 @@ export default function LogIn() {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
   };
-console.log(snack)
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

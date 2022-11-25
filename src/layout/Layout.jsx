@@ -33,7 +33,7 @@ export default function Layout({ children }) {
         sx={{ bgcolor: '#fff', zIndex: 200, m: 'auto' }}
         open={loading}
       >
-        <Logo sx={{width: 590, height: 160}} viewBox="0 0 306 76" />
+        <Logo sx={{width: {sm: 590, xs: 306}, height: {sm: 160, xs: 76}}} viewBox="0 0 306 76" />
       </Backdrop>
       :
       <React.Fragment>

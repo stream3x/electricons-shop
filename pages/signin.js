@@ -31,13 +31,15 @@ export default function SignIn() {
   const { snack } = state;
   const [confirmPassword, setConfirmPassword] = useState({
     showPassword: false,
-    confirmError: false
   })
   const [errors, setErrors] = useState({
     name: false,
     email: false,
-    password: false
+    password: false,
+    confirmPassword: false
   });
+  const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  let passwordPattern = /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{8, 22}$/;
 
   const handleClickShowPassword = () => {
     setConfirmPassword({
@@ -53,28 +55,72 @@ export default function SignIn() {
         name: formOutput.get('name'),
         email: formOutput.get('email'),
         password: formOutput.get('password'),
-      }
+      };
       if(formData.name === '' && formData.email === '') {
         setErrors({
           name: true,
-          email: true
+          email: true,
+          password: false,
+          confirmPassword: false
         });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name and email is required", severity: "error" }});
+        return;
+      }
+      if(!pattern.test(formData.email)) {
+        setErrors({
+          name: false,
+          email: true,
+          password: false,
+          confirmPassword: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
+        return;
+      }
+      if(passwordPattern.test(formData.password)) {
+        console.log('not valid', !passwordPattern.test(formData.password));
+        setErrors({
+          name: false,
+          email: false,
+          password: true,
+          confirmPassword: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password is not valid", severity: "error" }});
+        return;
+      }
+      if(formData.password === '') {
+        setErrors({
+          name: false,
+          email: false,
+          password: true,
+          confirmPassword: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password is required", severity: "error" }});
         return;
       }
       if(formData.password !== formOutput.get('password-confirmed')) {
-        setConfirmPassword({
-          confirmError: !confirmPassword.confirmError,
+        setErrors({
+          name: false,
+          email: false,
+          password: false,
+          confirmPassword: true,
         });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "passwords don't match", severity: "error" }});
         return;
       }
-      setConfirmPassword({
-        confirmError: false,
+      setErrors({
+        name: false,
+        email: false,
+        password: false
       });
       const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
-      router.back();
+      if(router.pathname === '/cart') {
+        router.back();
+      }else {
+        router.push('/');
+      }
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data : error, severity: "error" }});
     }
@@ -142,8 +188,8 @@ export default function SignIn() {
                   autoComplete="new-password"
                 />
                 {
-                  confirmPassword.confirmError &&
-                  <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                  errors.password &&
+                  <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
                 }
               </Grid>
               <Grid item xs={12}>
@@ -170,7 +216,7 @@ export default function SignIn() {
                 />
                 {
                   confirmPassword.confirmError &&
-                  <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                  <FormHelperText sx={{color: 'red'}} id="error-password">{snack.message}</FormHelperText>
                 }
               </FormControl>
               </Grid>

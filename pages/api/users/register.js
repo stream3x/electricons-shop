@@ -25,7 +25,7 @@ handler.post(async (req, res) => {
     birthday: req.body.birthday,
     newsletter: req.body.newsletter,
   });
-    const user = await newUser.save();
+  const user = await newUser.save();
     const token = signToken(user);
     res.send({
       token,
