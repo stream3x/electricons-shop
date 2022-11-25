@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import HeroCarousel from '../src/components/HeroCarousel';
 import Product from '../models/Product';
@@ -12,20 +12,20 @@ export async function getStaticProps() {
   if (!product) {
     return {
       notFound: true,
-    }
+    };
   }
 
   return {
     props: {
       product: product.map(db.convertDocToObject),
     },
-  }
-};
+  };
+}
 
-export default function Index(props) {
+export default function Index(props) {  
   return (
       <Box sx={{ my: 4 }}>
-        <HeroCarousel data={props}/>
+        <HeroCarousel data={props} />
       </Box>
   );
 }

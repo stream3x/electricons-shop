@@ -36,6 +36,7 @@ export default function Addresses() {
     postalcode: false,
     phone: false
   });
+
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
   const [checked, setChecked] = React.useState(true);
 

@@ -6,7 +6,7 @@ import StepButton from '@mui/material/StepButton';
 import Link from '../Link';
 import { useMediaQuery } from '@mui/material';
 
-const steps = [{ tab: 'Personal info', slug: 'personal-info' }, { tab: 'Addresses', slug: 'addresses' }, { tab: 'Shipping method', slug: 'shipping' }, { tab: 'Payment', slug: 'payment' }];
+const steps = [{ tab: 'Personal info', slug: 'personal-info' }, { tab: 'Addresses', slug: 'addresses' }, { tab: 'Shipping', slug: 'shipping' }, { tab: 'Payment', slug: 'payment' }, { tab: 'Place Order', slug: 'placeorder' }];
 
 export default function CheckoutStepper({ activeStep = 0 }) {
   const match = useMediaQuery('(max-width: 600px)');

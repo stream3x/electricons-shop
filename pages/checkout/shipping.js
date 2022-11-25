@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -27,7 +27,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: {cartItems, personalInfo, addresses, shipping} } = state;
+  const { snack, cart: {shipping} } = state;
   const [value, setValue] = React.useState('postexpress');
   const [city, setCity] = React.useState('');
   const [store, setStore] = React.useState('');
@@ -49,15 +49,13 @@ export default function Shipping() {
   };
  
   const shippingCost = 50;
-  const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
-  const emptyUserInfo = userInfo === null;
-  const emptyshipping = Object.keys(shipping).length === 0;
+  const emptyShipping = Object.keys(shipping).length === 0;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        shipingMethod: formOutput.get('shiping-method'),
+        shippingMethod: formOutput.get('shipping-method'),
         shippingCity: formOutput.get('shiping-city'),
         store: formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment')
@@ -73,16 +71,24 @@ export default function Shipping() {
         return;
       }
       console.log(formData);
-      // dispatch({ type: 'SHIPPING', payload: formData});
+      dispatch({ type: 'SHIPPING', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added shipping', severity: 'success'}});
-      // Cookies.set('shipping', JSON.stringify(formData));
-      if(cartItems.length !== 0) {
-        router.push('/checkout/payment');
-      }else {
-        router.push('/');
-      }
+      Cookies.set('shipping', JSON.stringify(formData));
+      router.push('/checkout/payment');
   };
-  
+
+  const handleEdit = () => {
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit shipping', severity: 'warning'}});
+    dispatch({ type: 'SHIPPING'});
+    Cookies.remove('perosnalInfo');
+  };
+
+  useEffect(() => {
+    !emptyShipping ? setValue(shipping.shippingMethod) : setValue('postexpress')
+    !emptyShipping ? setCity(shipping.shippingCity) : setCity('')
+    !emptyShipping ? setStore(shipping.store) : setStore('')
+  }, [shipping]);
+
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={2} />
@@ -103,7 +109,7 @@ export default function Shipping() {
                     <FormControl sx={{width: '100%'}}>
                       <RadioGroup
                         aria-labelledby="controlled-radio-buttons-group"
-                        name="shiping-method"
+                        name="shipping-method"
                         value={value}
                         onChange={handleChange}
                         >
@@ -153,9 +159,9 @@ export default function Shipping() {
                               <MenuItem value="">
                                 <em>None</em>
                               </MenuItem>
-                              <MenuItem value={10}>Moscow</MenuItem>
-                              <MenuItem value={21}>London</MenuItem>
-                              <MenuItem value={22}>Paris</MenuItem>
+                              <MenuItem value="Москва">Москва</MenuItem>
+                              <MenuItem value="London">London</MenuItem>
+                              <MenuItem value="Paris">Paris</MenuItem>
                             </Select>
                             {
                               errors.city && 
@@ -163,7 +169,7 @@ export default function Shipping() {
                             }
                           </FormControl>
                           {
-                            city === 10 &&
+                            city === "Москва" &&
                             <FormControl sx={{ m: 1, minWidth: 80 }}>
                               <InputLabel id="select-label-store">Store</InputLabel>
                               <Select
@@ -178,9 +184,9 @@ export default function Shipping() {
                                 <MenuItem value="">
                                   <em>None</em>
                                 </MenuItem>
-                                <MenuItem value={10}>Electricons Balasiha</MenuItem>
-                                <MenuItem value={21}>Electricons 2</MenuItem>
-                                <MenuItem value={22}>Electricons 3</MenuItem>
+                                <MenuItem value="Електриконс пр. Ленина, 30А, Балашиха">Електриконс пр. Ленина, 30А, Балашиха</MenuItem>
+                                <MenuItem value="Електриконс Тверская улица, 12">Електриконс Тверская улица, 12</MenuItem>
+                                <MenuItem value="Талалихина ул. 41 строение 4">Талалихина ул. 41 строение 4</MenuItem>
                               </Select>
                               {
                                 errors.store && 
@@ -189,7 +195,7 @@ export default function Shipping() {
                             </FormControl>
                           }
                           {
-                            city === 21 &&
+                            city === "London" &&
                             <FormControl sx={{ m: 1, minWidth: 80 }}>
                               <InputLabel id="select-label-store">Store</InputLabel>
                               <Select
@@ -204,14 +210,14 @@ export default function Shipping() {
                                 <MenuItem value="">
                                   <em>None</em>
                                 </MenuItem>
-                                <MenuItem value={10}>Electricons 4</MenuItem>
-                                <MenuItem value={21}>Electricons Pickadily</MenuItem>
-                                <MenuItem value={22}>Electricons 5</MenuItem>
+                                <MenuItem value="Electricons Staines Rd, Hounslow TW4 5DS">Electricons Staines Rd</MenuItem>
+                                <MenuItem value="Electricons Prince Ave, Westcliff-on-Sea, Southend-on-Sea SS0 0JP">Prince Ave, Westcliff-on-Sea</MenuItem>
+                                <MenuItem value="Electricons Windsor Rd, Englefield Green, Windsor SL4 2JL">Windsor Rd, Englefield Green</MenuItem>
                               </Select>
                             </FormControl>
                           }
                           {
-                            city === 22 &&
+                            city === "Paris" &&
                             <FormControl sx={{ m: 1, minWidth: 80 }}>
                               <InputLabel id="select-label-store">Store</InputLabel>
                               <Select
@@ -226,9 +232,9 @@ export default function Shipping() {
                                 <MenuItem value="">
                                   <em>None</em>
                                 </MenuItem>
-                                <MenuItem value={10}>Electricons 6</MenuItem>
-                                <MenuItem value={21}>Electricons Louvre</MenuItem>
-                                <MenuItem value={22}>Electricons 8</MenuItem>
+                                <MenuItem value="Electricons 701 Av. du Général Leclerc, 92100 Boulogne-Billancourt">Electricons 701 Av. du Général Leclerc</MenuItem>
+                                <MenuItem value="Electricons Rue André Citroën, 78140 Vélizy-Villacoublay">Electricons Rue André Citroën</MenuItem>
+                                <MenuItem value="Electricons 6 ALLEE BUISSONNIERE">Electricons 6 ALLEE BUISSONNIERE</MenuItem>
                               </Select>
                             </FormControl>
                           }
@@ -249,7 +255,7 @@ export default function Shipping() {
                   </Grid>
                 </Grid>
             {
-              emptyshipping ?
+              emptyShipping ?
                 <Button
                   type="submit"
                   fullWidth

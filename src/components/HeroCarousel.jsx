@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 import MobileStepper from "@mui/material/MobileStepper";
@@ -40,6 +40,7 @@ function TabPanel(props) {
 
 function HeroCarousel({ data }) {
   const { product } = data;
+  const [carouselPoroduct, setCarouselPoroduct] = useState([])
   const { category_products } = category;
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -50,6 +51,19 @@ function HeroCarousel({ data }) {
   const singleMaxSteps = filtered && filtered.length;
   const [stopSwipe, setStopSwipe] = useState(false);
   const matches = useMediaQuery('(min-width: 900px)');
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await product;
+        setCarouselPoroduct(res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData();
+  }, [])
+  
   
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -140,7 +154,7 @@ function HeroCarousel({ data }) {
           {
             category_products.map((step, index) => (
               <TabPanel key={step.title} value={activeStep} index={index} dir={theme.direction}>
-                <CardProduct products={product} step={step}/>
+                <CardProduct loading products={carouselPoroduct} step={step}/>
               </TabPanel>
             ))
           }

@@ -23,7 +23,7 @@ import { FormControl } from '@mui/material';
 export default function Payment() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
+  const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
   const [value, setValue] = React.useState('dina-card');
 
   const handleChange = (event) => {
@@ -69,9 +69,9 @@ export default function Payment() {
       dispatch({ type: 'PAYMENT', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added payment method', severity: 'success'}});
       Cookies.set('payment', JSON.stringify(formData));
-      
+      router.push('/checkout/placeorder');
   };  
-  console.log(emptyPersonalInfo, emptyAddresses, emptyShipping, emptyCartItems, value);
+
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={3} />

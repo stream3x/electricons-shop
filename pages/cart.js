@@ -20,7 +20,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
  function Cart() {
   const { state } = useContext(Store);
-  const { cart: {cartItems} } = state;
+  const { cart: {cartItems, shipping, payment} } = state;
 
   return (
     <Box sx={{ my: 4 }}>
@@ -32,7 +32,7 @@ const Item = styled(Paper)(({ theme }) => ({
         </Grid>
         <Grid xs={12} lg={4}>
           <Item elevation={0}>
-            <CartTotal cartItems={cartItems}/>
+            <CartTotal />
           </Item>
           {
             cartItems.length !== 0 &&

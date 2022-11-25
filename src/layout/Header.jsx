@@ -35,7 +35,7 @@ import SwipeableNavDrawer from '../components/SwipeableNavDrawer';
 
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
-const loged = ['Profile', 'admin', 'Logout'];
+const loged = ['Profile', 'Admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [{name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
 
@@ -177,12 +177,12 @@ export default function Header(props) {
             <Toolbar sx={{ display: { xs: 'none', sm: 'flex' } }}>
               <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
                 {pagesTop.map((page) => (
-                  <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}}}>
+                  <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'}}}>
                   {page.icon}
                       <Link
                         href={page.link}
-                        underline="hover"
                         sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0 }}
+                        passHref
                       >
                       {page.name}
                       </Link>
@@ -215,15 +215,15 @@ export default function Header(props) {
                   userInfo ?
                   (
                     <Box>
-                      <MenuItem onClick={handleCloseUserMenu}>
-                        <Link href={`/user/${userInfo._id}`}>
+                      <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                        <Link className="pera" href={`/user/${userInfo._id}`} passHref>
                           {loged[0]}
                         </Link>
                       </MenuItem>
                       {
                         userInfo.isAdmin &&
-                        <MenuItem onClick={handleCloseUserMenu}>
-                          <Link href={`/admin/${userInfo._id}`}>
+                        <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                          <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
                             {loged[1]}
                           </Link>
                         </MenuItem>
@@ -235,13 +235,13 @@ export default function Header(props) {
 
                   ) : (
                     <Box>
-                      <MenuItem onClick={handleCloseUserMenu}>
-                        <Link href="/login">
+                      <MenuItem sx={{ '& a': {textDecoration: 'none'}}} onClick={handleCloseUserMenu}>
+                        <Link href="/login" passHref>
                           {logedout[0]}
                         </Link>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseUserMenu}>
-                        <Link href="/signin">
+                      <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main}}} onClick={handleCloseUserMenu}>
+                        <Link href="/signin" passHref>
                           {logedout[1]}
                         </Link>
                       </MenuItem>

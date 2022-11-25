@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -6,9 +6,10 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
-import theme from '../theme';
 import Collapse from '@mui/material/Collapse';
 import Link from '../Link';
+import { useRouter } from 'next/router';
+import { Store } from '../utils/Store';
 
 const bull = (
   <Box
@@ -19,8 +20,18 @@ const bull = (
   </Box>
 );
 
-export default function CartTotal(props) {
-  const { cartItems } = props;
+const randomNumber = getRandomInt(1, 999999);
+
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+  }
+
+export default function CartTotal() {
+  const { state } = useContext(Store);
+  const { cart: {cartItems, shipping, payment} } = state;
+  const router = useRouter();
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
   const [expanded, setExpanded] = React.useState(false);
 
@@ -28,14 +39,17 @@ export default function CartTotal(props) {
     setExpanded(!expanded);
   };
 
-  const shipping = 50;
-  const total = subTotal + shipping;
-  
+  const emptyShipping = shipping && Object.keys(shipping).length === 0;
+  const shippingCost = shipping.shippingMethod !== 'store' ? 50 : 0;
+  const total = subTotal + shippingCost;
+
   return (
     <Box sx={{ minWidth: 275 }}>
-      <Card cartItems={cartItems} variant="outlined">
+    {
+      router.pathname !== '/checkout/placeorder' ?
+      <Card variant="outlined">
         <CardContent>
-          <Typography sx={{textAlign: 'left'}} variant="h5" component="h3">
+          <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
             Cart{bull}Totals
           </Typography>
           <Divider />
@@ -45,7 +59,7 @@ export default function CartTotal(props) {
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">shipping: </Typography>
-            <Typography variant={shipping ? "h6" : "p"} component="span">{shipping ? `$${shipping}` : 'Free'}</Typography>
+            <Typography component="span">{shippingCost === 0 ? 'free' : '$50'}</Typography>
           </Typography>
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
@@ -86,6 +100,44 @@ export default function CartTotal(props) {
         </CardContent>
       </Collapse>
       </Card>
+      :
+      <Card cartItems={cartItems} variant="outlined">
+        <CardContent>
+          <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
+            Order{bull}Details
+          </Typography>
+          <Divider />
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">order number: </Typography>
+            <Typography variant="h6" component="span">{`${new Date().getFullYear()}-${randomNumber}`} </Typography>
+          </Typography>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">date: </Typography>
+            <Typography variant="h6" component="span">{`${new Date().getDate()}.${new Date().getMonth() + 1}.${new Date().getFullYear()}`}</Typography>
+          </Typography>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">Payment method: </Typography>
+            <Typography variant="h6" component="span">{`${payment.paymentMethod}`}</Typography>
+          </Typography>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">Shipping method: </Typography>
+            <Typography variant="h6" component="span">{`${shipping.shippingMethod === 'store' ? 'pick up in-store' : 'delivery'}`}</Typography>
+          </Typography>
+          {
+            shipping.shippingMethod === 'store' &&
+            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+              <Typography component="span">Shipping address: </Typography>
+              <Typography variant="h6" component="span">{`${shipping.store}, ${shipping.shippingCity}`}</Typography>
+            </Typography>
+          }
+          <Divider />
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">Total: </Typography>
+            <Typography variant="h6" component="span">${total} </Typography>
+          </Typography>
+          </CardContent>
+      </Card>
+    }
     </Box>
   );
 }

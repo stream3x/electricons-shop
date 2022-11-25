@@ -8,7 +8,9 @@ import Rating from '@mui/material/Rating';
 import { Box } from '@mui/system';
 import Link from '../Link';
 
-export default function CardProduct({products, step}) {
+export default function CardProduct(props) {
+  const { products, step } = props; 
+
   return (
     <Grid container spacing={2}>
     {
@@ -30,10 +32,10 @@ export default function CardProduct({products, step}) {
                     <CardContent>
                       {
                         product.inStock > 0 ? 
-                       ( <Typography color="primary" gutterBottom variant="caption" component="p" align="center">
+                        ( <Typography color="primary" gutterBottom variant="caption" component="p" align="center">
                         Na stanju
                         </Typography>) :
-                       ( <Typography color="secondary" gutterBottom variant="caption" component="p" align="center">
+                        ( <Typography color="secondary" gutterBottom variant="caption" component="p" align="center">
                         nije na stanju
                         </Typography>)
                       }

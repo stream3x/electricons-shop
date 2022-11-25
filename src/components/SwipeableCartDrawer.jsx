@@ -152,11 +152,11 @@ export default function SwipeableCartDrawer({cart}) {
               ))}
             </List>
           </Box>
-          <Box sx={{ display: 'flex', flexGrow: 0, width: '100%', '& > a': { flex: 1, textDecoration: 'none!important' } }}>
-            <Link sx={{ p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', '&:hover': { textDecoration: 'none!important'}, display: 'flex', flexGrow: 1, textAlign: 'center' }} href="/cart" onClick={toggleDrawer(anchor, false)} passHref>
+          <Box sx={{ display: 'flex', flexGrow: 0, width: '100%', '& a': {textDecoration: 'none'}, '& > a': { flex: 1, '& a:hover': { textDecoration: 'none!important'}, } }}>
+            <Link sx={{ opacity: 0.95, '&:hover': {opacity: 1}, p: 2, backgroundColor: 'primary.main', color: 'primary.contrastText', display: 'flex', flexGrow: 1, textAlign: 'center' }} href="/cart" onClick={toggleDrawer(anchor, false)} passHref>
               <Typography sx={{ display: 'block', height: '100%', margin: 'auto' }} component="p">View Cart</Typography>
             </Link>
-            <Link sx={{ p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center', display: 'flex', '&:hover': { textDecoration: 'none!important'} }} href="/checkout/personal-info" onClick={toggleDrawer(anchor, false)}>
+            <Link sx={{ opacity: 0.95, '&:hover': {opacity: 1}, p: 2, backgroundColor: 'secondary.main', color: 'primary.contrastText', flex: 1, textAlign: 'center', display: 'flex' }} href="/checkout/personal-info" onClick={toggleDrawer(anchor, false)}>
               <Typography sx={{ display: 'block', height: '100%', margin: 'auto' }} component="span">Checkout</Typography>
             </Link>
           </Box>
