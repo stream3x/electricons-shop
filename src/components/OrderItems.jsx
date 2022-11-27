@@ -124,7 +124,7 @@ export default function OrderItems({ cartItems }) {
                         {row.quantity}
                       </TableCell>
                       <TableCell align="right">
-                        {subtotal}
+                        ${subtotal}
                       </TableCell>
                     </TableRow>
                   );
@@ -140,7 +140,7 @@ export default function OrderItems({ cartItems }) {
               <TableRow>
                 <TableCell colSpan={6}>
                   <Typography component="p" variant="h6" align="right" sx={{ fontSize: 14 }} color="secondary" gutterBottom>
-                    Total: {total}
+                    Total: ${total}
                   </Typography>
                 </TableCell>
               </TableRow>

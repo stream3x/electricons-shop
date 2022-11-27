@@ -1,14 +1,5 @@
 import mongoose from 'mongoose';
 
-const addressSchema = new mongoose.Schema(
-  {
-    address: {type: String, required: false}
-  },
-  {
-    timestamps: true
-  }
-);
-
 const userSchema = new mongoose.Schema(
   {
     name: {type: String, required: true},
@@ -16,8 +7,8 @@ const userSchema = new mongoose.Schema(
     password: {type: String, required: true},
     isAdmin: {type: Boolean, required: true, default: false},
     image: {type: String, required: false},
-    birthday: {type: String, required: false},
-    addresses: [addressSchema],
+    birthday: {type: Date, required: false},
+    address: {type: String, required: false},
     phone: {type: Number, required: false},
     country: {type: String, required: false},
     city: {type: String, required: false},

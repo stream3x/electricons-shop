@@ -50,6 +50,7 @@ export default function Addresses() {
 
   const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
   const emptyAddresses = Object.keys(addresses).length === 0;
+  const emptyUserInfo = Object.keys(userInfo).length === 0;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -152,16 +153,16 @@ export default function Addresses() {
               {
                 !emptyAddresses &&
                 <Grid container space={2}>
-                    <Grid sx={{p: 2}} item xs={3}>
-                      <Button onClick={() => setAddNewAddress(true)} size="small" startIcon={<AddIcon />}>
-                        Add new address
-                      </Button>
-                    </Grid>
+                  <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
+                    <Button onClick={() => setAddNewAddress(true)} size="small" startIcon={<AddIcon />}>
+                      Add new address
+                    </Button>
+                  </Grid>
                 </Grid>
               }
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               {
-                userInfo &&
+                !emptyUserInfo && addresses.length === 0 &&
                 <Box>
                   <TextField
                     margin="normal"
@@ -172,11 +173,10 @@ export default function Addresses() {
                     id="name"
                     label="Name"
                     name="name"
-                    error={errors.name}
                   />    
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.company : ''}
+                    defaultValue={userInfo ? userInfo.company ? userInfo.company : personalInfo.company : ''}
                     disabled
                     fullWidth
                     required
@@ -186,7 +186,7 @@ export default function Addresses() {
                   />    
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.vatNumber : ''}
+                    defaultValue={userInfo ? userInfo.vatNumber ? userInfo.vatNumber : personalInfo.vatNumber : ''}
                     disabled
                     fullWidth
                     required
@@ -196,7 +196,7 @@ export default function Addresses() {
                   />    
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.email : ''}
+                    defaultValue={userInfo ? userInfo.email ? userInfo.email : personalInfo.email : ''}
                     disabled
                     fullWidth
                     required
@@ -209,19 +209,21 @@ export default function Addresses() {
                     margin="normal"
                     type="date"
                     openTo="day"
-                    defaultValue={userInfo ? userInfo.birthday : ''}
+                    defaultValue={!emptyPersonalInfo ? personalInfo.birthday : !emptyUserInfo ? userInfo.birthday : ''}
                     disabled
                     fullWidth
-                    required
-                    id="birthday"
-                    label="Birthday"
+                    id="date"
+                    label="Birthday (optional)"
                     name="birthday"
-                    error={errors.birthday}
+                    autoComplete="birthday"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
                   />
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.country : ''}
-                    disabled={userInfo.country && true}
+                    defaultValue={!emptyUserInfo ? userInfo.country : addresses.country ? addresses.country : ''}
+                    disabled={!emptyAddresses && addresses.country && true}
                     fullWidth
                     required
                     id="country"
@@ -231,21 +233,20 @@ export default function Addresses() {
                   />
                   <TextField
                     margin="normal"
-                    type="number"
-                    defaultValue={userInfo ? userInfo.city : ''}
+                    defaultValue={userInfo ? userInfo.city ? userInfo.city : addresses.city : ''}
                     disabled={userInfo.city && true}
                     fullWidth
                     required
                     id="city"
                     label="city"
                     name="city"
-                    autoComplete="city"
+                    autoComplete="address-level2"
                     error={errors.city}
                   />
                   <TextField
                     margin="normal"
                     type="number"
-                    defaultValue={userInfo ? userInfo.postalcode : ''}
+                    defaultValue={userInfo ? userInfo.postalcode ? userInfo.postalcode : addresses.postalcode : ''}
                     disabled={userInfo.postcode && true}
                     fullWidth
                     required
@@ -257,7 +258,7 @@ export default function Addresses() {
                   />        
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.address : ''}
+                    defaultValue={userInfo ? userInfo.address ? userInfo.address : addresses.address : ''}
                     disabled={userInfo.address && true}
                     fullWidth
                     required
@@ -270,7 +271,7 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     type="number"
-                    defaultValue={userInfo ? userInfo.phone : ''}
+                    defaultValue={!emptyPersonalInfo ? personalInfo.phone : !emptyUserInfo ? userInfo.phone : ''}
                     disabled={userInfo.phone && true}
                     fullWidth
                     required
@@ -280,10 +281,31 @@ export default function Addresses() {
                     autoComplete="phone"
                     error={errors.phone}
                   />
+                  <FormControlLabel
+                    sx={{width: '100%'}}
+                    control={
+                      <Checkbox
+                        value={addresses.length ? addresses.length : forInvoice}
+                        color="primary"
+                        name="invoice"
+                        id="invoice"
+                        onChange={handleChange}
+                     />
+                    }
+                    label="Use this address for invoice too"
+                  />
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                  >
+                    Continue
+                  </Button>
                 </Box>
               }
               {
-                addresses.length === 0 &&
+                emptyUserInfo && addresses.length === 0 &&
                 <Box>
                   <TextField
                     margin="normal"
@@ -312,7 +334,7 @@ export default function Addresses() {
                       <TextField
                         margin="normal"
                         type="number"
-                        defaultValue={personalInfo.vatNumber && personalInfo.vatNumber}
+                        defaultValue={personalInfo.vatNumber ? personalInfo.vatNumber : ''}
                         disabled
                         fullWidth
                         id="vat"
@@ -434,7 +456,7 @@ export default function Addresses() {
                     sx={{width: '100%'}}
                     control={
                       <Checkbox
-                        value={addresses.length}
+                        value={addresses.length ? addresses.length : forInvoice}
                         color="primary"
                         name="invoice"
                         id="invoice"
@@ -458,67 +480,8 @@ export default function Addresses() {
                 <Box>
                   <TextField
                     margin="normal"
-                    defaultValue={!emptyPersonalInfo ? personalInfo.name : ''}
-                    disabled
-                    fullWidth
                     required
-                    id="name"
-                    label="Name"
-                    name="name"
-                    autoComplete="name"
-                    error={errors.name}
-                  />
-                  <TextField
-                    margin="normal"
-                    defaultValue={!emptyPersonalInfo ? personalInfo.company : ""}
-                    disabled
-                    fullWidth
-                    id="company"
-                    label="Company"
-                    name="company"
-                  />
-                  <TextField
-                    margin="normal"
-                    type="number"
-                    defaultValue={!emptyAddresses ? personalInfo.vatNumber : ''}
-                    disabled
-                    fullWidth
-                    id="vatNumber"
-                    label="VAT Number"
-                    name="vatNumber"
-                  />           
-                  <TextField
-                    margin="normal"
-                    defaultValue={!emptyPersonalInfo ? personalInfo.email : ''}
-                    disabled
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    error={errors.email}
-                  />
-                  <TextField
-                    margin="normal"
-                    type="date"
-                    openTo="day"
-                    defaultValue={!emptyPersonalInfo ? personalInfo.birthday : "09/29/1984"}
-                    disabled
-                    fullWidth
-                    id="date"
-                    label="Birthday (optional)"
-                    name="birthday"
-                    autoComplete="birthday"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                  <TextField
-                    margin="normal"
-                    required
-                    defaultValue={!emptyAddresses ? addresses.country : ""}
-                    disabled={addresses.country ? true : false}
+                    defaultValue=""
                     fullWidth
                     id="country"
                     label="Country"
@@ -532,8 +495,7 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     required
-                    defaultValue={!emptyAddresses ? addresses.city : ""}
-                    disabled={addresses.city ? true : false}
+                    defaultValue=""
                     fullWidth
                     id="city"
                     label="City"
@@ -548,8 +510,7 @@ export default function Addresses() {
                     margin="normal"
                     required
                     type="number"
-                    defaultValue={!emptyAddresses ? addresses.postalcode : ""}
-                    disabled={addresses.postalcode ? true : false}
+                    defaultValue=""
                     fullWidth
                     id="postalcode"
                     label="Zip/Postal Code"
@@ -563,8 +524,7 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     type="text"
-                    defaultValue={!emptyAddresses ? addresses.address : ""}
-                    disabled={addresses.address ? true : false}
+                    defaultValue=""
                     fullWidth
                     required
                     id="address"
@@ -580,8 +540,7 @@ export default function Addresses() {
                     margin="normal"
                     type="number"
                     required
-                    defaultValue={addresses ? addresses.phone : ""}
-                    disabled={addresses.phone ? true : false}
+                    defaultValue=""
                     fullWidth
                     id="phone"
                     label="Phone"

@@ -81,15 +81,14 @@ export default function PersonalInfo() {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        name: formOutput.get('name'),
-        email: formOutput.get('email'),
-        birthday: formOutput.get('birthday'),
+        name: !emptyUserInfo ? userInfo.name : formOutput.get('name'),
+        email: !emptyUserInfo ? userInfo.email : formOutput.get('email'),
+        birthday: !emptyUserInfo && userInfo.birthday ? userInfo.birthday : formOutput.get('birthday'),
         newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
         policy: formOutput.get('policy'),
         company: formOutput.get('company'),
         vatNumber: formOutput.get('vatNumber')
       };
-      
       setConfirmPassword({
         confirmError: false,
       });
@@ -99,7 +98,7 @@ export default function PersonalInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
         return;
       }
-      if(!pattern.test(formData.email) && formData.email !== '') {
+      if(!pattern.test(formData.email)) {
         setErrors({ ...errors, email: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
         return;
@@ -116,8 +115,10 @@ export default function PersonalInfo() {
       }
       dispatch({ type: 'PERSONAL_INFO', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
+      setCompany(false);
       Cookies.set('personalInfo', JSON.stringify(formData));
       router.push('/checkout/addresses');
+
   };
 
   const handleRegister = async (event) => {
@@ -151,7 +152,6 @@ export default function PersonalInfo() {
       }else {
         router.push('/');
       }
-      console.log('success register', formData);
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
@@ -188,9 +188,16 @@ export default function PersonalInfo() {
   };
 
   const handleEdit = () => {
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
-    dispatch({ type: 'PEROSNAL_REMOVE'});
-    Cookies.remove('perosnalInfo');
+    if(personalInfo) {
+      dispatch({ type: 'PEROSNAL_REMOVE'});
+      Cookies.remove('perosnalInfo');
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
+    }
+    if(userInfo) {
+      dispatch({ type: 'USER_LOGOUT'});
+      Cookies.remove('userInfo');
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you logged out', severity: 'warning'}});
+    }    
   };
   
   return (
@@ -323,7 +330,7 @@ export default function PersonalInfo() {
               {
                 !company && !personalInfo.company &&
                 <Grid container space={2}>
-                    <Grid sx={{p: 2}} item xs={3}>
+                    <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
                       <Button onClick={() => setCompany(true)} size="small" startIcon={<AddIcon />}>
                         Add Company Info
                       </Button>
@@ -333,7 +340,7 @@ export default function PersonalInfo() {
               {
                 company && !personalInfo.company &&
                 <Grid container space={2}>
-                    <Grid sx={{p: 2}} item xs={3}>
+                    <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
                       <Button onClick={() => setCompany(false)} size="small" startIcon={<AddIcon />}>
                         cencel Company Info
                       </Button>
@@ -443,6 +450,11 @@ export default function PersonalInfo() {
                     You may unsubscribe at any moment."
                   />
                   </Grid>
+                </Grid>
+              }
+              {
+                company || !emptyPersonalInfo && personalInfo.policy !== 'policy' &&
+                <Grid container space={2}>
                   <Grid align="left" item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
                     <FormControlLabel
                       control={
@@ -467,7 +479,33 @@ export default function PersonalInfo() {
                 </Grid>
               }
               {
-                emptyUserInfo && emptyPersonalInfo ?
+                !company || !emptyUserInfo &&
+                <Grid container space={2}>
+                  <Grid align="left" item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                        value={checkedPolicy ? "policy" : "not-agree"}
+                        color="primary"
+                        name="policy"
+                        required
+                        onChange={(e) => setCheckedPolicy(e.target.checked)}
+                        />
+                      }
+                      label='I agree to the terms and conditions and the privacy policy'
+                    />
+                    <FormHelperText sx={{color: 'red'}}>*</FormHelperText>
+                    <Box sx={{width: '100%'}}>
+                      {
+                        errors.policy && 
+                        <FormHelperText error>{snack.message ? snack.message : 'accept by checking the box'}</FormHelperText>
+                      }
+                    </Box>
+                  </Grid>
+                </Grid>
+              }
+              {
+                company || emptyUserInfo && emptyPersonalInfo ?
                 <Button
                   type="submit"
                   fullWidth

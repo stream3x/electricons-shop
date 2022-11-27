@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -10,6 +10,7 @@ import Collapse from '@mui/material/Collapse';
 import Link from '../Link';
 import { useRouter } from 'next/router';
 import { Store } from '../utils/Store';
+import theme from '../theme';
 
 const bull = (
   <Box
@@ -21,12 +22,11 @@ const bull = (
 );
 
 const randomNumber = getRandomInt(1, 999999);
-
-  function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min);
-  }
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
 
 export default function CartTotal() {
   const { state } = useContext(Store);
@@ -38,10 +38,20 @@ export default function CartTotal() {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-
+  
   const emptyShipping = shipping && Object.keys(shipping).length === 0;
   const shippingCost = shipping.shippingMethod !== 'store' ? 50 : 0;
   const total = subTotal + shippingCost;
+
+  console.log(randomNumber)
+
+  function placeOrderHandler() {
+    try {
+      
+    } catch (error) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+    }
+  }
 
   return (
     <Box sx={{ minWidth: 275 }}>
@@ -59,7 +69,7 @@ export default function CartTotal() {
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">shipping: </Typography>
-            <Typography component="span">{shippingCost === 0 ? 'free' : '$50'}</Typography>
+            <Typography component="span">{shippingCost ? shippingCost === 0 ? 'free' : '$50' : '_'}</Typography>
           </Typography>
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
@@ -107,27 +117,27 @@ export default function CartTotal() {
             Order{bull}Details
           </Typography>
           <Divider />
-          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">order number: </Typography>
             <Typography variant="h6" component="span">{`${new Date().getFullYear()}-${randomNumber}`} </Typography>
           </Typography>
-          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">date: </Typography>
             <Typography variant="h6" component="span">{`${new Date().getDate()}.${new Date().getMonth() + 1}.${new Date().getFullYear()}`}</Typography>
           </Typography>
-          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Payment method: </Typography>
             <Typography variant="h6" component="span">{`${payment.paymentMethod}`}</Typography>
           </Typography>
-          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Shipping method: </Typography>
             <Typography variant="h6" component="span">{`${shipping.shippingMethod === 'store' ? 'pick up in-store' : 'delivery'}`}</Typography>
           </Typography>
           {
             shipping.shippingMethod === 'store' &&
-            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-              <Typography component="span">Shipping address: </Typography>
-              <Typography variant="h6" component="span">{`${shipping.store}, ${shipping.shippingCity}`}</Typography>
+            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
+              <Typography align="left" component="span">Shipping address: </Typography>
+              <Typography align="right" variant="h6" component="span">{`${shipping.store}, ${shipping.shippingCity}`}</Typography>
             </Typography>
           }
           <Divider />
@@ -135,7 +145,17 @@ export default function CartTotal() {
             <Typography component="span">Total: </Typography>
             <Typography variant="h6" component="span">${total} </Typography>
           </Typography>
-          </CardContent>
+        </CardContent>
+        <CardActions>
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
+            onClick={placeOrderHandler}
+          >
+            Place Order
+          </Button>
+        </CardActions>
       </Card>
     }
     </Box>

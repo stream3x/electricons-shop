@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -30,6 +30,7 @@ import GppGoodIcon from '@mui/icons-material/GppGood';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
 import ProductTabs from '../../src/components/ProductTabs';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -53,7 +54,7 @@ const LabelButton = styled(Button)(({ theme }) => ({
   marginLeft: '10px',
 }));
 
-const AddToCartButton = styled(Button)(({ theme }) => ({
+const AddToCartButton = styled(LoadingButton)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
   textTransform: 'capitalize',
   backgroundColor: theme.palette.primary.main,
@@ -110,8 +111,9 @@ color: theme.palette.text.secondary,
 
 export default function SingleProduct(props) {
   const { product } = props;
-  const { state, dispatch } = React.useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const { cart: {cartItems} } = state;
+  const [loading, setLoading] = useState(false);
 
   if(!product) {
     return (
@@ -140,9 +142,21 @@ export default function SingleProduct(props) {
       dispatch({ type: 'CART_ADD_ITEM', payload: { ...state.snack, message: 'Sorry Product is out of stock', severity: 'success'}});
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 }});
-    
-    dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1}});
+    if(!data) {
+      setTimeout(() => {
+        setLoading(!loading);
+      }, 500);
+      clearTimeout();
+      setLoading(!loading);
+    }else {
+      setLoading(false);
+    }
+    if(cartItems.find(i => i._id === product._id)) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
+      return;
+    }
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   }
 
   return (    
@@ -201,10 +215,10 @@ export default function SingleProduct(props) {
                 <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1, width: {xs: '100%', sm: 'auto'}}}>
                   Avalability: 
                 </Typography>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<TapAndPlayIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<TapAndPlayIcon />}>
                   online shopping
                 </LabelButton>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<StoreIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<StoreIcon />}>
                   store shopping
                 </LabelButton>
             </Box>  
@@ -226,14 +240,14 @@ export default function SingleProduct(props) {
           }
           <Item>
             <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: {xs: 'center', sm: 'normal'} }}>
-              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center' }}>
               {
                 product.inStock !== 0 ? 
-                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} onClick={addToCartHandler} variant="variant" startIcon={<CartIcon />}>
+                <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={addToCartHandler} startIcon={<CartIcon />}>
                   Add To Cart
                 </AddToCartButton>
                 :
-                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} sx={{cursor: 'no-drop'}} variant="variant" startIcon={<RemoveShoppingCartIcon />}>
+                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} sx={{cursor: 'no-drop'}} startIcon={<RemoveShoppingCartIcon />}>
                   no Stock
                 </AddToCartButton>
               }
@@ -286,13 +300,13 @@ export default function SingleProduct(props) {
           </Item>
           <Item>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<LocalShippingIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<LocalShippingIcon />}>
                   Delivery policy
                 </LabelButton>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<GppGoodIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<GppGoodIcon />}>
                   Security Policy
                 </LabelButton>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}}} startIcon={<CreditCardIcon />}>
+                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<CreditCardIcon />}>
                   Security Payment
                 </LabelButton>
             </Box>  

@@ -24,14 +24,14 @@ export default function Payment() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
-  const [value, setValue] = React.useState('dina-card');
+  const [value, setValue] = React.useState('PayPal');
 
   const handleChange = (event) => {
     setValue(event.target.value);
   };
 
   useEffect(() => {
-    payment ? setValue(payment.paymentMethod) : setValue('dina-card')
+    payment ? setValue(payment.paymentMethod) : setValue('PayPal')
   }, [payment]);
   
 
@@ -97,16 +97,16 @@ export default function Payment() {
                         onChange={handleChange}
                         >
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
-                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="paycheck" control={<Radio />} label="Pay by Check" />
+                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="Pay by Check" control={<Radio />} label="Pay by Check" />
                           </Box>
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
-                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="master-card" control={<Radio />} label="Pay by Master Card" />
+                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="Master Card" control={<Radio />} label="Pay by Master Card" />
                           </Box>
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
-                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="dina-card" control={<Radio />} label="Pay by Dina Card" />
+                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="Dina Card" control={<Radio />} label="Pay by Dina Card" />
                           </Box>
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
-                            <FormControlLabel sx={{width: '200px'}} value="paypal" control={<Radio />} label="PayPal" />
+                            <FormControlLabel sx={{width: '200px'}} value="PayPal" control={<Radio />} label="PayPal" />
                           </Box>
                         </RadioGroup>
                       </FormControl>

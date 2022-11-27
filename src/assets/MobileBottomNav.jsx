@@ -14,10 +14,6 @@ export default function MobileBottomNav({ isVisible }) {
   const { state, dispatch } = React.useContext(Store);
   const { cart, userInfo } = state;
 
-  // React.useEffect(() => {
-  //   ref.current.ownerDocument.body.scrollTop = 0;
-  // }, []);
-
   return (
     <Box sx={{ display: {xs: 'block', sm: 'none'}, pb: 7 }} ref={ref}>
       <CssBaseline />
@@ -27,7 +23,7 @@ export default function MobileBottomNav({ isVisible }) {
         >
           <BottomNavigationAction label="Comparasion" icon={<CompareIcon />} />
           <BottomNavigationAction label="Wishlist" icon={<Wishlist />} />
-          <BottomNavigationAction label="Wishlist" icon={<SwipeableCartDrawer cart={cart}/>} />
+          <BottomNavigationAction label="Cart" icon={<SwipeableCartDrawer cart={cart}/>} />
         </BottomNavigation>
       </Paper>
     </Box>

@@ -125,9 +125,9 @@ export default function Header(props) {
     setAnchorElUser(null);
   };
 
-  const handleLogout = (e) => {
+  const handleLogout = () => {
     setAnchorElUser(null);
-    dispatch({ type: 'USER_LOGOUT', payload: { ...state.snack, message: 'successfully logedout', severity: 'success'}});
+    dispatch({ type: 'USER_LOGOUT'});
     Cookies.remove('userInfo');
     router.push('/');
   };
@@ -216,7 +216,7 @@ export default function Header(props) {
                   (
                     <Box>
                       <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                        <Link className="pera" href={`/user/${userInfo._id}`} passHref>
+                        <Link href={`/user/${userInfo._id}`} passHref>
                           {loged[0]}
                         </Link>
                       </MenuItem>
@@ -285,14 +285,14 @@ export default function Header(props) {
                         userInfo ?
                         (
                           <Box>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                               <Link href="/user/${id}">
                                 {loged[0]}
                               </Link>
                             </MenuItem>
                             {
                               userInfo.isAdmin &&
-                              <MenuItem onClick={handleCloseUserMenu}>
+                              <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                               <Link href={`/admin/${userInfo._id}`}>
                                 {loged[1]}
                               </Link>
@@ -305,12 +305,12 @@ export default function Header(props) {
       
                         ) : (
                           <Box>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                               <Link href="/login">
                                 {logedout[0]}
                               </Link>
                             </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                               <Link href="/signin">
                                 {logedout[1]}
                               </Link>

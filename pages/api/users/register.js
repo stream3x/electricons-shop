@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import { signToken } from '../../../src/utils/auth';
 
 const handler = nc();
-const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 
 handler.post(async (req, res) => {
   await db.connect();
@@ -15,7 +14,7 @@ handler.post(async (req, res) => {
     password: bcrypt.hashSync(req.body.password),
     isAdmin: false,
     image: '',
-    addresses: [],
+    address: req.body.address,
     phone: req.body.phone,
     country: req.body.country,
     city: req.body.city,
@@ -35,7 +34,7 @@ handler.post(async (req, res) => {
       isAdmin: user.isAdmin,
       image: user.image,
       birthday: user.birthday,
-      addresses: user.addresses,
+      address: user.address,
       phone: user.phone,
       country: user.country,
       city: user.city,

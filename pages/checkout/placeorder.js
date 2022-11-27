@@ -36,7 +36,7 @@ const Item = styled(Paper)(({ theme }) => ({
             </Grid>
             <Grid xs={12}>
             {
-              payment.paymentMethod === "paycheck" && cartItems.length !== 0 &&
+              payment.paymentMethod === "Pay by Check" && cartItems.length !== 0 &&
               <Item elevation={0}>
                 <PaymentInstruction />
               </Item>

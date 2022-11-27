@@ -7,7 +7,7 @@ import { Typography } from '@mui/material';
 import theme from '../theme';
 
 export default function Snackbars(props) {
-  const { snack, snack: {message, severity} } = props;
+  const { snack: {message, severity} } = props;
   const [open, setOpen] = useState(false);
 
   const handleClose = (event, reason) => {
@@ -43,7 +43,7 @@ export default function Snackbars(props) {
   
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar sx={{flexGrow: 0}} open={open} autoHideDuration={3000} onClose={handleClose}>
         <Snackbar
           sx={{ width: '100%' }}
           open={open}

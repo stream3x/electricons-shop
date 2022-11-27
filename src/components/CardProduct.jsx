@@ -56,7 +56,9 @@ export default function CardProduct(props) {
                       <Typography align="center" component="h3" variant="h6" color="secondary">
                         {product.price}
                         <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
-                          <del>{product.oldPrice && product.oldPrice}</del>
+                          <del>
+                          {product.oldPrice && product.oldPrice}
+                          </del>
                         </Typography>
                       </Typography>
                     </CardContent>

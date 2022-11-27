@@ -15,6 +15,22 @@ const data = {
       password: bcrypt.hashSync('Dmdevelo123'),
       isAdmin: true,
       image: '/images/admin.jpg'
+    },
+    {
+      name: 'Zoran Drazic',
+      email: 'zokac.pokac@gmail.com',
+      password: bcrypt.hashSync('Z@kula03'),
+      isAdmin: false,
+      image: '/images/lenjivac.jpg',
+      birthday: '03.10.1988',
+      address: 'Vase Stajica 16',
+      phone: 381644356988,
+      country: 'Serbia',
+      city: 'Sremska Mitrovica',
+      postalcode: 22000,
+      company: '',
+      vatNumber: null,
+      newsletter: 'newsletter',
     }
   ],
   products: [

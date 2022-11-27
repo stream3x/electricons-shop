@@ -165,7 +165,7 @@ function EnhancedTableToolbar(props) {
 
   function removeItemHandler(item) {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item})
-    dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'item removed', severity: 'warning' } });
+    dispatch({ type: 'SUCCESS_LOGIN', payload: { ...state.snack, message: 'item removed successfully', severity: 'warning' } });
   }
 
   return (
