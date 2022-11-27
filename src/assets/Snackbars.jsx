@@ -42,10 +42,11 @@ export default function Snackbars(props) {
   );
   
   return (
-    <Stack spacing={2} sx={{ width: '100%' }}>
-      <Snackbar sx={{flexGrow: 0}} open={open} autoHideDuration={3000} onClose={handleClose}>
+    <Stack spacing={2}>
+      <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <Snackbar
-          sx={{ width: '100%' }}
+          sx={{ flexGrow: 0 }}
+          onClose={handleClose}
           open={open}
           action={action}
           message={messageSnack}
