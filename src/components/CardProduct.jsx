@@ -7,6 +7,7 @@ import { CardActionArea, Grid } from '@mui/material';
 import Rating from '@mui/material/Rating';
 import { Box } from '@mui/system';
 import Link from '../Link';
+import Image from 'next/image';
 
 export default function CardProduct(props) {
   const { products, step } = props; 
@@ -20,14 +21,15 @@ export default function CardProduct(props) {
               <Card sx={{ width: "100%", height: "100%" }}>
                   <CardActionArea>
                     <Link href={`/product/${product.slug}`}>
-                      <CardMedia
-                        component="img"
-                        width="auto"
-                        height="168px"
-                        image={product.images[0].image}
-                        alt={product.title}
-                        sx={{margin: 'auto', objectFit: 'contain'}}
-                      />
+                      <CardMedia sx={{position: 'relative!important', display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important'}}} component="div">
+                        <Image
+                          fill
+                          priority
+                          src={product.images[0].image}
+                          alt={product.title}
+                          quality={35}
+                        />
+                      </CardMedia>
                     </Link>
                     <CardContent>
                       {

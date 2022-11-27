@@ -13,6 +13,11 @@ export default function Layout({ children }) {
   const [isVisible, setIsVisible] = useState(false);
   const { state: { snack } } = useContext(Store);
   const [loading, setLoading] = React.useState(true);
+  const [growLogo, setGrowLogo] = React.useState(false);
+
+  const handleChange = () => {
+    setGrowLogo((prev) => !prev);
+  };
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -30,7 +35,7 @@ export default function Layout({ children }) {
     {
       loading ?
       <Backdrop
-        sx={{ bgcolor: '#fff', zIndex: 200, m: 'auto' }}
+        sx={{ bgcolor: '#fff', zIndex: 200, m: 'auto', display: 'flex', flexWrap: 'wrap' }}
         open={loading}
       >
         <Logo sx={{width: {sm: 590, xs: 306}, height: {sm: 160, xs: 76}}} viewBox="0 0 306 76" />

@@ -189,4 +189,4 @@ function HeroCarousel({ data }) {
   );
 }
 
-export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: false });
+export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: true });
