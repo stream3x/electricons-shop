@@ -17,11 +17,11 @@ export default function CardProduct(props) {
     {
       products.map(product => (
         product.inWidget === 'hero' && product.category === step.category &&
-          <Grid key={product.title} item xs={12} md={4} >
+          <Grid key={product.title} item xs={12} md={4}>
               <Card sx={{ width: "100%", height: "100%" }}>
                   <CardActionArea>
                     <Link href={`/product/${product.slug}`}>
-                      <CardMedia sx={{position: 'relative!important', display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important'}}} component="div">
+                      <CardMedia sx={{position: 'relative!important', display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                         <Image
                           fill
                           priority

@@ -27,7 +27,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack, cart: {shipping} } = state;
+  const { snack, cart: {shipping, addresses} } = state;
   const [value, setValue] = React.useState('postexpress');
   const [city, setCity] = React.useState('');
   const [store, setStore] = React.useState('');
@@ -50,27 +50,28 @@ export default function Shipping() {
  
   const shippingCost = 50;
   const emptyShipping = Object.keys(shipping).length === 0;
+  const deliveryCity = addresses[Cookies.get('forInvoice')].city;
+  const deliveryAddress = addresses[Cookies.get('forInvoice')].address;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
-        shippingCity: formOutput.get('shiping-city'),
-        store: formOutput.get('shiping-store'),
-        comment: formOutput.get('shiping-comment')
+        shippingCity: formOutput.get('shiping-city') !== null ? formOutput.get('shiping-city') : deliveryCity,
+        store: formOutput.get('shiping-store') !== null ? formOutput.get('shiping-store') : deliveryAddress,
+        comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };
-      if(formData.shippingCity === '') {
+      if(formData.shippingCity === '' && formData.shippingMethod === 'store') {
         setErrors({ ...errors, city: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select city', severity: 'warning'}});
         return;
       }
-      if(formData.store === '') {
+      if(formData.store === '' && formData.shippingMethod === 'store') {
         setErrors({ ...errors, store: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select store', severity: 'warning'}});
         return;
       }
-      console.log(formData);
       dispatch({ type: 'SHIPPING', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added shipping', severity: 'success'}});
       Cookies.set('shipping', JSON.stringify(formData));
@@ -79,8 +80,8 @@ export default function Shipping() {
 
   const handleEdit = () => {
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit shipping', severity: 'warning'}});
-    dispatch({ type: 'SHIPPING'});
-    Cookies.remove('perosnalInfo');
+    dispatch({ type: 'SHIPPING_REMOVE' });
+    Cookies.remove('shipping');
   };
 
   useEffect(() => {
@@ -116,7 +117,7 @@ export default function Shipping() {
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
                           <FormControlLabel sx={{width: '200px'}} color="secondary" value="postexpress" control={<Radio />} label="POST Express" />
                           <Typography>
-                            Delivery next day!
+                            Delivery in 2 - 3 days!
                           </Typography>
                           <Typography>
                             {shippingCost ? `$${shippingCost}` : 'Free'}
@@ -125,10 +126,10 @@ export default function Shipping() {
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
                             <FormControlLabel sx={{width: '200px'}} value="dhl" control={<Radio />} label="DHL" />
                             <Typography align="left">
-                              Delivery in 2 days!
+                              Delivery in 5 - 7 days!
                             </Typography>
                             <Typography>
-                              {shippingCost ? `$${shippingCost}` : 'Free'}
+                              {shippingCost ? `$${shippingCost * 1.8}` : 'Free'}
                             </Typography>
                           </Box>
                           <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
@@ -255,7 +256,7 @@ export default function Shipping() {
                   </Grid>
                 </Grid>
             {
-              emptyShipping ?
+              emptyShipping &&
                 <Button
                   type="submit"
                   fullWidth
@@ -264,8 +265,12 @@ export default function Shipping() {
                 >
                   Continue
                 </Button>
-                :
+            }
+            </Box>
+            {
+              !emptyShipping &&
                 <Button
+                  type="button"
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
@@ -274,7 +279,6 @@ export default function Shipping() {
                   Edit
                 </Button>
             }
-            </Box>
           </Box>
         </Container>
       </ThemeProvider>

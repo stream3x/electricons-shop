@@ -3,8 +3,11 @@ import User from '../../../models/User';
 import db from '../../../src/utils/db';
 import bcrypt from 'bcryptjs';
 import { signToken } from '../../../src/utils/auth';
+import { onError } from '../../../src/utils/error';
 
-const handler = nc();
+const handler = nc({
+  onError
+});
 
 handler.post(async (req, res) => {
   await db.connect();
@@ -43,7 +46,6 @@ handler.post(async (req, res) => {
       vatNumber: user.vatNumber,
       newsletter: user.newsletter,
     });
-  await db.disconnect();
 });
 
 

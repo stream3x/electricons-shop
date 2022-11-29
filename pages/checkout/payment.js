@@ -46,26 +46,6 @@ export default function Payment() {
       const formData = {
         paymentMethod: formOutput.get('payment-method')
       };
-      if(emptyCartItems) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
-        router.push('/');
-        return;
-      }
-      if(emptyPersonalInfo) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the personal info step has not been completed', severity: 'warning'}});
-        router.push('/checkout/personal-info');
-        return;
-      }
-      if(emptyAddresses) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the address step has not been completed', severity: 'warning'}});
-        router.push('/checkout/addresses');
-        return;
-      }
-      if(emptyShipping) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method step has not been completed', severity: 'warning'}});
-        router.push('/checkout/shipping');
-        return;
-      }
       dispatch({ type: 'PAYMENT', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added payment method', severity: 'success'}});
       Cookies.set('payment', JSON.stringify(formData));

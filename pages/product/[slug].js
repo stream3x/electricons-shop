@@ -137,26 +137,20 @@ export default function SingleProduct(props) {
   }
 
   async function addToCartHandler() {
+    setLoading(true)
     const { data } = await axios.get(`/api/products/${product._id}`)
     if(data.inStock <= 0) {
       dispatch({ type: 'CART_ADD_ITEM', payload: { ...state.snack, message: 'Sorry Product is out of stock', severity: 'success'}});
       return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1}});
-    if(!data) {
-      setTimeout(() => {
-        setLoading(!loading);
-      }, 500);
-      clearTimeout();
-      setLoading(!loading);
-    }else {
-      setLoading(false);
-    }
     if(cartItems.find(i => i._id === product._id)) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
+      setLoading(false);
       return;
     }
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
+    setLoading(false);
   }
 
   return (    

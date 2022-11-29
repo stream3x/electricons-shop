@@ -67,6 +67,9 @@ function reducer(state, action) {
     case 'SHIPPING': {
       return { ...state, cart: { ...state.cart, shipping: action.payload } };
     }
+    case 'SHIPPING_REMOVE': {
+      return { ...state, cart: { ...state.cart, shipping: {} } };
+    }
     case 'PAYMENT': {
       return { ...state, cart: { ...state.cart, payment: action.payload } };
     }

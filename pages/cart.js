@@ -36,8 +36,8 @@ const Item = styled(Paper)(({ theme }) => ({
           </Item>
           {
             cartItems.length !== 0 &&
-            <Item elevation={0}>
-              <Link noLinkStyle={false} href="/checkout/personal-info">
+            <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
+              <Link href="/checkout/personal-info">
                 <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
                   <Typography variant="body">Checkout</Typography>
                 </Button>

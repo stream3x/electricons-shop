@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const imageSchema = new mongoose.Schema(
   {
@@ -21,6 +21,8 @@ const productSchema = new mongoose.Schema(
     slug: {type: String, required: true, unique: true},
     category: {type: String, required: true},
     categoryUrl: {type: String, required: true},
+    subCategory: {type: String, required: true},
+    subCategoryUrl: {type: String, required: true},
     brandImg: {type: String, required: true},
     reviews: {type: Number, required: true, default: 0},
     inStock: {type: Number, required: true, default: 0},

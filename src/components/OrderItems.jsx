@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -42,7 +42,9 @@ const headCells = [
   },
 ];
 
-export default function OrderItems({ cartItems }) {
+export default function OrderItems() {
+  const { state } = useContext(Store);
+  const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);

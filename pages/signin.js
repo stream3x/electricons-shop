@@ -28,7 +28,7 @@ import theme from '../src/theme';
 export default function SignIn() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack } = state;
+  const { snack, userInfo } = state;
   const [confirmPassword, setConfirmPassword] = useState({
     showPassword: false,
   })

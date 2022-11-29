@@ -3,6 +3,7 @@ import Link from "../src/Link";
 import ReplyIcon from '@mui/icons-material/Reply';
 import { useRouter } from "next/router";
 import { useState } from "react";
+import theme from '../src/theme';
 
 const statusCodes = {
   400: 'Bad Request',
@@ -24,16 +25,16 @@ export default function Custom404() {
   const [backPath, setBackPath] = useState('/');
 
   const handleBackPath = () => {
-    setBackPath(router.back())
+    setBackPath(router.push('/'))
   }
 
   return (
-      <Box sx={{ my: 4, textAlign: 'center' }}>
+      <Box sx={{ my: 4, textAlign: 'center', '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
         <Typography sx={{p: 4}} variant="h3" component="h1" gutterBottom>
           {status.statusCode} | {statusCodes[status.statusCode]}
         </Typography>
-        <Link href={backPath}>
-          <Button onClick={handleBackPath} size="large" variant="contained" startIcon={<ReplyIcon />}>
+        <Link href={backPath} passHref>
+          <Button sx={{'&:hover': {backgroundColor: theme.palette.secondary.main}}} onClick={handleBackPath} size="large" variant="contained" startIcon={<ReplyIcon />}>
             back to shop
           </Button>
         </Link>

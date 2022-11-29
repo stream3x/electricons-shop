@@ -1,23 +1,13 @@
 import * as React from 'react';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import Collapse from '@mui/material/Collapse';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import SendIcon from '@mui/icons-material/Send';
-import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import data from '../utils/data';
 import category from '../utils/category';
-import { Accordion, AccordionDetails, AccordionSummary, Grid, ListItem, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
 import Link from '../Link';
 import theme from '../theme';
 
@@ -70,7 +60,7 @@ export default function DropdownMenu(props) {
         transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
       >
-        <MenuItem>
+        <MenuItem sx={{'&:hover': {bgcolor: 'background.paper'}}}>
           <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
             component="ul"
@@ -96,32 +86,36 @@ export default function DropdownMenu(props) {
                       expandIcon={<ExpandMore />}
                       aria-controls={`${item.title} controls`}
                       id={`${item.title} panel`}
+                      sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}
                     >
-                    <Link href={item.categoryUrl} underline="hover" sx={{display: 'flex'}}>
+                    <Link href={item.categoryUrl} sx={{display: 'flex'}}>
                       <Avatar alt={item.title} src={item.avatar} /> 
-                      <Typography color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                      <Typography color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center', '&:hover': {color: theme.palette.primary.main} }}>
                         {item.title}
                       </Typography>
                     </Link>
                     </AccordionSummary>
-                    <AccordionDetails sx={{position: 'absolute', left: '100%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', paddingBottom: '8px', marginLeft: '8px'}}>
+                    <AccordionDetails sx={{position: 'absolute', left: '100%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', height: 'auto', py: 5, px: 3, marginLeft: '8px'}}>
                       <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <Link href={item.categoryUrl} underline="hover" sx={{display: 'flex'}}>
-                          <Typography color="secondary" component="h5" variant="p">
-                          {item.title}
-                          </Typography>
-                        </Link>
-                      </Grid>
                     {
-                      products.map((sub, index) => (
-                        sub.category === item.category &&
-                          <Grid key={index} item xs={4}>
-                            <Link href={`${sub.slug}`} underline="hover" sx={{display: 'flex'}}>
-                              <Typography color="secondary.lightGrey" component="h6" variant="p">
-                              {sub.title}
+                      item.subCategory.map((sub, index) => (
+                        
+                          <Grid sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }} key={index} item xs={4}>
+                            <Link href={sub.url} passHref>
+                              <Typography sx={{pb: 2, '&:hover': {color: theme.palette.secondary.lightGrey}}} color="secondary" component="h5" variant="p">
+                              {sub.label}
                               </Typography>
                             </Link>
+                            {
+                              products.map((prod, i) => (
+                                sub.label === prod.subCategory &&
+                                <Link key={i} href={`${prod.slug}`} underline="hover" sx={{display: 'flex', pb: 1}}>
+                                  <Typography sx={{'&:hover': {color: theme.palette.primary.main}}} color="secondary.lightGrey" component="h6" variant="p">
+                                  {prod.title}
+                                  </Typography>
+                                </Link>
+                              ))
+                            }
                           </Grid>
                       ))
                     }

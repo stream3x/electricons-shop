@@ -128,6 +128,7 @@ export default function Header(props) {
   const handleLogout = () => {
     setAnchorElUser(null);
     dispatch({ type: 'USER_LOGOUT'});
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
     Cookies.remove('userInfo');
     router.push('/');
   };
@@ -171,13 +172,13 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : 'translateY(0px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms' }} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : 'translateY(0px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: theme.palette.primary.white }} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
             <Toolbar sx={{ display: { xs: 'none', sm: 'flex' } }}>
               <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
                 {pagesTop.map((page) => (
-                  <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'}}}>
+                  <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'} }}>
                   {page.icon}
                       <Link
                         href={page.link}

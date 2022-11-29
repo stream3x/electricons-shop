@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Typography } from '@mui/material';
 import theme from '../theme';
+import { Store } from '../utils/Store';
 
-export default function Snackbars(props) {
-  const { snack: {message, severity} } = props;
+export default function Snackbars() {
+  const { state, dispatch } = useContext(Store);
+  const { snack, snack: {message, severity} } = state;
   const [open, setOpen] = useState(false);
 
   const handleClose = (event, reason) => {
@@ -21,8 +23,9 @@ export default function Snackbars(props) {
     setOpen(true);
     return () => {
       setOpen(false);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: '', severity: ''}});
     };
-  }, [message]);
+  }, []);
 
   const messageSnack = (
     <Typography variant="p" color={severity === 'success' ? theme.palette.primary.main : severity === 'error' ? theme.palette.error.main : severity === 'warning' ? theme.palette.warning.main : severity}>

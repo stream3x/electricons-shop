@@ -130,8 +130,8 @@ function HeroCarousel({ data }) {
           sx={{
             display: "flex",
             alignItems: "center",
-            height: 50,
-            pl: 2,
+            height: 150,
+            p: 3,
             bgcolor: "background.default"
           }}
         >

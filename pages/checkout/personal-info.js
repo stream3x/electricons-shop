@@ -29,8 +29,6 @@ import AddIcon from '@mui/icons-material/Add';
 
 export default function PersonalInfo() {
   const router = useRouter();
-  const [checkedPolicy, setCheckedPolicy] = useState(false);
-  const [checkedNewsletter, setCheckedNewsletter] = useState(false);
   const [company, setCompany] = useState(false);
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: {cartItems, personalInfo} } = state;
@@ -40,7 +38,6 @@ export default function PersonalInfo() {
     name: false,
     email: false,
     password: false,
-    policy: false,
     company: false,
     vatNumber: false
   });
@@ -50,8 +47,8 @@ export default function PersonalInfo() {
   });
   const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 
-  const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
-  const emptyUserInfo = userInfo === null;
+  const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
+  const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
 
   function orderLoginHandler() {
     setWillLogin(true);
@@ -81,18 +78,22 @@ export default function PersonalInfo() {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        name: !emptyUserInfo ? userInfo.name : formOutput.get('name'),
-        email: !emptyUserInfo ? userInfo.email : formOutput.get('email'),
-        birthday: !emptyUserInfo && userInfo.birthday ? userInfo.birthday : formOutput.get('birthday'),
-        newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
-        policy: formOutput.get('policy'),
+        _id: new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDay(),
+        name: formOutput.get('name'),
+        email: formOutput.get('email'),
+        birthday: formOutput.get('birthday'),
         company: formOutput.get('company'),
-        vatNumber: formOutput.get('vatNumber')
+        vatNumber: formOutput.get('vatNumber'),
       };
       setConfirmPassword({
         confirmError: false,
       });
       setErrors({ ...errors, name: false, firstName: false, lastName: false, email: false, password: false });
+      if(!emptyUserInfo) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added user info', severity: 'success'}});
+        router.push('/checkout/addresses');
+        return;
+      }
       if(formOutput.get('name') === '') {
         setErrors({ ...errors, firstName: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
@@ -108,12 +109,7 @@ export default function PersonalInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
         return;
       }
-      if(formData.policy !== 'policy') {
-        setErrors({ ...errors, policy: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'accept by checking the box', severity: 'error'}});
-        return;
-      }
-      dispatch({ type: 'PERSONAL_INFO', payload: formData});
+      dispatch({ type: 'PERSONAL_INFO', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
       setCompany(false);
       Cookies.set('personalInfo', JSON.stringify(formData));
@@ -188,18 +184,11 @@ export default function PersonalInfo() {
   };
 
   const handleEdit = () => {
-    if(personalInfo) {
       dispatch({ type: 'PEROSNAL_REMOVE'});
       Cookies.remove('perosnalInfo');
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
-    }
-    if(userInfo) {
-      dispatch({ type: 'USER_LOGOUT'});
-      Cookies.remove('userInfo');
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you logged out', severity: 'warning'}});
-    }    
   };
-  
+
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={0} />
@@ -233,7 +222,7 @@ export default function PersonalInfo() {
                 !emptyUserInfo ?
                 <TextField
                   margin="normal"
-                  defaultValue={!emptyUserInfo ? userInfo.name : ''}
+                  defaultValue={!emptyUserInfo && userInfo.name}
                   disabled={!emptyUserInfo && true}
                   fullWidth
                   required
@@ -241,13 +230,12 @@ export default function PersonalInfo() {
                   label="Name"
                   name="name"
                   autoComplete="name"
-                  error={errors.name}
                 />
                 : 
                 <TextField
                   margin="normal"
                   defaultValue={!emptyPersonalInfo ? personalInfo.name : ''}
-                  disabled={!emptyPersonalInfo && true}
+                  disabled={!emptyPersonalInfo}
                   fullWidth
                   required
                   id="name"
@@ -286,7 +274,6 @@ export default function PersonalInfo() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-                error={errors.email}
               />
               }
               {
@@ -299,7 +286,7 @@ export default function PersonalInfo() {
                   margin="normal"
                   type="date"
                   openTo="day"
-                  defaultValue={!emptyPersonalInfo ? personalInfo.birthday : "09/29/1984"}
+                  defaultValue={!emptyPersonalInfo ? personalInfo.birthday : ""}
                   disabled={!emptyPersonalInfo ? true : false}
                   fullWidth
                   id="date"
@@ -315,7 +302,7 @@ export default function PersonalInfo() {
                   margin="normal"
                   type="date"
                   openTo="day"
-                  defaultValue={!emptyUserInfo ? userInfo.birthday : "09/29/1984"}
+                  defaultValue={!emptyUserInfo ? userInfo.birthday : ""}
                   disabled={!emptyUserInfo ? true : false}
                   fullWidth
                   id="date"
@@ -328,7 +315,7 @@ export default function PersonalInfo() {
                 />
               }
               {
-                !company && !personalInfo.company &&
+                !company && emptyUserInfo &&
                 <Grid container space={2}>
                     <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
                       <Button onClick={() => setCompany(true)} size="small" startIcon={<AddIcon />}>
@@ -338,7 +325,7 @@ export default function PersonalInfo() {
                 </Grid>
               }
               {
-                company && !personalInfo.company &&
+                company &&
                 <Grid container space={2}>
                     <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
                       <Button onClick={() => setCompany(false)} size="small" startIcon={<AddIcon />}>
@@ -348,8 +335,7 @@ export default function PersonalInfo() {
                 </Grid>
               }
               {
-                  company &&
-                  emptyPersonalInfo &&
+                  company && emptyPersonalInfo &&
                   <React.Fragment>
                   <TextField
                       margin="normal"
@@ -435,77 +421,10 @@ export default function PersonalInfo() {
                     }
                   </FormControl>
                   </Grid>
-                  <Grid align="left" item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        value={checkedNewsletter !== undefined ? "newsletter" : ''}
-                        color="primary"
-                        name="newsletter"
-                        id="newsletter"
-                        onChange={(e) => setCheckedNewsletter(e.target.checked)}
-                     />
-                    }
-                    label="Sign up for our newsletter
-                    You may unsubscribe at any moment."
-                  />
-                  </Grid>
                 </Grid>
               }
               {
-                company || !emptyPersonalInfo && personalInfo.policy !== 'policy' &&
-                <Grid container space={2}>
-                  <Grid align="left" item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                        value={checkedPolicy ? "policy" : "not-agree"}
-                        color="primary"
-                        name="policy"
-                        required
-                        onChange={(e) => setCheckedPolicy(e.target.checked)}
-                        />
-                      }
-                      label='I agree to the terms and conditions and the privacy policy'
-                    />
-                    <FormHelperText sx={{color: 'red'}}>*</FormHelperText>
-                    <Box sx={{width: '100%'}}>
-                      {
-                        errors.policy && 
-                        <FormHelperText error>{snack.message ? snack.message : 'accept by checking the box'}</FormHelperText>
-                      }
-                    </Box>
-                  </Grid>
-                </Grid>
-              }
-              {
-                !company || !emptyUserInfo &&
-                <Grid container space={2}>
-                  <Grid align="left" item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                        value={checkedPolicy ? "policy" : "not-agree"}
-                        color="primary"
-                        name="policy"
-                        required
-                        onChange={(e) => setCheckedPolicy(e.target.checked)}
-                        />
-                      }
-                      label='I agree to the terms and conditions and the privacy policy'
-                    />
-                    <FormHelperText sx={{color: 'red'}}>*</FormHelperText>
-                    <Box sx={{width: '100%'}}>
-                      {
-                        errors.policy && 
-                        <FormHelperText error>{snack.message ? snack.message : 'accept by checking the box'}</FormHelperText>
-                      }
-                    </Box>
-                  </Grid>
-                </Grid>
-              }
-              {
-                company || emptyUserInfo && emptyPersonalInfo ?
+                company || emptyPersonalInfo &&
                 <Button
                   type="submit"
                   fullWidth
@@ -514,14 +433,16 @@ export default function PersonalInfo() {
                 >
                   Continue
                 </Button>
-                :
+              }
+              {
+                !emptyUserInfo &&
                 <Button
+                  type="submit"
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  onClick={handleEdit}
                 >
-                  Edit
+                  Continue
                 </Button>
               }
             </Box>
@@ -581,6 +502,17 @@ export default function PersonalInfo() {
                 </Grid>
               </Grid>
             </Box>
+          }
+          {
+            !emptyPersonalInfo &&
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
           }
           </Box>
         </Container>

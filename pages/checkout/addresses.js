@@ -6,15 +6,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
-import Link from '../../src/Link';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import FormHelperText from '@mui/material/FormHelperText';
-import { Divider } from '@mui/material';
 import theme from '../../src/theme';
 import { Store } from '../../src/utils/Store';
 import CheckoutLayout from '../../src/components/CheckoutLayout';
@@ -50,7 +46,7 @@ export default function Addresses() {
 
   const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
   const emptyAddresses = Object.keys(addresses).length === 0;
-  const emptyUserInfo = Object.keys(userInfo).length === 0;
+  const emptyUserInfo = userInfo === null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();

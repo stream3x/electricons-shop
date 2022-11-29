@@ -14,11 +14,12 @@ import Link from '../Link';
 import { Store } from '../utils/Store';
 
 export default function SwipeableCartDrawer({cart}) {
-  const [state, setState] = React.useState({
+  const [drawerState, setDrawerState] = React.useState({
     right: false
   });
   const match = useMediaQuery('(max-width: 600px)');
-  const { dispatch } = React.useContext(Store);
+  const { dispatch, state } = React.useContext(Store);
+  const { userInfo, cart: {cartItems, personalInfo, shipping, addresses, payment} } = state;
 
   function removeItemHandler(item) {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item});
@@ -26,8 +27,16 @@ export default function SwipeableCartDrawer({cart}) {
   }
 
   const subTotal = cart.cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
-  const tax = 33.33;
-  const shipping = 5;
+  const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : 50) : 0;
+  let taxCost;
+  let taxCount;
+  if(cartItems.length < 3) {
+    taxCost = '33.33%';
+    taxCount = 1.3333;
+  }else {
+    taxCost = '12%';
+    taxCount = 1.12;
+  }
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -38,7 +47,7 @@ export default function SwipeableCartDrawer({cart}) {
       return;
     }
 
-    setState({ ...state, [anchor]: open });
+    setDrawerState({ ...drawerState, [anchor]: open });
   };
 
   const list = (anchor) => (
@@ -131,7 +140,7 @@ export default function SwipeableCartDrawer({cart}) {
         <React.Fragment>
           <Box>
             <List sx={{ flexGrow: 1, p: 2 }}>
-              {['Subtotal', 'Tax', 'Total'].map((text, index) => (
+              {['Subtotal', 'Shipping', 'Tax', 'Total'].map((text, index) => (
                 <React.Fragment key={text}>
                   <ListItem disablePadding>
                       <ListItemText sx={{textAlign: 'left'}} primary={text} />
@@ -141,11 +150,15 @@ export default function SwipeableCartDrawer({cart}) {
                       }
                       {
                         text[index] === text[1] &&
-                        <ListItemText sx={{textAlign: 'right'}} primary={`${tax}%`} />
+                        <ListItemText sx={{textAlign: 'right'}} primary={shippingCost ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'} />
                       }
                       {
                         text[index] === text[2] &&
-                        <ListItemText sx={{textAlign: 'right'}} primary={`$${(subTotal + (subTotal * tax / 100)).toFixed(2)}`} />
+                        <ListItemText sx={{textAlign: 'right'}} primary={`${taxCost}`} />
+                      }
+                      {
+                        text[index] === text[3] &&
+                        <ListItemText sx={{textAlign: 'right'}} primary={`$${((subTotal + shippingCost) * taxCount).toFixed(2)}`} />
                       }
                   </ListItem>
                   <Divider />
@@ -192,7 +205,7 @@ export default function SwipeableCartDrawer({cart}) {
         }
           <SwipeableDrawer
             anchor={anchor}
-            open={state[anchor]}
+            open={drawerState[anchor]}
             onClose={toggleDrawer(anchor, false)}
             onOpen={toggleDrawer(anchor, true)}
           >
