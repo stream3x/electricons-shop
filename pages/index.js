@@ -22,10 +22,11 @@ export async function getStaticProps() {
   };
 }
 
-export default function Index(props) {  
+export default function Index(props) {
+
   return (
-      <Box sx={{ my: 4 }}>
-        <HeroCarousel data={props} />
-      </Box>
+    <Box sx={{ my: 4 }}>
+      <HeroCarousel data={props} />
+    </Box>
   );
 }

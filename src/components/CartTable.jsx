@@ -237,7 +237,6 @@ export default function CartTable({ cartItems }) {
     }
     setSelected([]);
     setSelectedItems([]);
-    
   };
 
   const handleClick = (event, name, item) => {

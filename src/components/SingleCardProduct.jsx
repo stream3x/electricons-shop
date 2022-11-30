@@ -7,13 +7,23 @@ import { CardActionArea } from '@mui/material';
 import Rating from '@mui/material/Rating';
 import { Box } from '@mui/system';
 import Link from '../Link';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function SingleCardProduct({product}) {
+  const [selected, setSelected] = React.useState('');
+
+  const handleLoading = (product) => {
+    setSelected(product._id);
+  };
 
   return (
     <Card sx={{ width: "100%", height: "100%" }}>
       <CardActionArea>
-        <Link href={`/product/${product.slug}`}>
+        <Link href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
+        {
+          product._id === selected &&
+          <CircularProgress sx={{position: 'absolute'}} size={20} />
+        }
           <CardMedia
             component="img"
             width="auto"

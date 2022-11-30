@@ -154,7 +154,7 @@ function HeroCarousel({ data }) {
           {
             category_products.map((step, index) => (
               <TabPanel key={step.title} value={activeStep} index={index} dir={theme.direction}>
-                <CardProduct loading products={carouselPoroduct} step={step}/>
+                <CardProduct loading products={carouselPoroduct} step={step} />
               </TabPanel>
             ))
           }

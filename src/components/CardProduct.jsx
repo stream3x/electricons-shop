@@ -8,19 +8,29 @@ import Rating from '@mui/material/Rating';
 import { Box } from '@mui/system';
 import Link from '../Link';
 import Image from 'next/image';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function CardProduct(props) {
-  const { products, step } = props; 
+  const { products, step } = props;
+  const [selected, setSelected] = React.useState('');
+
+  const handleLoading = (product) => {
+    setSelected(product._id);
+  };
 
   return (
     <Grid container spacing={2}>
     {
-      products.map(product => (
+      products.map((product, index) => (
         product.inWidget === 'hero' && product.category === step.category &&
           <Grid key={product.title} item xs={12} md={4}>
               <Card sx={{ width: "100%", height: "100%" }}>
-                  <CardActionArea>
-                    <Link href={`/product/${product.slug}`}>
+                  <CardActionArea sx={{position: 'relative'}}>
+                    <Link href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
+                    {
+                      product._id === selected &&
+                      <CircularProgress sx={{position: 'absolute'}} size={20} />
+                    }
                       <CardMedia sx={{position: 'relative!important', display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                         <Image
                           fill
@@ -69,6 +79,6 @@ export default function CardProduct(props) {
           </Grid>
           ))
         }
-    </Grid>
+        </Grid>
   );
 }

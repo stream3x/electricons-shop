@@ -197,7 +197,7 @@ export default function PersonalInfo() {
           <CssBaseline />
           {
             emptyUserInfo &&
-            <Box sx={{display: 'flex', flexWrap: 'wrap', mt: 5 }}>
+            <Box sx={{display: 'flex', flexWrap: 'nowrap', mt: 5 }}>
               <Button size="small" onClick={orderGestHandler} sx={{ color: theme.palette.secondary.main }}>
                   Order as a guest
               </Button>
