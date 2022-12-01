@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { red, grey, cyan, yellow } from '@mui/material/colors';
+import { red, green, grey, cyan, yellow } from '@mui/material/colors';
 
 // Create a theme instance.
 const theme = createTheme({
@@ -27,6 +27,9 @@ const theme = createTheme({
     badge: {
       main: grey[900],
       bgd: grey[300]
+    },
+    success: {
+      main: green.A100,
     },
     error: {
       main: red.A400,

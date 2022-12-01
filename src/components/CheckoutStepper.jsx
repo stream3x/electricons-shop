@@ -1,15 +1,18 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Link from '../Link';
 import { useMediaQuery } from '@mui/material';
+import { Store } from '../utils/Store';
 
 const steps = [{ tab: 'Personal info', slug: 'personal-info' }, { tab: 'Addresses', slug: 'addresses' }, { tab: 'Shipping', slug: 'shipping' }, { tab: 'Payment', slug: 'payment' }, { tab: 'Place Order', slug: 'placeorder' }];
 
 export default function CheckoutStepper({ activeStep = 0 }) {
   const match = useMediaQuery('(max-width: 600px)');
+  const { state, dispatch } = useContext(Store);
+  const { userInfo, cart: { personalInfo } } = state;
 
   const handleStep = (step) => {
     activeStep = step;
@@ -22,7 +25,7 @@ export default function CheckoutStepper({ activeStep = 0 }) {
           <Step sx={{ '& a': { textDecoration: 'none' }}} key={step.tab}>
             <Link noLinkStyle={false} href={{ pathname: `/checkout/${step.slug}` }} passHref>
               <StepButton color="inherit" onClick={handleStep(index)}>
-                {step.tab}
+                {userInfo && step.tab === 'Personal info' ? 'User info' : step.tab}
               </StepButton>
             </Link>
           </Step>

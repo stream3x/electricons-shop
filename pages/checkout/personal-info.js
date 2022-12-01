@@ -285,7 +285,6 @@ export default function PersonalInfo() {
                 <TextField
                   margin="normal"
                   type="date"
-                  openTo="day"
                   defaultValue={!emptyPersonalInfo ? personalInfo.birthday : ""}
                   disabled={!emptyPersonalInfo ? true : false}
                   fullWidth
@@ -301,7 +300,6 @@ export default function PersonalInfo() {
                 <TextField
                   margin="normal"
                   type="date"
-                  openTo="day"
                   defaultValue={!emptyUserInfo ? userInfo.birthday : ""}
                   disabled={!emptyUserInfo ? true : false}
                   fullWidth
@@ -424,7 +422,7 @@ export default function PersonalInfo() {
                 </Grid>
               }
               {
-                company || emptyPersonalInfo &&
+                company || emptyPersonalInfo && emptyUserInfo &&
                 <Button
                   type="submit"
                   fullWidth

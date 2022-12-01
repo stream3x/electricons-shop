@@ -65,7 +65,7 @@ export default function ProductTabs({ product }) {
           aria-label="full width tabs example"
         >
           <Tab label="Description" {...a11yProps(0)} />
-          <Tab label="Product Details" {...a11yProps(1)} />
+          <Tab label="Details" {...a11yProps(1)} />
           <Tab label="Reviews" {...a11yProps(2)} />
         </Tabs>
       </AppBar>

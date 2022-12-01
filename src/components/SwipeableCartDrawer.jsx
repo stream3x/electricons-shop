@@ -94,7 +94,7 @@ export default function SwipeableCartDrawer({cart}) {
         <List sx={{ overflowY: 'auto'}}>
           {cart.cartItems.map((item, index) => (
             <React.Fragment key={item._id}>
-              <ListItem disablePadding >
+              <ListItem sx={{pt: 1}} disablePadding>
                 <Grid container space={2}>
                   <Grid item xs={3} sx={{display: 'flex', alignItems: 'center'}}>
                     <Box
@@ -139,11 +139,11 @@ export default function SwipeableCartDrawer({cart}) {
         cart.cartItems.length !== 0 &&
         <React.Fragment>
           <Box>
-            <List sx={{ flexGrow: 1, p: 2 }}>
+            <List sx={{ flexGrow: 1, p: 2, '& hr:last-child': {display: 'none'}, '& .label-3 span': {fontWeight: 600} }}>
               {['Subtotal', 'Shipping', 'Tax', 'Total'].map((text, index) => (
                 <React.Fragment key={text}>
                   <ListItem disablePadding>
-                      <ListItemText sx={{textAlign: 'left'}} primary={text} />
+                      <ListItemText className={`label-${index}`} sx={{textAlign: 'left'}} primary={text} />
                       {
                         text[index] === text[0] &&
                         <ListItemText sx={{textAlign: 'right'}} primary={`$${subTotal}`} />
@@ -158,7 +158,7 @@ export default function SwipeableCartDrawer({cart}) {
                       }
                       {
                         text[index] === text[3] &&
-                        <ListItemText sx={{textAlign: 'right'}} primary={`$${((subTotal + shippingCost) * taxCount).toFixed(2)}`} />
+                        <ListItemText sx={{textAlign: 'right', '& .MuiTypography-root': {fontWeight: 600}}} primary={`$${((subTotal + shippingCost) * taxCount).toFixed(2)}`} />
                       }
                   </ListItem>
                   <Divider />

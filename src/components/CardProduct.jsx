@@ -29,7 +29,7 @@ export default function CardProduct(props) {
                     <Link href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
                     {
                       product._id === selected &&
-                      <CircularProgress sx={{position: 'absolute'}} size={20} />
+                      <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
                     }
                       <CardMedia sx={{position: 'relative!important', display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                         <Image
@@ -45,10 +45,10 @@ export default function CardProduct(props) {
                       {
                         product.inStock > 0 ? 
                         ( <Typography color="primary" gutterBottom variant="caption" component="p" align="center">
-                        Na stanju
+                        in Stock
                         </Typography>) :
                         ( <Typography color="secondary" gutterBottom variant="caption" component="p" align="center">
-                        nije na stanju
+                        out of Stock
                         </Typography>)
                       }
                       <Typography gutterBottom variant="h6" component="h3" align="center">

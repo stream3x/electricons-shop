@@ -23,12 +23,11 @@ export default function Snackbars() {
     setOpen(true);
     return () => {
       setOpen(false);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: '', severity: ''}});
     };
-  }, []);
+  }, [snack]);
 
   const messageSnack = (
-    <Typography variant="p" color={severity === 'success' ? theme.palette.primary.main : severity === 'error' ? theme.palette.error.main : severity === 'warning' ? theme.palette.warning.main : severity}>
+    <Typography variant="p" color={severity === 'success' ? theme.palette.success.main : severity === 'error' ? theme.palette.error.main : severity === 'warning' ? theme.palette.warning.main : severity}>
       {message ? message : 'Welcome to our Store'}
     </Typography>
   )

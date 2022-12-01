@@ -172,7 +172,7 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : 'translateY(0px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: theme.palette.primary.white }} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-80px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: theme.palette.primary.white }} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
             <Toolbar sx={{ display: { xs: 'none', sm: 'flex' } }}>

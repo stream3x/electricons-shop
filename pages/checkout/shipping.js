@@ -10,8 +10,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
-import Link from '../../src/Link';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import theme from '../../src/theme';
@@ -27,7 +25,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack, cart: {shipping, addresses} } = state;
+  const { snack, cart } = state;
   const [value, setValue] = React.useState('postexpress');
   const [city, setCity] = React.useState('');
   const [store, setStore] = React.useState('');
@@ -49,9 +47,9 @@ export default function Shipping() {
   };
  
   const shippingCost = 50;
-  const emptyShipping = Object.keys(shipping).length === 0;
-  const deliveryCity = addresses[Cookies.get('forInvoice')].city;
-  const deliveryAddress = addresses[Cookies.get('forInvoice')].address;
+  const emptyShipping = cart.shipping && Object.keys(cart.shipping).length === 0;
+  const deliveryCity = cart.addresses.city && addresses[Cookies.get('forInvoice')].city;
+  const deliveryAddress = cart.addresses.address && addresses[Cookies.get('forInvoice')].address;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -85,10 +83,10 @@ export default function Shipping() {
   };
 
   useEffect(() => {
-    !emptyShipping ? setValue(shipping.shippingMethod) : setValue('postexpress')
-    !emptyShipping ? setCity(shipping.shippingCity) : setCity('')
-    !emptyShipping ? setStore(shipping.store) : setStore('')
-  }, [shipping]);
+    !emptyShipping ? setValue(cart.shipping.shippingMethod) : setValue('postexpress');
+    !emptyShipping ? setCity(cart.shipping.shippingCity) : setCity('');
+    !emptyShipping ? setStore(cart.shipping.store) : setStore('');
+  }, [cart.shipping]);
 
   return (
     <CheckoutLayout>
@@ -247,11 +245,13 @@ export default function Shipping() {
                     If you would like to add a comment about your order, please write it in the field below.
                     </Typography>
                     <TextareaAutosize
+                      value={cart.shipping ? cart.shipping.comment : ''}
+                      disabled={cart.shipping && cart.shipping.comment}
                       name="shiping-comment"
                       maxRows={10}
                       minRows={4}
                       aria-label="empty textarea"
-                      style={{ width: '100%', resize: 'vertical' }}
+                      style={{ width: '100%', resize: 'vertical', padding: '8px' }}
                     />
                   </Grid>
                 </Grid>

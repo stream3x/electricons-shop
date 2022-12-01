@@ -44,8 +44,8 @@ export default function Addresses() {
     }
   };
 
-  const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
-  const emptyAddresses = Object.keys(addresses).length === 0;
+  const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
+  const emptyAddresses = addresses && Object.keys(addresses).length === 0;
   const emptyUserInfo = userInfo === null;
 
   const handleSubmit = async (event) => {
@@ -133,7 +133,7 @@ export default function Addresses() {
             >
             {
               !emptyAddresses &&
-                <RadioGroup name="radio-address-picker" defaultValue={`${addresses[addresses.length === 0 ? 0 : Number(Cookies.get('forInvoice')) - forInvoice].address}`} sx={{width: "100%"}}>
+                <RadioGroup name="radio-address-picker" defaultValue={emptyAddresses && addresses[addresses.length === 0 ? 0 : Number(Cookies.get('forInvoice')) - forInvoice].address} sx={{width: "100%"}}>
                   <Grid container space={2}>
                   {
                     !emptyAddresses ? addresses.map((address, index) => (
@@ -158,7 +158,7 @@ export default function Addresses() {
               }
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               {
-                !emptyUserInfo && addresses.length === 0 &&
+                !emptyUserInfo && addresses.length === 0 && emptyPersonalInfo &&
                 <Box>
                   <TextField
                     margin="normal"
@@ -204,7 +204,6 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     type="date"
-                    openTo="day"
                     defaultValue={!emptyPersonalInfo ? personalInfo.birthday : !emptyUserInfo ? userInfo.birthday : ''}
                     disabled
                     fullWidth
@@ -354,7 +353,6 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     type="date"
-                    openTo="day"
                     defaultValue={!emptyPersonalInfo ? personalInfo.birthday : "09/29/1984"}
                     disabled
                     fullWidth

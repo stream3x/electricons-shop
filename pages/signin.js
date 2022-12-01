@@ -55,6 +55,17 @@ export default function SignIn() {
         name: formOutput.get('name'),
         email: formOutput.get('email'),
         password: formOutput.get('password'),
+        isAdmin: {type: Boolean, required: true, default: false},
+        image: '',
+        birthday: '',
+        address: '',
+        phone: '',
+        country: '',
+        city: '',
+        postalcode: '',
+        company: '',
+        vatNumber: '',
+        newsletter: '',
       };
       if(formData.name === '' && formData.email === '') {
         setErrors({

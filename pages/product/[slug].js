@@ -112,7 +112,7 @@ color: theme.palette.text.secondary,
 export default function SingleProduct(props) {
   const { product } = props;
   const { state, dispatch } = useContext(Store);
-  const { cart: {cartItems} } = state;
+  const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
 
   if(!product) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
@@ -12,13 +12,13 @@ export default function Layout({ children }) {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTimeout(() => {
       setLoading(() => false);
     }, 3000);
-    setLoading(() => true);
     return () => {
       clearTimeout();
+      setLoading(() => true);
     };
   }, []);
 

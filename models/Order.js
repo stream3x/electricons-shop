@@ -21,17 +21,19 @@ const orderSchema = new mongoose.Schema(
     userInfo: {
       name: {type: String, required: true},
       email: {type: String, required: true},
+      image: {type: String, required: false},
       birthday: {type: Date, required: false},
       newsletter: {type: String, required: false},
       company: {type: String, required: false},
-      vatNumber: {type: Number, required: false}
+      vatNumber: {type: String, required: false},
+      isAdmin: {type: Boolean, required: false},
     },
     addresses: {
       address: {type: String, required: true},
-      phone: {type: Number, required: true},
+      phone: {type: String, required: true},
       country: {type: String, required: true},
       city: {type: String, required: true},
-      postalcode: {type: Number, required: true},
+      postalcode: {type: String, required: true},
     },
     shipping: {
       shippingMethod: {type: String, required: true},
@@ -42,6 +44,9 @@ const orderSchema = new mongoose.Schema(
     payment: {
       paymentMethod: {type: String, required: true}
     },
+    total: {type: Number, required: true},
+    shippingCost: {type: Number, required: true},
+    taxCost: {type: String, required: true},
     isPaid: {type: Boolean, required: true, default: false},
     isDelevered: {type: Boolean, required: true, default: false},
     paidAt: {type: Date},

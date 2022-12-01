@@ -69,9 +69,10 @@ export default function CartTotal() {
     taxCost = '12%'
     taxCount = 1.12;
   }
-  const total = (subTotal + shippingCost) * taxCount;
+  const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * taxCount;
 
   async function placeOrderHandler() {
+    console.log('user')
     if(emptyCartItems) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
       router.push('/');
@@ -114,6 +115,7 @@ export default function CartTotal() {
           authorization: `Bearer ${userInfo.token}`
         }
       })
+
       dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems});
       Cookies.remove('cartItems');
       Cookies.remove('checkedPolicy');
@@ -204,11 +206,11 @@ export default function CartTotal() {
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">shipping: </Typography>
-            <Typography variant="h6" component="span">{shippingCost ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
+            <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">tax <Typography variant="caption" component="span">(for less than three different products ordered)</Typography>: </Typography>
-            <Typography variant="h6" component="span">{taxCost ? taxCost : '_'}</Typography>
+            <Typography component="span">tax: </Typography>
+            <Typography variant="h6" component="span">{subTotal !== 0 ? taxCost : '_'}</Typography>
           </Typography>
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
@@ -272,7 +274,7 @@ export default function CartTotal() {
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Shipping method: </Typography>
-            <Typography variant="h6" component="span">{`${shipping.shippingMethod === 'store' ? 'pick up in-store' : 'delivery'}`}</Typography>
+            <Typography variant="h6" component="span">{shipping.shippingMethod === 'store' ? 'pick up in-store' : 'delivery'}</Typography>
           </Typography>
           {
             shipping.shippingMethod === 'store' &&
@@ -313,13 +315,15 @@ export default function CartTotal() {
                     onChange={(e) => setCheckedNewsletter(e.target.checked)}
                   />
                 }
-                label="Sign up for our newsletter
+                label="Sign up for our newsletter.
                 You may unsubscribe at any moment."
               />
             </Grid>
             <Grid align="left" item xs={12} sx={{ display: 'flex', flexWrap: 'wrap' }}>
-              <FormControlLabel
-                control={
+              <Box sx={{display: 'flex', alignItems: 'center'}}>
+                <FormControlLabel
+                  sx={{mr: 0}}
+                  control={
                   <Checkbox
                   value={checkedPolicy ? "policy" : "not-agree"}
                   color="primary"
@@ -328,15 +332,18 @@ export default function CartTotal() {
                   onChange={(e) => setCheckedPolicy(e.target.checked)}
                   />
                 }
-                label='I agree to the terms and conditions and the privacy policy'
-              />
-              <FormHelperText sx={{color: 'red'}}>*</FormHelperText>
-              <Box sx={{width: '100%'}}>
-                {
-                  errors.policy && 
-                  <FormHelperText error>{snack.message ? snack.message : 'accept by checking the box'}</FormHelperText>
-                }
+                />
+                <FormHelperText >
+                  <Typography component="span">I agree to the terms and conditions and the privacy policy</Typography>
+                  <Typography component="span" color="error"> *</Typography>
+                </FormHelperText>
               </Box>
+              {
+                errors.policy && 
+                <Box sx={{width: '100%'}}>
+                  <FormHelperText error>{snack.message ? snack.message : 'accept by checking the box'}</FormHelperText>
+                </Box>
+              }
             </Grid>
             <Grid item xs={12}>
               <Button

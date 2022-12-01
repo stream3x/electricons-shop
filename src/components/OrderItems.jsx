@@ -1,6 +1,4 @@
 import React, { useContext, useState } from 'react';
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -45,8 +43,8 @@ const headCells = [
 export default function OrderItems() {
   const { state } = useContext(Store);
   const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
 
   const total = subTotal;
@@ -60,7 +58,6 @@ export default function OrderItems() {
     setPage(0);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 

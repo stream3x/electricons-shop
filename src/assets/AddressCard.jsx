@@ -30,7 +30,9 @@ function MyFormControlLabel(props) {
     checked = radioGroup.value === props.value;
   }
 
-  return <StyledFormControlLabel checked={checked} {...props} />;
+  return (
+    <StyledFormControlLabel checked={checked} {...props} />
+  )
 }
 
 export default function AddressCard(props) {
