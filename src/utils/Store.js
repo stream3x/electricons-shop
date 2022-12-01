@@ -73,15 +73,6 @@ function reducer(state, action) {
     case 'PAYMENT': {
       return { ...state, cart: { ...state.cart, payment: action.payload } };
     }
-    case 'FETCH_REQUEST': {
-      return { ...state, loading: true, error: '' };
-    }
-    case 'FETCH_SUCCESS': {
-      return { ...state, loading: false, order: action.payload, error: '' };
-    }
-    case 'FETCH_FAIL': {
-      return { ...state, loading: false, error: action.payload };
-    }
     case 'SNACK_MESSAGE': {
       return { ...state, snack: action.payload };
     }

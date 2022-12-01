@@ -38,6 +38,7 @@ export default function PersonalInfo() {
     name: false,
     email: false,
     password: false,
+    birthday: false,
     company: false,
     vatNumber: false
   });
@@ -78,17 +79,19 @@ export default function PersonalInfo() {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
-        _id: new Date().getFullYear() + '-' + new Date().getMonth() + '-' + new Date().getDay(),
         name: formOutput.get('name'),
         email: formOutput.get('email'),
         birthday: formOutput.get('birthday'),
         company: formOutput.get('company'),
         vatNumber: formOutput.get('vatNumber'),
       };
+
       setConfirmPassword({
         confirmError: false,
       });
-      setErrors({ ...errors, name: false, firstName: false, lastName: false, email: false, password: false });
+
+      setErrors({ ...errors, name: false, email: false, birthday: false, password: false, company: false, vatNumber: false });
+
       if(!emptyUserInfo) {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added user info', severity: 'success'}});
         router.push('/checkout/addresses');
@@ -97,6 +100,16 @@ export default function PersonalInfo() {
       if(formOutput.get('name') === '') {
         setErrors({ ...errors, firstName: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
+        return;
+      }
+      if(formOutput.get('vatNumber') !== '' && formOutput.get('vatNumber').length < 9) {
+        setErrors({ ...errors, vatNumber: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'must contain exactly 9 numbers', severity: 'error'}});
+        return;
+      }
+      if(formOutput.get('vatNumber') !== '' && formOutput.get('vatNumber').length > 9) {
+        setErrors({ ...errors, vatNumber: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'must contain exactly 9 numbers', severity: 'error'}});
         return;
       }
       if(!pattern.test(formData.email)) {
@@ -109,11 +122,13 @@ export default function PersonalInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
         return;
       }
-      dispatch({ type: 'PERSONAL_INFO', payload: formData });
+      
+      console.log(formData, formOutput.get('vatNumber') !== '');
+      // dispatch({ type: 'PERSONAL_INFO', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
       setCompany(false);
-      Cookies.set('personalInfo', JSON.stringify(formData));
-      router.push('/checkout/addresses');
+      // Cookies.set('personalInfo', JSON.stringify(formData));
+      // router.push('/checkout/addresses');
 
   };
 
@@ -184,8 +199,8 @@ export default function PersonalInfo() {
   };
 
   const handleEdit = () => {
-      dispatch({ type: 'PEROSNAL_REMOVE'});
-      Cookies.remove('perosnalInfo');
+      dispatch({ type: 'PERSONAL_REMOVE'});
+      Cookies.remove('personalInfo');
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
   };
 
@@ -216,57 +231,26 @@ export default function PersonalInfo() {
             }}
           >
           {
-            !willLogin &&
-            <Box component="form" onSubmit={willRegister ?handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-              {
-                !emptyUserInfo ?
-                <TextField
-                  margin="normal"
-                  defaultValue={!emptyUserInfo && userInfo.name}
-                  disabled={!emptyUserInfo && true}
-                  fullWidth
-                  required
-                  id="name"
-                  label="Name"
-                  name="name"
-                  autoComplete="name"
-                />
-                : 
-                <TextField
-                  margin="normal"
-                  defaultValue={!emptyPersonalInfo ? personalInfo.name : ''}
-                  disabled={!emptyPersonalInfo}
-                  fullWidth
-                  required
-                  id="name"
-                  label="Name"
-                  name="name"
-                  autoComplete="name"
-                  error={errors.name}
-                />
-              }
-              {
-                errors.name && 
-                <FormHelperText error>{snack.message ? snack.message : 'please fill the name'}</FormHelperText>
-              }
-              {
-                !emptyPersonalInfo ?
-                <TextField
-                margin="normal"
-                defaultValue={!emptyPersonalInfo ? personalInfo.email : ''}
-                disabled={!emptyPersonalInfo && true}
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                error={errors.email}
-              />
-              : 
+            !emptyUserInfo &&
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
-                defaultValue={!emptyUserInfo ? userInfo.email : ''}
+                defaultValue={!emptyUserInfo && userInfo.name}
+                disabled={!emptyUserInfo && true}
+                fullWidth
+                required
+                id="name"
+                label="Name"
+                name="name"
+                autoComplete="name"
+              />
+              {
+                errors.name && 
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+              }
+              <TextField
+                margin="normal"
+                defaultValue={!emptyUserInfo && userInfo.email}
                 disabled={!emptyUserInfo && true}
                 required
                 fullWidth
@@ -275,28 +259,96 @@ export default function PersonalInfo() {
                 name="email"
                 autoComplete="email"
               />
-              }
               {
                 errors.email && 
-                <FormHelperText error>{snack.message ? snack.message : 'email is not valid'}</FormHelperText>
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
               }
+              <TextField
+                margin="normal"
+                type="date"
+                defaultValue={!emptyUserInfo ? userInfo.birthday : ""}
+                disabled={!emptyUserInfo ? true : false}
+                fullWidth
+                id="date"
+                label="Birthday (optional)"
+                name="birthday"
+                autoComplete="birthday"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <TextField
+                margin="normal"
+                defaultValue={!emptyUserInfo && userInfo.company}
+                disabled={!emptyUserInfo && true}
+                fullWidth
+                id="company"
+                label="Company (optional)"
+                name="company"
+                autoComplete="company"
+              />
               {
-                !emptyPersonalInfo ?
-                <TextField
-                  margin="normal"
-                  type="date"
-                  defaultValue={!emptyPersonalInfo ? personalInfo.birthday : ""}
-                  disabled={!emptyPersonalInfo ? true : false}
-                  fullWidth
-                  id="date"
-                  label="Birthday (optional)"
-                  name="birthday"
-                  autoComplete="birthday"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                : 
+                errors.company && 
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+              }
+              <TextField
+                margin="normal"
+                type="number"
+                defaultValue={!emptyUserInfo && userInfo.vatNumber}
+                disabled={!emptyUserInfo && true}
+                fullWidth
+                id="vatNumber"
+                label="VAT Number (optional)"
+                name="vatNumber"
+                autoComplete="vatNumber"
+              />
+              {
+                errors.vatNumber && 
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+              }
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
+              >
+                Continue
+              </Button>
+            </Box>
+          }
+          {
+            emptyUserInfo &&
+            <Box component="form" onSubmit={willRegister ? handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+              <TextField
+                margin="normal"
+                defaultValue={!emptyUserInfo ? userInfo.name : ''}
+                disabled={!emptyUserInfo && true}
+                fullWidth
+                required
+                id="name"
+                label="Name"
+                name="name"
+                autoComplete="name"
+              />
+              {
+                errors.name && 
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+              }
+              <TextField
+                margin="normal"
+                defaultValue={!emptyUserInfo && userInfo.email}
+                disabled={!emptyUserInfo && true}
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+              />
+              {
+                errors.email && 
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+              }
                 <TextField
                   margin="normal"
                   type="date"
@@ -311,71 +363,35 @@ export default function PersonalInfo() {
                     shrink: true,
                   }}
                 />
-              }
-              {
-                !company && emptyUserInfo &&
-                <Grid container space={2}>
-                    <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
-                      <Button onClick={() => setCompany(true)} size="small" startIcon={<AddIcon />}>
-                        Add Company Info
-                      </Button>
-                    </Grid>
-                </Grid>
-              }
-              {
-                company &&
-                <Grid container space={2}>
-                    <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
-                      <Button onClick={() => setCompany(false)} size="small" startIcon={<AddIcon />}>
-                        cencel Company Info
-                      </Button>
-                    </Grid>
-                </Grid>
-              }
-              {
-                  company && emptyPersonalInfo &&
-                  <React.Fragment>
-                  <TextField
-                      margin="normal"
-                      defaultValue={personalInfo.company ? personalInfo.company : ''}
-                      disabled={personalInfo.company && true}
-                      fullWidth
-                      required
-                      id="company"
-                      label="Company"
-                      name="company"
-                      autoComplete="company"
-                    />     
-                    {
-                      errors.company && 
-                      <FormHelperText error>{snack.message ? snack.message : 'company required'}</FormHelperText>
-                    }           
-                    <TextField
-                      margin="normal"
-                      type="number"
-                      defaultValue={personalInfo ? personalInfo.vatNumber : ''}
-                      disabled={personalInfo.vatNumber && true}
-                      fullWidth
-                      required
-                      id="vatNumber"
-                      label="VAT Number"
-                      name="vatNumber"
-                    />         
-                    {
-                      errors.vatNumber && 
-                      <FormHelperText error>{snack.message ? snack.message : 'VAT Number required'}</FormHelperText>
-                    }    
-                  </React.Fragment>
-              }
-              {
-                emptyUserInfo && emptyPersonalInfo &&
+                <TextField
+                  margin="normal"
+                  defaultValue={personalInfo.company ? personalInfo.company : ''}
+                  disabled={personalInfo.company && true}
+                  fullWidth
+                  required
+                  id="company"
+                  label="Company (optional)"
+                  name="company"
+                  autoComplete="company"
+                />
+                 <TextField
+                  margin="normal"
+                  type="number"
+                  defaultValue={personalInfo ? personalInfo.vatNumber : ''}
+                  disabled={personalInfo.vatNumber && true}
+                  fullWidth
+                  id="vatNumber"
+                  label="VAT Number (optional)"
+                  name="vatNumber"
+                />         
+                {
+                  errors.vatNumber && 
+                  <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+                }
                 <Typography sx={{pt: 3, pb: 2}} align="left" variant='h6' component="p">
                   Create an account (optional)
                   <Typography variant='caption' component="p">And save time on your next order!</Typography>
                 </Typography>
-              }
-              {
-                emptyUserInfo && emptyPersonalInfo &&
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextField
@@ -420,30 +436,16 @@ export default function PersonalInfo() {
                   </FormControl>
                   </Grid>
                 </Grid>
-              }
-              {
-                company || emptyPersonalInfo && emptyUserInfo &&
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
                 >
                   Continue
                 </Button>
-              }
-              {
-                !emptyUserInfo &&
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Continue
-                </Button>
-              }
             </Box>
+            
           }
           {
             willLogin &&
@@ -512,6 +514,24 @@ export default function PersonalInfo() {
               Edit
             </Button>
           }
+          {
+              !company ?
+              <Grid container space={2}>
+                  <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
+                    <Button onClick={() => setCompany(true)} size="small" startIcon={<AddIcon />}>
+                      Add Company Info
+                    </Button>
+                  </Grid>
+              </Grid>
+              :
+              <Grid container space={2}>
+                  <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
+                    <Button onClick={() => setCompany(false)} size="small" startIcon={<AddIcon />}>
+                      cencel Company Info
+                    </Button>
+                  </Grid>
+              </Grid>
+            }
           </Box>
         </Container>
       </ThemeProvider>
