@@ -10,28 +10,14 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import Link from '../src/Link';
 import axios from 'axios';
 import { Store } from '../src/utils/Store';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
-import Snackbars from '../src/assets/Snackbars';
 import FormHelperText from '@mui/material/FormHelperText';
 import theme from '../src/theme';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://electricons.explodemarket.com">
-        Electricons
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 export default function LogIn() {
   const router = useRouter();
@@ -67,6 +53,7 @@ export default function LogIn() {
       }
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
+    setErrors({ ...errors, email: '', password: '' })
   };
 
   return (
@@ -130,21 +117,20 @@ export default function LogIn() {
             >
               Sign In
             </Button>
-            <Grid container>
+            <Grid sx={{display: 'flex', flexWrap: 'wrap'}} container spacing={2}>
               <Grid item xs>
                 <Link href='/forgot-password' variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
-              <Grid item>
+              <Grid sx={{width: {xs: '100%', sm: 'auto'}}} item>
                 <Link href='/signin' variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  Don't have an account? Sign Up
                 </Link>
               </Grid>
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );

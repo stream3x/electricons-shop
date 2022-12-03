@@ -235,7 +235,7 @@ export default function SingleProduct(props) {
           }
           <Item>
             <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: {xs: 'center', sm: 'normal'} }}>
-              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', '& > a': {textDecoration: 'none'} }}>
+              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', '& > a': {textDecoration: 'none', width: {xs:'100%', sm: 'auto'}} }}>
               {
                 product.inStock !== 0 ? (cartItems.find(item => item._id === product._id) ? 
                   <Link noLinkStyle href="/cart" passHref>

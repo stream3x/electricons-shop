@@ -21,6 +21,15 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import FormHelperText from '@mui/material/FormHelperText';
+import { styled } from '@mui/material/styles';
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.default,
+  border: 'thin solid lightGrey',
+  borderLeft: '3px solid black',
+}));
 
 export default function Shipping() {
   const router = useRouter();
@@ -112,33 +121,33 @@ export default function Shipping() {
                         value={value}
                         onChange={handleChange}
                         >
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
-                          <FormControlLabel sx={{width: '200px'}} color="secondary" value="postexpress" control={<Radio />} label="POST Express" />
-                          <Typography>
-                            Delivery in 2 - 3 days!
-                          </Typography>
-                          <Typography>
-                            {shippingCost ? `$${shippingCost}` : 'Free'}
-                          </Typography>
-                          </Box>
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
-                            <FormControlLabel sx={{width: '200px'}} value="dhl" control={<Radio />} label="DHL" />
-                            <Typography align="left">
-                              Delivery in 5 - 7 days!
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
+                            <FormControlLabel sx={{width: '200px'}} color="secondary" value="postexpress" control={<Radio />} label="POST Express" />
+                            <Typography component="span" variant="body2">
+                              Delivery in 2 - 3 days!
                             </Typography>
-                            <Typography>
+                            <Typography component="span" variant="body">
+                              {shippingCost ? `$${shippingCost}` : 'Free'}
+                            </Typography>
+                          </LabelButton>
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
+                            <FormControlLabel sx={{width: '200px'}} value="dhl" control={<Radio />} label="DHL" />
+                            <Typography component="span" variant="body2" align="left">
+                              Delivery in 2 - 5 days!
+                            </Typography>
+                            <Typography component="span" variant="body">
                               {shippingCost ? `$${shippingCost * 1.8}` : 'Free'}
                             </Typography>
-                          </Box>
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          </LabelButton>
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
                             <FormControlLabel sx={{width: '200px'}} value="store" control={<Radio />} label="Electricons Store" />
-                            <Typography>
+                            <Typography component="span" variant="body2">
                               Pick up in-store
                             </Typography>
-                            <Typography>
-                              {'Free'}
+                            <Typography component="span" variant="body">
+                              Free
                             </Typography>
-                          </Box>
+                          </LabelButton>
                         </RadioGroup>
                       </FormControl>
                       {

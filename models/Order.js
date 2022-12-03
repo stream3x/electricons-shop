@@ -47,6 +47,7 @@ const orderSchema = new mongoose.Schema(
     total: {type: Number, required: true},
     shippingCost: {type: Number, required: true},
     taxCost: {type: String, required: true},
+    orderNumber: {type: String, required: true},
     isPaid: {type: Boolean, required: true, default: false},
     isDelevered: {type: Boolean, required: true, default: false},
     paidAt: {type: Date},

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -26,11 +26,12 @@ const bull = (
 );
 
 const randomNumber = getRandomInt(1, 999999);
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min);
-}
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+const date = new Date().getFullYear();
 
 export default function CartTotal() {
   const { state, dispatch } = useContext(Store);
@@ -45,11 +46,22 @@ export default function CartTotal() {
     policy: false,
   });
 
+  const [orderNumber, setOrderNumber] = useState('');
+
+  useEffect(() => {
+    
+    setOrderNumber(
+      `${date}-${randomNumber}`
+    )
+  }, [date]);
+  
+
   const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
   const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
   const emptyAddresses = Object.keys(addresses).length === 0;
   const emptyShipping = Object.keys(shipping).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
+  const emptyPayment = payment && Object.keys(payment).length === 0;
 
   const handleLoading = () => {
     setLoading(true);
@@ -58,7 +70,7 @@ export default function CartTotal() {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  
+  console.log(emptyAddresses, emptyCartItems, emptyPersonalInfo, emptyShipping, emptyPayment, emptyUserInfo)
   const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : 50) : 0;
   let taxCost;
   let taxCount;
@@ -72,7 +84,6 @@ export default function CartTotal() {
   const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * taxCount;
 
   async function placeOrderHandler() {
-    console.log('user')
     if(emptyCartItems) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
       router.push('/');
@@ -89,8 +100,13 @@ export default function CartTotal() {
       return;
     }
     if(emptyShipping) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method step has not been completed', severity: 'warning'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method has not been completed', severity: 'warning'}});
       router.push('/checkout/shipping');
+      return;
+    }
+    if(emptyPayment) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the payment method has not been completed', severity: 'warning'}});
+      router.push('/checkout/payment');
       return;
     }
     if(!checkedPolicy) {
@@ -103,20 +119,20 @@ export default function CartTotal() {
       Cookies.set('checkedPolicy', checkedPolicy);
       const { data } = await axios.post('/api/orders', {
         orderItems: cartItems,
-        userInfo: userInfo,
+        userInfo,
         addresses: addresses[Cookies.get('forInvoice') ? JSON.parse(Cookies.get('forInvoice')) : 0],
         shipping,
         payment,
         total,
         shippingCost,
-        taxCost
+        taxCost,
+        orderNumber
       }, {
         headers: {
           authorization: `Bearer ${userInfo.token}`
         }
       })
 
-      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems});
       Cookies.remove('cartItems');
       Cookies.remove('checkedPolicy');
       Cookies.remove('addresses');
@@ -125,6 +141,7 @@ export default function CartTotal() {
       Cookies.remove('payment');
       setLoading(false);
       router.push(`/order/${data._id}`);
+      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems});
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.response ? error.response.data.message : error.message, severity: 'error' }});
@@ -132,8 +149,6 @@ export default function CartTotal() {
   }
 
   async function placeGuestOrderHandler() {
-    console.log('guest')
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: '', severity: ''}});
     if(emptyCartItems) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
       router.push('/');
@@ -154,6 +169,11 @@ export default function CartTotal() {
       router.push('/checkout/shipping');
       return;
     }
+    if(emptyPayment) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the payment method has not been completed', severity: 'warning'}});
+      router.push('/checkout/payment');
+      return;
+    }
     if(!checkedPolicy) {
       setErrors({ ...errors, policy: true});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'accept by checking the box', severity: 'error'}});
@@ -169,13 +189,13 @@ export default function CartTotal() {
         payment,
         total,
         shippingCost,
-        taxCost
+        taxCost,
+        orderNumber
       }, {
         headers: {
           "Content-Type": "application/json"
         }
       })
-      dispatch({ type: 'CART_REMOVE_ITEM' });
       Cookies.remove('cartItems');
       Cookies.remove('personalInfo');
       Cookies.remove('addresses');
@@ -184,6 +204,7 @@ export default function CartTotal() {
       Cookies.remove('payment');
       setLoading(false);
       router.push(`/guest/${data._id}`);
+      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems });
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.response ? error.response.data.message : error.message, severity: 'error' }});
@@ -262,7 +283,7 @@ export default function CartTotal() {
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">order number: </Typography>
-            <Typography variant="h6" component="span">{`${new Date().getFullYear()}-${randomNumber}`} </Typography>
+            <Typography variant="h6" component="span">{orderNumber}</Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">date: </Typography>
@@ -270,7 +291,7 @@ export default function CartTotal() {
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Payment method: </Typography>
-            <Typography variant="h6" component="span">{`${payment.paymentMethod}`}</Typography>
+            <Typography variant="h6" component="span">{`${!emptyPayment ? payment.paymentMethod : 'not set'}`}</Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Shipping method: </Typography>

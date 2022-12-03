@@ -33,12 +33,9 @@ export default function Addresses() {
     phone: false
   });
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
-  const [checked, setChecked] = React.useState(false);
 
   const handleChange = (event) => {
-    setChecked(event.target.checked);
-    console.log(forInvoice)
-    if(checked) {
+    if(event.target.checked) {
       setForInvoice(() => event.target.value);
       Cookies.set('forInvoice', forInvoice);
     }

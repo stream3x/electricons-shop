@@ -7,6 +7,9 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import theme from '../../src/theme';
 import styled from '@emotion/styled';
 import CheckIcon from '@mui/icons-material/Check';
+import Fab from '@mui/material/Fab';
+import CircularProgress from '@mui/material/CircularProgress';
+import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -17,10 +20,60 @@ const LabelButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function GuestOrder() {
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const timer = React.useRef();
+
+  const buttonSx = {
+    ...(success && {
+      bgcolor: theme.palette.success,
+    }),
+  };
+
+  React.useEffect(() => {
+    handleButtonClick();
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+      timer.current = window.setTimeout(() => {
+        setSuccess(true);
+        setLoading(false);
+      }, 2000);
+    }
+  };
+
   return (
       <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
-        <LabelButton sx={{width: '100%', my: 5}} startIcon={<CheckIcon />}>
-          <Typography sx={{m: 0, p: 1}} color="success" variant="h5" component="h1" gutterBottom>
+        <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+          <Box sx={{ m: 1, position: 'relative' }}>
+            <Fab
+              aria-label="save"
+              color="primary"
+              sx={buttonSx}
+              onClick={handleButtonClick}
+            >
+              {success ? <CheckIcon /> : <CartIcon />}
+            </Fab>
+            {loading && (
+              <CircularProgress
+                size={68}
+                sx={{
+                  color: theme.palette.success,
+                  position: 'absolute',
+                  top: -6,
+                  left: -6,
+                  zIndex: 1,
+                }}
+              />
+            )}
+            </Box>
+          <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
             Thank you. Your order has been received.
           </Typography>
         </LabelButton>

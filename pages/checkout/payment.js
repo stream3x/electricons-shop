@@ -19,26 +19,31 @@ import { Store } from '../../src/utils/Store';
 import CheckoutLayout from '../../src/components/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
 import { FormControl } from '@mui/material';
+import { styled } from '@mui/material/styles';
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.default,
+  border: 'thin solid lightGrey',
+  borderLeft: '3px solid black',
+}));
 
 export default function Payment() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
-  const [value, setValue] = React.useState('PayPal');
+  const { cart: {payment} } = state;
+  const [value, setValue] = useState('');
+
+  const emptyPayment = payment && Object.keys(payment).length === 0;
 
   const handleChange = (event) => {
     setValue(event.target.value);
   };
 
   useEffect(() => {
-    payment ? setValue(payment.paymentMethod) : setValue('PayPal')
-  }, [payment]);
-  
-
-  const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
-  const emptyAddresses = Object.keys(addresses).length === 0;
-  const emptyShipping = Object.keys(shipping).length === 0;
-  const emptyCartItems = Object.keys(cartItems).length === 0;
+    !emptyPayment ? setValue(payment.paymentMethod) : setValue(() => 'Dina Card')
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -76,18 +81,18 @@ export default function Payment() {
                         value={value}
                         onChange={handleChange}
                         >
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
                           <FormControlLabel sx={{width: '200px'}} color="secondary" value="Pay by Check" control={<Radio />} label="Pay by Check" />
-                          </Box>
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          </LabelButton>
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
                           <FormControlLabel sx={{width: '200px'}} color="secondary" value="Master Card" control={<Radio />} label="Pay by Master Card" />
-                          </Box>
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          </LabelButton>
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
                           <FormControlLabel sx={{width: '200px'}} color="secondary" value="Dina Card" control={<Radio />} label="Pay by Dina Card" />
-                          </Box>
-                          <Box sx={{backgroundColor: theme.palette.secondary.borderColor, px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', my: 1}}>
+                          </LabelButton>
+                          <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
                             <FormControlLabel sx={{width: '200px'}} value="PayPal" control={<Radio />} label="PayPal" />
-                          </Box>
+                          </LabelButton>
                         </RadioGroup>
                       </FormControl>
                   </Grid>
