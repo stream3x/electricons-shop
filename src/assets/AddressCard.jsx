@@ -43,7 +43,7 @@ export default function AddressCard(props) {
       <Card variant="outlined">
         <ThemeProvider theme={theme}>
           <CardActions>
-              <MyFormControlLabel value={`${address.address}`} control={<Radio />}/>
+              <MyFormControlLabel value={`${index}`} control={<Radio />}/>
           </CardActions>
           <CardContent>
             <Typography color="secondary" sx={{ mb: 2 }} variant="h6" component="h2">

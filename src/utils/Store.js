@@ -82,11 +82,12 @@ function reducer(state, action) {
     case 'USER_LOGOUT': {
       return { ...state, userInfo: null, snack: action.payload };
     }
-    case 'PEROSNAL_REMOVE': {
+    case 'PERSONAL_REMOVE': {
       return { ...state, cart: { ...state.cart, personalInfo: {} } };
     }
     case 'ADDRESSES_REMOVE': {
-      return { ...state, cart: { ...state.cart, addresses: {} } };
+      Cookies.remove('addresses');
+      return { ...state, cart: { ...state.cart, addresses: [] } };
     }
     default:
       return { ...state, snack: {message: '', severity: ''} };

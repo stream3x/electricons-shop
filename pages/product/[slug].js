@@ -31,6 +31,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
 import ProductTabs from '../../src/components/ProductTabs';
 import LoadingButton from '@mui/lab/LoadingButton';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -234,12 +235,19 @@ export default function SingleProduct(props) {
           }
           <Item>
             <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: {xs: 'center', sm: 'normal'} }}>
-              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', '& > a': {textDecoration: 'none'} }}>
               {
-                product.inStock !== 0 ? 
-                <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={addToCartHandler} startIcon={<CartIcon />}>
-                  Add To Cart
-                </AddToCartButton>
+                product.inStock !== 0 ? (cartItems.find(item => item._id === product._id) ? 
+                  <Link noLinkStyle href="/cart" passHref>
+                    <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" startIcon={<VisibilityIcon />}>
+                      View Cart
+                    </AddToCartButton>
+                  </Link>
+                : 
+                  <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={addToCartHandler} startIcon={<CartIcon />}>
+                    Add To Cart
+                  </AddToCartButton>
+                )
                 :
                 <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} sx={{cursor: 'no-drop'}} startIcon={<RemoveShoppingCartIcon />}>
                   no Stock
