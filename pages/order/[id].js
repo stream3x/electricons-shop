@@ -12,6 +12,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { Store } from '../../src/utils/Store';
+import theme from '../../src/theme';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
