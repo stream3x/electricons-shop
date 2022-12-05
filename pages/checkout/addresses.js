@@ -23,7 +23,6 @@ export default function Addresses() {
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: { personalInfo, addresses} } = state;
-  const [forInvoice, setForInvoice] = useState(0);
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -32,7 +31,8 @@ export default function Addresses() {
     phone: false
   });
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
+  const [forInvoice, setForInvoice] = useState(Number(Cookies.get('forInvoice') ? Number(Cookies.get('forInvoice')) : 0));
 
   const handleNext = () => {
     router.push('/checkout/shipping');
@@ -40,16 +40,15 @@ export default function Addresses() {
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
-    console.log(forInvoice)
     if(checked) {
-      setForInvoice(() => event.target.value);
+      setForInvoice(() => Number(event.target.value))
+      Cookies.set('forInvoice', Number(event.target.value));
     }
-    Cookies.set('forInvoice', forInvoice);
   };
 
   const handleChangeInvoice = (event) => {
-    setForInvoice(() => event.target.value);
-    Cookies.set('forInvoice', JSON.stringify(Number(event.target.value)));
+    setForInvoice(() => Number(event.target.value))
+    Cookies.set('forInvoice', Number(event.target.value) - 1);
   };
 
   const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
@@ -141,12 +140,12 @@ export default function Addresses() {
             >
               {
                 !emptyAddresses &&
-                <RadioGroup name="radio-address-picker" value={!emptyAddresses ? addresses[forInvoice].address : addresses[Cookies.get('forInvoice')].address} sx={{width: "100%"}} onChange={handleChangeInvoice}>
+                <RadioGroup name="radio-address-picker" value={!emptyAddresses ? Number(forInvoice) : 0} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                   <Grid container space={2}>
                   {
                     !emptyAddresses ? addresses.map((address, index) => (
                       <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
-                        <AddressCard index={index} address={address} personalInfo={personalInfo} name={userInfo && userInfo.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
+                        <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInfo && userInfo.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
                       </Grid>
                     ))
                     : null
@@ -337,7 +336,7 @@ export default function Addresses() {
                       sx={{width: '100%'}}
                       control={
                         <Checkbox
-                          value={!addresses ? addresses.length : forInvoice}
+                          value={!emptyAddresses ? addresses.length : forInvoice}
                           color="primary"
                           name="invoice"
                           id="invoice"
