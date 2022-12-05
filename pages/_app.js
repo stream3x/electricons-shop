@@ -9,6 +9,7 @@ import createEmotionCache from '../src/createEmotionCache';
 import Layout from '../src/layout/Layout';
 import '../src/globals.css';
 import { StoreProvider } from '../src/utils/Store';
+import { Analytics } from '@vercel/analytics/react';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -27,6 +28,7 @@ export default function MyApp(props) {
         <StoreProvider>
           <Layout>
             <Component {...pageProps} />
+            <Analytics />
           </Layout>
         </StoreProvider>
       </ThemeProvider>
