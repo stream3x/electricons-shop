@@ -101,10 +101,10 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
 
 export default function Header(props) {
   const { isVisible } = props;
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [cartAnchorEl, setCartAnchorEl] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [anchorElDropdown, setAnchorElDropdown] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [cartAnchorEl, setCartAnchorEl] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [anchorElDropdown, setAnchorElDropdown] = useState(null);
   const matches = useMediaQuery('(min-width: 600px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
@@ -131,7 +131,7 @@ export default function Header(props) {
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
     Cookies.remove('userInfo');
     router.push('/');
-  };
+  };  
 
   const openDropdown = Boolean(anchorElDropdown);
   const isMenuOpen = Boolean(anchorEl);

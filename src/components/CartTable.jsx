@@ -209,7 +209,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function CartTable({ cartItems }) {
+export default function CartTable({ cartitems }) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
@@ -229,8 +229,8 @@ export default function CartTable({ cartItems }) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = cartItems.map((n) => n.title);
-      const newSelectedItems = cartItems.map((n) => n);
+      const newSelected = cartitems.map((n) => n.title);
+      const newSelectedItems = cartitems.map((n) => n);
       setSelected(newSelected);
       setSelectedItems(newSelectedItems);
       return;
@@ -282,7 +282,7 @@ export default function CartTable({ cartItems }) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  if(cartItems.length === 0) {
+  if(cartitems.length === 0) {
     return (
       <Box sx={{ flexGrow: 1, my: 4  }}>
         <Typography gutterBottom variant="h6" component="h3" textAlign="center">
@@ -316,12 +316,12 @@ export default function CartTable({ cartItems }) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={cartItems && cartItems.length}
+              rowCount={cartitems && cartitems.length}
             />
             <TableBody>
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.slice().sort(getComparator(order, orderBy)) */}
-              {cartItems && stableSort(cartItems, getComparator(order, orderBy))
+              {cartitems && stableSort(cartitems, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.title);
@@ -403,7 +403,7 @@ export default function CartTable({ cartItems }) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={cartItems && cartItems.length}
+          count={cartitems && cartitems.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

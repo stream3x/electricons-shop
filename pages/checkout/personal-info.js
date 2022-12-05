@@ -450,7 +450,7 @@ export default function PersonalInfo() {
             </Box>
           }
           {
-            emptyPersonalInfo && !emptyUserInfo &&
+            !emptyUserInfo &&
             <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
@@ -483,7 +483,7 @@ export default function PersonalInfo() {
             </Box>
           }
           {
-            !emptyPersonalInfo &&
+            !emptyPersonalInfo && emptyUserInfo &&
             <Button
               fullWidth
               variant="contained"
@@ -496,7 +496,6 @@ export default function PersonalInfo() {
           {
             !emptyUserInfo &&
             <Button
-              type="number"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}

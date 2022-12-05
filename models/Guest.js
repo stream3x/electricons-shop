@@ -21,7 +21,6 @@ const guestSchema = new mongoose.Schema(
       name: {type: String, required: true},
       email: {type: String, required: true},
       birthday: {type: String, required: false},
-      newsletter: {type: String, required: false},
       company: {type: String, required: false},
       vatNumber: {type: String, required: false}
     },
@@ -34,6 +33,7 @@ const guestSchema = new mongoose.Schema(
     },
     shipping: {
       shippingMethod: {type: String, required: true},
+      shippingAddress: {type: String, required: false},
       shippingCity: {type: String, required: false},
       store: {type: String, required: false},
       comment: {type: String, required: false},
@@ -45,6 +45,7 @@ const guestSchema = new mongoose.Schema(
     shippingCost: {type: Number, required: true},
     taxCost: {type: String, required: true},
     orderNumber: {type: String, required: true},
+    checkedNewsletter: {type: Boolean, required: true},
     isPaid: {type: Boolean, required: true, default: false},
     isDelevered: {type: Boolean, required: true, default: false},
     paidAt: {type: Date},

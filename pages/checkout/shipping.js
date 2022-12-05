@@ -38,6 +38,7 @@ export default function Shipping() {
   const [value, setValue] = React.useState('postexpress');
   const [city, setCity] = React.useState('');
   const [store, setStore] = React.useState('');
+  const [delivery, setDelivery] = React.useState(false);
   const [errors, setErrors] = useState({
     city: false,
     store: false
@@ -57,16 +58,15 @@ export default function Shipping() {
  
   const shippingCost = 50;
   const emptyShipping = cart.shipping && Object.keys(cart.shipping).length === 0;
-  const deliveryCity = cart.addresses.city && addresses[Cookies.get('forInvoice')].city;
-  const deliveryAddress = cart.addresses.address && addresses[Cookies.get('forInvoice')].address;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
-        shippingCity: formOutput.get('shiping-city') !== null ? formOutput.get('shiping-city') : deliveryCity,
-        store: formOutput.get('shiping-store') !== null ? formOutput.get('shiping-store') : deliveryAddress,
+        shippingAddress: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : 'null',
+        shippingCity: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : formOutput.get('shiping-city'),
+        store: formOutput.get('shipping-method') !== 'store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };
       if(formData.shippingCity === '' && formData.shippingMethod === 'store') {
@@ -79,16 +79,14 @@ export default function Shipping() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select store', severity: 'warning'}});
         return;
       }
-      dispatch({ type: 'SHIPPING', payload: formData});
+      dispatch({ type: 'SHIPPING', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added shipping', severity: 'success'}});
       Cookies.set('shipping', JSON.stringify(formData));
       router.push('/checkout/payment');
   };
 
-  const handleEdit = () => {
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit shipping', severity: 'warning'}});
-    dispatch({ type: 'SHIPPING_REMOVE' });
-    Cookies.remove('shipping');
+  const handleNext = () => {
+    router.push('/checkout/payment');
   };
 
   useEffect(() => {
@@ -283,9 +281,9 @@ export default function Shipping() {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
-                  onClick={handleEdit}
+                  onClick={handleNext}
                 >
-                  Edit
+                  Continue Next
                 </Button>
             }
           </Box>

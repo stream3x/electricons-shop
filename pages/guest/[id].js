@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -10,6 +10,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import Fab from '@mui/material/Fab';
 import CircularProgress from '@mui/material/CircularProgress';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import { Store } from '../../src/utils/Store';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -20,9 +23,12 @@ const LabelButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function GuestOrder() {
-  const [loading, setLoading] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
-  const timer = React.useRef();
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const timer = useRef();
+  const router = useRouter();
+  const { state } = useContext(Store);
+  const { userInfo, order, cart: {cartItems, personalInfo, payment} } = state;
 
   const buttonSx = {
     ...(success && {
@@ -30,8 +36,20 @@ export default function GuestOrder() {
     }),
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleButtonClick();
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    try {
+      dispatch({type: 'FETCH_REQUEST'});
+      const { data } = axios.get(`/api/guest/${id}`)
+    } catch (error) {
+      
+    }
     return () => {
       clearTimeout(timer.current);
     };

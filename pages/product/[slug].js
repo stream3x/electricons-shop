@@ -32,6 +32,7 @@ import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
 import ProductTabs from '../../src/components/ProductTabs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import theme from '../../src/theme';
 
 export async function getServerSideProps(context) {
   const { params } = context;

@@ -85,10 +85,6 @@ function reducer(state, action) {
     case 'PERSONAL_REMOVE': {
       return { ...state, cart: { ...state.cart, personalInfo: {} } };
     }
-    case 'ADDRESSES_REMOVE': {
-      Cookies.remove('addresses');
-      return { ...state, cart: { ...state.cart, addresses: [] } };
-    }
     default:
       return { ...state, snack: {message: '', severity: ''} };
   }

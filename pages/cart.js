@@ -27,7 +27,7 @@ const Item = styled(Paper)(({ theme }) => ({
       <Grid container space={2}>
         <Grid xs={12} lg={8}>
           <Item elevation={0}>
-            <CartTable cartItems={cartItems} />
+            <CartTable cartitems={cartItems} />
           </Item>
         </Grid>
         <Grid xs={12} lg={4}>

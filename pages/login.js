@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,42 +18,83 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import FormHelperText from '@mui/material/FormHelperText';
 import theme from '../src/theme';
+import CircularProgress from '@mui/material/CircularProgress';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import Fab from '@mui/material/Fab';
 
 export default function LogIn() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack } = state;
+  const { snack, userInfo } = state;
   const [errors, setErrors] = useState({
     email: false,
     password: false
   });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const timer = useRef();
+  const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+  const buttonSx = {
+    ...(success && {
+      bgcolor: theme.palette.primary.main,
+    }),
+  };
+
+  useEffect(() => {
+    if(userInfo) {
+      router.push("/");
+      return;
+    }
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+      timer.current = window.setTimeout(() => {
+        setSuccess(true);
+        setLoading(false);
+        if(router.pathname === '/cart') {
+          router.back();
+        }
+        router.push('/');
+      }, 2000);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors({ ...errors, email: false, password: false});
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         email: formOutput.get('email'),
         password: formOutput.get('password'),
-      }
+      };
       const { data } = await axios.post('/api/users/login', formData);
+      handleButtonClick();
       dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      Cookies.set('userInfo', JSON.stringify(data));
-      if(router.pathname === '/cart') {
-        router.back()
-      }else {
-        router.push('/');
-      }
+      Cookies.set('userInfo', JSON.stringify(data)); 
     } catch (error) {
       if(error.response.data.type === 'all') {
-        setErrors({ ...errors, email: error.response.data.type === 'all', password: error.response.data.type === 'all' })
-      }else {
-        setErrors({ ...errors, email: error.response.data.type === 'email', password: error.response.data.type === 'password' })
+        setErrors({ ...errors, email: true, password: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+      }
+      if(error.response.data.type === 'email') {
+        setErrors({ ...errors, email: true, password: false });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+      }
+      if(error.response.data.type === 'password') {
+        setErrors({ ...errors, email: false, password: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
       }
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
-    setErrors({ ...errors, email: '', password: '' })
   };
 
   return (
@@ -68,9 +109,27 @@ export default function LogIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          <Box sx={{ m: 1, position: 'relative' }}>
+            <Fab
+              aria-label="sign in"
+              color="secondary"
+              sx={buttonSx}
+            >
+              {success ? <LockOpenIcon /> : <LockOutlinedIcon />}
+            </Fab>
+            {loading && (
+              <CircularProgress
+                size={68}
+                sx={{
+                  color: theme.palette.primary.main,
+                  position: 'absolute',
+                  top: -6,
+                  left: -6,
+                  zIndex: 1,
+                }}
+              />
+            )}
+          </Box>
           <Typography component="h1" variant="h5">
             Login
           </Typography>
@@ -113,9 +172,9 @@ export default function LogIn() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
             >
-              Sign In
+              Login
             </Button>
             <Grid sx={{display: 'flex', flexWrap: 'wrap'}} container spacing={2}>
               <Grid item xs>

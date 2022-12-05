@@ -36,22 +36,29 @@ function MyFormControlLabel(props) {
 }
 
 export default function AddressCard(props) {
-  const { address, index, personalInfo, handleEdit, handleDelete } = props;
+  const { address, index, personalInfo, name, handleEdit, handleDelete } = props;
   
   return (
     <Box sx={{ minWidth: '100%' }}>
       <Card variant="outlined">
         <ThemeProvider theme={theme}>
           <CardActions>
-              <MyFormControlLabel value={`${index}`} control={<Radio />}/>
+              <MyFormControlLabel value={`${address.address}`} control={<Radio />}/>
           </CardActions>
           <CardContent>
             <Typography color="secondary" sx={{ mb: 2 }} variant="h6" component="h2">
               {address.address} <br /><Typography variant="body2" component="span">{address.city}</Typography>
             </Typography>
+            {
+              name ?
+              <Typography align="left" color="secondary.lightGrey">
+              {name}
+            </Typography>
+            :
             <Typography align="left" color="secondary.lightGrey">
               {personalInfo.name}
             </Typography>
+            }
             <Typography align="left" color="secondary.lightGrey">
               {address.company}
             </Typography>

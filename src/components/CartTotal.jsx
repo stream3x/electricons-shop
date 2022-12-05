@@ -34,6 +34,7 @@ const randomNumber = getRandomInt(1, 999999);
 const date = new Date().getFullYear();
 
 export default function CartTotal() {
+  const route = useRouter();
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment} } = state;
   const router = useRouter();
@@ -70,7 +71,7 @@ export default function CartTotal() {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  console.log(emptyAddresses, emptyCartItems, emptyPersonalInfo, emptyShipping, emptyPayment, emptyUserInfo)
+
   const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : 50) : 0;
   let taxCost;
   let taxCount;
@@ -85,7 +86,7 @@ export default function CartTotal() {
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
       router.push('/');
       return;
     }
@@ -116,7 +117,6 @@ export default function CartTotal() {
     }
     try {
       handleLoading();
-      Cookies.set('checkedPolicy', checkedPolicy);
       const { data } = await axios.post('/api/orders', {
         orderItems: cartItems,
         userInfo,
@@ -126,31 +126,28 @@ export default function CartTotal() {
         total,
         shippingCost,
         taxCost,
-        orderNumber
+        orderNumber,
+        checkedNewsletter
       }, {
         headers: {
-          authorization: `Bearer ${userInfo.token}`
+          "Content-Type": "application/json"
         }
       })
-
-      Cookies.remove('cartItems');
-      Cookies.remove('checkedPolicy');
-      Cookies.remove('addresses');
-      Cookies.remove('forInvoice');
-      Cookies.remove('shipping');
-      Cookies.remove('payment');
-      setLoading(false);
+      setErrors({ ...errors, policy: false});
       router.push(`/order/${data._id}`);
-      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems});
+      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems });
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'Empty cart...', severity: 'warning' }});
+      setLoading(false);
     } catch (error) {
       setLoading(false);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.response ? error.response.data.message : error.message, severity: 'error' }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});
+      setErrors({ ...errors, policy: false});
     }
   }
 
   async function placeGuestOrderHandler() {
     if(emptyCartItems) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry you must first select product', severity: 'warning'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
       router.push('/');
       return;
     }
@@ -190,24 +187,19 @@ export default function CartTotal() {
         total,
         shippingCost,
         taxCost,
-        orderNumber
+        orderNumber,
+        checkedNewsletter
       }, {
         headers: {
           "Content-Type": "application/json"
         }
       })
-      Cookies.remove('cartItems');
-      Cookies.remove('personalInfo');
-      Cookies.remove('addresses');
-      Cookies.remove('forInvoice');
-      Cookies.remove('shipping');
-      Cookies.remove('payment');
-      setLoading(false);
       router.push(`/guest/${data._id}`);
+      setLoading(false);
       dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems });
     } catch (error) {
       setLoading(false);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.response ? error.response.data.message : error.message, severity: 'error' }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});
     }
   }
 
@@ -239,40 +231,45 @@ export default function CartTotal() {
             <Typography color="primary" variant="h6" component="span">${total.toFixed(2)} </Typography>
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button onClick={handleExpandClick} size="small">
-            Show Deatalis
-          </Button>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          {
-            cartItems.map(row => (
-              <Box key={row._id} sx={{display: 'flex', alignItems: 'center', width: '100%'}}>
-                <Box sx={{width: '100px'}}>
-                  <Box
-                    component="img"
-                    sx={{
-                      height: 70,
-                      display: 'block',
-                      maxWidth: 100,
-                      overflow: 'hidden',
-                      width: 'auto',
-                      margin: '5px auto'
-                    }}
-                    src={row.images[0].image}
-                    alt={row.title}
-                  />
-                </Box>
-                <Link href={`/product/${row.slug}`} passHref>
-                  <Typography>{row.title}</Typography>
-                </Link>
-                <Typography sx={{p: 1}}>{`x ${row.quantity}`}</Typography>
-              </Box>
-            ))
-          }
-          </CardContent>
-        </Collapse>
+        {
+          route.pathname !== '/cart' &&
+          <React.Fragment>
+            <CardActions>
+              <Button onClick={handleExpandClick} size="small">
+                Show Deatalis
+              </Button>
+            </CardActions>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent>
+              {
+                cartItems.map(row => (
+                  <Box key={row._id} sx={{display: 'flex', alignItems: 'center', width: '100%'}}>
+                    <Box sx={{width: '100px'}}>
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 70,
+                          display: 'block',
+                          maxWidth: 100,
+                          overflow: 'hidden',
+                          width: 'auto',
+                          margin: '5px auto'
+                        }}
+                        src={row.images[0].image}
+                        alt={row.title}
+                      />
+                    </Box>
+                    <Link href={`/product/${row.slug}`} passHref>
+                      <Typography>{row.title}</Typography>
+                    </Link>
+                    <Typography sx={{p: 1}}>{`x ${row.quantity}`}</Typography>
+                  </Box>
+                ))
+              }
+              </CardContent>
+            </Collapse>
+          </React.Fragment>
+        }
       </Card>
       :
       <Card cartItems={cartItems} variant="outlined">
@@ -300,8 +297,15 @@ export default function CartTotal() {
           {
             shipping.shippingMethod === 'store' &&
             <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
-              <Typography align="left" component="span">Shipping address: </Typography>
+              <Typography align="left" component="span">Store address: </Typography>
               <Typography align="right" variant="h6" component="span">{`${shipping.store}, ${shipping.shippingCity}`}</Typography>
+            </Typography>
+          }
+          {
+            shipping.shippingMethod !== 'store' &&
+            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
+              <Typography align="left" component="span">Shipping address: </Typography>
+              <Typography align="right" variant="h6" component="span">{!emptyAddresses && addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].city + ', ' + addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address}</Typography>
             </Typography>
           }
           <Divider />
@@ -314,7 +318,7 @@ export default function CartTotal() {
             <Typography variant="h6" component="span">{shippingCost ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">tax <Typography variant="caption" component="span">(for less than three different products ordered)</Typography>: </Typography>
+            <Typography component="span">tax: </Typography>
             <Typography variant="h6" component="span">{taxCost ? taxCost : '_'}</Typography>
           </Typography>
           <Divider />

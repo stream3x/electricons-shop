@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from 'react';
+import { useEffect, useContext, useState, useRef } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -24,6 +24,9 @@ import FormHelperText from '@mui/material/FormHelperText';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import theme from '../src/theme';
+import CircularProgress from '@mui/material/CircularProgress';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import Fab from '@mui/material/Fab';
 
 export default function SignIn() {
   const router = useRouter();
@@ -31,7 +34,7 @@ export default function SignIn() {
   const { snack, userInfo } = state;
   const [confirmPassword, setConfirmPassword] = useState({
     showPassword: false,
-  })
+  });
   const [errors, setErrors] = useState({
     name: false,
     email: false,
@@ -39,7 +42,41 @@ export default function SignIn() {
     confirmPassword: false
   });
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  let passwordPattern = /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{8, 22}$/;
+  const passwordPattern = /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{8, 22}$/;
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const timer = useRef();
+
+  const buttonSx = {
+    ...(success && {
+      bgcolor: theme.palette.primary.main,
+    }),
+  };
+
+  useEffect(() => {
+    if(userInfo) {
+      router.push("/");
+      return;
+    }
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+      timer.current = window.setTimeout(() => {
+        setSuccess(true);
+        setLoading(false);
+        if(router.pathname === '/cart') {
+          router.back();
+        }
+        router.push('/');
+      }, 2000);
+    }
+  };
 
   const handleClickShowPassword = () => {
     setConfirmPassword({
@@ -67,14 +104,14 @@ export default function SignIn() {
         vatNumber: '',
         newsletter: '',
       };
-      if(formData.name === '' && formData.email === '') {
+      if(formData.name === '') {
         setErrors({
           name: true,
           email: true,
           password: false,
           confirmPassword: false
         });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name and email is required", severity: "error" }});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
         return;
       }
       if(!pattern.test(formData.email)) {
@@ -88,14 +125,13 @@ export default function SignIn() {
         return;
       }
       if(passwordPattern.test(formData.password)) {
-        console.log('not valid', !passwordPattern.test(formData.password));
         setErrors({
           name: false,
           email: false,
           password: true,
           confirmPassword: false
         });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password is not valid", severity: "error" }});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password is too weak", severity: "error" }});
         return;
       }
       if(formData.password === '') {
@@ -118,6 +154,7 @@ export default function SignIn() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "passwords don't match", severity: "error" }});
         return;
       }
+      handleButtonClick();
       setErrors({
         name: false,
         email: false,
@@ -127,17 +164,10 @@ export default function SignIn() {
       dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
-      if(router.pathname === '/cart') {
-        router.back();
-      }else {
-        router.push('/');
-      }
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data : error, severity: "error" }});
     }
-   
   };
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -151,11 +181,29 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          <Box sx={{ m: 1, position: 'relative' }}>
+            <Fab
+              aria-label="sign in"
+              color="secondary"
+              sx={buttonSx}
+            >
+              {success ? <LockOpenIcon /> : <LockOutlinedIcon />}
+            </Fab>
+            {loading && (
+              <CircularProgress
+                size={68}
+                sx={{
+                  color: theme.palette.primary.main,
+                  position: 'absolute',
+                  top: -6,
+                  left: -6,
+                  zIndex: 1,
+                }}
+              />
+            )}
+          </Box>
           <Typography component="h1" variant="h5">
-            Sign up
+            Sign in
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -243,9 +291,9 @@ export default function SignIn() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
             >
-              Sign Up
+              Sign in
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>

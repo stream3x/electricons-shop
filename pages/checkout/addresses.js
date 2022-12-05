@@ -17,7 +17,6 @@ import CheckoutStepper from '../../src/components/CheckoutStepper';
 import AddressCard from '../../src/assets/AddressCard';
 import RadioGroup from '@mui/material/RadioGroup';
 import AddIcon from '@mui/icons-material/Add';
-import axios from 'axios';
 
 export default function Addresses() {
   const router = useRouter();
@@ -33,12 +32,19 @@ export default function Addresses() {
     phone: false
   });
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
+  const [checked, setChecked] = React.useState(false);
+
+  const handleNext = () => {
+    router.push('/checkout/shipping');
+  };
 
   const handleChange = (event) => {
-    if(event.target.checked) {
+    setChecked(event.target.checked);
+    console.log(forInvoice)
+    if(checked) {
       setForInvoice(() => event.target.value);
-      Cookies.set('forInvoice', forInvoice);
     }
+    Cookies.set('forInvoice', forInvoice);
   };
 
   const handleChangeInvoice = (event) => {
@@ -105,13 +111,13 @@ export default function Addresses() {
   };
 
   const handleEdit = (item) => {
-    Cookies.set('forInvoice', JSON.stringify(addresses[addresses.length - 1]));
+    Cookies.set('forInvoice', JSON.stringify(addresses.length - 1));
     dispatch({ type: 'ADDRESSES_REMOVE', payload: item});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit address', severity: 'warning'}});
     setAddNewAddress(true);
   };
   const handleDelete = (item) => {
-    Cookies.set('forInvoice', JSON.stringify(addresses[addresses.length - 1]));
+    Cookies.set('forInvoice', JSON.stringify(addresses.length - 1));
     dispatch({ type: 'ADDRESSES_REMOVE', payload: item});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack,message: 'address successfully removed', severity: 'warning'}});
     if(emptyAddresses) {
@@ -119,7 +125,6 @@ export default function Addresses() {
     }
   };
 
-console.log(addresses.length, Number(Cookies.get('forInvoice')));
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={1} />
@@ -136,12 +141,12 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
             >
               {
                 !emptyAddresses &&
-                <RadioGroup name="radio-address-picker" value={addresses.length === 0 ? "0" : Cookies.get('forInvoice') ? Cookies.get('forInvoice') : forInvoice} sx={{width: "100%"}} onChange={handleChangeInvoice}>
+                <RadioGroup name="radio-address-picker" value={!emptyAddresses ? addresses[forInvoice].address : addresses[Cookies.get('forInvoice')].address} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                   <Grid container space={2}>
                   {
                     !emptyAddresses ? addresses.map((address, index) => (
                       <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
-                        <AddressCard index={index} address={address} personalInfo={personalInfo} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
+                        <AddressCard index={index} address={address} personalInfo={personalInfo} name={userInfo && userInfo.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
                       </Grid>
                     ))
                     : null
@@ -191,7 +196,7 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                 }
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.country ? userInfo.country : addresses.country : ''}
+                    defaultValue={personalInfo ? personalInfo.country ? personalInfo.country : addresses.country : ''}
                     disabled={!emptyAddresses && addresses.country && true}
                     fullWidth
                     required
@@ -202,7 +207,7 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                   />
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.city ? userInfo.city : addresses.city : ''}
+                    defaultValue={personalInfo ? personalInfo.city ? personalInfo.city : addresses.city : ''}
                     disabled={!emptyAddresses && addresses.city && true}
                     fullWidth
                     required
@@ -215,8 +220,8 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                   <TextField
                     margin="normal"
                     type="number"
-                    defaultValue={userInfo ? userInfo.postalcode ? userInfo.postalcode : addresses.postalcode : ''}
-                    disabled={!emptyAddresses && userInfo.postalcode && true}
+                    defaultValue={personalInfo ? personalInfo.postalcode ? personalInfo.postalcode : addresses.postalcode : ''}
+                    disabled={!emptyAddresses && personalInfo.postalcode && true}
                     fullWidth
                     required
                     id="postalcode"
@@ -227,7 +232,7 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                   />        
                   <TextField
                     margin="normal"
-                    defaultValue={userInfo ? userInfo.address ? userInfo.address : addresses.address : ''}
+                    defaultValue={personalInfo ? personalInfo.address ? personalInfo.address : personalInfo.address : ''}
                     disabled={!emptyAddresses && userInfo.address && true}
                     fullWidth
                     required
@@ -240,8 +245,8 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                   <TextField
                     margin="normal"
                     type="number"
-                    defaultValue={userInfo ? userInfo.phone ? userInfo.phone : addresses.phone : ''}
-                    disabled={userInfo && userInfo.phone && true}
+                    defaultValue={personalInfo ? personalInfo.phone ? personalInfo.phone : addresses.phone : ''}
+                    disabled={personalInfo && personalInfo.phone && true}
                     fullWidth
                     required
                     id="phone"
@@ -266,7 +271,7 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
+                    sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
                   >
                     Continue
                   </Button>
@@ -351,6 +356,17 @@ console.log(addresses.length, Number(Cookies.get('forInvoice')));
                     Continue
                   </Button>
                 </Box>
+              }
+              {
+                !emptyAddresses &&
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
+                  onClick={handleNext}
+                >
+                  Continue Next
+                </Button>
               }
               </Box>
             </Box>
