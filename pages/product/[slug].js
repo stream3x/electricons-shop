@@ -160,12 +160,12 @@ export default function SingleProduct(props) {
       <BreadcrumbNav productData={product} />
       <Grid container spacing={2}>
         <Grid xs={12} md={6}>
-          <Item>
+          <Item elevation={0}>
             <VerticalTabs productData={product} />
           </Item>
         </Grid>
         <Grid xs={12} md={6}>
-          <Item>
+          <Item elevation={0}>
             <Box sx={{ flexGrow: 0, my: 1, display: 'flex'  }}>
               <Typography gutterBottom variant="h6" component="h1" align="left" color="secondary" sx={{flex: 1}}>
                 {product.title}
@@ -193,7 +193,7 @@ export default function SingleProduct(props) {
               </Link>
             </Box>
           </Item>
-          <Item>
+          <Item elevation={0}>
             <Typography align="left" component="h3" variant="h5" color="primary">
               {product.price}
               <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
@@ -201,12 +201,12 @@ export default function SingleProduct(props) {
               </Typography>
             </Typography>
           </Item>
-          <Item>
+          <Item elevation={0}>
             <Typography align="left" component="p" variant="p" color="secondary.lightGray">
               {product.description}
             </Typography>
           </Item>
-          <Item>
+          <Item elevation={0}>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'  }}>
                 <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1, width: {xs: '100%', sm: 'auto'}}}>
                   Avalability: 
@@ -221,7 +221,7 @@ export default function SingleProduct(props) {
           </Item>
           {
             cartItems.length !== 0 && cartItems.find(item => item._id === product._id) &&
-            <Item>
+            <Item elevation={0}>
               <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
                 <Typography gutterBottom variant="p" component="span" align="left" color="secondary" sx={{marginLeft: 1}}>
                 Quantity :
@@ -234,7 +234,7 @@ export default function SingleProduct(props) {
               </Box>  
             </Item>
           }
-          <Item>
+          <Item elevation={0}>
             <Box sx={{ flex: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: {xs: 'center', sm: 'normal'} }}>
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', '& > a': {textDecoration: 'none', width: {xs:'100%', sm: 'auto'}} }}>
               {
@@ -279,7 +279,7 @@ export default function SingleProduct(props) {
               </Box>
             </Box>
           </Item>
-          <Item>
+          <Item elevation={0}>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
               <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
                 Share on:
@@ -301,7 +301,7 @@ export default function SingleProduct(props) {
               </LightTooltip>
             </Box>
           </Item>
-          <Item>
+          <Item elevation={0}>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                 <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<LocalShippingIcon />}>
                   Delivery policy

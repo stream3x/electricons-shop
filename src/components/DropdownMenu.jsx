@@ -95,7 +95,7 @@ export default function DropdownMenu(props) {
                       </Typography>
                     </Link>
                     </AccordionSummary>
-                    <AccordionDetails sx={{position: 'absolute', left: '100%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', height: 'auto', py: 5, px: 3, marginLeft: '8px'}}>
+                    <AccordionDetails sx={{position: 'absolute', left: '106%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', height: 'auto', py: 5, px: 3, marginLeft: '8px'}}>
                       <Grid container spacing={2}>
                     {
                       item.subCategory.map((sub, index) => (
