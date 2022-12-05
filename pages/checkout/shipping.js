@@ -262,8 +262,6 @@ export default function Shipping() {
                     />
                   </Grid>
                 </Grid>
-            {
-              emptyShipping &&
                 <Button
                   type="submit"
                   fullWidth
@@ -272,20 +270,7 @@ export default function Shipping() {
                 >
                   Continue
                 </Button>
-            }
             </Box>
-            {
-              !emptyShipping &&
-                <Button
-                  type="button"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                  onClick={handleNext}
-                >
-                  Continue Next
-                </Button>
-            }
           </Box>
         </Container>
       </ThemeProvider>

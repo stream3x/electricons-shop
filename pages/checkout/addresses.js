@@ -351,14 +351,14 @@ export default function Addresses() {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
+                    sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
                   >
                     Continue
                   </Button>
                 </Box>
               }
               {
-                !emptyAddresses &&
+                !emptyAddresses && !addNewAddress &&
                 <Button
                   fullWidth
                   variant="contained"
