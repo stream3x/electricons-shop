@@ -30,7 +30,7 @@ export default function SingleCardProduct({product}) {
             height="168px"
             image={product.images[0].image}
             alt={product.title}
-            sx={{margin: 'auto', objectFit: 'contain'}}
+            sx={{margin: 'auto', objectFit: 'contain', pt: 2}}
           />
         </Link>
         <CardContent>

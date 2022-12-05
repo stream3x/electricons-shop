@@ -16,7 +16,7 @@ import theme from '../../src/theme';
 import { Store } from '../../src/utils/Store';
 import CheckoutLayout from '../../src/components/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
-import { FormControl, InputLabel } from '@mui/material';
+import { FormControl, InputLabel, useMediaQuery } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
@@ -35,14 +35,14 @@ export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { snack, cart } = state;
-  const [value, setValue] = React.useState('postexpress');
-  const [city, setCity] = React.useState('');
-  const [store, setStore] = React.useState('');
-  const [delivery, setDelivery] = React.useState(false);
+  const [value, setValue] = useState('postexpress');
+  const [city, setCity] = useState('');
+  const [store, setStore] = useState('');
   const [errors, setErrors] = useState({
     city: false,
     store: false
   });
+  const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChangeCity = (event) => {
     setCity(event.target.value);
@@ -120,8 +120,8 @@ export default function Shipping() {
                         onChange={handleChange}
                         >
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{width: '200px'}} color="secondary" value="postexpress" control={<Radio />} label="POST Express" />
-                            <Typography component="span" variant="body2">
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} color="secondary" value="postexpress" control={<Radio />} label="POST Express" />
+                            <Typography component="span" variant={!matches ? "caption" : "body2"}>
                               Delivery in 2 - 3 days!
                             </Typography>
                             <Typography component="span" variant="body">
@@ -129,8 +129,8 @@ export default function Shipping() {
                             </Typography>
                           </LabelButton>
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{width: '200px'}} value="dhl" control={<Radio />} label="DHL" />
-                            <Typography component="span" variant="body2" align="left">
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="dhl" control={<Radio />} label="DHL" />
+                            <Typography component="span" variant={!matches ? "caption" : "body2"} align="left">
                               Delivery in 2 - 5 days!
                             </Typography>
                             <Typography component="span" variant="body">
@@ -138,8 +138,8 @@ export default function Shipping() {
                             </Typography>
                           </LabelButton>
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{width: '200px'}} value="store" control={<Radio />} label="Electricons Store" />
-                            <Typography component="span" variant="body2">
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="store" control={<Radio />} label="Electricons Store" />
+                            <Typography component="span" variant={!matches ? "caption" : "body2"}>
                               Pick up in-store
                             </Typography>
                             <Typography component="span" variant="body">
@@ -266,7 +266,7 @@ export default function Shipping() {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
                 >
                   Continue
                 </Button>
