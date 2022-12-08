@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useReducer } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -13,6 +13,8 @@ import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Store } from '../../src/utils/Store';
+import { onError } from '../../src/utils/error';
+import dynamic from 'next/dynamic';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -22,19 +24,36 @@ const LabelButton = styled(Button)(({ theme }) => ({
   borderLeft: '5px solid black',
 }));
 
-export default function Order() {
-  const [loading, setLoading] = useState(false);
+function reducer(state, action) {
+  switch(action.type){
+    case 'FETCH_REQUEST': return { ...state, loading: true, error: '' };
+    case 'FETCH_SUCCESS': return { ...state, loading: false, order: action.payload, error: '' };
+    case 'FETCH_FAIL': return { ...state, loading: false, error: action.payload };
+    default: return { ...state };
+  }
+}
+
+function Order({params}) {
+  const orderId = params.id;
+  const [loader, setLoader] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
   const { state } = useContext(Store);
-  const { order, cart: {cartItems, payment} } = state;
+  const { userInfo } = state;
 
   const buttonSx = {
     ...(success && {
       bgcolor: theme.palette.success,
     }),
   };
+
+  const [{loading, error, order}, dispatch] = useReducer(reducer, {
+    loading: true,
+    order: {},
+    error: ''
+  });
+  const {addresses, shipping, payment} = order;
 
   useEffect(() => {
     handleButtonClick();
@@ -46,14 +65,39 @@ export default function Order() {
   const handleButtonClick = () => {
     if (!loading) {
       setSuccess(false);
-      setLoading(true);
+      setLoader(true);
       timer.current = window.setTimeout(() => {
         setSuccess(true);
-        setLoading(false);
+        setLoader(false);
       }, 2000);
     }
   };
 
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        dispatch({type: 'FETCH_REQUEST'});
+        const { data } = await axios.get(`/api/orders/${orderId}`, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        dispatch({type: 'FETCH_SUCCESS', payload: data});
+      } catch (error) {
+        dispatch({type: 'FETCH_FAIL', payload: error});
+      }
+    };
+
+    if(!order._id || (order._id && order._id !== orderId)) {
+      fetchOrder();
+    }
+  
+    return () => {
+      console.log('return something in order');
+    };
+
+  }, [order]);
+  
   return (
       <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
         <LabelButton sx={{width: '100%', my: 5, p: 2}}>
@@ -66,7 +110,7 @@ export default function Order() {
             >
               {success ? <CheckIcon /> : <CartIcon />}
             </Fab>
-            {loading && (
+            {loader && (
               <CircularProgress
                 size={68}
                 sx={{
@@ -83,6 +127,20 @@ export default function Order() {
             Thank you. Your order has been received.
           </Typography>
         </LabelButton>
+        <Box sx={{m: 2}}>
+          <Typography sx={{m: 0, p: 1}} variant="h5" component="h1" gutterBottom>
+            Order {order._id}
+          </Typography>
+          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
+            {addresses && addresses.address}
+          </Typography>
+          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
+            {shipping && shipping.shippingAddress}
+          </Typography>
+          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
+            {payment && payment.paymentMethod}
+          </Typography>
+        </Box>
         <Link href="/" passHref>
           <Button sx={{'&:hover': {backgroundColor: theme.palette.secondary.main}}} size="large" variant="contained" startIcon={<ReplyIcon />}>
             back to shop
@@ -91,3 +149,9 @@ export default function Order() {
       </Box>
   );
 }
+
+export async function getServerSideProps({params}) {
+  return { props: { params }};
+}
+
+export default dynamic(() => Promise.resolve(Order), { ssr: false });

@@ -8,6 +8,12 @@ const categorySchema = new mongoose.Schema(
       avatar: {type: String, required: true},
       category: {type: String, required: true},
       categoryUrl: {type: String, required: true},
+      subCategory: [
+        {
+          label: {type: String, required: true},
+          url: {type: String, required: true}
+        }
+      ]
     }
   ]
   },

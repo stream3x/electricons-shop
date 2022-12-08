@@ -135,8 +135,6 @@ export default function CartTotal() {
       })
       setErrors({ ...errors, policy: false});
       router.push(`/order/${data._id}`);
-      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems });
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'Empty cart...', severity: 'warning' }});
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -178,7 +176,7 @@ export default function CartTotal() {
     }
     try {
       handleLoading();
-      const { data } = await axios.post('/api/guest', {
+      const { data } = await axios.post('/api/guests', {
         orderItems: cartItems,
         personalInfo,
         addresses: addresses[Cookies.get('forInvoice') ? JSON.parse(Cookies.get('forInvoice')) : 0],
@@ -194,9 +192,8 @@ export default function CartTotal() {
           "Content-Type": "application/json"
         }
       })
-      router.push(`/guest/${data._id}`);
+      router.push(`/order_guest/${data._id}`);
       setLoading(false);
-      dispatch({ type: 'CART_REMOVE_ITEM', payload: cartItems });
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});

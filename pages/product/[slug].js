@@ -184,9 +184,9 @@ export default function SingleProduct(props) {
                 alt={product.title}
               />
             </Box>
-            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center'  }}>
+            <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' }  }}>
               <Rating align="center" size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
-              <Link href="#reviews">
+              <Link noLinkStyle href="#reviews">
                 <Typography align="center" gutterBottom variant="p" component="span" color="secondary" sx={{marginLeft: 1}}>
                   Reviews ({product.reviews})
                 </Typography>

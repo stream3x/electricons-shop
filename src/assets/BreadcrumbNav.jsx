@@ -41,7 +41,7 @@ const Page = () => {
   );
 };
 
-export default function BreadcrumbNav({productData}) {
+export default function BreadcrumbNav({productData, categoryData}) {
 
   return (
     <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 14, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>

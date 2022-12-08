@@ -105,12 +105,12 @@ export default function PersonalInfo() {
       }
       if(formOutput.get('vatNumber') !== '' && formOutput.get('vatNumber').length < 9) {
         setErrors({ ...errors, vatNumber: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'must contain exactly 9 numbers', severity: 'error'}});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'can\'t contain less then 9 numbers', severity: 'error'}});
         return;
       }
       if(formOutput.get('vatNumber') !== '' && formOutput.get('vatNumber').length > 9) {
         setErrors({ ...errors, vatNumber: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'must contain exactly 9 numbers', severity: 'error'}});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'can\'t contain more than 9 numbers', severity: 'error'}});
         return;
       }
       if(!pattern.test(formData.email)) {

@@ -47,7 +47,7 @@ const guestSchema = new mongoose.Schema(
     orderNumber: {type: String, required: true},
     checkedNewsletter: {type: Boolean, required: true},
     isPaid: {type: Boolean, required: true, default: false},
-    isDelevered: {type: Boolean, required: true, default: false},
+    isDelivered: {type: Boolean, required: true, default: false},
     paidAt: {type: Date},
     deleveredAt: {type: Date},
   },

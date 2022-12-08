@@ -101,7 +101,7 @@ export default function DropdownMenu(props) {
                       item.subCategory.map((sub, index) => (
                         
                           <Grid sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }} key={index} item xs={4}>
-                            <Link href={sub.url} passHref>
+                            <Link href={`/category/${item.categoryUrl}/${sub.url}`} passHref>
                               <Typography sx={{pb: 2, '&:hover': {color: theme.palette.secondary.lightGrey}}} color="secondary" component="h5" variant="p">
                               {sub.label}
                               </Typography>
@@ -109,7 +109,7 @@ export default function DropdownMenu(props) {
                             {
                               products.map((prod, i) => (
                                 sub.label === prod.subCategory &&
-                                <Link key={i} href={`${prod.slug}`} underline="hover" sx={{display: 'flex', pb: 1}}>
+                                <Link key={i} href={`/product/${prod.slug}`} underline="hover" sx={{display: 'flex', pb: 1}}>
                                   <Typography sx={{'&:hover': {color: theme.palette.primary.main}}} color="secondary.lightGrey" component="h6" variant="p">
                                   {prod.title}
                                   </Typography>
@@ -132,7 +132,7 @@ export default function DropdownMenu(props) {
                     aria-controls={`${item.title} controls`}
                     id={`${item.title} panel`}
                   >
-                    <Link href={item.path} underline="hover" sx={{display: 'flex'}}>
+                    <Link href={`/product/${item.path}`} underline="hover" sx={{display: 'flex'}}>
                       <Avatar alt={item.title} src={item.avatar} />
                       <Typography sx={{ width: '33%', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
                         {item.title}

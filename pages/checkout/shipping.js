@@ -42,10 +42,15 @@ export default function Shipping() {
     city: false,
     store: false
   });
+  const [comment, setComment] = useState('');
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChangeCity = (event) => {
     setCity(event.target.value);
+  };
+
+  const handleAddComment = (event) => {
+    setComment(event.target.value);
   };
 
   const handleChangeStore = (event) => {
@@ -65,7 +70,7 @@ export default function Shipping() {
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
         shippingAddress: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : 'null',
-        shippingCity: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : formOutput.get('shiping-city'),
+        shippingCity: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].city : formOutput.get('shiping-city'),
         store: formOutput.get('shipping-method') !== 'store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };
@@ -252,7 +257,8 @@ export default function Shipping() {
                     If you would like to add a comment about your order, please write it in the field below.
                     </Typography>
                     <TextareaAutosize
-                      value={cart.shipping ? cart.shipping.comment : ''}
+                      value={cart.shipping && cart.shipping.comment ? cart.shipping.comment : comment}
+                      onChange={handleAddComment}
                       disabled={cart.shipping && cart.shipping.comment}
                       name="shiping-comment"
                       maxRows={10}
