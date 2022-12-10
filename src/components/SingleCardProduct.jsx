@@ -16,16 +16,20 @@ export default function SingleCardProduct({product}) {
     setSelected(product._id);
   };
 
+  const handleTouchLoading = (product) => {
+    setSelected(product._id);
+  };
+
   return (
     <Card sx={{ width: "100%", height: "100%" }}>
       <CardActionArea>
-        <Link href={`/product/${product.slug}`} onTouchStart={() => handleLoading(product)} onTouchEnd={() => handleLoading(product)} onClick={() => handleLoading(product)}>
+        <Link href={`/product/${product.slug}`} onTouchEnd={() => handleTouchLoading(product)} onClick={() => handleLoading(product)}>
         {
           product._id === selected &&
           <CircularProgress sx={{position: 'absolute', left: '50%', top: '20%', zIndex: 1 , transform: 'translateX(-50%)'}} size={30} />
         }
           <CardMedia
-            component="img"
+          component="img"
             width="auto"
             height="168px"
             image={product.images[0].image}

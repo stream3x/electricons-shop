@@ -185,8 +185,8 @@ export async function getServerSideProps(context) {
       delivery_method: guest_order.shipping.shippingMethod.toString(),
       payment_method: guest_order.payment.paymentMethod.toString(),
       order_items: newValue,
-      paid: guest_order.isPaid.toString(),
-      delivered: guest_order.isDelevered.toString()
+      paid: guest_order && guest_order.isPaid.toString(),
+      delivered: guest_order && guest_order.isDelevered ? guest_order.isDelevered.toString() : null
     },
   };
 }
