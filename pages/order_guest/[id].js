@@ -5,7 +5,6 @@ import Button from '@mui/material/Button';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import theme from '../../src/theme';
-import styled from '@emotion/styled';
 import CheckIcon from '@mui/icons-material/Check';
 import Fab from '@mui/material/Fab';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -14,6 +13,29 @@ import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import Guest from '../../models/Guest';
 import db from '../../src/utils/db';
+import { Card, CardContent, Divider, Grid, Paper } from '@mui/material';
+import styled from '@emotion/styled';
+import CartTotal from '../../src/components/CartTotal';
+import OrderItems from '../../src/components/OrderItems';
+import { usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import axios from 'axios';
+
+const bull = (
+  <Box
+    component="span"
+    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
+  >
+    •
+  </Box>
+);
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -24,11 +46,12 @@ const LabelButton = styled(Button)(({ theme }) => ({
 }));
 
 function GuestOrder(props) {
-  const { order_number, order_id, order_address, order_user_name, paid, delivered, delivery_method, order_items, order_country, order_city, order_postalcode, order_phone } = props;
+  const { order_number, order_id, order_address, order_user_name, paid, delivered, order_items, order_country, order_city, order_postalcode, order_phone, shippingMethod, shippingCost, taxCost, total, payment_method } = props;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
+  const [{isPending}, paypalDispatch] = usePayPalScriptReducer();
 
   const buttonSx = {
     ...(success && {
@@ -43,10 +66,6 @@ function GuestOrder(props) {
     };
   }, []);
 
-  useEffect(() => {
-    console.log(props)
-  }, [props]);
-
   const handleButtonClick = () => {
     if (!loading) {
       setSuccess(false);
@@ -57,6 +76,24 @@ function GuestOrder(props) {
       }, 2000);
     }
   };
+
+  useEffect(() => {
+    const loadPayPalScript = async () => {
+      const {data: clientId} = await axios.get('/api/keys/paypal', {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      paypalDispatch({type: 'resetOptions', value: {
+        'client-id': clientId,
+        currency: 'USD'
+      },
+    });
+      paypalDispatch({type: 'setLoadingStatus', value: 'pending'});
+    }
+    loadPayPalScript();
+  
+  }, [order_id])
 
   return (
       <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
@@ -87,57 +124,160 @@ function GuestOrder(props) {
             Thank you. Your order has been received.
           </Typography>
         </LabelButton>
-        <Box sx={{m: 2}}>
-          <Typography sx={{m: 0, p: 1}} variant="h5" component="h1" gutterBottom>
-            Order ID: {order_id}
-          </Typography>
-          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
-            Order number: {order_number}
-          </Typography>
-          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
-            Customer information: {order_user_name}, {order_address}, {order_postalcode}, {order_city}, {order_country}, {order_phone}
-          </Typography>
-          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
-            Delivery method: {delivery_method}
-          </Typography>
-          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
-            {delivered === "false" ? "Not delivered" : "Delivered"}
-          </Typography>
-          <Typography sx={{m: 0, p: 1}} variant="h5" component="p" gutterBottom>
-            {paid === "false" ? "Not paid" : "Paid"}
-          </Typography>
-          <Typography sx={{m: 0, p: 1}} variant="body2" component="p" gutterBottom>
-            Product reviews
-          </Typography>
-          {
-            order_items.map(item => (
-              <Box key={item._id} sx={{m: 2, width: '200px'}}>
-                <Box
-                 component="img"
-                 src={item.images[0].image}
-                 alt={item.title}
-                 sx={{
-                  height: {xs: 70, sm: 100},
-                  display: 'block',
-                  maxWidth: 100,
-                  overflow: 'hidden',
-                  width: 'auto',
-                  margin: 0,
-                  p: 2
-                }}
-                 />
-                <Typography sx={{m: 0, p: 1}} variant="body2" component="p" gutterBottom>
-                  {item.title} x {item.quantity}
-                </Typography>
+        <Grid container space={2}>
+          <Grid xs={12} lg={8}>
+            <Item elevation={0}>
+              <Card variant="outlined">
+                <CardContent>
+                  <OrderItems order_items={order_items}/>
+                </CardContent>
+              </Card>
+            </Item>
+          </Grid>
+          <Grid xs={12} lg={4}>
+            <Item elevation={0}>
+              <CartTotal
+               paid={paid}
+               delivered={delivered}
+               order_items={order_items}
+               shippingMethod={shippingMethod}
+               shippingPrice={shippingCost}
+               taxToPaid={taxCost}
+               totalToPaid={total}
+               payment_method={payment_method}
+               isPending={isPending}
+               />
+            </Item>
+          </Grid>
+        </Grid>
+        <Grid container space={2}>
+          <Grid xs={12} lg={6}>
+            <Item elevation={0}>
+              <Box sx={{ minWidth: 275 }}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
+                      Payment{bull}Info
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
+                      <Typography component="span">Order number:</Typography>
+                      <Typography variant="h6" component="span">{order_number}</Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                    <Typography component="span">Order ID:</Typography>
+                      <Typography variant="h6" component="span">{order_id}</Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Name of account owner: </Typography>
+                      <Typography variant="h6" component="span">
+                        Electricons Phd
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Aaccount number: </Typography>
+                      <Typography variant="h6" component="span">
+                        980-555062201787-58
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Model: </Typography>
+                      <Typography variant="h6" component="span">
+                        {order_number}
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Bank name: </Typography>
+                      <Typography variant="h6" component="span">
+                        Banka Postanska Stedionica
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography align="left" sx={{pt: 2}} color="secondary" gutterBottom>
+                      <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="span">
+                        Your order will be sent as soon as we receive payment.
+                      </Typography>
+                      <Typography align="left" sx={{ fontSize: 14 }} variant="body" component="p">
+                      If you have questions, comments or concerns, please contact our expert customer support team.
+                      </Typography>
+                    </Typography>
+                  </CardContent>
+                </Card>
               </Box>
-            ))
-          }
-        </Box>
-        <Link href="/" passHref>
-          <Button sx={{'&:hover': {backgroundColor: theme.palette.secondary.main}}} size="large" variant="contained" startIcon={<ReplyIcon />}>
-            back to shop
-          </Button>
-        </Link>
+            </Item>
+          </Grid>
+          <Grid xs={12} lg={6}>
+            <Item elevation={0}>
+              <Box sx={{ minWidth: 275 }}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
+                      Customer{bull}Info
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
+                      <Typography component="span">Name:</Typography>
+                      <Typography variant="h6" component="span">{order_user_name}</Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                    <Typography component="span">Address:</Typography>
+                      <Typography variant="h6" component="span">
+                        {order_address}
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                    <Typography component="span">City:</Typography>
+                      <Typography variant="h6" component="span">
+                        {order_city}
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                    <Typography component="span">Postal Code:</Typography>
+                      <Typography variant="h6" component="span">
+                        {order_postalcode}
+                      </Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                    <Typography component="span">Country:</Typography>
+                      <Typography variant="h6" component="span">{order_country}</Typography>
+                    </Typography>
+                    <Divider />
+                    <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                    <Typography component="span">Phone:</Typography>
+                      <Typography variant="h6" component="span">{order_phone}</Typography>
+                    </Typography>
+                    
+                    <Divider />
+                    <Typography align="left" sx={{pt: 2}} color="secondary" gutterBottom>
+                      <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="span">
+                        Your order will be sent as soon as we receive payment.
+                      </Typography>
+                      <Typography align="left" sx={{ fontSize: 14 }} variant="body" component="p">
+                      If you have questions, comments or concerns, please contact our expert customer support team.
+                      </Typography>
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            </Item>
+          </Grid>
+        </Grid>
+        <Item elevation={0} sx={{display: 'flex'}}>
+          <Link href="/" passHref>
+            <Button sx={{'&:hover': {backgroundColor: theme.palette.secondary.main}}} size="large" variant="contained" startIcon={<ReplyIcon />}>
+              back to shop
+            </Button>
+          </Link>
+        </Item>
       </Box>
   );
 }
@@ -182,11 +322,14 @@ export async function getServerSideProps(context) {
       order_phone: guest_order.addresses.phone.toString(),
       order_user_name: guest_order.personalInfo.name.toString(),
       order_number: guest_order.orderNumber,
-      delivery_method: guest_order.shipping.shippingMethod.toString(),
       payment_method: guest_order.payment.paymentMethod.toString(),
       order_items: newValue,
       paid: guest_order && guest_order.isPaid.toString(),
-      delivered: guest_order && guest_order.isDelevered ? guest_order.isDelevered.toString() : null
+      delivered: guest_order && guest_order.isDelevered ? guest_order.isDelevered.toString() : null,
+      shippingMethod: guest_order && guest_order.shipping.shippingMethod,
+      shippingCost: guest_order && guest_order.shippingCost,
+      taxCost: guest_order && guest_order.taxCost,
+      total: guest_order && guest_order.total
     },
   };
 }

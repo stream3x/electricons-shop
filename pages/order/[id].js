@@ -15,6 +15,7 @@ import axios from 'axios';
 import { Store } from '../../src/utils/Store';
 import { onError } from '../../src/utils/error';
 import dynamic from 'next/dynamic';
+import { usePayPalScriptReducer } from '@paypal/react-paypal-js';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -35,6 +36,7 @@ function reducer(state, action) {
 
 function Order({params}) {
   const orderId = params.id;
+  const [{isPending}, paypalDispatch] = usePayPalScriptReducer();
   const [loader, setLoader] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
@@ -90,6 +92,20 @@ function Order({params}) {
 
     if(!order._id || (order._id && order._id !== orderId)) {
       fetchOrder();
+    }else {
+      const loadPayPalScript = async () => {
+        const {data: clientId} = await axios.get('/api/keys/paypal', {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        paypalDispatch({type: 'resetOptions', value: {
+          'client-id': clientId,
+          currency: 'USD'
+        },
+      });
+        paypalDispatch({type: 'setLoadingStatus', value: 'pending'});
+      }
     }
   
     return () => {

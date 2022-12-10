@@ -46,6 +46,7 @@ const guestSchema = new mongoose.Schema(
     taxCost: {type: String, required: true},
     orderNumber: {type: String, required: true},
     checkedNewsletter: {type: Boolean, required: true},
+    paymentResult: { id: String, status: String, email_address: String },
     isPaid: {type: Boolean, required: true, default: false},
     isDelivered: {type: Boolean, required: true, default: false},
     paidAt: {type: Date},

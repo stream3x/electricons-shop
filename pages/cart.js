@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import CartTable from '../src/components/CartTable';
 import Link from '../src/Link';
 import theme from '../src/theme';
+import ReplyIcon from '@mui/icons-material/Reply';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -20,14 +21,14 @@ const Item = styled(Paper)(({ theme }) => ({
 
  function Cart() {
   const { state } = useContext(Store);
-  const { cart: {cartItems, shipping, payment} } = state;
+  const { cart: {cartItems} } = state;
 
   return (
     <Box sx={{ my: 4 }}>
       <Grid container space={2}>
         <Grid xs={12} lg={8}>
           <Item elevation={0}>
-            <CartTable cartitems={cartItems} />
+            <CartTable />
           </Item>
         </Grid>
         <Grid xs={12} lg={4}>
@@ -40,6 +41,11 @@ const Item = styled(Paper)(({ theme }) => ({
               <Link href="/checkout/personal-info">
                 <Button sx={{ my: 3, width: '100%', '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }} variant="contained">
                   <Typography variant="body">Checkout</Typography>
+                </Button>
+              </Link>
+              <Link noLinkStyle href="/" passHref>
+                <Button sx={{width: '100%', bgcolor: 'secondary.lightGrey', '&:hover': {backgroundColor: theme.palette.secondary.main}}} size="large" variant="contained" startIcon={<ReplyIcon />}>
+                  Continue shoping
                 </Button>
               </Link>
             </Item>

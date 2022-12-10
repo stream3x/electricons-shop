@@ -91,7 +91,7 @@ export default function Footer({ isVisible, setIsVisible }) {
       <Container component="div" sx={{ mt: 8, mb: 2 }} maxWidth="xl">
         <Grid sx={{m: '0 auto'}} container spacing={2}>
           <Grid item xs={12} sm={3}>
-          <Typography variant="h6" component="h2" gutterBottom>
+          <Typography variant="p" component="h3" gutterBottom>
             STORE INFORMATION
           </Typography>
           <List

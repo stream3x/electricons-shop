@@ -40,12 +40,12 @@ const headCells = [
   },
 ];
 
-export default function OrderItems() {
+export default function OrderItems({order_items}) {
   const { state } = useContext(Store);
   const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
 
   const total = subTotal;
 
@@ -58,8 +58,7 @@ export default function OrderItems() {
     setPage(0);
   };
 
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -79,6 +78,79 @@ export default function OrderItems() {
               }
               </TableRow>
             </TableHead>
+            {
+              order_items ?
+              <TableBody>
+              {order_items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const labelId = `enhanced-table-checkbox-${index}`;
+                  const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
+
+                  return (
+                    <TableRow
+                      hover
+                      key={row._id}
+                    >
+                      <TableCell align="left" sx={{maxWidth: 100}}>
+                        <Box
+                          component="img"
+                          sx={{
+                            height: 70,
+                            display: 'block',
+                            maxWidth: 100,
+                            overflow: 'hidden',
+                            width: 'auto',
+                            margin: 'auto'
+                          }}
+                          src={row.images[0].image}
+                          alt={row.title}
+                        />
+                      </TableCell>
+                      {
+                          order_items ?
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                            align="right"
+                          >
+                            {row.title}
+                          </TableCell>
+                          :
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                            align="right"
+                          >
+                            <Link href={`/product/${row.slug}`}>
+                              {row.title}
+                            </Link>
+                          </TableCell>
+                      }
+                      <TableCell color='primary' align="right">
+                        {row.price}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.quantity}
+                      </TableCell>
+                      <TableCell align="right">
+                        ${subtotal}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              {emptyRows > 0 && (
+                <TableRow
+                >
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+            
+            :
             <TableBody>
               {cartItems && cartItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
@@ -135,6 +207,7 @@ export default function OrderItems() {
                 </TableRow>
               )}
             </TableBody>
+            }
             <TableBody>
               <TableRow>
                 <TableCell colSpan={6}>
@@ -150,7 +223,7 @@ export default function OrderItems() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={cartItems && cartItems.length}
+          count={order_items ? order_items.length : cartItems && cartItems.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

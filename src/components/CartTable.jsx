@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -21,10 +20,63 @@ import { visuallyHidden } from '@mui/utils';
 import CountQuantity from '../assets/CountQuantity';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { Button } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import Link from '../Link';
 import { Store } from '../utils/Store';
 import { useRouter } from 'next/router';
+import theme from '../theme';
+import InputBase from '@mui/material/InputBase';
+
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  flexWrap: 'nowrap',
+  display: 'flex',
+  borderRadius: theme.palette.shape.borderRadius,
+  border: `thin solid ${theme.palette.secondary.borderColor}`,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: theme.spacing(2),
+  width: '50%',
+  [theme.breakpoints.down('xs')]: {
+    marginLeft: theme.spacing(3),
+    width: '20ch',
+  },
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  width: '100%',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.down('xs')]: {
+      width: '20ch',
+    },
+  },
+}));
+
+const StyledInputButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: theme.palette.inputButtonShape.borderRadius,
+  margin: '-1px',
+  padding: '.5em 2em',
+  width: 'inherit',
+  '&:hover': {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.secondary.main,
+  },
+  [theme.breakpoints.down('sm')]: {
+    display: 'none'
+  },
+}));
 
 function descendingComparator(a, b, orderBy) {
   
@@ -209,7 +261,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function CartTable({ cartitems }) {
+export default function CartTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
@@ -218,6 +270,7 @@ export default function CartTable({ cartitems }) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const { state, dispatch } = React.useContext(Store);
+  const {cart: {cartItems}} = state;
   const router = useRouter()
 
   const handleRequestSort = (event, property) => {
@@ -296,120 +349,131 @@ export default function CartTable({ cartitems }) {
   }
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper elevation={0} sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar
-         numSelected={selected.length}
-         dispatch={dispatch}
-         state={state}
-         selectedItems={selectedItems}
-         />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={cartitems && cartitems.length}
-            />
-            <TableBody>
-              {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                 rows.slice().sort(getComparator(order, orderBy)) */}
-              {cartitems && stableSort(cartitems, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.title);
-                  const labelId = `enhanced-table-checkbox-${index}`;
-                  const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
+    <React.Fragment>
+      <Box sx={{ width: '100%' }}>
+        <Paper elevation={0} sx={{ width: '100%', mb: 2 }}>
+          <EnhancedTableToolbar
+          numSelected={selected.length}
+          dispatch={dispatch}
+          state={state}
+          selectedItems={selectedItems}
+          />
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby="tableTitle"
+              size={dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={cartItems && cartItems.length}
+              />
+              <TableBody>
+                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+                  rows.slice().sort(getComparator(order, orderBy)) */}
+                {cartItems && stableSort(cartItems, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.title);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                    const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
 
-                  return (
-                    <TableRow
-                      hover
-                      key={row._id}
-                    >
-                       <TableCell
-                        onClick={(event) => handleClick(event, row.title, row)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        selected={isItemSelected}
-                        padding="checkbox"
-                       >
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell align="left" sx={{maxWidth: 100}}>
-                        <Box
-                          component="img"
-                          sx={{
-                            height: 70,
-                            display: 'block',
-                            maxWidth: 100,
-                            overflow: 'hidden',
-                            width: 'auto',
-                            margin: 'auto'
-                          }}
-                          src={row.images[0].image}
-                          alt={row.title}
-                        />
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                        align="right"
+                    return (
+                      <TableRow
+                        hover
+                        key={row._id}
                       >
-                        <Link href={`/product/${row.slug}`}>
-                          {row.title}
-                        </Link>
-                      </TableCell>
-                      <TableCell color='primary' align="right">
-                        {row.price}
-                      </TableCell>
-                      <TableCell align="right">
-                        <CountQuantity item={row} quantityItem={row.quantity} maxItem={row.inStock} size="small"/>
-                      </TableCell>
-                      <TableCell align="right">
-                        {subtotal}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={cartitems && cartitems.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </Box>
+                        <TableCell
+                          onClick={(event) => handleClick(event, row.title, row)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          selected={isItemSelected}
+                          padding="checkbox"
+                        >
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell align="left" sx={{maxWidth: 100}}>
+                          <Box
+                            component="img"
+                            sx={{
+                              height: 70,
+                              display: 'block',
+                              maxWidth: 100,
+                              overflow: 'hidden',
+                              width: 'auto',
+                              margin: 'auto'
+                            }}
+                            src={row.images[0].image}
+                            alt={row.title}
+                          />
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                          align="right"
+                        >
+                          <Link href={`/product/${row.slug}`}>
+                            {row.title}
+                          </Link>
+                        </TableCell>
+                        <TableCell color='primary' align="right">
+                          {row.price}
+                        </TableCell>
+                        <TableCell align="right">
+                          <CountQuantity item={row} quantityItem={row.quantity} maxItem={row.inStock} size="small"/>
+                        </TableCell>
+                        <TableCell align="right">
+                          {subtotal}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={cartItems && cartItems.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </Box>
+      <Box sx={{'& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between'}}>
+        <Search>
+          <StyledInputBase
+            placeholder="Coupon code"
+            inputProps={{ 'aria-label': 'coupon' }}
+          />
+          <StyledInputButton>Apply coupon</StyledInputButton>
+        </Search>
+      </Box>
+    </React.Fragment>
   );
 }

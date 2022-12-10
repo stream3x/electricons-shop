@@ -10,6 +10,7 @@ import Layout from '../src/layout/Layout';
 import '../src/globals.css';
 import { StoreProvider } from '../src/utils/Store';
 import { Analytics } from '@vercel/analytics/react';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -26,10 +27,12 @@ export default function MyApp(props) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <StoreProvider>
-          <Layout>
-            <Component {...pageProps} />
-            <Analytics />
-          </Layout>
+          <PayPalScriptProvider deferLoading={true}>
+            <Layout>
+              <Component {...pageProps} />
+              <Analytics />
+            </Layout>
+          </PayPalScriptProvider>
         </StoreProvider>
       </ThemeProvider>
     </CacheProvider>

@@ -69,17 +69,17 @@ export default function Shipping() {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
-        shippingAddress: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : 'null',
-        shippingCity: formOutput.get('shipping-method') !== 'store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].city : formOutput.get('shiping-city'),
-        store: formOutput.get('shipping-method') !== 'store' ? 'null' : formOutput.get('shiping-store'),
+        shippingAddress: formOutput.get('shipping-method') !== 'Electricons Store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : 'null',
+        shippingCity: formOutput.get('shipping-method') !== 'Electricons Store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].city : formOutput.get('shiping-city'),
+        store: formOutput.get('shipping-method') !== 'Electricons Store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };
-      if(formData.shippingCity === '' && formData.shippingMethod === 'store') {
+      if(formData.shippingCity === '' && formData.shippingMethod === 'Electricons Store') {
         setErrors({ ...errors, city: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select city', severity: 'warning'}});
         return;
       }
-      if(formData.store === '' && formData.shippingMethod === 'store') {
+      if(formData.store === '' && formData.shippingMethod === 'Electricons Store') {
         setErrors({ ...errors, store: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select store', severity: 'warning'}});
         return;
@@ -125,7 +125,7 @@ export default function Shipping() {
                         onChange={handleChange}
                         >
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} color="secondary" value="postexpress" control={<Radio />} label="POST Express" />
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} color="secondary" value="Post Express" control={<Radio />} label="POST Express" />
                             <Typography component="span" variant={!matches ? "caption" : "body2"}>
                               Delivery in 2 - 3 days!
                             </Typography>
@@ -134,7 +134,7 @@ export default function Shipping() {
                             </Typography>
                           </LabelButton>
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="dhl" control={<Radio />} label="DHL" />
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="DHL" control={<Radio />} label="DHL" />
                             <Typography component="span" variant={!matches ? "caption" : "body2"} align="left">
                               Delivery in 2 - 5 days!
                             </Typography>
@@ -143,7 +143,7 @@ export default function Shipping() {
                             </Typography>
                           </LabelButton>
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="store" control={<Radio />} label="Electricons Store" />
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="Electricons Store" control={<Radio />} label="Electricons Store" />
                             <Typography component="span" variant={!matches ? "caption" : "body2"}>
                               Pick up in-store
                             </Typography>

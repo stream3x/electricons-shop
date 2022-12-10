@@ -15,6 +15,9 @@ import Cookies from 'js-cookie';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
+import { LoadingButton } from '@mui/lab';
+import { PayPalButtons } from '@paypal/react-paypal-js';
+import styled from '@emotion/styled';
 
 const bull = (
   <Box
@@ -25,6 +28,19 @@ const bull = (
   </Box>
 );
 
+const PaymentButton = styled(LoadingButton)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: theme.palette.addToCartButtonShape.borderRadius,
+  marginTop: 15,
+  padding: '.5em 2em',
+  '&:hover': {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.secondary.main,
+  }
+}));
+
 const randomNumber = getRandomInt(1, 999999);
     function getRandomInt(min, max) {
       min = Math.ceil(min);
@@ -33,12 +49,22 @@ const randomNumber = getRandomInt(1, 999999);
     }
 const date = new Date().getFullYear();
 
-export default function CartTotal() {
+export default function CartTotal({
+  order_items,
+  paid,
+  delivered,
+  shippingMethod,
+  shippingPrice,
+  taxToPaid,
+  totalToPaid,
+  payment_method,
+  isPending
+}) {
   const route = useRouter();
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment} } = state;
   const router = useRouter();
-  const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkedPolicy, setCheckedPolicy] = useState(false);
@@ -82,6 +108,7 @@ export default function CartTotal() {
     taxCost = '12%'
     taxCount = 1.12;
   }
+
   const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * taxCount;
 
   async function placeOrderHandler() {
@@ -200,6 +227,37 @@ export default function CartTotal() {
     }
   }
 
+  function createOrder(data, actions) {
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: { value: totalToPaid }
+        }
+      ]
+    }).then((orderID) => {
+      return orderID;
+    });
+  }
+
+  function onApprove(data, actions) {
+    return actions.order.capture().then(async function(details) {
+      try {
+        const {data} = await axios.put(`/api/guest/${order._id}/pay`, details, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: 'paid successfuly', severity: 'success'}});
+      } catch (error) {
+        dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
+      }
+    })
+  }
+
+  function onError(error) {
+    dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
+  }
+
   return (
     <Box sx={{ minWidth: 275 }}>
     {
@@ -215,21 +273,79 @@ export default function CartTotal() {
             <Typography variant="h6" component="span">${subTotal} </Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">shipping: </Typography>
-            <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
+            <Typography component="span">shipping method: </Typography>
+            {
+              shippingMethod ?
+              <Typography variant="h6" component="span">{shippingMethod}</Typography>
+              :
+              <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
+            }
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">shipping: </Typography>
+            {
+              shippingPrice ?
+              <Typography variant="h6" component="span">${shippingPrice}</Typography>
+              :
+              <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
+            }
+          </Typography>
+          {
+            shippingMethod &&
+            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+              <Typography component="span">shipping status: </Typography>
+              <Typography variant="h6" component="span">{delivered ? "deliverd" : "not deliverd"}</Typography>
+            </Typography>
+          }
+          {
+            paid &&
+            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+              <Typography component="span">paid status: </Typography>
+              <Typography variant="h6" component="span">{paid ? "not paid" : "paid"}</Typography>
+            </Typography>
+          }
+          {
+            payment_method &&
+            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+              <Typography component="span">payment method: </Typography>
+              <Typography variant="h6" component="span">{payment_method}</Typography>
+            </Typography>
+          }
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">tax: </Typography>
-            <Typography variant="h6" component="span">{subTotal !== 0 ? taxCost : '_'}</Typography>
+            {
+              taxToPaid ?
+              <Typography variant="h6" component="span">{taxToPaid}</Typography>
+              :
+              <Typography variant="h6" component="span">{subTotal !== 0 ? taxCost : '_'}</Typography>
+            }
           </Typography>
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">Total: </Typography>
-            <Typography color="primary" variant="h6" component="span">${total.toFixed(2)} </Typography>
+            {
+              totalToPaid ?
+              <Typography color="primary" variant="h6" component="span">${totalToPaid.toFixed(2)}</Typography>
+              :
+              <Typography color="primary" variant="h6" component="span">${total.toFixed(2)}</Typography>
+            }
           </Typography>
+          {
+            !paid ?
+              <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay Order</PaymentButton>
+              :
+              payment_method === 'PayPal' ?
+              <PayPalButtons
+              createOrder={createOrder}
+              onApprove={onApprove}
+              onError={onError}
+              ></PayPalButtons>
+              : 
+              <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
+          }
         </CardContent>
         {
-          route.pathname !== '/cart' &&
+          route.pathname !== '/cart' && route.pathname === '/order_guest/[id]' || route.pathname === '/order/[id]' &&
           <React.Fragment>
             <CardActions>
               <Button onClick={handleExpandClick} size="small">
