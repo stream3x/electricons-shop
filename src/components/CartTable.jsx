@@ -27,6 +27,9 @@ import { useRouter } from 'next/router';
 import theme from '../theme';
 import InputBase from '@mui/material/InputBase';
 import Cookies from 'js-cookie';
+import Backdrop from '@mui/material/Backdrop';
+import Image from 'next/image';
+import Slide from '@mui/material/Slide';
 
 const MyTableContainer = styled(TableContainer)({
   overflowY: "auto",
@@ -279,6 +282,22 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
+const icon = (
+  <Paper sx={{ m: 1 }} elevation={4}>
+    <Box component="svg" sx={{ width: 100, height: 100 }}>
+      <Box
+        component="polygon"
+        sx={{
+          fill: (theme) => theme.palette.common.white,
+          stroke: (theme) => theme.palette.divider,
+          strokeWidth: 1,
+        }}
+        points="0,100 50,00, 100,100"
+      />
+    </Box>
+  </Paper>
+);
+
 export default function CartTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('title');
@@ -293,7 +312,19 @@ export default function CartTable() {
   const [errors, setErrors] = React.useState({
     cupon: false
   });
+  const [open, setOpen] = React.useState(false);
+  const [cuponNum, setCuponNum] = React.useState(Number);
+
+  const handleToggle = () => {
+    setOpen(true);
+    setTimeout(() => {
+      setOpen(false);
+    }, 3000);
+  };
+
+  const emptyCupon = cupon_discount && Object.keys(cupon_discount).length === 0;
   const codex = [{code: '123789', discount: '.25'}, {code: '789456', discount: '.10'}, {code: '456132', discount: '.30'}];
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -382,13 +413,15 @@ export default function CartTable() {
       }
       if(codex.find(cupon => cupon.code === formData.cuponCode)) {
         const cupon = codex.filter(cupon => cupon.code === formData.cuponCode && cupon.discount);
+        setCuponNum(cupon[0].discount);
         setErrors({
           ...errors,
           cupon: false
         });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'cupon code accepted', severity: 'success'}});
-        dispatch({ type: 'CUPON_DISCOUNT', payload: { cupon } });
+        dispatch({ type: 'CUPON_DISCOUNT', payload: cupon[0].discount });
         Cookies.set('cupon_discount', cupon[0].discount);
+        handleToggle();
         return;
       }
       if(codex.find(code => code !== formData.cuponCode)) {
@@ -535,6 +568,19 @@ export default function CartTable() {
             <FormHelperText sx={{width: '100%', ml: 3}} error>{snack.message && snack.message}</FormHelperText>
           }
       </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+          <Box
+            component="img"
+            sx={{width: '100%'}}
+            src={`/images/cupon_code${!emptyCupon && cuponNum * 100}.png`}
+            alt="cupon code"
+          />
+        </Slide>
+      </Backdrop>
     </React.Fragment>
   );
 }

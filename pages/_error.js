@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Link from "../src/Link";
 import ReplyIcon from '@mui/icons-material/Reply';
+import theme from "../src/theme";
 
 const statusCodes = {
   400: 'Bad Request',

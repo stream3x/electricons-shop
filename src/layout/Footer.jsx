@@ -6,13 +6,14 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Logo from '../assets/Logo';
 import { Divider, Grid, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import InboxIcon from '@mui/icons-material/Inbox';
 import MobileBottomNav from '../assets/MobileBottomNav';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
-import theme from '../theme';
+import DraftsIcon from '@mui/icons-material/Drafts';
+import Public from '@mui/icons-material/Public';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 function Copyright() {
   return (
@@ -65,6 +66,33 @@ function ScrollTop(props) {
   );
 }
 
+const store_information = [
+  {title: 'Elecetricons store, Serbia', icon: <Public />},
+  {title: 'electricons@explodemarket.com', icon: <DraftsIcon />},
+  {title: '(+381) 555 333', icon: <LocalPhoneIcon />}
+];
+const company = [
+  {title: 'Delivery'},
+  {title: 'Legal Notice'},
+  {title: 'Terms and conditions of use'},
+  {title: 'About us'},
+  {title: 'Contact us'},
+];
+const account = [
+  {title: 'Personal Info'},
+  {title: 'Orders'},
+  {title: 'Credit slips'},
+  {title: 'Addresses'},
+  {title: 'My wishlists'}
+];
+const products = [
+  {title: 'Electricons'},
+  {title: 'Desktop computers'},
+  {title: 'Laptop computers'},
+  {title: 'Mobile'},
+  {title: 'Tablets'}
+];
+
 export default function Footer({ isVisible, setIsVisible }) {
 
   function toggleVisibility() {
@@ -97,13 +125,64 @@ export default function Footer({ isVisible, setIsVisible }) {
           <List
             component="ul"
           >
-            <ListItem>
-              <ListItemIcon>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sent mail" />
-            </ListItem>
-            
+            {
+              store_information.map(info => (
+                <ListItem key={info}>
+                  <ListItemIcon>
+                    {info.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={info.title} />
+                </ListItem>
+              ))
+            }
+            </List>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+          <Typography variant="p" component="h3" gutterBottom>
+            OUR COMPANY
+          </Typography>
+          <List
+            component="ul"
+          >
+            {
+              company.map(company_list => (
+                <ListItem key={company_list}>
+                  <ListItemText primary={company_list.title} />
+                </ListItem>
+              ))
+            }
+            </List>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+          <Typography variant="p" component="h3" gutterBottom>
+            YOUR ACCOUNT
+          </Typography>
+          <List
+            component="ul"
+          >
+            {
+              account.map(account => (
+                <ListItem key={account}>
+                  <ListItemText primary={account.title} />
+                </ListItem>
+              ))
+            }
+            </List>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+          <Typography variant="p" component="h3" gutterBottom>
+            PRODUCTS
+          </Typography>
+          <List
+            component="ul"
+          >
+            {
+              products.map(product => (
+                <ListItem key={product}>
+                  <ListItemText primary={product.title} />
+                </ListItem>
+              ))
+            }
             </List>
           </Grid>
         </Grid>

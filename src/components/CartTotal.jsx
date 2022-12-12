@@ -71,6 +71,7 @@ export default function CartTotal({
   const emptyShipping = Object.keys(shipping).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
   const emptyPayment = payment && Object.keys(payment).length === 0;
+  const emptyCupon = cupon_discount && Object.keys(cupon_discount).length === 0;
 
   const handleLoading = () => {
     setLoading(true);
@@ -91,7 +92,7 @@ export default function CartTotal({
     taxCount = 1.12;
   }
 
-  const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * (cupon_discount ? Number(1 - cupon_discount) : 1) * taxCount;
+  const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * (!emptyCupon ? Number(1 - cupon_discount) : 1) * taxCount;
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
@@ -267,14 +268,14 @@ export default function CartTotal({
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">cupon discount: </Typography>
             {
-              cupon_discount ?
+              !emptyCupon ?
               <Typography variant="h6" component="span">- {cupon_discount * 100}%</Typography>
               :
-              <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
+              <Typography variant="h6" component="span">{'_'}</Typography>
             }
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">tax: </Typography>
+            <Typography component="span">tax: {`(< 3 diff. products )`} </Typography>
             {
               taxToPaid ?
               <Typography variant="h6" component="span">{taxToPaid}</Typography>
@@ -377,7 +378,7 @@ export default function CartTotal({
             <Typography variant="h6" component="span">{shippingCost ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">tax: </Typography>
+            <Typography component="span">tax: {`(< 3 diff. products )`} </Typography>
             <Typography variant="h6" component="span">{taxCost ? taxCost : '_'}</Typography>
           </Typography>
           <Divider />

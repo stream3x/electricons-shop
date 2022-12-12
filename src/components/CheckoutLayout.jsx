@@ -3,8 +3,6 @@ import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
 import CartTotal from './CartTotal';
-import { useContext } from 'react';
-import { Store } from '../utils/Store';
 import dynamic from 'next/dynamic';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -16,8 +14,6 @@ const Item = styled(Paper)(({ theme }) => ({
   }));
 
  function CheckoutLayout({ children }) {
-  const { state } = useContext(Store);
-  const { cart: {cartItems} } = state;
 
   return (
     <Box sx={{ my: 4 }}>
