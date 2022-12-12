@@ -44,7 +44,7 @@ const Item = styled(Paper)(({ theme }) => ({
                 </Button>
               </Link>
               <Link noLinkStyle href="/" passHref>
-                <Button sx={{width: '100%', bgcolor: 'secondary.lightGrey', '&:hover': {backgroundColor: theme.palette.secondary.main}}} size="large" variant="contained" startIcon={<ReplyIcon />}>
+                <Button sx={{width: '100%', '&:hover': {color: theme.palette.secondary.main}}} size="large" startIcon={<ReplyIcon />}>
                   Continue shoping
                 </Button>
               </Link>

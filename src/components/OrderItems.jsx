@@ -9,13 +9,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { visuallyHidden } from '@mui/utils';
-import ReplyIcon from '@mui/icons-material/Reply';
-import { Button, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Link from '../Link';
 import { Store } from '../utils/Store';
 import { useRouter } from 'next/router';
+import theme from '../theme';
 
 const headCells = [
   {
@@ -40,6 +38,44 @@ const headCells = [
   },
 ];
 
+const MyTableContainer = styled(TableContainer)({
+  overflowY: "auto",
+  margin: 0,
+  padding: 0,
+  listStyle: "none",
+  height: "100%",
+  '&::-webkit-scrollbar': {
+    width: '3px',
+    height: '3px'
+  },
+  '&::-webkit-scrollbar-track': {
+    background: theme.palette.secondary.borderColor
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: theme.palette.primary.main,
+    borderRadius: '3px'
+  }
+});
+
+const MyTablePagination = styled(TablePagination)({
+  overflowY: "auto",
+  margin: 0,
+  padding: 0,
+  listStyle: "none",
+  height: "100%",
+  '&::-webkit-scrollbar': {
+    width: '3px',
+    height: '3px'
+  },
+  '&::-webkit-scrollbar-track': {
+    background: theme.palette.secondary.borderColor
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: theme.palette.primary.main,
+    borderRadius: '3px'
+  }
+});
+
 export default function OrderItems({order_items}) {
   const { state } = useContext(Store);
   const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
@@ -63,7 +99,7 @@ export default function OrderItems({order_items}) {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper elevation={0} sx={{ width: '100%', mb: 2 }}>
-        <TableContainer>
+        <MyTableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
@@ -218,9 +254,9 @@ export default function OrderItems({order_items}) {
               </TableRow>
             </TableBody>
           </Table>
-        </TableContainer>
+        </MyTableContainer>
         
-        <TablePagination
+        <MyTablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={order_items ? order_items.length : cartItems && cartItems.length}

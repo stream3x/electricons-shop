@@ -22,7 +22,7 @@ export default function Addresses() {
   const router = useRouter();
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: { personalInfo, addresses} } = state;
+  const { userInfo, cart: { personalInfo, addresses} } = state;
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -32,20 +32,24 @@ export default function Addresses() {
   });
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
   const [checked, setChecked] = useState(false);
-  const [forInvoice, setForInvoice] = useState(Number(Cookies.get('forInvoice') ? Number(Cookies.get('forInvoice')) : 0));
+  const [forInvoice, setForInvoice] = useState(Number(Cookies.get('forInvoice')) && Cookies.get('forInvoice') !== NaN ? Number(Cookies.get('forInvoice')) : 0);
 
   const handleNext = () => {
     router.push('/checkout/shipping');
   };
 
   const handleChange = (event) => {
-    setChecked(event.target.checked);
-    if(checked) {
-      setForInvoice(() => Number(event.target.value))
+    setChecked(() => event.target.checked);
+    console.log(checked);
+    if(!checked) {
+      setForInvoice(() => Number(event.target.value));
       Cookies.set('forInvoice', Number(event.target.value));
+    }else {
+      setForInvoice(() => 0);
+      Cookies.set('forInvoice', 0);
     }
   };
-
+console.log(checked, forInvoice, Cookies.get('forInvoice'));
   const handleChangeInvoice = (event) => {
     setForInvoice(() => Number(event.target.value))
     Cookies.set('forInvoice', Number(event.target.value) - 1);
@@ -258,6 +262,9 @@ export default function Addresses() {
                     sx={{width: '100%'}}
                     control={
                       <Checkbox
+                        value={!emptyAddresses ? addresses.length : forInvoice}
+                        defaultChecked
+                        checked={checked}
                         color="primary"
                         name="invoice"
                         id="invoice"
@@ -336,7 +343,9 @@ export default function Addresses() {
                       sx={{width: '100%'}}
                       control={
                         <Checkbox
-                          value={!emptyAddresses ? addresses.length : forInvoice}
+                          value={!emptyAddresses ? addresses.length : addresses[addresses.length - 1]}
+                          defaultChecked
+                          checked={checked}
                           color="primary"
                           name="invoice"
                           id="invoice"

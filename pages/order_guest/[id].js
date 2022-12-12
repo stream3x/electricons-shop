@@ -19,6 +19,8 @@ import CartTotal from '../../src/components/CartTotal';
 import OrderItems from '../../src/components/OrderItems';
 import { usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import axios from 'axios';
+import { LoadingButton } from '@mui/lab';
+import { PayPalButtons } from '@paypal/react-paypal-js';
 
 const bull = (
   <Box
@@ -28,6 +30,19 @@ const bull = (
     •
   </Box>
 );
+
+const PaymentButton = styled(LoadingButton)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: theme.palette.addToCartButtonShape.borderRadius,
+  marginTop: 15,
+  padding: '.5em 2em',
+  '&:hover': {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.secondary.main,
+  }
+}));
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -77,6 +92,37 @@ function GuestOrder(props) {
     }
   };
 
+  function createOrder(data, actions) {
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: { value: total.toFixed(2) }
+        }
+      ]
+    }).then((orderID) => {
+      return orderID;
+    });
+  }
+
+  function onApprove(data, actions) {
+    return actions.order.capture().then(async function(details) {
+      try {
+        const {data} = await axios.put(`/api/guest/${order._id}/pay`, details, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: 'paid successfuly', severity: 'success'}});
+      } catch (error) {
+        dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
+      }
+    })
+  }
+
+  function onError(error) {
+    dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
+  }
+
   useEffect(() => {
     const loadPayPalScript = async () => {
       const {data: clientId} = await axios.get('/api/keys/paypal', {
@@ -121,7 +167,7 @@ function GuestOrder(props) {
             )}
             </Box>
           <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
-            Thank you. Your order has been received.
+            Thank you. Your order has been created.
           </Typography>
         </LabelButton>
         <Grid container space={2}>
@@ -143,10 +189,23 @@ function GuestOrder(props) {
                shippingMethod={shippingMethod}
                shippingPrice={shippingCost}
                taxToPaid={taxCost}
-               totalToPaid={total}
                payment_method={payment_method}
-               isPending={isPending}
                />
+            </Item>
+            <Item elevation={0}>
+            {
+              !paid ?
+              <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay Order</PaymentButton>
+              :
+              payment_method === 'PayPal' ?
+              <PayPalButtons
+              createOrder={createOrder}
+              onApprove={onApprove}
+              onError={onError}
+              ></PayPalButtons>
+              : 
+              <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
+            }
             </Item>
           </Grid>
         </Grid>
@@ -162,38 +221,38 @@ function GuestOrder(props) {
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
                       <Typography component="span">Order number:</Typography>
-                      <Typography variant="h6" component="span">{order_number}</Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order_number}</Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                     <Typography component="span">Order ID:</Typography>
-                      <Typography variant="h6" component="span">{order_id}</Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order_id}</Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                      <Typography component="span">Name of account owner: </Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography align="left" component="span">Name of account owner: </Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         Electricons Phd
                       </Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                      <Typography component="span">Aaccount number: </Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography align="left" component="span">Aaccount number: </Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         980-555062201787-58
                       </Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                      <Typography component="span">Model: </Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography align="left" component="span">Model: </Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         {order_number}
                       </Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                      <Typography component="span">Bank name: </Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography align="left" component="span">Bank name: </Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         Banka Postanska Stedionica
                       </Typography>
                     </Typography>
@@ -201,6 +260,9 @@ function GuestOrder(props) {
                     <Typography align="left" sx={{pt: 2}} color="secondary" gutterBottom>
                       <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="span">
                         Your order will be sent as soon as we receive payment.
+                      </Typography>
+                      <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="p">
+                      The deadline for payment is 5 days from the creation of the order.
                       </Typography>
                       <Typography align="left" sx={{ fontSize: 14 }} variant="body" component="p">
                       If you have questions, comments or concerns, please contact our expert customer support team.
@@ -222,48 +284,38 @@ function GuestOrder(props) {
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
                       <Typography component="span">Name:</Typography>
-                      <Typography variant="h6" component="span">{order_user_name}</Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order_user_name}</Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                     <Typography component="span">Address:</Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         {order_address}
                       </Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                     <Typography component="span">City:</Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         {order_city}
                       </Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                     <Typography component="span">Postal Code:</Typography>
-                      <Typography variant="h6" component="span">
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
                         {order_postalcode}
                       </Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                     <Typography component="span">Country:</Typography>
-                      <Typography variant="h6" component="span">{order_country}</Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order_country}</Typography>
                     </Typography>
                     <Divider />
                     <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                     <Typography component="span">Phone:</Typography>
-                      <Typography variant="h6" component="span">{order_phone}</Typography>
-                    </Typography>
-                    
-                    <Divider />
-                    <Typography align="left" sx={{pt: 2}} color="secondary" gutterBottom>
-                      <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="span">
-                        Your order will be sent as soon as we receive payment.
-                      </Typography>
-                      <Typography align="left" sx={{ fontSize: 14 }} variant="body" component="p">
-                      If you have questions, comments or concerns, please contact our expert customer support team.
-                      </Typography>
+                      <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order_phone}</Typography>
                     </Typography>
                   </CardContent>
                 </Card>

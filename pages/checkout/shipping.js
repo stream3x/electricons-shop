@@ -35,7 +35,7 @@ export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { snack, cart } = state;
-  const [value, setValue] = useState('postexpress');
+  const [value, setValue] = useState('Post Express');
   const [city, setCity] = useState('');
   const [store, setStore] = useState('');
   const [errors, setErrors] = useState({
@@ -90,12 +90,8 @@ export default function Shipping() {
       router.push('/checkout/payment');
   };
 
-  const handleNext = () => {
-    router.push('/checkout/payment');
-  };
-
   useEffect(() => {
-    !emptyShipping ? setValue(cart.shipping.shippingMethod) : setValue('postexpress');
+    !emptyShipping ? setValue(cart.shipping.shippingMethod) : setValue('Post Express');
     !emptyShipping ? setCity(cart.shipping.shippingCity) : setCity('');
     !emptyShipping ? setStore(cart.shipping.store) : setStore('');
   }, [cart.shipping]);
@@ -125,8 +121,8 @@ export default function Shipping() {
                         onChange={handleChange}
                         >
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} color="secondary" value="Post Express" control={<Radio />} label="POST Express" />
-                            <Typography component="span" variant={!matches ? "caption" : "body2"}>
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}}, textAlign: 'left' }} color="secondary" value="Post Express" control={<Radio />} label="POST Express" />
+                            <Typography align="left" component="span" variant={!matches ? "caption" : "body2"}>
                               Delivery in 2 - 3 days!
                             </Typography>
                             <Typography component="span" variant="body">
@@ -134,8 +130,8 @@ export default function Shipping() {
                             </Typography>
                           </LabelButton>
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="DHL" control={<Radio />} label="DHL" />
-                            <Typography component="span" variant={!matches ? "caption" : "body2"} align="left">
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}}, textAlign: 'left' }} value="DHL" control={<Radio />} label="DHL" />
+                            <Typography align="left" component="span" variant={!matches ? "caption" : "body2"}>
                               Delivery in 2 - 5 days!
                             </Typography>
                             <Typography component="span" variant="body">
@@ -143,8 +139,8 @@ export default function Shipping() {
                             </Typography>
                           </LabelButton>
                           <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5, display: 'flex', justifyContent: 'space-between', p: 1.5}}>
-                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}} }} value="Electricons Store" control={<Radio />} label="Electricons Store" />
-                            <Typography component="span" variant={!matches ? "caption" : "body2"}>
+                            <FormControlLabel sx={{'& span': {fontSize: {xs: '12px', sm: '1rem'}}, textAlign: 'left' }} value="Electricons Store" control={<Radio />} label="Electricons Store" />
+                            <Typography align="left" component="span" variant={!matches ? "caption" : "body2"}>
                               Pick up in-store
                             </Typography>
                             <Typography component="span" variant="body">
@@ -154,7 +150,7 @@ export default function Shipping() {
                         </RadioGroup>
                       </FormControl>
                       {
-                        value === 'store' &&
+                        value === 'Electricons Store' &&
                         <Box sx={{display: 'flex', flexWrap: 'wrap'}}>
                           <FormControl sx={{ m: 1, minWidth: 80 }}>
                             <InputLabel id="select-label-city">City</InputLabel>

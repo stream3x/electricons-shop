@@ -15,9 +15,6 @@ import Cookies from 'js-cookie';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
-import { LoadingButton } from '@mui/lab';
-import { PayPalButtons } from '@paypal/react-paypal-js';
-import styled from '@emotion/styled';
 
 const bull = (
   <Box
@@ -27,19 +24,6 @@ const bull = (
     •
   </Box>
 );
-
-const PaymentButton = styled(LoadingButton)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-  textTransform: 'capitalize',
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: theme.palette.addToCartButtonShape.borderRadius,
-  marginTop: 15,
-  padding: '.5em 2em',
-  '&:hover': {
-    color: theme.palette.primary.contrastText,
-    backgroundColor: theme.palette.secondary.main,
-  }
-}));
 
 const randomNumber = getRandomInt(1, 999999);
     function getRandomInt(min, max) {
@@ -56,9 +40,7 @@ export default function CartTotal({
   shippingMethod,
   shippingPrice,
   taxToPaid,
-  totalToPaid,
-  payment_method,
-  isPending
+  payment_method
 }) {
   const route = useRouter();
   const { state, dispatch } = useContext(Store);
@@ -227,37 +209,6 @@ export default function CartTotal({
     }
   }
 
-  function createOrder(data, actions) {
-    return actions.order.create({
-      purchase_units: [
-        {
-          amount: { value: totalToPaid }
-        }
-      ]
-    }).then((orderID) => {
-      return orderID;
-    });
-  }
-
-  function onApprove(data, actions) {
-    return actions.order.capture().then(async function(details) {
-      try {
-        const {data} = await axios.put(`/api/guest/${order._id}/pay`, details, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: 'paid successfuly', severity: 'success'}});
-      } catch (error) {
-        dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
-      }
-    })
-  }
-
-  function onError(error) {
-    dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
-  }
-
   return (
     <Box sx={{ minWidth: 275 }}>
     {
@@ -323,26 +274,10 @@ export default function CartTotal({
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">Total: </Typography>
-            {
-              totalToPaid ?
-              <Typography color="primary" variant="h6" component="span">${totalToPaid.toFixed(2)}</Typography>
-              :
-              <Typography color="primary" variant="h6" component="span">${total.toFixed(2)}</Typography>
-            }
+              <Typography color="primary" variant="h6" component="span">
+              ${total.toFixed(2)}
+              </Typography>
           </Typography>
-          {
-            !paid ?
-              <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay Order</PaymentButton>
-              :
-              payment_method === 'PayPal' ?
-              <PayPalButtons
-              createOrder={createOrder}
-              onApprove={onApprove}
-              onError={onError}
-              ></PayPalButtons>
-              : 
-              <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
-          }
         </CardContent>
         {
           route.pathname !== '/cart' && route.pathname === '/order_guest/[id]' || route.pathname === '/order/[id]' &&

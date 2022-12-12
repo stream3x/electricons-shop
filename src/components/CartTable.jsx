@@ -27,6 +27,25 @@ import { useRouter } from 'next/router';
 import theme from '../theme';
 import InputBase from '@mui/material/InputBase';
 
+const MyTableContainer = styled(TableContainer)({
+  overflowY: "auto",
+  margin: 0,
+  padding: 0,
+  listStyle: "none",
+  height: "100%",
+  '&::-webkit-scrollbar': {
+    width: '3px',
+    height: '3px'
+  },
+  '&::-webkit-scrollbar-track': {
+    background: theme.palette.secondary.borderColor
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: theme.palette.primary.main,
+    borderRadius: '3px'
+  }
+});
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   flexWrap: 'nowrap',
@@ -40,9 +59,9 @@ const Search = styled('div')(({ theme }) => ({
   marginRight: theme.spacing(2),
   marginLeft: theme.spacing(2),
   width: '50%',
-  [theme.breakpoints.down('xs')]: {
+  [theme.breakpoints.down('md')]: {
     marginLeft: theme.spacing(3),
-    width: '20ch',
+    width: '100%',
   },
 }));
 
@@ -55,9 +74,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
-    [theme.breakpoints.down('xs')]: {
-      width: '20ch',
-    },
   },
 }));
 
@@ -67,14 +83,15 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   borderRadius: theme.palette.inputButtonShape.borderRadius,
   margin: '-1px',
-  padding: '.5em 2em',
-  width: 'inherit',
+  padding: '.5em 1em',
+  width: '250px',
+  fontSize: '14px',
   '&:hover': {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.secondary.main,
   },
   [theme.breakpoints.down('sm')]: {
-    display: 'none'
+    fontSize: '12px',
   },
 }));
 
@@ -282,8 +299,8 @@ export default function CartTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = cartitems.map((n) => n.title);
-      const newSelectedItems = cartitems.map((n) => n);
+      const newSelected = cartItems.map((n) => n.title);
+      const newSelectedItems = cartItems.map((n) => n);
       setSelected(newSelected);
       setSelectedItems(newSelectedItems);
       return;
@@ -335,9 +352,9 @@ export default function CartTable() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  if(cartitems.length === 0) {
+  if(cartItems.length === 0) {
     return (
-      <Box sx={{ flexGrow: 1, my: 4  }}>
+      <Box sx={{ flexGrow: 1, my: 4, '& a': {textDecoration: 'none'} }}>
         <Typography gutterBottom variant="h6" component="h3" textAlign="center">
           There are no items in your cart
         </Typography>
@@ -358,7 +375,7 @@ export default function CartTable() {
           state={state}
           selectedItems={selectedItems}
           />
-          <TableContainer>
+          <MyTableContainer>
             <Table
               sx={{ minWidth: 750 }}
               aria-labelledby="tableTitle"
@@ -452,7 +469,7 @@ export default function CartTable() {
                 )}
               </TableBody>
             </Table>
-          </TableContainer>
+          </MyTableContainer>
           
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
@@ -465,13 +482,13 @@ export default function CartTable() {
           />
         </Paper>
       </Box>
-      <Box sx={{'& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between'}}>
+      <Box sx={{width: {xs: '100%', sm: 'auto'}, '& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between'}}>
         <Search>
           <StyledInputBase
             placeholder="Coupon code"
             inputProps={{ 'aria-label': 'coupon' }}
           />
-          <StyledInputButton>Apply coupon</StyledInputButton>
+          <StyledInputButton>Apply coupon code</StyledInputButton>
         </Search>
       </Box>
     </React.Fragment>
