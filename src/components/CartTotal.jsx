@@ -44,7 +44,7 @@ export default function CartTotal({
 }) {
   const route = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment} } = state;
+  const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment, cupon_discount} } = state;
   const router = useRouter();
   const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
   const [expanded, setExpanded] = useState(false);
@@ -91,7 +91,7 @@ export default function CartTotal({
     taxCount = 1.12;
   }
 
-  const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * taxCount;
+  const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * (cupon_discount ? Number(1 - cupon_discount) : 1) * taxCount;
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
@@ -224,13 +224,15 @@ export default function CartTotal({
             <Typography variant="h6" component="span">${subTotal} </Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">shipping method: </Typography>
-            {
-              shippingMethod ?
-              <Typography variant="h6" component="span">{shippingMethod}</Typography>
-              :
-              <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
-            }
+          {
+            shippingMethod && 
+            <React.Fragment>
+              <Typography component="span">shipping method: </Typography>
+              <Typography variant="h6" component="span">
+              {shippingMethod}
+              </Typography>
+            </React.Fragment>
+          }
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">shipping: </Typography>
@@ -262,6 +264,15 @@ export default function CartTotal({
               <Typography variant="h6" component="span">{payment_method}</Typography>
             </Typography>
           }
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+            <Typography component="span">cupon discount: </Typography>
+            {
+              cupon_discount ?
+              <Typography variant="h6" component="span">- {cupon_discount * 100}%</Typography>
+              :
+              <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
+            }
+          </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">tax: </Typography>
             {

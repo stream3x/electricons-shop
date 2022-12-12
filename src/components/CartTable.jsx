@@ -19,13 +19,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
 import CountQuantity from '../assets/CountQuantity';
 import ReplyIcon from '@mui/icons-material/Reply';
-import { Button } from '@mui/material';
+import { Button, FormHelperText } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import Link from '../Link';
 import { Store } from '../utils/Store';
 import { useRouter } from 'next/router';
 import theme from '../theme';
 import InputBase from '@mui/material/InputBase';
+import Cookies from 'js-cookie';
 
 const MyTableContainer = styled(TableContainer)({
   overflowY: "auto",
@@ -46,7 +47,7 @@ const MyTableContainer = styled(TableContainer)({
   }
 });
 
-const Search = styled('div')(({ theme }) => ({
+const InputContainer = styled('div')(({ theme }) => ({
   position: 'relative',
   flexWrap: 'nowrap',
   display: 'flex',
@@ -71,7 +72,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    paddingLeft: `calc(1em + ${theme.spacing(1)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
   },
@@ -83,7 +84,7 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   borderRadius: theme.palette.inputButtonShape.borderRadius,
   margin: '-1px',
-  padding: '.5em 1em',
+  padding: '.5em 0em',
   width: '250px',
   fontSize: '14px',
   '&:hover': {
@@ -287,9 +288,12 @@ export default function CartTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const { state, dispatch } = React.useContext(Store);
-  const {cart: {cartItems}} = state;
-  const router = useRouter()
-
+  const {cart: {cartItems, cupon_discount}, snack} = state;
+  const router = useRouter();
+  const [errors, setErrors] = React.useState({
+    cupon: false
+  });
+  const codex = [{code: '123789', discount: '.25'}, {code: '789456', discount: '.10'}, {code: '456132', discount: '.30'}];
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -364,6 +368,39 @@ export default function CartTable() {
       </Box>
     )
   }
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+      const formOutput = new FormData(event.currentTarget);
+      const formData = {
+        cuponCode: formOutput.get('cupon-code'),
+      };
+      if(formData.cuponCode === '') {
+        setErrors({ ...errors, cupon: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'enter cupon code', severity: 'warning'}});
+        return;
+      }
+      if(codex.find(cupon => cupon.code === formData.cuponCode)) {
+        const cupon = codex.filter(cupon => cupon.code === formData.cuponCode && cupon.discount);
+        setErrors({
+          ...errors,
+          cupon: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'cupon code accepted', severity: 'success'}});
+        dispatch({ type: 'CUPON_DISCOUNT', payload: { cupon } });
+        Cookies.set('cupon_discount', cupon[0].discount);
+        return;
+      }
+      if(codex.find(code => code !== formData.cuponCode)) {
+        setErrors({ ...errors, cupon: true });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'cupon code is not valid', severity: 'error'}});
+        return;
+      }
+      setErrors({ 
+        ...errors,
+        cupon: false
+      });
+  };
 
   return (
     <React.Fragment>
@@ -482,14 +519,21 @@ export default function CartTable() {
           />
         </Paper>
       </Box>
-      <Box sx={{width: {xs: '100%', sm: 'auto'}, '& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between'}}>
-        <Search>
+      <Box component="form" onSubmit={handleSubmit} sx={{width: {xs: '100%', sm: 'auto'}, '& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap'}}>
+        <InputContainer>
           <StyledInputBase
+            name="cupon-code"
+            id="cupon-code"
             placeholder="Coupon code"
             inputProps={{ 'aria-label': 'coupon' }}
+            error={errors.cupon}
           />
-          <StyledInputButton>Apply coupon code</StyledInputButton>
-        </Search>
+          <StyledInputButton type="submit">Apply coupon</StyledInputButton>
+          </InputContainer>
+          {
+            errors.cupon && 
+            <FormHelperText sx={{width: '100%', ml: 3}} error>{snack.message && snack.message}</FormHelperText>
+          }
       </Box>
     </React.Fragment>
   );

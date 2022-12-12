@@ -49,7 +49,7 @@ export default function Addresses() {
       Cookies.set('forInvoice', 0);
     }
   };
-console.log(checked, forInvoice, Cookies.get('forInvoice'));
+
   const handleChangeInvoice = (event) => {
     setForInvoice(() => Number(event.target.value))
     Cookies.set('forInvoice', Number(event.target.value) - 1);

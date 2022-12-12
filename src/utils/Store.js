@@ -10,6 +10,7 @@ const initialState = {
     addresses: Cookies.get('addresses') ? JSON.parse(Cookies.get('addresses')) : [],
     shipping: Cookies.get('shipping') ? JSON.parse(Cookies.get('shipping')) : {},
     payment: Cookies.get('payment') ? JSON.parse(Cookies.get('payment')) : {},
+    cupon_discount: Cookies.get('cupon_discount') ? Cookies.get('cupon_discount') : {},
   },
   userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
   snack: {
@@ -42,6 +43,9 @@ function reducer(state, action) {
     }
     case 'PERSONAL_INFO': {
       return { ...state, cart: { ...state.cart, personalInfo: action.payload } };
+    }
+    case 'CUPON_DISCOUNT': {
+      return { ...state, cart: { ...state.cart, cupon_discount: action.payload } };
     }
     case 'ADDRESSES': {
       const newItem = action.payload;
