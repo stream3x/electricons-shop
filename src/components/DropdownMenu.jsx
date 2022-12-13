@@ -88,7 +88,7 @@ export default function DropdownMenu(props) {
                       id={`${item.title} panel`}
                       sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}
                     >
-                    <Link href={item.categoryUrl} sx={{display: 'flex'}}>
+                    <Link href={`/category/${item.categoryUrl}`} sx={{display: 'flex'}}>
                       <Avatar alt={item.title} src={item.avatar} /> 
                       <Typography color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center', '&:hover': {color: theme.palette.primary.main} }}>
                         {item.title}
