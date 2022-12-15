@@ -41,7 +41,7 @@ const Page = () => {
   );
 };
 
-export default function BreadcrumbNav({productData, categoryData}) {
+export default function BreadcrumbNav({productData, categoryData, subCategoryData}) {
 
   return (
     <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 14, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>
@@ -54,20 +54,42 @@ export default function BreadcrumbNav({productData, categoryData}) {
         <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
         Home
       </Link>
-      <Link
-        underline="none"
-        sx={{ display: 'flex', alignItems: 'center' }}
-        color="primary"
-        href={productData.categoryUrl}
-      >
-        {productData.category}
-      </Link>
-      <Typography
-        sx={{ display: 'flex', alignItems: 'center' }}
-        color="text.primary"
-      >
-        {productData.title}
-      </Typography>
+      {
+        categoryData ?
+          <Typography
+            sx={{ display: 'flex', alignItems: 'center' }}
+            color="text.primary"
+          >
+            {categoryData.categoryName}
+          </Typography>
+        :
+          <Link
+            underline="none"
+            sx={{ display: 'flex', alignItems: 'center' }}
+            color="primary"
+            href={`/category/${productData.categoryUrl}`}
+          >
+            {productData.category}
+          </Link>
+      }
+      {
+        categoryData && categoryData.subCategoryName &&
+        <Typography
+          sx={{ display: 'flex', alignItems: 'center' }}
+          color="text.primary"
+        >
+          {categoryData.subCategoryName}
+        </Typography>
+      }
+      {
+        productData && 
+          <Typography
+            sx={{ display: 'flex', alignItems: 'center' }}
+            color="text.primary"
+          >
+            {productData && productData.title}
+          </Typography>
+      }
     </Breadcrumbs>
   );
 }

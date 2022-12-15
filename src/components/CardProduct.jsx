@@ -22,7 +22,7 @@ export default function CardProduct(props) {
     <Grid container spacing={2}>
     {
       products.map((product, index) => (
-        product.inWidget === 'hero' && product.category === step.category &&
+        product.inWidget === 'hero' && product.category === step.categoryName &&
           <Grid key={product.title} item xs={12} md={4}>
               <Card sx={{ width: "100%", height: "100%" }}>
                   <CardActionArea sx={{position: 'relative'}}>
@@ -31,9 +31,10 @@ export default function CardProduct(props) {
                       product._id === selected &&
                       <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
                     }
-                      <CardMedia sx={{position: 'relative!important', display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                      <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                         <Image
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority
                           src={product.images[0].image}
                           alt={product.title}
@@ -79,6 +80,6 @@ export default function CardProduct(props) {
           </Grid>
           ))
         }
-        </Grid>
+    </Grid>
   );
 }

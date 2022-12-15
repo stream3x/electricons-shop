@@ -1,27 +1,36 @@
-const category = {
-  category_products: [
+const category_data = {
+  categories: [
     {
-      title: "Desktop computers",
+      categoryName: "Desktop computers",
       avatar: "/images/desktopAvatar.jpeg",
-      category: "desktop computers",
-      categoryUrl: "desktop-computers",
-      subCategory: [{label: 'AMD Computers', url: 'amd-computers'}, {label: 'Dell Computers', url: 'dell-computers'}, {label: 'HP Computers', url: 'hp-computers'}]
+      slug: "desktop-computers",
+      subCategory: [
+        {url: 'amd-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
+        {url: 'dell-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
+        {url: 'hp-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'}
+      ]
     },
     {
-      title: "Laptop computers",
+      categoryName: "Laptop computers",
       avatar: "/images/laptopAvatar.jpg",
-      category: "laptop",
-      categoryUrl: "laptops",
-      subCategory: [{label: 'Acer Laptops', url: 'acer-laptops'}, {label: 'Lenovo Laptops', url: 'lenovo-laptops'},{label: 'Toshiba Laptops', url: 'toshiba-laptops'}]
+      slug: "laptops",
+      subCategory: [
+        {url: 'acer-laptops', subCategoryName: 'Acer laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'},
+        {url: 'lenovo-laptops', subCategoryName: 'Lenovo laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'},
+        {url: 'toshiba-laptops', subCategoryName: 'Toshiba laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'}
+      ]
     },
     {
-      title: "Smartphones",
+      categoryName: "Smartphones",
       avatar: "/images/mobileAvatar.png",
-      category: "smartphones",
-      categoryUrl: "smartphones",
-      subCategory: [{label: 'Xiaomi smartphones', url: 'xiaomi-smartphones'}, {label: 'Nokia smartphones', url: 'nokia-smartphones'}, {label: 'Huawei smartphones', url: 'huawei-smartphones'}]
+      slug: "smartphones",
+      subCategory: [
+        {url: 'xiaomi-smartphones', subCategoryName: 'Xiaomi smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'},
+        {url: 'nokia-smartphones', subCategoryName: 'Nokia smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'},
+        {url: 'huawei-smartphones', subCategoryName: 'Huawei smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'}
+      ]
     }
-  ],
+  ]
 }
 
-export default category;
+export default category_data;

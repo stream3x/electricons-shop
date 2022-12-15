@@ -250,7 +250,7 @@ export default function SingleProduct(props) {
                   </AddToCartButton>
                 )
                 :
-                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} sx={{cursor: 'no-drop'}} startIcon={<RemoveShoppingCartIcon />}>
+                <AddToCartButton sx={{width: {xs: '100%', sm: 'auto'}}} startIcon={<RemoveShoppingCartIcon />}>
                   no Stock
                 </AddToCartButton>
               }

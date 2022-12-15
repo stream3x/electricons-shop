@@ -43,5 +43,17 @@ function convertDocToObject(doc) {
   return doc;
 }
 
-const db = { connect, disconnect, convertDocToObject };
+function convertCatToObject(doc) {
+  doc._id = doc._id.toString();
+  doc.subCategory.forEach(sub => {
+    sub._id = sub._id.toString();
+    sub.createdAt = sub.createdAt.toString();
+    sub.updatedAt = sub.updatedAt.toString();
+  });
+  doc.createdAt = doc.createdAt.toString();
+  doc.updatedAt = doc.updatedAt.toString();
+  return doc;
+}
+
+const db = { connect, disconnect, convertDocToObject, convertCatToObject };
 export default db;

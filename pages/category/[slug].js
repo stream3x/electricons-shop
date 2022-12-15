@@ -3,36 +3,56 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
-import VerticalTabs from '../../src/components/VerticalTabs';
 import Rating from '@mui/material/Rating';
-import CountQuantity from '../../src/assets/CountQuantity';
 import BreadcrumbNav from '../../src/assets/BreadcrumbNav';
-import Product from '../../models/Product';
 import db from '../../src/utils/db';
-import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
-import Wishlist from '@mui/icons-material/FavoriteBorderOutlined';
-import CompareIcon from '@mui/icons-material/RepeatOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
-import axios from 'axios';
 import { Store } from '../../src/utils/Store';
 import LoadingButton from '@mui/lab/LoadingButton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import theme from '../../src/theme';
 import Category from '../../models/Category';
+import Product from '../../models/Product';
+import Image from 'next/image';
 
 export async function getServerSideProps(context) {
   const { params } = context;
   const { slug } = params;
   await db.connect();
   const category = await Category.findOne({slug}).lean();
+  const product = await Product.find({}).lean();
+  const categoryProducts = product.filter(prod => prod.categoryUrl === slug);
   await db.disconnect();
+
+  function replacer(key, value) {
+    if(value instanceof Map) {
+      return {
+        dataType: 'Map',
+        value: Array.from([...value]),
+      };
+    } else {
+      return value;
+    }
+  }
+
+  function reviver(key, value) {
+    if(typeof value === 'object' && value !== null) {
+      if (value.dataType === 'Map') {
+        return new Map(value.value);
+      }
+    }
+    return value;
+  }
+
+  const org_value = JSON.stringify(categoryProducts, replacer);
+  const newValue = JSON.parse(org_value, reviver);
+
   return {
     props: {
-      category: db.convertDocToObject(category),
+      category: db.convertCatToObject(category),
+      categoryProducts: newValue
     },
   };
 }
@@ -102,10 +122,15 @@ color: theme.palette.text.secondary,
 }));
 
 export default function CategoryProducts(props) {
-  const { category } = props;
+  const { category, categoryProducts } = props;
   const { state, dispatch } = useContext(Store);
   const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
+  const [selected, setSelected] = React.useState('');
+
+  const handleLoading = (product) => {
+    setSelected(product._id);
+  };
 
   if(!category) {
     return (
@@ -128,27 +153,69 @@ export default function CategoryProducts(props) {
     )
   }
 
-  async function addToCartHandler() {
-    setLoading(true)
-    const { data } = await axios.get(`/api/products/${product._id}`)
-    if(data.inStock <= 0) {
-      dispatch({ type: 'CART_ADD_ITEM', payload: { ...state.snack, message: 'Sorry Product is out of stock', severity: 'success'}});
-      return;
-    }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1}});
-    if(cartItems.find(i => i._id === product._id)) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
-      setLoading(false);
-      return;
-    }
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
-    setLoading(false);
-  }
-
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
-      {/*<BreadcrumbNav categoryData={category} />*/}
-     
+      <BreadcrumbNav categoryData={category} />
+      <Grid container spacing={2}>
+      {categoryProducts.map(prod => (
+        <Grid key={prod._id} item xs={12} md={3}>
+            <Card sx={{ width: "100%", height: "100%" }}>
+                <CardActionArea sx={{position: 'relative'}}>
+                  <Link href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
+                  {
+                    prod._id === selected &&
+                    <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                  }
+                    <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                      <Image
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority
+                        src={prod.images[0].image}
+                        alt={prod.title}
+                        quality={35}
+                      />
+                    </CardMedia>
+                  </Link>
+                  <CardContent>
+                    {
+                      prod.inStock > 0 ? 
+                      ( <Typography color="primary" gutterBottom variant="caption" component="p" align="center">
+                      in Stock
+                      </Typography>) :
+                      ( <Typography color="secondary" gutterBottom variant="caption" component="p" align="center">
+                      out of Stock
+                      </Typography>)
+                    }
+                    <Typography gutterBottom variant="h6" component="h3" align="center">
+                    {prod.title}
+                    </Typography>
+                    <Typography align="center" variant="body2" color="text.secondary">
+                      {prod.shortDescription}
+                    </Typography>
+                    <Box
+                      sx={{
+                        textAlign: 'center',
+                        my: 1,
+                      }}
+                      >
+                      <Rating size="small" name="read-only" value={prod.rating} readOnly precision={0.5} />
+                    </Box>
+                    <Typography align="center" component="h3" variant="h6" color="secondary">
+                      {prod.price}
+                      <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
+                        <del>
+                        {prod.oldPrice && prod.oldPrice}
+                        </del>
+                      </Typography>
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+            </Card>
+        </Grid>
+      ))}
+      </Grid>
+      
     </Box>
   );
 }

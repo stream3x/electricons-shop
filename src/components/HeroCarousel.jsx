@@ -8,7 +8,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import CardProduct from "./CardProduct";
 import { IconButton, useMediaQuery } from "@mui/material";
-import category from "../utils/category";
+import category_data from "../utils/category";
 import Link from '../Link';
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from 'react-swipeable-views-utils';
@@ -41,10 +41,10 @@ function TabPanel(props) {
 function HeroCarousel({ data }) {
   const { product } = data;
   const [carouselPoroduct, setCarouselPoroduct] = useState([])
-  const { category_products } = category;
+  const { categories } = category_data;
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = category_products.length;
+  const maxSteps = categories.length;
   const filtered = product && product.filter(obj => {
     return obj.inWidget === 'hero';
   });
@@ -136,12 +136,12 @@ function HeroCarousel({ data }) {
           }}
         >
         <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center' }}>
-        <Link href={category_products && category_products[activeStep ? activeStep : 0].categoryUrl}>
+        <Link href={categories && `/category/${categories[activeStep ? activeStep : 0].slug}`}>
           <Typography color="primary" variant="caption">
-            {category_products[activeStep].title}
+            {categories[activeStep].categoryName}
           </Typography>
         </Link>
-          <Typography variant="h" component="h1">{category_products[activeStep].title}</Typography>
+          <Typography variant="h" component="h1">{categories[activeStep].categoryName}</Typography>
         </Box>
         </Paper>
         <AutoPlaySwipeableViews
@@ -152,8 +152,8 @@ function HeroCarousel({ data }) {
           onChangeIndex={handleStepChange}
         >
           {
-            category_products.map((step, index) => (
-              <TabPanel key={step.title} value={activeStep} index={index} dir={theme.direction}>
+            categories.map((step, index) => (
+              <TabPanel key={step.categoryName} value={activeStep} index={index} dir={theme.direction}>
                 <CardProduct loading products={carouselPoroduct} step={step} />
               </TabPanel>
             ))

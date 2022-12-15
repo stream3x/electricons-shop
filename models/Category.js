@@ -1,21 +1,23 @@
 import mongoose from 'mongoose'
 
+const subCategorySchema = new mongoose.Schema(
+  {
+    url: {type: String, required: true},
+    subCategoryName: {type: String, required: true},
+    topCategoryName: {type: String, required: true},
+    topCategoryUrl: {type: String, required: true}
+  },
+  {
+    timestamps: true
+  }
+);
+
 const categorySchema = new mongoose.Schema(
   {
-  category_products: [
-    {
-      title: {type: String, required: true},
-      avatar: {type: String, required: true},
-      category: {type: String, required: true},
-      categoryUrl: {type: String, required: true},
-      subCategory: [
-        {
-          label: {type: String, required: true},
-          url: {type: String, required: true}
-        }
-      ]
-    }
-  ]
+    categoryName: {type: String, required: true},
+    avatar: {type: String, required: true},
+    slug: {type: String, required: true},
+    subCategory: [subCategorySchema]
   },
   {
     timestamps: true

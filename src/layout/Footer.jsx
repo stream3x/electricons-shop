@@ -131,7 +131,7 @@ export default function Footer({ isVisible, setIsVisible }) {
                   <ListItemIcon>
                     {info.icon}
                   </ListItemIcon>
-                  <ListItemText primary={info.title} />
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={info.title} />
                 </ListItem>
               ))
             }

@@ -6,7 +6,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import data from '../utils/data';
-import category from '../utils/category';
+import category_data from '../utils/category';
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
 import Link from '../Link';
 import theme from '../theme';
@@ -14,7 +14,7 @@ import theme from '../theme';
 export default function DropdownMenu(props) {
   const { openDropdown, anchorElDropdown , handleCloseDropdown, isVisible } = props;
   const { products } = data;
-  const { category_products } = category;
+  const { categories } = category_data;
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -72,7 +72,7 @@ export default function DropdownMenu(props) {
             }
           >
           {
-            category_products.map((item, index) => (
+            categories.map((item, index) => (
               item ? (
                   <Accordion
                     elevation={0}
@@ -84,14 +84,14 @@ export default function DropdownMenu(props) {
                     >
                     <AccordionSummary
                       expandIcon={<ExpandMore />}
-                      aria-controls={`${item.title} controls`}
-                      id={`${item.title} panel`}
+                      aria-controls={`${item.categoryName} controls`}
+                      id={`${item.categoryName} panel`}
                       sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}
                     >
-                    <Link href={`/category/${item.categoryUrl}`} sx={{display: 'flex'}}>
+                    <Link href={`/category/${item.slug}`} sx={{display: 'flex'}}>
                       <Avatar alt={item.title} src={item.avatar} /> 
                       <Typography color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center', '&:hover': {color: theme.palette.primary.main} }}>
-                        {item.title}
+                        {item.categoryName}
                       </Typography>
                     </Link>
                     </AccordionSummary>
@@ -101,14 +101,14 @@ export default function DropdownMenu(props) {
                       item.subCategory.map((sub, index) => (
                         
                           <Grid sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }} key={index} item xs={4}>
-                            <Link href={`/category/${item.categoryUrl}/${sub.url}`} passHref>
+                            <Link href={`/category/${sub.url}`} passHref>
                               <Typography sx={{pb: 2, '&:hover': {color: theme.palette.secondary.lightGrey}}} color="secondary" component="h5" variant="p">
-                              {sub.label}
+                              {sub.url}
                               </Typography>
                             </Link>
                             {
                               products.map((prod, i) => (
-                                sub.label === prod.subCategory &&
+                                sub.url === prod.subCategoryUrl &&
                                 <Link key={i} href={`/product/${prod.slug}`} underline="hover" sx={{display: 'flex', pb: 1}}>
                                   <Typography sx={{'&:hover': {color: theme.palette.primary.main}}} color="secondary.lightGrey" component="h6" variant="p">
                                   {prod.title}
@@ -129,13 +129,13 @@ export default function DropdownMenu(props) {
                   key={index}
                   >
                   <AccordionSummary
-                    aria-controls={`${item.title} controls`}
-                    id={`${item.title} panel`}
+                    aria-controls={`${item.categoryName} controls`}
+                    id={`${item.categoryName} panel`}
                   >
-                    <Link href={`/product/${item.path}`} underline="hover" sx={{display: 'flex'}}>
-                      <Avatar alt={item.title} src={item.avatar} />
+                    <Link href={`/product/${item.slug}`} underline="hover" sx={{display: 'flex'}}>
+                      <Avatar alt={item.categoryName} src={item.avatar} />
                       <Typography sx={{ width: '33%', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-                        {item.title}
+                        {item.categoryName}
                       </Typography>
                     </Link>
                   </AccordionSummary> 
