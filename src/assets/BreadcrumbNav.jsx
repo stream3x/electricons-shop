@@ -41,10 +41,10 @@ const Page = () => {
   );
 };
 
-export default function BreadcrumbNav({productData, categoryData, subCategoryData}) {
+export default function BreadcrumbNav({productData, categoryData}) {
 
   return (
-    <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 14, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>
+    <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 12, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>
       <Link
         underline="none"
         sx={{ display: 'flex', alignItems: 'center' }}
@@ -55,40 +55,57 @@ export default function BreadcrumbNav({productData, categoryData, subCategoryDat
         Home
       </Link>
       {
-        categoryData ?
-          <Typography
+        categoryData && categoryData[0] &&
+          <Link
+            underline="none"
             sx={{ display: 'flex', alignItems: 'center' }}
-            color="text.primary"
+            color="primary"
+            href={`/category/${categoryData[0]}`}
           >
-            {categoryData.categoryName}
-          </Typography>
-        :
+            {categoryData[0].replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+          </Link>
+      }
+      {
+        categoryData && categoryData[1] &&
+          <Link
+            underline="none"
+            sx={{ display: 'flex', alignItems: 'center' }}
+            color="primary"
+            href={`/category/${categoryData[0]}/${categoryData[1]}`}
+          >
+            {categoryData[1].replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+          </Link>
+      }
+      {
+        productData && productData.categoryUrl &&
           <Link
             underline="none"
             sx={{ display: 'flex', alignItems: 'center' }}
             color="primary"
             href={`/category/${productData.categoryUrl}`}
           >
-            {productData.category}
+            {productData.categoryUrl}
           </Link>
       }
       {
-        categoryData && categoryData.subCategoryName &&
-        <Typography
-          sx={{ display: 'flex', alignItems: 'center' }}
-          color="text.primary"
-        >
-          {categoryData.subCategoryName}
-        </Typography>
+        productData && productData.subCategoryUrl &&
+          <Link
+            underline="none"
+            sx={{ display: 'flex', alignItems: 'center' }}
+            color="primary"
+            href={`/category/${productData.categoryUrl}/${productData.subCategoryUrl}`}
+          >
+            {productData.subCategory}
+          </Link>
       }
       {
-        productData && 
-          <Typography
-            sx={{ display: 'flex', alignItems: 'center' }}
-            color="text.primary"
-          >
-            {productData && productData.title}
-          </Typography>
+        productData && productData.slug &&
+        <Typography
+          sx={{ display: 'flex', alignItems: 'center', fontSize: {xs: 12, sm: 'inherit'} }}
+          color="text.primary"
+        >
+          {productData.title}
+        </Typography>
       }
     </Breadcrumbs>
   );

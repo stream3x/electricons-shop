@@ -67,30 +67,30 @@ function ScrollTop(props) {
 }
 
 const store_information = [
-  {title: 'Elecetricons store, Serbia', icon: <Public />},
-  {title: 'electricons@explodemarket.com', icon: <DraftsIcon />},
-  {title: '(+381) 555 333', icon: <LocalPhoneIcon />}
+  {id: '1.1', title: 'Elecetricons store, Serbia', icon: <Public />},
+  {id: '1.2', title: 'electricons@explodemarket.com', icon: <DraftsIcon />},
+  {id: '1.3', title: '(+381) 555 333', icon: <LocalPhoneIcon />}
 ];
 const company = [
-  {title: 'Delivery'},
-  {title: 'Legal Notice'},
-  {title: 'Terms and conditions of use'},
-  {title: 'About us'},
-  {title: 'Contact us'},
+  {id: '2.1', title: 'Delivery'},
+  {id: '2.2', title: 'Legal Notice'},
+  {id: '2.3', title: 'Terms and conditions of use'},
+  {id: '2.4', title: 'About us'},
+  {id: '2.5', title: 'Contact us'},
 ];
 const account = [
-  {title: 'Personal Info'},
-  {title: 'Orders'},
-  {title: 'Credit slips'},
-  {title: 'Addresses'},
-  {title: 'My wishlists'}
+  {id: '3.1', title: 'Personal Info'},
+  {id: '3.2', title: 'Orders'},
+  {id: '3.3', title: 'Credit slips'},
+  {id: '3.4', title: 'Addresses'},
+  {id: '3.5', title: 'My wishlists'}
 ];
 const products = [
-  {title: 'Electricons'},
-  {title: 'Desktop computers'},
-  {title: 'Laptop computers'},
-  {title: 'Mobile'},
-  {title: 'Tablets'}
+  {id: '4.1', title: 'Electricons'},
+  {id: '4.2', title: 'Desktop computers'},
+  {id: '4.3', title: 'Laptop computers'},
+  {id: '4.4', title: 'Mobile'},
+  {id: '4.5', title: 'Tablets'}
 ];
 
 export default function Footer({ isVisible, setIsVisible }) {
@@ -127,7 +127,7 @@ export default function Footer({ isVisible, setIsVisible }) {
           >
             {
               store_information.map(info => (
-                <ListItem key={info}>
+                <ListItem key={info.id}>
                   <ListItemIcon>
                     {info.icon}
                   </ListItemIcon>
@@ -146,7 +146,7 @@ export default function Footer({ isVisible, setIsVisible }) {
           >
             {
               company.map(company_list => (
-                <ListItem key={company_list}>
+                <ListItem key={company_list.id}>
                   <ListItemText primary={company_list.title} />
                 </ListItem>
               ))
@@ -162,7 +162,7 @@ export default function Footer({ isVisible, setIsVisible }) {
           >
             {
               account.map(account => (
-                <ListItem key={account}>
+                <ListItem key={account.id}>
                   <ListItemText primary={account.title} />
                 </ListItem>
               ))
@@ -178,7 +178,7 @@ export default function Footer({ isVisible, setIsVisible }) {
           >
             {
               products.map(product => (
-                <ListItem key={product}>
+                <ListItem key={product.id}>
                   <ListItemText primary={product.title} />
                 </ListItem>
               ))
