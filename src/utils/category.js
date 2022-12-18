@@ -6,8 +6,8 @@ const category_data = {
       slug: "desktop-computers",
       subCategory: [
         {url: 'amd-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
-        {url: 'dell-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
-        {url: 'hp-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'}
+        {url: 'dell-computers', subCategoryName: 'Dell Computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
+        {url: 'hp-computers', subCategoryName: 'HP computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'}
       ]
     },
     {

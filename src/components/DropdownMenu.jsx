@@ -103,7 +103,7 @@ export default function DropdownMenu(props) {
                           <Grid sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }} key={index} item xs={4}>
                             <Link href={`/category/${item.slug}/${sub.url}`} passHref>
                               <Typography sx={{pb: 2, '&:hover': {color: theme.palette.primary.main}}} color="secondary" component="h5" variant="p">
-                              {sub.url}
+                              {sub.subCategoryName}
                               </Typography>
                             </Link>
                             {

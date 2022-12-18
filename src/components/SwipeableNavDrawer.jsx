@@ -20,6 +20,14 @@ import theme from '../theme';
 function ListsItem(props) {
   const { cat, onClose } = props;
   const [open, setOpen] = React.useState(false);
+  const [openSub, setOpenSub] = React.useState('');
+
+  function collapseHeandler(e, i) {
+    if(e.currentTarget.tabIndex === i) {
+      setOpenSub(`open ${i}`);
+      console.log(`open ${i}`);
+    }
+  }
 
   return (
       <React.Fragment>
@@ -39,15 +47,36 @@ function ListsItem(props) {
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List sx={{'& a': {textDecoration: 'none'}}} component="ul" disablePadding>
           {
-            data.products.map(product => (
-              product.category === cat.categoryName &&
-              <Link onClick={onClose} href={`/category/${cat.slug}/${product.subCategoryUrl}/${product.slug}`} sx={{display: 'flex', '&:hover': {color: theme.palette.primary.main} }} color="secondary">
-                <ListItem key={product.title} disablePadding>
-                  <ListItemButton sx={{ pl: 4 }}>
-                    <ListItemText primary={product.title} />
-                  </ListItemButton>
-                </ListItem>
-              </Link>
+            cat.subCategory.map((sub, i) => (
+              <React.Fragment key={sub.url}>
+                
+                  <ListItem key={sub.url} disablePadding>
+                    <ListItemButton tabIndex={i} onClick={(e) => collapseHeandler(e, i)} sx={{ pl: 4, justifyContent: 'space-between' }}>
+                      <Link href={`/category/${cat.slug}/${sub.url}`} sx={{display: 'flex', '&:hover': {color: theme.palette.primary.main} }} color="secondary">
+                        <ListItemText sx={{'& span': {fontSize: '14px', fontWeight: 'bold', ml: 2} }} onClick={onClose} primary={sub.subCategoryName} />
+                      </Link>
+                      {openSub === `open ${i}` ? 
+                        <ExpandLess />
+                      :
+                        <ExpandMore />
+                      }
+                    </ListItemButton>
+                  </ListItem>
+                <Collapse in={openSub === `open ${i}`} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {
+                      data.products.map(prod => (
+                        sub.url === prod.subCategoryUrl &&
+                        <Link onClick={onClose} underline="none" key={prod.slug} href={`/product/${prod.slug}`} sx={{display: 'flex', pb: 1, '&:hover': {color: theme.palette.primary.main} }} color="secondary.lightGrey">
+                          <ListItemButton key={prod.slug} sx={{ pl: 4 }}>                   
+                            <ListItemText sx={{'& span': {fontSize: '13px', ml: 2} }} primary={prod.title} />
+                          </ListItemButton>
+                        </Link>
+                      ))
+                    }
+                  </List>
+                </Collapse>
+              </React.Fragment>
             ))
           }
           </List>
@@ -103,7 +132,7 @@ export default function SwipeableNavDrawer() {
               <List 
               sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
               component="ul"
-              aria-labelledby="nested-list-subheader"
+              aria-labelledby="nested-list-sub-nav"
               >
                {category_data.categories.map((cat, index) => (
                 <ListsItem key={cat.categoryName} cat={cat} onClose={toggleDrawer(anchor, false)}/>

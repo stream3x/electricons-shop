@@ -31,9 +31,9 @@ export default function RangeSlider() {
       <Typography component="p" color="secondary" id="input-slider" gutterBottom>
         Filter by price
       </Typography>
-      <Box sx={{ my: 2 }}>
+      <Box sx={{ my: 2, display: 'flex' }}>
         <Input
-          sx={{ '& input': {textAlign: 'center'} }}
+          sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
           value={value[0]}
           size="small"
           onChange={handleInputChange}
@@ -50,7 +50,7 @@ export default function RangeSlider() {
           -
         </Typography>
         <Input
-          sx={{ '& input': {textAlign: 'center'} }}
+          sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
           value={value[1]}
           size="small"
           onChange={handleInputChange}

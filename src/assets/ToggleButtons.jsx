@@ -13,7 +13,7 @@ export default function ToggleButtons() {
 
   return (
     <ToggleButtonGroup
-      sx={{ flexGrow: 1, mx: 3 }}
+      sx={{ flexGrow: 0, mx: 3, display: {xs: 'none', sm: 'block'} }}
       orientation="horizontal"
       value={view}
       exclusive

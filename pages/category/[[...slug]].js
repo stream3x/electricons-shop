@@ -23,6 +23,7 @@ import RangeSlider from '../../src/assets/RangeSlider';
 import ToggleButtons from '../../src/assets/ToggleButtons';
 import SelectCategory from '../../src/assets/SelectCategory';
 import CheckboxesGroup from '../../src/assets/CheckboxesGroup';
+import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -144,6 +145,9 @@ color: theme.palette.text.secondary,
 export default function CategoryProducts(props) {
   const { category, categoryProducts, subCategoryProducts } = props;
   const { state, dispatch } = useContext(Store);
+  const router = useRouter();
+  const { ...slug } = router;
+  const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
   const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = React.useState('');
@@ -177,7 +181,7 @@ export default function CategoryProducts(props) {
     <Box sx={{ flexGrow: 1, my: 4  }}>
       <BreadcrumbNav categoryData={category} />
       <Grid container spacing={2}>
-        <Grid item sx={{display: {xs: 'none', sm: 'block'}}} sm={2}>
+        <Grid item sx={{display: {xs: 'none', lg: 'block'}}} lg={3}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
@@ -196,20 +200,21 @@ export default function CategoryProducts(props) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} sm={10}>
+        <Grid item xs={12} lg={9}>
         {
           subCategoryProducts ?
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
+                  <Typography color="secondary.lightGrey" component="h2" variant="p">{titlePage}</Typography>
                   {
                     subCategoryProducts.length === 0 ?
-                    <Typography sx={{ m: 0 }} color="secondary" gutterBottom variant="p" component="p" textAlign="center">
+                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No products"
                     </Typography>
                     :
-                    <Typography sx={{ m: 0 }} color="secondary" gutterBottom variant="p" component="p" textAlign="center">
+                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     There are {subCategoryProducts.length} {subCategoryProducts.length === 1 ? "product" : "products"}.
                   </Typography>
                   }
@@ -281,13 +286,14 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
+                  <Typography color="primary" component="h2" variant="p">{titlePage}</Typography>
                   {
                     categoryProducts.length === 0 ?
-                    <Typography sx={{ m: 0 }} color="secondary" gutterBottom variant="p" component="p" textAlign="center">
+                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No products"
                     </Typography>
                     :
-                    <Typography sx={{ m: 0 }} color="secondary" gutterBottom variant="p" component="p" textAlign="center">
+                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     There are {categoryProducts.length} {categoryProducts.length === 1 ? "product" : "products"}.
                   </Typography>
                   }

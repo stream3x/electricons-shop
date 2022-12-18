@@ -137,9 +137,9 @@ export default function Header(props) {
   const isMenuOpen = Boolean(anchorEl);
   const isMenuUserOpen = Boolean(anchorElUser);
 
-  const handleCartOpen = (event) => {
+  function handleCartOpen(event) {
     setCartAnchorEl(event.currentTarget);
-  };
+  }
 
   const handleCartClose = () => {
     setCartAnchorEl(null);
@@ -372,7 +372,7 @@ export default function Header(props) {
                     sx={{ backgroundColor: theme.palette.badge.bgd, ml: 2 }}
                   >
                     <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={7} color="secondary">
-                      <Wishlist color="secondary"/>
+                      <Wishlist color="badge.bgd"/>
                     </Badge>
                   </IconButton>
                   <SwipeableCartDrawer cart={cart}/>

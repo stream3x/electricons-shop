@@ -7,13 +7,25 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import theme from '../theme';
+import { Button, Collapse, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
+import data from '../utils/data';
 
 export default function CheckboxesGroup() {
-  const [state, setState] = React.useState({
-    AMD: true,
-    Dell: false,
-    Lenovo: false,
-  });
+  const [expanded, setExpanded] = React.useState(false);
+  const { products } = data;
+  const router = useRouter();
+  const { ...slug } = router;
+  const defaultState = products.filter(product => product.categoryUrl === slug.query.slug.toString());
+  const brandState = defaultState.map(item => item.brand);
+  const unique = [...new Set(brandState)]
+  const createBooleans = Array(unique.length).fill(false);
+
+  const result = [createBooleans].map(row =>
+    row.reduce((acc, cur, i) =>
+      (acc[unique[i]] = cur, acc), {}))
+
+  const [state, setState] = React.useState(result);
 
   const handleChange = (event) => {
     setState({
@@ -22,37 +34,48 @@ export default function CheckboxesGroup() {
     });
   };
 
-  const { AMD, Dell, Lenovo } = state;
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <FormControl sx={{ my: 3 }} component="fieldset" variant="standard">
-        <FormLabel component="legend">Brands</FormLabel>
-        <FormGroup sx={{ width: '100%' }}>
-          <FormControlLabel
-            sx={{ '& span:last-child': { color: theme.palette.secondary.main } }}
-            control={
-              <Checkbox checked={AMD} onChange={handleChange} name="AMD" />
-            }
-            label="AMD"
-          />
-          <FormControlLabel
-            sx={{ '& span:last-child': { color: theme.palette.secondary.main } }}
-            control={
-              <Checkbox checked={Dell} onChange={handleChange} name="Dell" />
-            }
-            label="Dell"
-          />
-          <FormControlLabel
-            sx={{ '& span:last-child': { color: theme.palette.secondary.main } }}
-            control={
-              <Checkbox checked={Lenovo} onChange={handleChange} name="Lenovo" />
-            }
-            label="Lenovo"
-          />
-        </FormGroup>
-        <FormHelperText>+ show more</FormHelperText>
+    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+        <FormLabel component="legend">Brand</FormLabel>
+        {
+          unique.slice(0, 3).map(item => (
+            <FormGroup key={item}>
+              <FormControlLabel
+                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                control={
+                  <Checkbox checked={result.item} onChange={handleChange} name={item} />
+                }
+                label={item}
+              />
+            </FormGroup>
+          ))
+        }
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {
+            unique.slice(3, unique.length).map(item => (
+              <FormGroup key={item}>
+                <FormControlLabel
+                  sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  control={
+                    <Checkbox checked={result.item} onChange={handleChange} name={item} />
+                  }
+                  label={item}
+                />
+              </FormGroup>
+            ))
+          }
+        </Collapse>
+        {
+          unique.length > 3 &&
+          <FormHelperText onClick={handleExpandClick}>+ show more</FormHelperText>
+        }
       </FormControl>
+      
     </Box>
   );
 }

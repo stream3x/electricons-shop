@@ -3,9 +3,11 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { useMediaQuery } from '@mui/material';
 
 export default function SelectCategory() {
   const [sort, setSort] = React.useState('');
+  const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event) => {
     setSort(event.target.value);
@@ -14,8 +16,9 @@ export default function SelectCategory() {
   return (
     <div>
       <FormControl sx={{ m: 1, minWidth: 100 }}>
-        <InputLabel id="select-label">Sort by</InputLabel>
+        <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Sort by</InputLabel>
         <Select
+          size={!matches ? 'small' : 'medium'}
           labelId="select-label"
           id="select-label"
           value={sort}
