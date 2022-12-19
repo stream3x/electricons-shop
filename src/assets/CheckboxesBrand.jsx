@@ -10,13 +10,11 @@ import { Collapse } from '@mui/material';
 import { useRouter } from 'next/router';
 import data from '../utils/data';
 
-export default function CheckboxesGroup() {
+export default function CheckboxesBrand() {
   const [expanded, setExpanded] = React.useState(false);
   const { products } = data;
-  const router = useRouter();
-  const { ...slug } = router;
-  const defaultState = products.filter(product => product.categoryUrl === slug.query.slug.toString());
-  const brandState = defaultState.map(item => item.brand);
+  // const defaultState = products.filter(product => product.categoryUrl === slug.query.slug.toString());
+  const brandState = products.map(item => item.brand);
   const unique = [...new Set(brandState)]
   const createBooleans = Array(unique.length).fill(false);
 
@@ -71,7 +69,7 @@ export default function CheckboxesGroup() {
         </Collapse>
         {
           unique.length > 3 &&
-          <FormHelperText onClick={handleExpandClick}>+ show more</FormHelperText>
+          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
         }
       </FormControl>
       

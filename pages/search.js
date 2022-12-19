@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Product from '../models/Product';
 import BreadcrumbNav from '../src/assets/BreadcrumbNav';
-import CheckboxesGroup from '../src/assets/CheckboxesGroup';
 import RangeSlider from '../src/assets/RangeSlider';
 import SelectCategory from '../src/assets/SelectCategory';
 import ToggleButtons from '../src/assets/ToggleButtons';
@@ -13,6 +12,8 @@ import Link from '../src/Link';
 import theme from '../src/theme';
 import db from '../src/utils/db';
 import { Store } from '../src/utils/Store';
+import CheckboxesBrand from '../src/assets/CheckboxesBrand';
+import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -153,7 +154,10 @@ export default function Search(props) {
                   <RangeSlider />
                 </Toolbar>
                 <Toolbar>
-                  
+                  <CheckboxesBrand />
+                </Toolbar>
+                <Toolbar>
+                  <CheckboxesCategory />
                 </Toolbar>
               </AppBar>
             </Grid>
