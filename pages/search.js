@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { AppBar, Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, Rating, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, Pagination, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -15,55 +15,53 @@ import { Store } from '../src/utils/Store';
 import CheckboxesBrand from '../src/assets/CheckboxesBrand';
 import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 
-export async function getServerSideProps(context) {
-  const { params } = context;
-  await db.connect();
-  const products = await Product.find({}).lean();
-  await db.disconnect();
+// export async function getServerSideProps(context) {
+//   const { params } = context;
+//   await db.connect();
+//   const products = await Product.find({}).lean();
+//   await db.disconnect();
 
-  function replacer(key, value) {
-    if(value instanceof Map) {
-      return {
-        dataType: 'Map',
-        value: Array.from([...value]),
-      };
-    } else {
-      return value;
-    }
-  }
+//   function replacer(key, value) {
+//     if(value instanceof Map) {
+//       return {
+//         dataType: 'Map',
+//         value: Array.from([...value]),
+//       };
+//     } else {
+//       return value;
+//     }
+//   }
 
-  function reviver(key, value) {
-    if(typeof value === 'object' && value !== null) {
-      if (value.dataType === 'Map') {
-        return new Map(value.value);
-      }
-    }
-    return value;
-  }
+//   function reviver(key, value) {
+//     if(typeof value === 'object' && value !== null) {
+//       if (value.dataType === 'Map') {
+//         return new Map(value.value);
+//       }
+//     }
+//     return value;
+//   }
 
-  function convertToJson() {
-    if(products) {
-      const org_value = JSON.stringify(products, replacer);
-      const newValue = JSON.parse(org_value, reviver);
-      return newValue;
-    }else {
-      const org_value = JSON.stringify(subCategoryProducts, replacer);
-      const newValue = JSON.parse(org_value, reviver);
-      return newValue;
-    }
-  }
+//   function convertToJson() {
+//     if(products) {
+//       const org_value = JSON.stringify(products, replacer);
+//       const newValue = JSON.parse(org_value, reviver);
+//       return newValue;
+//     }else {
+//       const org_value = JSON.stringify(subCategoryProducts, replacer);
+//       const newValue = JSON.parse(org_value, reviver);
+//       return newValue;
+//     }
+//   }
 
-  return {
-    props: {
-      products: convertToJson()
-    },
-  };
-}
+//   return {
+//     props: {
+//       products: convertToJson()
+//     },
+//   };
+// }
 
 export default function Search(props) {
   const router = useRouter();
-  const { ...slug } = router;
-  // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
   const [selected, setSelected] = useState('');
 
   const handleLoading = (product) => {
@@ -73,17 +71,19 @@ export default function Search(props) {
   const {
     query = '',
     category = '',
+    subCategory = '',
     brand = '',
     price = '',
     sort = '',
     page = 1
   } = router.query;
 
-  const { products, countProducts, categories, brands, pages } = props;
+  const { products, countProducts, categories, subCategories, brands, pages } = props;
 
   const filterSearch = ({
     page,
     category,
+    subCategory,
     brand,
     sort,
     min,
@@ -95,6 +95,7 @@ export default function Search(props) {
     if(page) query.page = page;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
+    if(subCategory) query.subCategory = subCategory;
     if(brand) query.brand = brand;
     if(sort) query.sort = sort;
     if(price) query.price = price;
@@ -107,8 +108,11 @@ export default function Search(props) {
     })
   }
 
-  const categoryHandler = (e) => {
-    filterSearch({ category: e.target.value })
+  const categoryHandler = (item) => {
+    filterSearch({ category: item })
+  }
+  const subCategoryHandler = (item) => {
+    filterSearch({ subCategory: item })
   }
   const pageHandler = (e) => {
     filterSearch({ page })
@@ -157,7 +161,7 @@ export default function Search(props) {
                   <CheckboxesBrand />
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesCategory />
+                  <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -185,8 +189,15 @@ export default function Search(props) {
               </AppBar>
             </Grid>
             {
+              products.length === 0 &&
+              <Grid item xs={12} sm={4} md={3}>
+                <Typography color="secondary.lightGrey" gutterBottom variant="h6" component="h6" align="center">
+                  Products not found
+                </Typography>
+              </Grid>
+            }
+            {
               products.map(prod => (
-
                 <Grid key={prod._id} item xs={12} sm={4} md={3}>
                     <Card sx={{ width: "100%", height: "100%" }}>
                         <CardActionArea sx={{position: 'relative'}}>
@@ -244,12 +255,112 @@ export default function Search(props) {
                 </Grid>
               ))
             }
-           
+           <Grid item xs={12}>
+              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+                <Toolbar>
+                  {
+                    products.length === 0 ?
+                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    "No products"
+                    </Typography>
+                    :
+                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    There are {products.length} {products.length === 1 ? "product" : "products"}.
+                  </Typography>
+                  }
+                  <Stack spacing={2}>
+                    <Pagination count={10} color="primary" showFirstButton showLastButton  />
+                  </Stack>
+                </Toolbar>
+              </AppBar>
+            </Grid>
           </Grid>
-         
         </Grid>
       </Grid>
     </Box>
   )
 }
 
+export async function getServerSideProps({ query }) {
+  const pageSize = query.pageSize;
+  const page = query.page || 1;
+  const category = query.category || '';
+  const subCategory = query.subCategory || '';
+  const brand = query.brand || '';
+  const price = query.price || '';
+  const sort = query.sort || '';
+  const searchQueary = query.query || '';
+
+  const queryFilter = 
+    searchQueary && searchQueary !== 'all'
+    ? {
+      name: {
+        $regex: searchQueary,
+        $options: 'i'
+      }
+    }
+    : {};
+  
+  const categoryFilter = category && category !== '' ? { category } : {};
+  const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
+  const brandFilter = brand && brand !== '' ? { brand } : {};
+  const priceFilter =
+    price && price !== 'all'
+    ? {
+      price: {
+        $fromPrice: Number(price.split('-')[0]),
+        $toPrice: Number(price.splite('-')[1])
+      }
+    }
+    : {};
+  
+  const order = 
+    sort === 'availability'
+    ? { isAvalable: -1 }
+    : sort === 'lowest'
+    ? { price: 1 }
+    : sort === 'highest'
+    ? { price: -1 }
+    : sort === 'namelowest'
+    ? { name: 1 }
+    : sort === 'namehighest'
+    ? { createdAt: -1 }
+    : { _id: -1 };
+
+    await db.connect();
+    const categories = await Product.find().distinct('category');
+    const subCategories = await Product.find().distinct('subCategory');
+    const brands = await Product.find().distinct('brand');
+    const productDocs = await Product.find(
+      {
+        ...queryFilter,
+        ...categoryFilter,
+        ...subCategoryFilter,
+        ...priceFilter,
+        ...brandFilter,
+      },
+    ).sort(order).skip(pageSize * (page - 1)).limit(pageSize).lean();
+
+    const countProducts = await Product.countDocuments({
+      ...queryFilter,
+      ...categoryFilter,
+      ...subCategoryFilter,
+      ...priceFilter,
+      ...brandFilter
+    });
+
+    await db.disconnect();
+    const products = productDocs.map(db.convertDocToObject);
+
+    return {
+      props: {
+        products,
+        countProducts,
+        page,
+        pages: Math.ceil(countProducts / pageSize),
+        categories,
+        subCategories,
+        brands
+      }
+    }
+}
