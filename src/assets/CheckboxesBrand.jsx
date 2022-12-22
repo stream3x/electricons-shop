@@ -7,28 +7,37 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
-import { useRouter } from 'next/router';
-import data from '../utils/data';
 
-export default function CheckboxesBrand() {
+let brandArray = [];
+
+export default function CheckboxesBrand(props) {
+  const { brands, brandHandler } = props;
   const [expanded, setExpanded] = React.useState(false);
-  const { products } = data;
-  // const defaultState = products.filter(product => product.categoryUrl === slug.query.slug.toString());
-  const brandState = products.map(item => item.brand);
+  const brandState = brands.map(item => item);
   const unique = [...new Set(brandState)]
   const createBooleans = Array(unique.length).fill(false);
-
   const result = [createBooleans].map(row =>
     row.reduce((acc, cur, i) =>
       (acc[unique[i]] = cur, acc), {}))
 
   const [state, setState] = React.useState(result);
+  delete state[""];
 
-  const handleChange = (event) => {
-    setState({
-      ...state,
-      [event.target.name]: event.target.checked,
-    });
+  const handleChange = (item) => (event) => {
+    const removeDuplicates = [];
+
+    setState((prev) => ({
+      ...prev,
+      [item]: event.target.checked,
+    }));
+
+    if(!state[item]) {
+      brandArray.push(item)
+    }else {
+      removeDuplicates.push(item);
+    }
+
+    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)));
   };
 
   const handleExpandClick = () => {
@@ -45,7 +54,7 @@ export default function CheckboxesBrand() {
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
-                  <Checkbox checked={result.item} onChange={handleChange} name={item} />
+                  <Checkbox onChange={handleChange(item)} />
                 }
                 label={item}
               />
@@ -59,7 +68,7 @@ export default function CheckboxesBrand() {
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
                   control={
-                    <Checkbox checked={result.item} onChange={handleChange} name={item} />
+                    <Checkbox checked={result.item} onChange={handleChange(item)} name={item} />
                   }
                   label={item}
                 />

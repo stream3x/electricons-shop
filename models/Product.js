@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
     categoryUrl: {type: String, required: true},
     subCategory: {type: String, required: true},
     subCategoryUrl: {type: String, required: true},
+    brand: {type: String, required: true},
     brandImg: {type: String, required: true},
     reviews: {type: Number, required: true, default: 0},
     inStock: {type: Number, required: true, default: 0},

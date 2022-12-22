@@ -15,50 +15,8 @@ import { Store } from '../src/utils/Store';
 import CheckboxesBrand from '../src/assets/CheckboxesBrand';
 import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 
-// export async function getServerSideProps(context) {
-//   const { params } = context;
-//   await db.connect();
-//   const products = await Product.find({}).lean();
-//   await db.disconnect();
-
-//   function replacer(key, value) {
-//     if(value instanceof Map) {
-//       return {
-//         dataType: 'Map',
-//         value: Array.from([...value]),
-//       };
-//     } else {
-//       return value;
-//     }
-//   }
-
-//   function reviver(key, value) {
-//     if(typeof value === 'object' && value !== null) {
-//       if (value.dataType === 'Map') {
-//         return new Map(value.value);
-//       }
-//     }
-//     return value;
-//   }
-
-//   function convertToJson() {
-//     if(products) {
-//       const org_value = JSON.stringify(products, replacer);
-//       const newValue = JSON.parse(org_value, reviver);
-//       return newValue;
-//     }else {
-//       const org_value = JSON.stringify(subCategoryProducts, replacer);
-//       const newValue = JSON.parse(org_value, reviver);
-//       return newValue;
-//     }
-//   }
-
-//   return {
-//     props: {
-//       products: convertToJson()
-//     },
-//   };
-// }
+const PAGE_SIZE = 2;
+const ratings = [1, 2, 3, 4, 5];
 
 export default function Search(props) {
   const router = useRouter();
@@ -117,8 +75,8 @@ export default function Search(props) {
   const pageHandler = (e) => {
     filterSearch({ page })
   }
-  const brandHandler = (e) => {
-    filterSearch({ brand: e.target.value })
+  const brandHandler = (item) => {
+    filterSearch({ brand: item })
   }
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value })
@@ -158,7 +116,7 @@ export default function Search(props) {
                   <RangeSlider />
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesBrand />
+                  <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
                 </Toolbar>
                 <Toolbar>
                   <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
@@ -172,7 +130,7 @@ export default function Search(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <Typography color="secondary.lightGrey" component="h2" variant="p">Category</Typography>
+                  <Typography color="secondary.lightGrey" component="h2" variant="p">Products</Typography>
                   {
                     products.length === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -184,7 +142,7 @@ export default function Search(props) {
                   </Typography>
                   }
                   <ToggleButtons />
-                  <SelectCategory />
+                  <SelectCategory value={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -258,6 +216,7 @@ export default function Search(props) {
            <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
+                  <SelectCategory  />
                   {
                     products.length === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -268,9 +227,12 @@ export default function Search(props) {
                     There are {products.length} {products.length === 1 ? "product" : "products"}.
                   </Typography>
                   }
-                  <Stack spacing={2}>
-                    <Pagination count={10} color="primary" showFirstButton showLastButton  />
-                  </Stack>
+                  {
+                    products.length > 0 &&
+                    <Stack spacing={2}>
+                      <Pagination count={products.length} color="primary" showFirstButton showLastButton onChange={pageHandler}  />
+                    </Stack>
+                  }
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -282,7 +244,7 @@ export default function Search(props) {
 }
 
 export async function getServerSideProps({ query }) {
-  const pageSize = query.pageSize;
+  const pageSize = query.pageSize || PAGE_SIZE;
   const page = query.page || 1;
   const category = query.category || '';
   const subCategory = query.subCategory || '';
@@ -292,9 +254,9 @@ export async function getServerSideProps({ query }) {
   const searchQueary = query.query || '';
 
   const queryFilter = 
-    searchQueary && searchQueary !== 'all'
+    searchQueary && searchQueary !== ''
     ? {
-      name: {
+      title: {
         $regex: searchQueary,
         $options: 'i'
       }

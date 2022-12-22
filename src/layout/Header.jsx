@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
+import TextField from '@mui/material/TextField';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
@@ -32,14 +33,17 @@ import SwipeableCartDrawer from '../components/SwipeableCartDrawer';
 import Link from '../Link';
 import Cookies from 'js-cookie';
 import SwipeableNavDrawer from '../components/SwipeableNavDrawer';
-
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
+import Image from 'next/image';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
 const loged = ['Profile', 'Admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [{name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
 
-const Search = styled('div')(({ theme }) => ({
+const Search = styled('form')(({ theme }) => ({
   position: 'relative',
   flexWrap: 'nowrap',
   display: 'flex',
@@ -65,15 +69,18 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   pointerEvents: 'none',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'center'
 }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
+const StyledInputBase = styled(TextField)(({ theme }) => ({
   color: 'inherit',
   width: '100%',
-  '& .MuiInputBase-input': {
+  '& .MuiInputBase-root': {
+    borderColor: 'transparent',
+    borderRightColor: 'transparent',
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
+    padding: 0,
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -81,6 +88,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
       width: '20ch',
     },
   },
+  '& fieldset': {
+    border: 'none'
+  }
 }));
 
 const StyledInputButton = styled(Button)(({ theme }) => ({
@@ -102,13 +112,47 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
 export default function Header(props) {
   const { isVisible } = props;
   const [anchorEl, setAnchorEl] = useState(null);
-  const [cartAnchorEl, setCartAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = useState(null);
   const matches = useMediaQuery('(min-width: 600px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart, userInfo } = state;
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = React.useState(false);
+  const [options, setOptions] = React.useState([]);
+  const loading = open && options.length === 0;
+
+  React.useEffect(() => {
+    let active = true;
+
+    if (!loading) {
+      return undefined;
+    }
+
+    (async () => {
+      const { data } = await axios.get('/api/products')
+
+      if(active) {
+        setOptions([...data]);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [loading]);
+
+  React.useEffect(() => {
+    if (!open) {
+      setOptions([]);
+    }
+  }, [open]);
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    router.push(`/search?query=${query}`);
+  }
 
   const handleClick = (event) => {
     setAnchorElDropdown(event.currentTarget);
@@ -136,14 +180,6 @@ export default function Header(props) {
   const openDropdown = Boolean(anchorElDropdown);
   const isMenuOpen = Boolean(anchorEl);
   const isMenuUserOpen = Boolean(anchorElUser);
-
-  function handleCartOpen(event) {
-    setCartAnchorEl(event.currentTarget);
-  }
-
-  const handleCartClose = () => {
-    setCartAnchorEl(null);
-  };
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -348,15 +384,72 @@ export default function Header(props) {
                   :
                   <SwipeableNavDrawer />
                 }
-                <Search>
+                <Search onSubmit={submitHandler}>
                   <SearchIconWrapper>
                     <SearchIcon />
                   </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="Search…"
-                    inputProps={{ 'aria-label': 'search' }}
+                  <Autocomplete
+                    id="asynchronous"
+                    sx={{ width: '100%' }}
+                    open={open}
+                    onOpen={() => {
+                      setOpen(true);
+                    }}
+                    onClose={() => {
+                      setOpen(false);
+                    }}
+                    isOptionEqualToValue={(option, value) => option.title === value.title}
+                    getOptionLabel={(option) => option.title}
+                    options={options}
+                    loading={loading}
+                    getOptionDisabled={(option) =>
+                      option.inStock === 0
+                    }
+                    renderOption={(props, option) => (
+                      <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                        <Box sx={{width: '30px', height: '30px', position: 'relative'}}>
+                          <Image
+                            loading="lazy"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            src={option.images[0].image}
+                            alt={option.title}
+                          />
+                        </Box>
+                        <Typography sx={{px: 1}} color="primary" component="span">
+                          <Link href={`product/${option.slug}`} passHref>{option.title}</Link>
+                        </Typography>                        
+                        brand:
+                        <Typography sx={{px: 1}} color="primary" component="span">
+                          {option.brand}
+                        </Typography>
+                        category: 
+                        <Typography sx={{px: 1}} color="primary" component="span">{option.category}</Typography>
+                        price: 
+                        <Typography sx={{px: 1}} color="primary" component="span">{option.price}
+                        </Typography>
+                        <Typography sx={{px: 1}} color="secondary" component="span">{option.inStock > 0 ? "in stock" : "out of stock"}
+                        </Typography>
+                      </Box>
+                    )}
+                    renderInput={(params) => (
+                      <StyledInputBase
+                        {...params}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search…"
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <React.Fragment>
+                              {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                              {params.InputProps.endAdornment}
+                            </React.Fragment>
+                          ),
+                        }}
+                      />
+                    )}
                   />
-                  <StyledInputButton>Search</StyledInputButton>
+                  <StyledInputButton type='submit'>Search</StyledInputButton>
                 </Search>
                 <Box sx={{ flexGrow: 1 }} />
                 <Box sx={{ display: { xs: 'none', sm: 'flex', md: 'flex' } }}>

@@ -5,13 +5,9 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { useMediaQuery } from '@mui/material';
 
-export default function SelectCategory() {
-  const [sort, setSort] = React.useState('');
+export default function SelectCategory(props) {
+  const { sort, sortHandler } = props;
   const matches = useMediaQuery('(min-width: 600px)');
-
-  const handleChange = (event) => {
-    setSort(event.target.value);
-  };
 
   return (
     <div>
@@ -22,7 +18,7 @@ export default function SelectCategory() {
           labelId="select-label"
           id="select-label"
           value={sort}
-          onChange={handleChange}
+          onChange={sortHandler}
           autoWidth
           label="Sort by"
         >
