@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { AppBar, Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, Pagination, Rating, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, Pagination, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -14,8 +14,9 @@ import db from '../src/utils/db';
 import { Store } from '../src/utils/Store';
 import CheckboxesBrand from '../src/assets/CheckboxesBrand';
 import CheckboxesCategory from '../src/assets/CheckboxesCategory';
+import SelectPages from '../src/assets/SelectPages';
 
-const PAGE_SIZE = 2;
+let PAGE_SIZE = 16;
 const ratings = [1, 2, 3, 4, 5];
 
 export default function Search(props) {
@@ -36,7 +37,7 @@ export default function Search(props) {
     page = 1
   } = router.query;
 
-  const { products, countProducts, categories, subCategories, brands, pages } = props;
+  const { products, countProducts, categories, subCategories, brands, pages, pageSize } = props;
 
   const filterSearch = ({
     page,
@@ -87,6 +88,10 @@ export default function Search(props) {
 
   const { state, dispatch } = useContext(Store);
 
+  const handleDelete = () => {
+    router.push('/search');
+  };
+
   const addToCartHandler = async (product) => {
     const existItem = state.cart.cartItems.find(item => item._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
@@ -113,7 +118,7 @@ export default function Search(props) {
                   </Typography>
                 </Toolbar>
                 <Toolbar>
-                  <RangeSlider />
+                  <RangeSlider countProducts={countProducts} />
                 </Toolbar>
                 <Toolbar>
                   <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
@@ -130,7 +135,7 @@ export default function Search(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <Typography color="secondary.lightGrey" component="h2" variant="p">Products</Typography>
+                  <Typography color="secondary.lightGrey" component="h2" variant="p">Search</Typography>
                   {
                     products.length === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -154,6 +159,21 @@ export default function Search(props) {
                 </Typography>
               </Grid>
             }
+            <Grid item xs={12}>
+              {query !== '' && ' : ' + query}
+              {category !== '' && ' : ' + category}
+              {price !== '' && ' : ' + brand}
+              &nbsp;
+              {
+                (query !== '' && query !== '') ||
+                category !== '' ||
+                brand !== '' ||
+                price !== '' ? (
+                  <Chip label={router.asPath} variant="outlined" onDelete={handleDelete} />
+                )
+                : null
+              } 
+            </Grid>
             {
               products.map(prod => (
                 <Grid key={prod._id} item xs={12} sm={4} md={3}>
@@ -216,7 +236,7 @@ export default function Search(props) {
            <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <SelectCategory  />
+                  <SelectPages pageSize={pageSize} sort={sort} page={page}  />
                   {
                     products.length === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -230,7 +250,7 @@ export default function Search(props) {
                   {
                     products.length > 0 &&
                     <Stack spacing={2}>
-                      <Pagination count={products.length} color="primary" showFirstButton showLastButton onChange={pageHandler}  />
+                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={pageHandler}  />
                     </Stack>
                   }
                 </Toolbar>
@@ -267,11 +287,11 @@ export async function getServerSideProps({ query }) {
   const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
   const brandFilter = brand && brand !== '' ? { brand } : {};
   const priceFilter =
-    price && price !== 'all'
+    price && price !== ''
     ? {
       price: {
         $fromPrice: Number(price.split('-')[0]),
-        $toPrice: Number(price.splite('-')[1])
+        $toPrice: Number(price.split('-')[1])
       }
     }
     : {};
@@ -316,6 +336,7 @@ export async function getServerSideProps({ query }) {
 
     return {
       props: {
+        pageSize,
         products,
         countProducts,
         page,

@@ -7,11 +7,29 @@ function valuetext(value) {
   return `$${value}`;
 }
 
-export default function RangeSlider() {
-  const [value, setValue] = React.useState([20, 37]);
+const minDistance = 10;
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+export default function RangeSlider(props) {
+  const { countProducts, price, priceHandler } = props;
+  console.log(countProducts);
+  const [value, setValue] = React.useState([0, 10000]);
+
+  const handleChange = (event, newValue, activeThumb) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (newValue[1] - newValue[0] < minDistance) {
+      if (activeThumb === 0) {
+        const clamped = Math.min(newValue[0], 10000 - minDistance);
+        setValue([clamped, clamped + minDistance]);
+      } else {
+        const clamped = Math.max(newValue[1], minDistance);
+        setValue([clamped - minDistance, clamped]);
+      }
+    } else {
+      setValue(newValue);
+    }
   };
 
   const handleInputChange = (event) => {
@@ -21,8 +39,8 @@ export default function RangeSlider() {
   const handleBlur = () => {
     if (value < 0) {
       setValue(0);
-    } else if (value > 100) {
-      setValue(100);
+    } else if (value > 10000) {
+      setValue(10000);
     }
   };
 
@@ -41,7 +59,7 @@ export default function RangeSlider() {
           inputProps={{
             step: 10,
             min: 0,
-            max: 90,
+            max: 9990,
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
@@ -58,7 +76,7 @@ export default function RangeSlider() {
           inputProps={{
             step: 10,
             min: 10,
-            max: 100,
+            max: 10000,
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
@@ -66,7 +84,8 @@ export default function RangeSlider() {
       </Box>
       <Slider
         getAriaLabel={() => 'Filter by price'}
-        value={value}
+        value={[value[0], value[1]]}
+        max={10000}
         onChange={handleChange}
         valueLabelDisplay="auto"
         getAriaValueText={valuetext}

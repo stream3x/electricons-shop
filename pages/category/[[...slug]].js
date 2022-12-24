@@ -25,11 +25,59 @@ import SelectCategory from '../../src/assets/SelectCategory';
 import CheckboxesGroup from '../../src/assets/CheckboxesGroup';
 import { useRouter } from 'next/router';
 
+const PAGE_SIZE = 2;
+
 export async function getServerSideProps(context) {
-  const { params } = context;
+  const { params, query } = context;
   const { slug } = params;
+
+  const pageSize = query.pageSize || PAGE_SIZE;
+  const page = query.page || 1;
+  const category = query.category || '';
+  const subCategory = query.subCategory || '';
+  const brand = query.brand || '';
+  const price = query.price || '';
+  const sort = query.sort || '';
+  const searchQueary = query.query || '';
+
+  const queryFilter = 
+    searchQueary && searchQueary !== ''
+    ? {
+      title: {
+        $regex: searchQueary,
+        $options: 'i'
+      }
+    }
+    : {};
+  
+  const categoryFilter = category && category !== '' ? { category } : {};
+  const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
+  const brandFilter = brand && brand !== '' ? { brand } : {};
+  const priceFilter =
+    price && price !== ''
+    ? {
+      price: {
+        $fromPrice: Number(price.split('-')[0]),
+        $toPrice: Number(price.splite('-')[1])
+      }
+    }
+    : {};
+  
+  const order = 
+    sort === 'availability'
+    ? { isAvalable: -1 }
+    : sort === 'lowest'
+    ? { price: 1 }
+    : sort === 'highest'
+    ? { price: -1 }
+    : sort === 'namelowest'
+    ? { name: 1 }
+    : sort === 'namehighest'
+    ? { createdAt: -1 }
+    : { _id: -1 };
+
   await db.connect();
-  const category = await Category.find({slug}).lean();
+  const categoryCat = await Category.find({}).lean();
   const product = await Product.find({}).lean();
   const categoryProducts = product.filter(prod => prod.categoryUrl === slug[0]);
   const subCategoryProducts = product.filter(prod => prod.subCategoryUrl === slug[1]);
@@ -69,13 +117,43 @@ export async function getServerSideProps(context) {
     }
   }
 
-  return {
-    props: {
-      category: slug,
-      categoryProducts: !emptyCategoryProducts && convertToJson(),
-      subCategoryProducts: !emptySubCategoryProducts && convertToJson()
-    },
-  };
+    const categories = await Product.find().distinct('category');
+    const subCategories = await Product.find().distinct('subCategory');
+    const brands = await Product.find().distinct('brand');
+    const productDocs = await Product.find(
+      {
+        ...queryFilter,
+        ...categoryFilter,
+        ...subCategoryFilter,
+        ...priceFilter,
+        ...brandFilter,
+      },
+    ).sort(order).skip(pageSize * (page - 1)).limit(pageSize).lean();
+
+    const countProducts = await Product.countDocuments({
+      ...queryFilter,
+      ...categoryFilter,
+      ...subCategoryFilter,
+      ...priceFilter,
+      ...brandFilter
+    });
+
+    const products = productDocs.map(db.convertDocToObject);
+
+    return {
+      props: {
+        products,
+        countProducts,
+        page,
+        pages: Math.ceil(countProducts / pageSize),
+        categories,
+        subCategories,
+        brands,
+        categoryCat: slug,
+        categoryProducts: !emptyCategoryProducts && convertToJson(),
+        subCategoryProducts: !emptySubCategoryProducts && convertToJson()
+      }
+    }
 }
 
 const LabelButton = styled(Button)(({ theme }) => ({
@@ -143,11 +221,68 @@ color: theme.palette.text.secondary,
 }));
 
 export default function CategoryProducts(props) {
-  const { category, categoryProducts, subCategoryProducts } = props;
-  const { state, dispatch } = useContext(Store);
   const router = useRouter();
-  const { ...slug } = router;
-  const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
+  const {
+    query = '',
+    category = '',
+    subCategory = '',
+    brand = '',
+    price = '',
+    sort = '',
+    page = 1
+  } = router.query;
+
+  const { categoryCat, products, subCategoryProducts, categoryProducts, countProducts, categories, subCategories, brands, pages } = props;
+
+  const filterSearch = ({
+    page,
+    category,
+    subCategory,
+    brand,
+    sort,
+    min,
+    max,
+    searchQueary,
+    price
+  }) => {
+    const { query } = router;
+    if(page) query.page = page;
+    if(searchQueary) query.searchQueary = searchQueary;
+    if(category) query.category = category;
+    if(subCategory) query.subCategory = subCategory;
+    if(brand) query.brand = brand;
+    if(sort) query.sort = sort;
+    if(price) query.price = price;
+    if(min) query.min ? query.min : query.min === 0 ? 0 : min;
+    if(max) query.max ? query.max : query.max === 0 ? 0 : max;
+
+    router.push({
+      pathname: router.pathname,
+      query: query
+    })
+  }
+
+  const categoryHandler = (item) => {
+    filterSearch({ category: item })
+  }
+  const subCategoryHandler = (item) => {
+    filterSearch({ subCategory: item })
+  }
+  const pageHandler = (e) => {
+    filterSearch({ page })
+  }
+  const brandHandler = (item) => {
+    filterSearch({ brand: item })
+  }
+  const sortHandler = (e) => {
+    filterSearch({ sort: e.target.value })
+  }
+  const priceHandler = (e) => {
+    filterSearch({ price: e.target.value })
+  }
+
+  const { state, dispatch } = useContext(Store);
+  // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
   const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = React.useState('');
@@ -156,17 +291,17 @@ export default function CategoryProducts(props) {
     setSelected(product._id);
   };
 
-  if(!category) {
+  if(!categoryCat) {
     return (
       <Box sx={{ flexGrow: 1, my: 4  }}>
-        <Typography gutterBottom variant="h6" component="h3" textAlign="center">
+        <Typography gutterBottom variant="h6" component="h2" textAlign="center">
           Category not found
         </Typography>
         <Grid container spacing={2}>
           <Grid xs={12}>
-            <Item>
-              <Link href="/">
-                <Button variant="contained" startIcon={<ReplyIcon />}>
+            <Item elevation={0}>
+              <Link href="/" passHref>
+                <Button sx={{'&:hover': {backgroundColor: theme.palette.secondary.main}}} variant="contained" startIcon={<ReplyIcon />}>
                   back to shop
                 </Button>
               </Link>
@@ -179,7 +314,7 @@ export default function CategoryProducts(props) {
 
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
-      <BreadcrumbNav categoryData={category} />
+      <BreadcrumbNav categoryData={categoryCat} />
       <Grid container spacing={2}>
         <Grid item sx={{display: {xs: 'none', lg: 'block'}}} lg={3}>
           <Grid container spacing={2}>
@@ -207,7 +342,7 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <Typography color="secondary.lightGrey" component="h2" variant="p">{titlePage}</Typography>
+                  <Typography color="primary" component="h2" variant="p">Category</Typography>
                   {
                     subCategoryProducts.length === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -286,7 +421,9 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <Typography color="primary" component="h2" variant="p">{titlePage}</Typography>
+                  <Typography color="primary" component="h2" variant="p">
+                    Category
+                  </Typography>
                   {
                     categoryProducts.length === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">

@@ -398,6 +398,7 @@ export default function Header(props) {
                     onClose={() => {
                       setOpen(false);
                     }}
+                    onChange={(option, value) => setQuery(value.title)}
                     isOptionEqualToValue={(option, value) => option.title === value.title}
                     getOptionLabel={(option) => option.title}
                     options={options}
@@ -406,31 +407,57 @@ export default function Header(props) {
                       option.inStock === 0
                     }
                     renderOption={(props, option) => (
-                      <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                        <Box sx={{width: '30px', height: '30px', position: 'relative'}}>
-                          <Image
-                            loading="lazy"
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            src={option.images[0].image}
-                            alt={option.title}
-                          />
-                        </Box>
-                        <Typography sx={{px: 1}} color="primary" component="span">
-                          <Link href={`product/${option.slug}`} passHref>{option.title}</Link>
-                        </Typography>                        
-                        brand:
-                        <Typography sx={{px: 1}} color="primary" component="span">
-                          {option.brand}
-                        </Typography>
-                        category: 
-                        <Typography sx={{px: 1}} color="primary" component="span">{option.category}</Typography>
-                        price: 
-                        <Typography sx={{px: 1}} color="primary" component="span">{option.price}
-                        </Typography>
-                        <Typography sx={{px: 1}} color="secondary" component="span">{option.inStock > 0 ? "in stock" : "out of stock"}
-                        </Typography>
-                      </Box>
+                      <React.Fragment>
+                        {
+                          matches ?
+                          <Box key={option.title} component="li" sx={{ '& > img': { mr: 2, flexShrink: 1 } }} {...props}>
+                            <Box sx={{maxWidth: '30px', minWidth: '25px', height: '30px', position: 'relative'}}>
+                              <Image
+                                loading="lazy"
+                                fill
+                                sizes="(max-width: 768px) 50vw, (min-width: 1200px) 50vw, 33vw"
+                                src={option.images[0].image}
+                                alt={option.title}
+                              />
+                            </Box>
+                            <Typography component="span" variant='caption' sx={{px: 1 }} color="primary">
+                              <Link href={`product/${option.slug}`} passHref> {option.title}</Link>
+                            </Typography>      
+                            <Typography sx={{px: 1 }} color="secondary" component="span" variant='caption'>
+                              / brand:
+                              <Typography color="primary" component="span" variant='caption'> {option.brand}</Typography>
+                            </Typography>
+                            <Typography sx={{px: 1 }} color="secondary" component="span" variant='caption'>
+                              / category: 
+                              <Link href={`category/${option.categoryUrl}`} passHref> {option.category}</Link>
+                            </Typography>
+                            <Typography sx={{px: 1 }} color="secondary" component="span" variant='caption'>
+                              / price:  
+                              <Typography color="primary" component="span" variant='caption'> {option.price}
+                              </Typography>
+                            </Typography>             
+                            <Typography sx={{px: 1}} color="secondary" component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
+                            </Typography>
+                          </Box>
+                          :
+                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 0 }, display: 'flex' }} {...props}>
+                            <Box sx={{width: {xs: '15px', md: '30px'}, height: {xs: '15px', md: '30px'}, position: 'relative'}}>
+                              <Image
+                                loading="lazy"
+                                fill
+                                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
+                                src={option.images[0].image}
+                                alt={option.title}
+                              />
+                            </Box>
+                            <Typography sx={{px: 1, flex: '0 0 70%', maxWidth: '70%', fontSize: '10px', overflow: 'hidden' }} color="primary" component="span">
+                              <Link sx={{overflow: 'hidden'}} href={`product/${option.slug}`} passHref> {option.title}</Link>
+                            </Typography>
+                            <Typography sx={{px: 1, fontSize: '10px', overflow: 'hidden' }} color="secondary" component="span"> {option.price}
+                            </Typography>
+                          </Box>
+                        }
+                      </React.Fragment>
                     )}
                     renderInput={(params) => (
                       <StyledInputBase
@@ -441,7 +468,7 @@ export default function Header(props) {
                           ...params.InputProps,
                           endAdornment: (
                             <React.Fragment>
-                              {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                              {loading ? <CircularProgress color="primary" size={20} /> : null}
                               {params.InputProps.endAdornment}
                             </React.Fragment>
                           ),
