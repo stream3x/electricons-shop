@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, List, ListItem, ListItemText, Pagination, Stack, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import Rating from '@mui/material/Rating';
@@ -24,8 +24,9 @@ import ToggleButtons from '../../src/assets/ToggleButtons';
 import SelectCategory from '../../src/assets/SelectCategory';
 import CheckboxesGroup from '../../src/assets/CheckboxesGroup';
 import { useRouter } from 'next/router';
+import SelectPages from '../../src/assets/SelectPages';
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 4;
 
 export async function getServerSideProps(context) {
   const { params, query } = context;
@@ -268,7 +269,7 @@ export default function CategoryProducts(props) {
   const subCategoryHandler = (item) => {
     filterSearch({ subCategory: item })
   }
-  const pageHandler = (e) => {
+  const pageHandler = (page) => {
     filterSearch({ page })
   }
   const brandHandler = (item) => {
@@ -280,13 +281,22 @@ export default function CategoryProducts(props) {
   const priceHandler = (e) => {
     filterSearch({ price: e.target.value })
   }
-
+  const pageSizeHandler = (value) => {
+    setPageSize(value)
+  }
   const { state, dispatch } = useContext(Store);
   // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
   const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = React.useState('');
+  const [pageSize, setPageSize] = useState(PAGE_SIZE)
 
+  const currentPage = [...Array(pages).keys()].map(pageNumber => pageNumber + 1);
+
+  const handlePageChange = (event, value) => {
+    pageHandler(value);
+  };
+console.log(pageSize, pages, countProducts, products);
   const handleLoading = (product) => {
     setSelected(product._id);
   };
@@ -358,7 +368,7 @@ export default function CategoryProducts(props) {
                 </Toolbar>
               </AppBar>
             </Grid>
-            {subCategoryProducts.map(prod => (
+            {subCategoryProducts.slice(0, pageSize).map(prod => (
               <Grid key={prod._id} item xs={12} sm={4} md={3}>
                   <Card sx={{ width: "100%", height: "100%" }}>
                       <CardActionArea sx={{position: 'relative'}}>
@@ -415,6 +425,29 @@ export default function CategoryProducts(props) {
                   </Card>
               </Grid>
             ))}
+            <Grid item xs={12}>
+              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+                <Toolbar>
+                  <SelectPages pageSize={pageSize} sort={sort} page={page} pageSizeHandler={pageSizeHandler}  />
+                  {
+                    products.length === 0 ?
+                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    "No products"
+                    </Typography>
+                    :
+                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    There are {products.length} {products.length === 1 ? "product" : "products"}.
+                  </Typography>
+                  }
+                  {
+                    products.length > 0 &&
+                    <Stack spacing={2}>
+                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={handlePageChange}  />
+                    </Stack>
+                  }
+                </Toolbar>
+              </AppBar>
+            </Grid>
           </Grid>
           :
           <Grid container spacing={2}>
@@ -425,21 +458,21 @@ export default function CategoryProducts(props) {
                     Category
                   </Typography>
                   {
-                    categoryProducts.length === 0 ?
+                    countProducts === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No products"
                     </Typography>
                     :
                     <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {categoryProducts.length} {categoryProducts.length === 1 ? "product" : "products"}.
+                    There are {countProducts} {countProducts === 1 ? "product" : "products"}.
                   </Typography>
                   }
                   <ToggleButtons />
-                  <SelectCategory />
+                  <SelectCategory sort={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
             </Grid>
-          {categoryProducts.map(prod => (
+          {products.map(prod => (
             <Grid key={prod._id} item xs={12} sm={4} md={3}>
                 <Card sx={{ width: "100%", height: "100%" }}>
                     <CardActionArea sx={{position: 'relative'}}>
@@ -496,6 +529,45 @@ export default function CategoryProducts(props) {
                 </Card>
             </Grid>
           ))}
+            <Grid item xs={12}>
+              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+                <Toolbar>
+                  <SelectPages pageSize={pageSize} sort={sort} page={page} pageSizeHandler={pageSizeHandler}  />
+                  {
+                    countProducts === 0 ?
+                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    "No products"
+                    </Typography>
+                    :
+                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    There are {countProducts} {countProducts === 1 ? "product" : "products"}.
+                    </Typography>
+                  }
+                  {
+                    countProducts > 0 &&
+                    <Stack spacing={2}>
+                      {
+                        
+                        console.log(pages, page)
+                      }
+                      <List sx={{display: 'flex'}}>
+                        {
+                          products.length > 0 &&
+                          [...Array(pages).keys()].map(pageNumber => (
+                            <ListItem key={pageNumber}>
+                              <Button onClick={() => pageHandler(pageNumber + 1)} size="small" variant='outlined' color={page == pageNumber + 1 ? "primary" : "secondary"}>
+                                <ListItemText primary={pageNumber + 1} />
+                              </Button>
+                            </ListItem>
+                          ))
+                        }
+                      </List>
+                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(pages[e.target.value + 1])}  />
+                    </Stack>
+                  }
+                </Toolbar>
+              </AppBar>
+            </Grid>
           </Grid>
         }
         </Grid>

@@ -17,7 +17,7 @@ export default function SelectCategory(props) {
           size={!matches ? 'small' : 'medium'}
           labelId="select-label"
           id="select-label"
-          value={sort}
+          value={sort ? sort : ''}
           onChange={sortHandler}
           autoWidth
           label="Sort by"

@@ -11,7 +11,7 @@ const minDistance = 10;
 
 export default function RangeSlider(props) {
   const { countProducts, price, priceHandler } = props;
-  console.log(countProducts);
+
   const [value, setValue] = React.useState([0, 10000]);
 
   const handleChange = (event, newValue, activeThumb) => {

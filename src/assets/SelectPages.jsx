@@ -6,11 +6,11 @@ import Select from '@mui/material/Select';
 import { useMediaQuery } from '@mui/material';
 
 export default function SelectPages(props) {
-  const { value, sortHandler, pageSize } = props;
+  const { value, pageSizeHandler, pageSize } = props;
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event) => {
-    sortHandler(event);
+    pageSizeHandler(event.target.value);
   };
 
   return (
@@ -21,12 +21,12 @@ export default function SelectPages(props) {
           size={!matches ? 'small' : 'medium'}
           labelId="select-label"
           id="select-label"
-          value={value}
+          value={value ? value : ''}
           onChange={handleChange}
           autoWidth
           label="Sort by"
         >
-          <MenuItem value={8}>8 per page</MenuItem>
+          <MenuItem value={4}>4 per page</MenuItem>
           <MenuItem value={16}>16 per page</MenuItem>
           <MenuItem value={32}>32 per page</MenuItem>
         </Select>
