@@ -1,9 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, List, ListItem, ListItemText, Pagination, Stack, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, List, ListItem, ListItemText, Pagination, Stack, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import Rating from '@mui/material/Rating';
@@ -21,12 +21,14 @@ import Toolbar from '@mui/material/Toolbar';
 import theme from '../../src/theme';
 import RangeSlider from '../../src/assets/RangeSlider';
 import ToggleButtons from '../../src/assets/ToggleButtons';
-import SelectCategory from '../../src/assets/SelectCategory';
+import SelectCategory from '../../src/assets/SelectSort';
 import CheckboxesGroup from '../../src/assets/CheckboxesGroup';
 import { useRouter } from 'next/router';
 import SelectPages from '../../src/assets/SelectPages';
+import CheckboxesBrand from '../../src/assets/CheckboxesBrand';
+import SelectSort from '../../src/assets/SelectSort';
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 40;
 
 export async function getServerSideProps(context) {
   const { params, query } = context;
@@ -51,7 +53,7 @@ export async function getServerSideProps(context) {
     }
     : {};
   
-  const categoryFilter = category && category !== '' ? { category } : {};
+  const categoryFilter = category ? { category } : {};
   const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
   const brandFilter = brand && brand !== '' ? { brand } : {};
   const priceFilter =
@@ -63,64 +65,61 @@ export async function getServerSideProps(context) {
       }
     }
     : {};
-  
+
   const order = 
     sort === 'availability'
-    ? { isAvalable: -1 }
+    ? { inStock: -1 }
     : sort === 'lowest'
     ? { price: 1 }
     : sort === 'highest'
     ? { price: -1 }
     : sort === 'namelowest'
-    ? { name: 1 }
+    ? { title: 1 }
     : sort === 'namehighest'
+    ? { title: -1 } 
+    : sort === 'latest'
     ? { createdAt: -1 }
     : { _id: -1 };
 
   await db.connect();
-  const categoryCat = await Category.find({}).lean();
-  const product = await Product.find({}).lean();
-  const categoryProducts = product.filter(prod => prod.categoryUrl === slug[0]);
-  const subCategoryProducts = product.filter(prod => prod.subCategoryUrl === slug[1]);
-  const emptyCategoryProducts = Object.keys(categoryProducts).length === 0;
-  const emptySubCategoryProducts = Object.keys(subCategoryProducts).length === 0;
-  await db.disconnect();
+  const cat = await Category.find({}).lean();
+  
+  // function replacer(key, value) {
+  //   if(value instanceof Map) {
+  //     return {
+  //       dataType: 'Map',
+  //       value: Array.from([...value]),
+  //     };
+  //   } else {
+  //     return value;
+  //   }
+  // }
 
-  function replacer(key, value) {
-    if(value instanceof Map) {
-      return {
-        dataType: 'Map',
-        value: Array.from([...value]),
-      };
-    } else {
-      return value;
-    }
-  }
+  // function reviver(key, value) {
+  //   if(typeof value === 'object' && value !== null) {
+  //     if (value.dataType === 'Map') {
+  //       return new Map(value.value);
+  //     }
+  //   }
+  //   return value;
+  // }
 
-  function reviver(key, value) {
-    if(typeof value === 'object' && value !== null) {
-      if (value.dataType === 'Map') {
-        return new Map(value.value);
-      }
-    }
-    return value;
-  }
+  // function convertToJson() {
+  //   if(productDocsCategory) {
+  //     const org_value = JSON.stringify(productDocsCategory, replacer);
+  //     const newValue = JSON.parse(org_value, reviver);
+  //     return newValue;
+  //   }else {
+  //     const org_value = JSON.stringify(subCategoryProducts, replacer);
+  //     const newValue = JSON.parse(org_value, reviver);
+  //     return newValue;
+  //   }
+  // }
 
-  function convertToJson() {
-    if(emptySubCategoryProducts) {
-      const org_value = JSON.stringify(categoryProducts, replacer);
-      const newValue = JSON.parse(org_value, reviver);
-      return newValue;
-    }else {
-      const org_value = JSON.stringify(subCategoryProducts, replacer);
-      const newValue = JSON.parse(org_value, reviver);
-      return newValue;
-    }
-  }
-
-    const categories = await Product.find().distinct('category');
-    const subCategories = await Product.find().distinct('subCategory');
+    const categories = await Product.find().distinct('categoryUrl');
+    const subCategories = await Product.find().distinct('subCategoryUrl');
     const brands = await Product.find().distinct('brand');
+    
     const productDocs = await Product.find(
       {
         ...queryFilter,
@@ -130,29 +129,29 @@ export async function getServerSideProps(context) {
         ...brandFilter,
       },
     ).sort(order).skip(pageSize * (page - 1)).limit(pageSize).lean();
+    const productDocsByCategory = productDocs.filter(prod => slug[1] !== undefined ? prod.subCategoryUrl === slug[1] : prod.categoryUrl === slug[0]);
 
-    const countProducts = await Product.countDocuments({
-      ...queryFilter,
-      ...categoryFilter,
-      ...subCategoryFilter,
-      ...priceFilter,
-      ...brandFilter
-    });
+    // const countProducts = await Product.countDocuments({
+    //   ...queryFilter,
+    //   ...categoryFilter,
+    //   ...subCategoryFilter,
+    //   ...priceFilter,
+    //   ...brandFilter
+    // });
 
-    const products = productDocs.map(db.convertDocToObject);
+    await db.disconnect();
+    const products = productDocsByCategory.map(db.convertDocToObject);
 
     return {
       props: {
         products,
-        countProducts,
+        countProducts: productDocsByCategory.length,
         page,
-        pages: Math.ceil(countProducts / pageSize),
+        pages: Math.ceil(productDocsByCategory.length / pageSize),
         categories,
         subCategories,
         brands,
-        categoryCat: slug,
-        categoryProducts: !emptyCategoryProducts && convertToJson(),
-        subCategoryProducts: !emptySubCategoryProducts && convertToJson()
+        slug
       }
     }
 }
@@ -230,13 +229,15 @@ export default function CategoryProducts(props) {
     brand = '',
     price = '',
     sort = '',
+    pageSize = 40,
     page = 1
   } = router.query;
 
-  const { categoryCat, products, subCategoryProducts, categoryProducts, countProducts, categories, subCategories, brands, pages } = props;
+  const { slug, products, countProducts, categories, subCategories, brands, pages, productDocsCategory } = props;
 
   const filterSearch = ({
     page,
+    pageSize,
     category,
     subCategory,
     brand,
@@ -247,6 +248,7 @@ export default function CategoryProducts(props) {
     price
   }) => {
     const { query } = router;
+    if(pageSize) query.pageSize = pageSize;
     if(page) query.page = page;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
@@ -263,6 +265,24 @@ export default function CategoryProducts(props) {
     })
   }
 
+  const [chipData, setChipData] = useState([
+    { key: 0, label: [query] },
+    { key: 1, label: [category] },
+    { key: 2, label: [brand] },
+    { key: 3, label: [subCategory] },
+    { key: 4, label: [price] }
+  ]);
+
+  const handleDelete = (chipToDelete) => {
+    console.log(chipToDelete.label[0], router.asPath);
+    setChipData(chips => chips.filter((chip) => chip.key !== chipToDelete.key));
+    // router.push(`${router.asPath}`);
+  };
+  // console.log(chipData, query, router.query);  
+
+  const pageSizeHandler = (num) => {
+    filterSearch({ pageSize: num })
+  }
   const categoryHandler = (item) => {
     filterSearch({ category: item })
   }
@@ -274,6 +294,7 @@ export default function CategoryProducts(props) {
   }
   const brandHandler = (item) => {
     filterSearch({ brand: item })
+    setChipData((prev) => [...prev, { label: item }]);
   }
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value })
@@ -281,27 +302,24 @@ export default function CategoryProducts(props) {
   const priceHandler = (e) => {
     filterSearch({ price: e.target.value })
   }
-  const pageSizeHandler = (value) => {
-    setPageSize(value)
-  }
+
   const { state, dispatch } = useContext(Store);
   // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
   const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = React.useState('');
-  const [pageSize, setPageSize] = useState(PAGE_SIZE)
 
   const currentPage = [...Array(pages).keys()].map(pageNumber => pageNumber + 1);
 
   const handlePageChange = (event, value) => {
     pageHandler(value);
   };
-console.log(pageSize, pages, countProducts, products);
+
   const handleLoading = (product) => {
     setSelected(product._id);
   };
 
-  if(!categoryCat) {
+  if(!products) {
     return (
       <Box sx={{ flexGrow: 1, my: 4  }}>
         <Typography gutterBottom variant="h6" component="h2" textAlign="center">
@@ -324,7 +342,7 @@ console.log(pageSize, pages, countProducts, products);
 
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
-      <BreadcrumbNav categoryData={categoryCat} />
+      <BreadcrumbNav categoryData={slug} />
       <Grid container spacing={2}>
         <Grid item sx={{display: {xs: 'none', lg: 'block'}}} lg={3}>
           <Grid container spacing={2}>
@@ -339,117 +357,13 @@ console.log(pageSize, pages, countProducts, products);
                   <RangeSlider />
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesGroup />
+                  <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
                 </Toolbar>
               </AppBar>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} lg={9}>
-        {
-          subCategoryProducts ?
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-                <Toolbar>
-                  <Typography color="primary" component="h2" variant="p">Category</Typography>
-                  {
-                    subCategoryProducts.length === 0 ?
-                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    "No products"
-                    </Typography>
-                    :
-                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {subCategoryProducts.length} {subCategoryProducts.length === 1 ? "product" : "products"}.
-                  </Typography>
-                  }
-                  <ToggleButtons />
-                  <SelectCategory />
-                </Toolbar>
-              </AppBar>
-            </Grid>
-            {subCategoryProducts.slice(0, pageSize).map(prod => (
-              <Grid key={prod._id} item xs={12} sm={4} md={3}>
-                  <Card sx={{ width: "100%", height: "100%" }}>
-                      <CardActionArea sx={{position: 'relative'}}>
-                        <Link href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
-                        {
-                          prod._id === selected &&
-                          <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
-                        }
-                          <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
-                            <Image
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              priority
-                              src={prod.images[0].image}
-                              alt={prod.title}
-                              quality={35}
-                            />
-                          </CardMedia>
-                        </Link>
-                        <CardContent>
-                          {
-                            prod.inStock > 0 ? 
-                            ( <Typography color="primary" gutterBottom variant="caption" component="p" align="center">
-                            in Stock
-                            </Typography>) :
-                            ( <Typography color="secondary" gutterBottom variant="caption" component="p" align="center">
-                            out of Stock
-                            </Typography>)
-                          }
-                          <Typography gutterBottom variant="h6" component="h3" align="center">
-                          {prod.title}
-                          </Typography>
-                          <Typography align="center" variant="body2" color="text.secondary">
-                            {prod.shortDescription}
-                          </Typography>
-                          <Box
-                            sx={{
-                              textAlign: 'center',
-                              my: 1,
-                            }}
-                            >
-                            <Rating size="small" name="read-only" value={prod.rating} readOnly precision={0.5} />
-                          </Box>
-                          <Typography align="center" component="h3" variant="h6" color="secondary">
-                            {prod.price}
-                            <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
-                              <del>
-                              {prod.oldPrice && prod.oldPrice}
-                              </del>
-                            </Typography>
-                          </Typography>
-                        </CardContent>
-                      </CardActionArea>
-                  </Card>
-              </Grid>
-            ))}
-            <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-                <Toolbar>
-                  <SelectPages pageSize={pageSize} sort={sort} page={page} pageSizeHandler={pageSizeHandler}  />
-                  {
-                    products.length === 0 ?
-                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    "No products"
-                    </Typography>
-                    :
-                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {products.length} {products.length === 1 ? "product" : "products"}.
-                  </Typography>
-                  }
-                  {
-                    products.length > 0 &&
-                    <Stack spacing={2}>
-                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={handlePageChange}  />
-                    </Stack>
-                  }
-                </Toolbar>
-              </AppBar>
-            </Grid>
-          </Grid>
-          :
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
@@ -468,9 +382,38 @@ console.log(pageSize, pages, countProducts, products);
                   </Typography>
                   }
                   <ToggleButtons />
-                  <SelectCategory sort={sort} sortHandler={sortHandler} />
+                  <SelectSort sort={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
+            </Grid>
+            <Grid item xs={12}>
+              <Paper
+                elevation={0}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  flexWrap: 'wrap',
+                  listStyle: 'none',
+                  p: 0.5,
+                  m: 0,
+                }}
+                component="ul"
+              >
+                {
+                  chipData.length !== 0 &&
+                  chipData.map((data) => (
+                    data.label && data.label.map(label => (
+                    label !== '' &&
+                    <ListItem sx={{width: 'auto'}} key={data.key + label}>
+                      <Chip
+                        label={label}
+                        onDelete={() => handleDelete(data)}
+                      />
+                    </ListItem>
+                    ))
+                  ))
+                }
+              </Paper>
             </Grid>
           {products.map(prod => (
             <Grid key={prod._id} item xs={12} sm={4} md={3}>
@@ -532,7 +475,7 @@ console.log(pageSize, pages, countProducts, products);
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <SelectPages pageSize={pageSize} sort={sort} page={page} pageSizeHandler={pageSizeHandler}  />
+                  <SelectPages pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
                     countProducts === 0 ?
                     <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -546,11 +489,7 @@ console.log(pageSize, pages, countProducts, products);
                   {
                     countProducts > 0 &&
                     <Stack spacing={2}>
-                      {
-                        
-                        console.log(pages, page)
-                      }
-                      <List sx={{display: 'flex'}}>
+                   {/*   <List sx={{display: 'flex'}}>
                         {
                           products.length > 0 &&
                           [...Array(pages).keys()].map(pageNumber => (
@@ -561,15 +500,14 @@ console.log(pageSize, pages, countProducts, products);
                             </ListItem>
                           ))
                         }
-                      </List>
-                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(pages[e.target.value + 1])}  />
+                      </List>*/}
+                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>
                   }
                 </Toolbar>
               </AppBar>
             </Grid>
           </Grid>
-        }
         </Grid>
       </Grid>
     </Box>

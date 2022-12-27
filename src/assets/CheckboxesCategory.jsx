@@ -12,7 +12,7 @@ let catArray = [];
 let subCatArray = [];
 
 
-export default function CheckboxesBrand(props) {
+export default function CheckboxesCategory(props) {
   const [expanded, setExpanded] = React.useState(false);
   const { categories, subCategories, categoryHandler, subCategoryHandler } = props;
   const topCategoryState = categories.map(item => item);

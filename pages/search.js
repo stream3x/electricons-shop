@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react';
-import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, Pagination, Rating, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Product from '../models/Product';
 import BreadcrumbNav from '../src/assets/BreadcrumbNav';
 import RangeSlider from '../src/assets/RangeSlider';
-import SelectCategory from '../src/assets/SelectCategory';
+import SelectCategory from '../src/assets/SelectSort';
 import ToggleButtons from '../src/assets/ToggleButtons';
 import Link from '../src/Link';
 import theme from '../src/theme';
@@ -16,7 +16,7 @@ import CheckboxesBrand from '../src/assets/CheckboxesBrand';
 import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 import SelectPages from '../src/assets/SelectPages';
 
-let PAGE_SIZE = 16;
+let PAGE_SIZE = 40;
 const ratings = [1, 2, 3, 4, 5];
 
 export default function Search(props) {
@@ -67,17 +67,32 @@ export default function Search(props) {
     })
   }
 
+  const [chipData, setChipData] = useState([
+    { key: 0, label: [query] },
+    { key: 1, label: [category] },
+    { key: 2, label: [brand] },
+    { key: 3, label: [subCategory] },
+    { key: 4, label: [price] }
+  ]);
+
+  const handleDelete = (chipToDelete) => {
+    console.log(chipToDelete, chipData);
+    setChipData(chips => chips.filter((chip) => chip.key !== chipToDelete.key));
+    // router.push(`/search?`);
+  };
+
   const categoryHandler = (item) => {
     filterSearch({ category: item })
   }
   const subCategoryHandler = (item) => {
     filterSearch({ subCategory: item })
   }
-  const pageHandler = (e) => {
+  const pageHandler = (page) => {
     filterSearch({ page })
   }
   const brandHandler = (item) => {
     filterSearch({ brand: item })
+    setChipData((prev) => [...prev, { label: item }]);
   }
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value })
@@ -87,10 +102,6 @@ export default function Search(props) {
   }
 
   const { state, dispatch } = useContext(Store);
-
-  const handleDelete = () => {
-    router.push('/search');
-  };
 
   const addToCartHandler = async (product) => {
     const existItem = state.cart.cartItems.find(item => item._id === product._id);
@@ -160,19 +171,31 @@ export default function Search(props) {
               </Grid>
             }
             <Grid item xs={12}>
-              {query !== '' && ' : ' + query}
-              {category !== '' && ' : ' + category}
-              {price !== '' && ' : ' + brand}
-              &nbsp;
-              {
-                (query !== '' && query !== '') ||
-                category !== '' ||
-                brand !== '' ||
-                price !== '' ? (
-                  <Chip label={router.asPath} variant="outlined" onDelete={handleDelete} />
-                )
-                : null
-              } 
+              <Paper
+                elevation={0}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  flexWrap: 'wrap',
+                  listStyle: 'none',
+                  p: 0.5,
+                  m: 0,
+                }}
+                component="ul"
+              >
+                {
+                  chipData.map((data) => (
+                    data.label.map(label => (
+                    <ListItem sx={{width: 'auto'}} key={data.key}>
+                      <Chip
+                        label={label}
+                        onDelete={() => handleDelete(data)}
+                      />
+                    </ListItem>
+                    ))
+                  ))
+                }
+              </Paper>
             </Grid>
             {
               products.map(prod => (
@@ -250,7 +273,7 @@ export default function Search(props) {
                   {
                     products.length > 0 &&
                     <Stack spacing={2}>
-                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={pageHandler}  />
+                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>
                   }
                 </Toolbar>

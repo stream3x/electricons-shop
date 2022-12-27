@@ -398,7 +398,7 @@ export default function Header(props) {
                     onClose={() => {
                       setOpen(false);
                     }}
-                    onChange={(option, value) => setQuery(value.title)}
+                    onChange={(option, value) => setQuery(value && value.title)}
                     isOptionEqualToValue={(option, value) => option.title === value.title}
                     getOptionLabel={(option) => option.title}
                     options={options}
