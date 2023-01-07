@@ -5,9 +5,9 @@ const category_data = {
       avatar: "/images/desktopAvatar.jpeg",
       slug: "desktop-computers",
       subCategory: [
-        {url: 'amd-computers', subCategoryName: 'AMD computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
-        {url: 'dell-computers', subCategoryName: 'Dell Computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
-        {url: 'hp-computers', subCategoryName: 'HP computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'}
+        {url: 'AMD-Computers', subCategoryName: 'AMD Computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
+        {url: 'Dell-Computers', subCategoryName: 'Dell Computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'},
+        {url: 'HP-Computers', subCategoryName: 'HP Computers', topCategoryName: 'Desktop computers', topCategoryUrl: 'desktop-computers'}
       ]
     },
     {
@@ -15,9 +15,9 @@ const category_data = {
       avatar: "/images/laptopAvatar.jpg",
       slug: "laptops",
       subCategory: [
-        {url: 'acer-laptops', subCategoryName: 'Acer laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'},
-        {url: 'lenovo-laptops', subCategoryName: 'Lenovo laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'},
-        {url: 'toshiba-laptops', subCategoryName: 'Toshiba laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'}
+        {url: 'Acer-Laptops', subCategoryName: 'Acer Laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'},
+        {url: 'Lenovo-Laptops', subCategoryName: 'Lenovo Laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'},
+        {url: 'Toshiba-Laptops', subCategoryName: 'Toshiba Laptops', topCategoryName: 'Laptop computers', topCategoryUrl: 'laptops'}
       ]
     },
     {
@@ -25,9 +25,9 @@ const category_data = {
       avatar: "/images/mobileAvatar.png",
       slug: "smartphones",
       subCategory: [
-        {url: 'xiaomi-smartphones', subCategoryName: 'Xiaomi smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'},
-        {url: 'nokia-smartphones', subCategoryName: 'Nokia smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'},
-        {url: 'huawei-smartphones', subCategoryName: 'Huawei smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'}
+        {url: 'Xiaomi-Smartphones', subCategoryName: 'Xiaomi Smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'},
+        {url: 'Nokia-Smartphones', subCategoryName: 'Nokia Smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'},
+        {url: 'Huawei-Smartphones', subCategoryName: 'Huawei Smartphones', topCategoryName: 'Smartphones', topCategoryUrl: 'smartphones'}
       ]
     }
   ]

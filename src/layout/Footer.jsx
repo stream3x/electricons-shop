@@ -17,16 +17,22 @@ import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 function Copyright() {
   return (
-    <Typography align="center" variant="body2" color="primary.contrastText">
-      {'Copyright © '}
-      <Link color="primary.main" href="https://electricons.vercel.app/">
-        Electricons
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-      {' - '}
-      {' Ecommerce Software By ExplodeMarket™ '}
-    </Typography>
+    <Box sx={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+      <Typography align="center" variant="body2" color="primary.contrastText">
+        {'Copyright © '}
+        <Link color="primary.main" href="https://electricons.vercel.app/">
+          Electricons
+        </Link>{' '}{' 2022 - '}
+        {new Date().getFullYear()}
+        {'.'}
+      </Typography>
+      <Typography align="center" variant="body2" color="primary.contrastText">
+        Ecommerce Software By{' '}
+      <Link color="primary.main" href="https://explodemarket.com/">
+        ExplodeMarket™
+      </Link>
+      </Typography>
+    </Box>
   );
 }
 
@@ -38,7 +44,7 @@ function ScrollTop(props) {
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
     disableHysteresis: true,
-    threshold: 50,
+    threshold: 100,
   });
 
   const handleClick = (event) => {
@@ -58,7 +64,7 @@ function ScrollTop(props) {
       <Box
         onClick={handleClick}
         role="presentation"
-        sx={{ position: 'fixed', bottom: {xs: 70, sm: 16}, right: 16 }}
+        sx={{ position: 'fixed', bottom: {xs: 70, sm: 30}, right: 16 }}
       >
         {children}
       </Box>

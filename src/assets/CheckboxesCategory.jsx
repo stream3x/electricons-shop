@@ -11,7 +11,6 @@ import { Collapse } from '@mui/material';
 let catArray = [];
 let subCatArray = [];
 
-
 export default function CheckboxesCategory(props) {
   const [expanded, setExpanded] = React.useState(false);
   const { categories, subCategories, categoryHandler, subCategoryHandler } = props;
@@ -47,12 +46,12 @@ export default function CheckboxesCategory(props) {
     }));
 
     if(!topCat[item]) {
-      catArray.push(item)
+      catArray.push(item);
     }else {
       removeDuplicates.push(item);
     }
 
-    categoryHandler(catArray = catArray.filter(val => !removeDuplicates.includes(val)));
+    categoryHandler(catArray = catArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
   };
 
   const handleChangeSubCat = (item) => (event) => {
@@ -64,12 +63,12 @@ export default function CheckboxesCategory(props) {
     }));
 
     if(!subCat[item]) {
-      subCatArray.push(item)
+      subCatArray.push(item);
     }else {
       removeDuplicates.push(item);
     }
 
-    subCategoryHandler(subCatArray = subCatArray.filter(val => !removeDuplicates.includes(val)));
+    subCategoryHandler(subCatArray = subCatArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
   };
 
   const handleExpandClick = () => {
@@ -88,7 +87,7 @@ export default function CheckboxesCategory(props) {
                 control={
                   <Checkbox onChange={handleChangeTopCat(item)} />
                 }
-                label={item}
+                label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
               />
             </FormGroup>
           ))
@@ -102,7 +101,7 @@ export default function CheckboxesCategory(props) {
                   control={
                     <Checkbox onChange={handleChangeTopCat(item)} />
                   }
-                  label={item}
+                  label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
                 />
               </FormGroup>
             ))
@@ -116,35 +115,35 @@ export default function CheckboxesCategory(props) {
       <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
         <FormLabel component="legend">Brand Categories</FormLabel>
         {
-          subCategoryState.slice(0, 3).map(item => (
+          uniqueSubCat.slice(0, 3).map(item => (
             <FormGroup key={item}>
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
                   <Checkbox onChange={handleChangeSubCat(item)} />
                 }
-                label={item}
+                label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
               />
             </FormGroup>
           ))
         }
         <Collapse in={expanded} timeout="auto" unmountOnExit>
         {
-          subCategoryState.slice(3, subCategoryState.length).map(item => (
+          uniqueSubCat.slice(3, uniqueSubCat.length).map(item => (
             <FormGroup key={item}>
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
                   <Checkbox onChange={handleChangeSubCat(item)} />
                 }
-                label={item}
+                label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
               />
             </FormGroup>
           ))
         }
         </Collapse>
         {
-          subCategoryState.length > 3 &&
+          uniqueSubCat.length > 3 &&
           <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
         }
       </FormControl>

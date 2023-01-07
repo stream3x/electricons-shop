@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
@@ -15,6 +15,8 @@ import { Store } from '../src/utils/Store';
 import CheckboxesBrand from '../src/assets/CheckboxesBrand';
 import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 import SelectPages from '../src/assets/SelectPages';
+import SwipeableFilterDrawer from '../src/components/SwipeableFilterDrawer';
+import ActionCardButtons from '../src/assets/ActionCardButtons';
 
 let PAGE_SIZE = 40;
 const ratings = [1, 2, 3, 4, 5];
@@ -22,6 +24,7 @@ const ratings = [1, 2, 3, 4, 5];
 export default function Search(props) {
   const router = useRouter();
   const [selected, setSelected] = useState('');
+  const { state, dispatch } = useContext(Store);
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -60,48 +63,224 @@ export default function Search(props) {
     if(price) query.price = price;
     if(min) query.min ? query.min : query.min === 0 ? 0 : min;
     if(max) query.max ? query.max : query.max === 0 ? 0 : max;
-
     router.push({
       pathname: router.pathname,
       query: query
-    })
-  }
-
-  const [chipData, setChipData] = useState([
-    { key: 0, label: [query] },
-    { key: 1, label: [category] },
-    { key: 2, label: [brand] },
-    { key: 3, label: [subCategory] },
-    { key: 4, label: [price] }
-  ]);
-
-  const handleDelete = (chipToDelete) => {
-    console.log(chipToDelete, chipData);
-    setChipData(chips => chips.filter((chip) => chip.key !== chipToDelete.key));
-    // router.push(`/search?`);
+    });
   };
 
-  const categoryHandler = (item) => {
-    filterSearch({ category: item })
-  }
-  const subCategoryHandler = (item) => {
-    filterSearch({ subCategory: item })
-  }
-  const pageHandler = (page) => {
-    filterSearch({ page })
-  }
-  const brandHandler = (item) => {
-    filterSearch({ brand: item })
-    setChipData((prev) => [...prev, { label: item }]);
-  }
-  const sortHandler = (e) => {
-    filterSearch({ sort: e.target.value })
-  }
-  const priceHandler = (e) => {
-    filterSearch({ price: e.target.value })
-  }
+  const initialState = [
+    { key: 'query', label: [...query] },
+    { key: 'category', label: [...category] },
+    { key: 'brand', label: [...brand] },
+    { key: 'subCategory', label: [...subCategory] },
+    { key: 'price', label: [price] }
+  ];
 
-  const { state, dispatch } = useContext(Store);
+  const [chipData, setChipData] = useState(initialState);
+  const [view, setView] = React.useState('module');
+
+  const handleChangeView = (event, nextView) => {
+    setView(nextView);
+  };
+
+  // const [uncheckState, setUncheckState] = useState({
+  //   tags: []
+  // });
+
+  // function onCheck(e) {
+  //   let tags = [...uncheckState.tags];
+  //   tags = tags.filter(tag => tag !== e.target.value);
+  //   e.target.checked && tags.push(e.target.value);
+  //   setUncheckState({ tags });
+  // }
+
+  // function onRemove(e, i) {
+  //   setUncheckState({
+  //     tags: uncheckState.tags.filter((_, index) => index !== i)
+  //   });
+  // }
+  
+  const objToArray = obj => {
+    setChipData(current => [...current, obj]);
+  };
+  
+  const handleDelete = (chipToDelete, index, i) => {
+    const filterLabel = chipToDelete.label.filter(e => e !== index);
+    if(chipToDelete.key === 'query') {
+      if(chipToDelete.label.length !== 0) {
+        router.push(`/search?query=`);
+        setChipData((prev) => (
+          prev.map(obj => {
+            if(obj.key === 'query') {
+              return { ...obj, label: filterLabel };
+            }
+            return obj;
+          })
+        ));
+      }else {
+        setChipData((prev) => (
+          prev.filter(obj => {
+            return obj.key !== 'query';
+          })
+        ));
+        objToArray({
+          key: 'query',
+          label: []
+        });
+      }
+    }
+    if(chipToDelete.key === 'brand') {
+      setChipData((prev) => (
+        prev.map(obj => {
+          const filterLabel = obj.label.filter(e => e !== index);
+          if(obj.key === 'brand') {
+            filterSearch({ brand: filterLabel });
+            return { ...obj, label: filterLabel };
+          }          
+          return obj;
+        })
+      ));
+    }
+    if(chipToDelete.key === 'category') {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'category') {
+            const filterLabel = obj.label.filter(e => e !== index);
+            filterSearch({ category: filterLabel });
+            return { ...obj, label: filterLabel };
+          }
+          return obj;
+        })
+      ));
+      // setUncheckState((prev) => (
+      //   { ...prev, filterName: [...index], uncheck: [true] }
+      // ));
+    }
+    if(chipToDelete.key === 'subCategory') {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'subCategory') {
+            const filterLabel = obj.label.filter(e => e !== index);
+            filterSearch({ subCategory: filterLabel });
+            return { ...obj, label: filterLabel };
+          }
+          return obj;
+        })
+      ));
+      // setUncheckState((prev) => (
+      //   { ...prev, filterName: [...index], uncheck: [true] }
+      // ));
+    }
+  };
+
+  const searchHandler = (item) => {
+    console.log(item);
+    if(item.length !== 0) {
+      filterSearch({ query: item});
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'query') {
+            return { ...obj, label: [item] };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'query';
+        })
+      ));
+      objToArray({
+        key: 'query',
+        label: []
+      });
+    }
+  };
+
+  useEffect(() => {
+    searchHandler(query);
+  }, [query]);
+
+  const categoryHandler = (item, isChecked) => {
+    filterSearch({ category: item });
+    if(item.length !== 0 && isChecked) {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'category') {
+            return { ...obj, label: item };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'category';
+        })
+      ));
+      objToArray({
+        key: 'category',
+        label: []
+      });
+    }
+  };
+  const subCategoryHandler = (item, isChecked) => {
+    filterSearch({ subCategory: item });
+    if(item.length !== 0 && isChecked) {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'subCategory') {
+            return { ...obj, label: item };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'subCategory';
+        })
+      ));
+      objToArray({
+        key: 'subCategory',
+        label: []
+      });
+    }
+  };
+  const pageHandler = (page) => {
+    filterSearch({ page });
+  };
+  const brandHandler = (item, isChecked, event) => {
+    filterSearch({ brand: item });
+    if(item.length !== 0 && isChecked) {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'brand') {
+            return { ...obj, label: item };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'brand';
+        })
+      ));
+      objToArray({
+        key: 'brand',
+        label: []
+      });
+    }
+  };
+  const sortHandler = (e) => {
+    filterSearch({ sort: e.target.value });
+  };
+  const priceHandler = (e) => {
+    filterSearch({ price: e.target.value });
+  };
 
   const addToCartHandler = async (product) => {
     const existItem = state.cart.cartItems.find(item => item._id === product._id);
@@ -109,11 +288,11 @@ export default function Search(props) {
     const { data } = await axios.get(`/api/products/${product._id}`);
     if(data.inStock < quantity) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'product is out of stock', severity: 'warning' } });
-      return
+      return;
     }
     dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1}});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
-  }
+  };
 
   return (
     <Box sx={{ flexGrow: 1, my: 4  }}>
@@ -145,19 +324,22 @@ export default function Search(props) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-                <Toolbar>
-                  <Typography color="secondary.lightGrey" component="h2" variant="p">Search</Typography>
-                  {
-                    products.length === 0 ?
-                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    "No products"
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                  <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center'}}>
+                    <Typography color="secondary.lightGrey" component="h2" variant="p">Search</Typography>
+                    {
+                      products.length === 0 ?
+                      <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                      "No products"
+                      </Typography>
+                      :
+                      <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                      There are {products.length} {products.length === 1 ? "product" : "products"}.
                     </Typography>
-                    :
-                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {products.length} {products.length === 1 ? "product" : "products"}.
-                  </Typography>
-                  }
-                  <ToggleButtons />
+                    }
+                  </Box>
+                  <SwipeableFilterDrawer countProducts={countProducts} brands={brands} brandHandler={brandHandler} categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                  <ToggleButtons handleChangeView={handleChangeView} view={view} />
                   <SelectCategory value={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
@@ -184,12 +366,13 @@ export default function Search(props) {
                 component="ul"
               >
                 {
-                  chipData.map((data) => (
-                    data.label.map(label => (
-                    <ListItem sx={{width: 'auto'}} key={data.key}>
+                  chipData.map((data, i) => (
+                    data.label.map((label, index) => (
+                    label !== '' &&
+                    <ListItem sx={{width: 'auto'}} key={data.key + index}>
                       <Chip
-                        label={label}
-                        onDelete={() => handleDelete(data)}
+                        label={`${data.key} : ${label}`}
+                        onDelete={() => handleDelete(data, label, index)}
                       />
                     </ListItem>
                     ))
@@ -198,9 +381,10 @@ export default function Search(props) {
               </Paper>
             </Grid>
             {
+              view === 'module' &&
               products.map(prod => (
                 <Grid key={prod._id} item xs={12} sm={4} md={3}>
-                    <Card sx={{ width: "100%", height: "100%" }}>
+                    <Card sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
                         <CardActionArea sx={{position: 'relative'}}>
                           <Link href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
                           {
@@ -218,6 +402,9 @@ export default function Search(props) {
                               />
                             </CardMedia>
                           </Link>
+                          <Box className='hover-buttons' sx={{opacity: {xs: 1, sm: 0}, transform: {xs: 'translateX(0px)', sm: 'translateX(-200px)'}}}>
+                            <ActionCardButtons view={view} />
+                          </Box>
                           <CardContent>
                             {
                               prod.inStock > 0 ? 
@@ -256,24 +443,86 @@ export default function Search(props) {
                 </Grid>
               ))
             }
+            {
+              view === 'list' &&
+              products.map(prod => (
+                <Grid sx={{display: {xs: 'none', md: 'block'}}} key={prod._id} item xs={12}>
+                    <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
+                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%'} }}>
+                          <Link sx={{position: 'relative', display: 'flex', flex: 0}} href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
+                          {
+                            prod._id === selected &&
+                            <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                          }
+                            <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                              <Image
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                priority
+                                src={prod.images[0].image}
+                                alt={prod.title}
+                                quality={35}
+                              />
+                            </CardMedia>
+                          </Link>
+                          <CardContent sx={{display: 'flex', flex: '0 0 75%', flexWrap: 'wrap'}}>
+                            <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                            {prod.title}
+                            </Typography>
+                            <Typography align="center" variant="body2" color="text.secondary">
+                              {prod.shortDescription}
+                            </Typography>
+                            {
+                              prod.inStock > 0 ? 
+                              ( <Typography sx={{width: '100%', py: 2}} color="primary" gutterBottom variant="caption" component="p" align="left">
+                              in Stock
+                              </Typography>) :
+                              ( <Typography sx={{width: '100%', py: 2}} color="secondary" gutterBottom variant="caption" component="p" align="left">
+                              out of Stock
+                              </Typography>)
+                            }
+                            <Box
+                              sx={{
+                                textAlign: 'left',
+                                my: 1,
+                                width: '100%'
+                              }}
+                              >
+                              <Rating size="small" name="read-only" value={prod.rating} readOnly precision={0.5} />
+                            </Box>
+                            <Typography align="center" component="h3" variant="h6" color="secondary">
+                              {prod.price}
+                              <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
+                                <del>
+                                {prod.oldPrice && prod.oldPrice}
+                                </del>
+                              </Typography>
+                            </Typography>
+                            <ActionCardButtons view={view} />
+                          </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+              ))
+            }
            <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-                <Toolbar>
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages pageSize={pageSize} sort={sort} page={page}  />
                   {
                     products.length === 0 ?
-                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, py: 3 }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No products"
                     </Typography>
                     :
-                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3 }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     There are {products.length} {products.length === 1 ? "product" : "products"}.
                   </Typography>
                   }
                   {
                     products.length > 0 &&
-                    <Stack spacing={2}>
-                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                    <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
+                      <Pagination sx={{mx: 'auto'}} count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>
                   }
                 </Toolbar>
@@ -305,7 +554,7 @@ export async function getServerSideProps({ query }) {
       }
     }
     : {};
-  
+
   const categoryFilter = category && category !== '' ? { category } : {};
   const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
   const brandFilter = brand && brand !== '' ? { brand } : {};

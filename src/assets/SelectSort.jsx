@@ -3,15 +3,15 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { useMediaQuery } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 
 export default function SelectSort(props) {
   const { sort, sortHandler } = props;
   const matches = useMediaQuery('(min-width: 600px)');
 
   return (
-    <div>
-      <FormControl sx={{ m: 1, minWidth: 100 }}>
+    <Box sx={{ flex: {xs: 1, sm: 0} }}>
+      <FormControl sx={{ m: 1, minWidth: {xs: '100%', sm: 100} }}>
         <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Sort by</InputLabel>
         <Select
           size={!matches ? 'small' : 'medium'}
@@ -30,6 +30,6 @@ export default function SelectSort(props) {
           <MenuItem defaultValue="latest" value="latest">Featured Products</MenuItem>
         </Select>
       </FormControl>
-    </div>
+    </Box>
   );
 }

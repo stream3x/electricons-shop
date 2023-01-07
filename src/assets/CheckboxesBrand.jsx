@@ -14,30 +14,29 @@ export default function CheckboxesBrand(props) {
   const { brands, brandHandler } = props;
   const [expanded, setExpanded] = React.useState(false);
   const brandState = brands.map(item => item);
-  const unique = [...new Set(brandState)]
+  const unique = [...new Set(brandState)];
   const createBooleans = Array(unique.length).fill(false);
   const result = [createBooleans].map(row =>
     row.reduce((acc, cur, i) =>
-      (acc[unique[i]] = cur, acc), {}))
-
-  const [state, setState] = React.useState(result);
-  delete state[""];
+      (acc[unique[i]] = cur, acc), {})
+  );
+  const [stateBrand, setStateBrand] = React.useState(result);
+  delete stateBrand[0];
 
   const handleChange = (item) => (event) => {
     const removeDuplicates = [];
-
-    setState((prev) => ({
+    setStateBrand((prev) => ({
       ...prev,
       [item]: event.target.checked,
     }));
 
-    if(!state[item]) {
-      brandArray.push(item)
+    if(!stateBrand[item]) {
+      brandArray.push(item);
     }else {
       removeDuplicates.push(item);
     }
 
-    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)));
+    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
   };
 
   const handleExpandClick = () => {
@@ -54,7 +53,7 @@ export default function CheckboxesBrand(props) {
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
-                  <Checkbox onChange={handleChange(item)} />
+                  <Checkbox onChange={handleChange(item)} name={item} value={item} />
                 }
                 label={item}
               />
@@ -68,7 +67,7 @@ export default function CheckboxesBrand(props) {
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
                   control={
-                    <Checkbox checked={result.item} onChange={handleChange(item)} name={item} />
+                    <Checkbox onChange={handleChange(item)} name={item} value={item} />
                   }
                   label={item}
                 />

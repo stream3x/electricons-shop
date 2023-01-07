@@ -4,12 +4,8 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-export default function ToggleButtons() {
-  const [view, setView] = React.useState('list');
-
-  const handleChange = (event, nextView) => {
-    setView(nextView);
-  };
+export default function ToggleButtons(props) {
+  const { handleChangeView, view} = props;
 
   return (
     <ToggleButtonGroup
@@ -17,7 +13,7 @@ export default function ToggleButtons() {
       orientation="horizontal"
       value={view}
       exclusive
-      onChange={handleChange}
+      onChange={handleChangeView}
     >
       <ToggleButton value="module" aria-label="module">
         <ViewModuleIcon />

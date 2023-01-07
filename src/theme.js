@@ -15,6 +15,9 @@ const theme = createTheme({
       lightGrey: grey[500],
       borderColor: grey[300]
     },
+    white: {
+      main: grey[50],
+    },
     shape: {
       borderRadius: 50
     },

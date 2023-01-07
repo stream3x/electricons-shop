@@ -3,7 +3,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { useMediaQuery } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 
 export default function SelectPages(props) {
   const { pageSizeHandler, pageSize } = props;
@@ -14,8 +14,8 @@ export default function SelectPages(props) {
   };
 
   return (
-    <div>
-      <FormControl sx={{ m: 1, minWidth: 100 }}>
+    <Box sx={{ flex: {xs: 1, sm: 0} }}>
+      <FormControl sx={{ m: 1, minWidth: {xs: '100%', sm: 100} }}>
         <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Show</InputLabel>
         <Select
           size={!matches ? 'small' : 'medium'}
@@ -31,6 +31,6 @@ export default function SelectPages(props) {
           <MenuItem value={40}>40 per page</MenuItem>
         </Select>
       </FormControl>
-    </div>
+    </Box>
   );
 }

@@ -108,7 +108,7 @@ export default function DropdownMenu(props) {
                             </Link>
                             {
                               products.map((prod, i) => (
-                                sub.url === prod.subCategoryUrl &&
+                                prod.subCategoryUrl === sub.url &&
                                 <Link key={prod.slug + i} href={`/product/${prod.slug}`} underline="hover" sx={{display: 'flex', pb: 1}}>
                                   <Typography sx={{'&:hover': {color: theme.palette.primary.main}}} color="secondary.lightGrey" component="h6" variant="p">
                                   {prod.title}

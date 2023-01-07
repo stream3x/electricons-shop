@@ -6,7 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
+// import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
@@ -131,7 +131,7 @@ export default function Header(props) {
     }
 
     (async () => {
-      const { data } = await axios.get('/api/products')
+      const { data } = await axios.get('/api/products');
 
       if(active) {
         setOptions([...data]);
@@ -152,7 +152,7 @@ export default function Header(props) {
   const submitHandler = (e) => {
     e.preventDefault();
     router.push(`/search?query=${query}`);
-  }
+  };
 
   const handleClick = (event) => {
     setAnchorElDropdown(event.currentTarget);
@@ -347,7 +347,7 @@ export default function Header(props) {
                                 {logedout[0]}
                               </Link>
                             </MenuItem>
-                            <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                            <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main} }} onClick={handleCloseUserMenu}>
                               <Link href="/signin">
                                 {logedout[1]}
                               </Link>
@@ -360,7 +360,7 @@ export default function Header(props) {
                 </Grid>
               </Grid>    
             </Toolbar>
-            <Toolbar>
+            <Toolbar sx={{p: {xs: 0, sm: 'inherit'}}}>
               <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%', postion: 'relative' }}>
                 {
                   matches ? 
@@ -398,9 +398,9 @@ export default function Header(props) {
                     onClose={() => {
                       setOpen(false);
                     }}
-                    onChange={(option, value) => setQuery(value && value.title)}
-                    isOptionEqualToValue={(option, value) => option.title === value.title}
-                    getOptionLabel={(option) => option.title}
+                    onChange={(option, value) => setQuery(value && value.title || value.subCategory)}
+                    isOptionEqualToValue={(option, value) => option.title === value.title || option.subCategory === value.subCategory}
+                    getOptionLabel={(option) => option.title || option.subCategory}
                     options={options}
                     loading={loading}
                     getOptionDisabled={(option) =>
@@ -410,8 +410,8 @@ export default function Header(props) {
                       <React.Fragment>
                         {
                           matches ?
-                          <Box key={option.title} component="li" sx={{ '& > img': { mr: 2, flexShrink: 1 } }} {...props}>
-                            <Box sx={{maxWidth: '30px', minWidth: '25px', height: '30px', position: 'relative'}}>
+                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 1 } }} {...props}>
+                            <Box sx={{ minWidth: '30px', width: '30px', height: '30px', position: 'relative', mr: .25}}>
                               <Image
                                 loading="lazy"
                                 fill
@@ -420,28 +420,30 @@ export default function Header(props) {
                                 alt={option.title}
                               />
                             </Box>
-                            <Typography component="span" variant='caption' sx={{px: 1 }} color="primary">
+                            <Typography component="span" variant='caption' sx={{ p: 0, mr: .25 }} color="primary">
                               <Link href={`product/${option.slug}`} passHref> {option.title}</Link>
                             </Typography>      
-                            <Typography sx={{px: 1 }} color="secondary" component="span" variant='caption'>
-                              / brand:
-                              <Typography color="primary" component="span" variant='caption'> {option.brand}</Typography>
+                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
+                            | brand:
+                              <Typography color="primary" component="span" variant='caption'>{option.brand}</Typography>
                             </Typography>
-                            <Typography sx={{px: 1 }} color="secondary" component="span" variant='caption'>
-                              / category: 
+                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
+                            | category: 
                               <Link href={`category/${option.categoryUrl}`} passHref> {option.category}</Link>
+                              /
+                              <Link href={`category/${option.categoryUrl}/${option.subCategoryUrl}`} passHref> {option.subCategory}</Link>
                             </Typography>
-                            <Typography sx={{px: 1 }} color="secondary" component="span" variant='caption'>
-                              / price:  
+                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
+                              | price:  
                               <Typography color="primary" component="span" variant='caption'> {option.price}
                               </Typography>
                             </Typography>             
-                            <Typography sx={{px: 1}} color="secondary" component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
+                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
                             </Typography>
                           </Box>
                           :
                           <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 0 }, display: 'flex' }} {...props}>
-                            <Box sx={{width: {xs: '15px', md: '30px'}, height: {xs: '15px', md: '30px'}, position: 'relative'}}>
+                            <Box sx={{width: {xs: '30px', md: '30px'}, height: {xs: '30px', md: '30px'}, position: 'relative'}}>
                               <Image
                                 loading="lazy"
                                 fill

@@ -27,6 +27,9 @@ import { useRouter } from 'next/router';
 import SelectPages from '../../src/assets/SelectPages';
 import CheckboxesBrand from '../../src/assets/CheckboxesBrand';
 import SelectSort from '../../src/assets/SelectSort';
+import SwipeableFilterDrawer from '../../src/components/SwipeableFilterDrawer';
+import CheckboxesCategory from '../../src/assets/CheckboxesCategory';
+import ActionCardButtons from '../../src/assets/ActionCardButtons';
 
 const PAGE_SIZE = 40;
 
@@ -153,7 +156,7 @@ export async function getServerSideProps(context) {
         brands,
         slug
       }
-    }
+    };
 }
 
 const LabelButton = styled(Button)(({ theme }) => ({
@@ -252,7 +255,7 @@ export default function CategoryProducts(props) {
     if(page) query.page = page;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
-    if(subCategory) query.subCategory = subCategory;
+    if(subCategory) query.subCategory = subCategory.toString().replace(/-/g, ' ');
     if(brand) query.brand = brand;
     if(sort) query.sort = sort;
     if(price) query.price = price;
@@ -276,9 +279,22 @@ export default function CategoryProducts(props) {
   const handleDelete = (chipToDelete) => {
     console.log(chipToDelete.label[0], router.asPath);
     setChipData(chips => chips.filter((chip) => chip.key !== chipToDelete.key));
-    // router.push(`${router.asPath}`);
+    if(chipToDelete.key === 0) {
+      router.push(`/search?query=`);
+    }
+    if(chipToDelete.key === 1) {
+      router.push(`/search?category=`);
+    }
+    if(chipToDelete.key === 2) {
+      router.push(`/search?brand=`);
+    }
+    if(chipToDelete.key === 3) {
+      router.push(`/search?subCategory=`);
+    }
+    if(chipToDelete.key === 4) {
+      router.push(`/search?price=`);
+    }
   };
-  // console.log(chipData, query, router.query);  
 
   const pageSizeHandler = (num) => {
     filterSearch({ pageSize: num })
@@ -308,6 +324,11 @@ export default function CategoryProducts(props) {
   const { snack, cart: {cartItems} } = state;
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = React.useState('');
+  const [view, setView] = React.useState('module');
+
+  const handleChangeView = (event, nextView) => {
+    setView(nextView);
+  };
 
   const currentPage = [...Array(pages).keys()].map(pageNumber => pageNumber + 1);
 
@@ -359,6 +380,9 @@ export default function CategoryProducts(props) {
                 <Toolbar>
                   <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
                 </Toolbar>
+                <Toolbar>
+                  <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                </Toolbar>
               </AppBar>
             </Grid>
           </Grid>
@@ -368,20 +392,23 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <Typography color="primary" component="h2" variant="p">
-                    Category
-                  </Typography>
-                  {
-                    countProducts === 0 ?
-                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    "No products"
+                  <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center'}}>
+                    <Typography color="secondary.lightGrey" component="h2" variant="p">
+                      Category
                     </Typography>
-                    :
-                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {countProducts} {countProducts === 1 ? "product" : "products"}.
-                  </Typography>
-                  }
-                  <ToggleButtons />
+                    {
+                      products.length === 0 ?
+                      <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                      "No products"
+                      </Typography>
+                      :
+                      <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                      There are {products.length} {products.length === 1 ? "product" : "products"}.
+                    </Typography>
+                    }
+                  </Box>
+                  <SwipeableFilterDrawer countProducts={countProducts} brands={brands} brandHandler={brandHandler} categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                  <ToggleButtons handleChangeView={handleChangeView} view={view} />
                   <SelectSort sort={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
@@ -406,7 +433,7 @@ export default function CategoryProducts(props) {
                     label !== '' &&
                     <ListItem sx={{width: 'auto'}} key={data.key + label}>
                       <Chip
-                        label={label}
+                        label={`${data.key === 0 ? 'query' : data.key === 1 ? 'category' : data.key === 2 ? 'brand' : data.key === 3 ? 'sub category' : data.key === 3 ? 'price' : data.key} : ${label}`}
                         onDelete={() => handleDelete(data)}
                       />
                     </ListItem>
@@ -415,9 +442,11 @@ export default function CategoryProducts(props) {
                 }
               </Paper>
             </Grid>
-          {products.map(prod => (
+          {
+            view === 'module' &&
+            products.map(prod => (
             <Grid key={prod._id} item xs={12} sm={4} md={3}>
-                <Card sx={{ width: "100%", height: "100%" }}>
+                <Card sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
                     <CardActionArea sx={{position: 'relative'}}>
                       <Link href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
                       {
@@ -435,6 +464,9 @@ export default function CategoryProducts(props) {
                           />
                         </CardMedia>
                       </Link>
+                      <Box className='hover-buttons' sx={{opacity: {xs: 1, sm: 0}, transform: {xs: 'translateX(0px)', sm: 'translateX(-200px)'}}}>
+                        <ActionCardButtons view={view} />
+                      </Box>
                       <CardContent>
                         {
                           prod.inStock > 0 ? 
@@ -471,7 +503,70 @@ export default function CategoryProducts(props) {
                     </CardActionArea>
                 </Card>
             </Grid>
-          ))}
+          ))
+        }
+        {
+          view === 'list' &&
+          products.map(prod => (
+            <Grid sx={{display: {xs: 'none', md: 'block'}}} key={prod._id} item xs={12}>
+                <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
+                    <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%'} }}>
+                      <Link sx={{position: 'relative', display: 'flex', flex: 0}} href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
+                      {
+                        prod._id === selected &&
+                        <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                      }
+                        <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                          <Image
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority
+                            src={prod.images[0].image}
+                            alt={prod.title}
+                            quality={35}
+                          />
+                        </CardMedia>
+                      </Link>
+                      <CardContent sx={{display: 'flex', flex: '0 0 75%', flexWrap: 'wrap'}}>
+                        <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                        {prod.title}
+                        </Typography>
+                        <Typography align="center" variant="body2" color="text.secondary">
+                          {prod.shortDescription}
+                        </Typography>
+                        {
+                          prod.inStock > 0 ? 
+                          ( <Typography sx={{width: '100%', py: 2}} color="primary" gutterBottom variant="caption" component="p" align="left">
+                          in Stock
+                          </Typography>) :
+                          ( <Typography sx={{width: '100%', py: 2}} color="secondary" gutterBottom variant="caption" component="p" align="left">
+                          out of Stock
+                          </Typography>)
+                        }
+                        <Box
+                          sx={{
+                            textAlign: 'left',
+                            my: 1,
+                            width: '100%'
+                          }}
+                          >
+                          <Rating size="small" name="read-only" value={prod.rating} readOnly precision={0.5} />
+                        </Box>
+                        <Typography align="center" component="h3" variant="h6" color="secondary">
+                          {prod.price}
+                          <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
+                            <del>
+                            {prod.oldPrice && prod.oldPrice}
+                            </del>
+                          </Typography>
+                        </Typography>
+                        <ActionCardButtons view={view} />
+                      </CardContent>
+                    </CardActionArea>
+                </Card>
+            </Grid>
+          ))
+        }
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
