@@ -17,8 +17,8 @@ import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 function Copyright() {
   return (
-    <Box sx={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
-      <Typography align="center" variant="body2" color="primary.contrastText">
+    <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', width: '100%'}}>
+      <Typography sx={{width: {xs: '100%', sm: 'auto'}, p: 2}} align="center" variant="body2" color="primary.contrastText">
         {'Copyright © '}
         <Link color="primary.main" href="https://electricons.vercel.app/">
           Electricons
@@ -26,7 +26,7 @@ function Copyright() {
         {new Date().getFullYear()}
         {'.'}
       </Typography>
-      <Typography align="center" variant="body2" color="primary.contrastText">
+      <Typography sx={{width: {xs: '100%', sm: 'auto'}}} align="center" variant="body2" color="primary.contrastText">
         Ecommerce Software By{' '}
       <Link color="primary.main" href="https://explodemarket.com/">
         ExplodeMarket™

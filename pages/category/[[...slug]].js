@@ -391,7 +391,7 @@ export default function CategoryProducts(props) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-                <Toolbar>
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center'}}>
                     <Typography color="secondary.lightGrey" component="h2" variant="p">
                       Category
@@ -569,21 +569,21 @@ export default function CategoryProducts(props) {
         }
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-                <Toolbar>
-                  <SelectPages pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                  <SelectPages sx={{order: 2}} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
                     countProducts === 0 ?
-                    <Typography sx={{ m: 0, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No products"
                     </Typography>
                     :
-                    <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, textAlign: {xs: 'center', sm: 'left'}, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     There are {countProducts} {countProducts === 1 ? "product" : "products"}.
                     </Typography>
                   }
                   {
                     countProducts > 0 &&
-                    <Stack spacing={2}>
+                    <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                    {/*   <List sx={{display: 'flex'}}>
                         {
                           products.length > 0 &&
@@ -596,7 +596,7 @@ export default function CategoryProducts(props) {
                           ))
                         }
                       </List>*/}
-                      <Pagination count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                      <Pagination sx={{mx: 'auto'}} count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>
                   }
                 </Toolbar>

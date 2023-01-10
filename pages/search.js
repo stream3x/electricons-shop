@@ -511,11 +511,11 @@ export default function Search(props) {
                   <SelectPages pageSize={pageSize} sort={sort} page={page}  />
                   {
                     products.length === 0 ?
-                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, py: 3 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No products"
                     </Typography>
                     :
-                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3 }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     There are {products.length} {products.length === 1 ? "product" : "products"}.
                   </Typography>
                   }
