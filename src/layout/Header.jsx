@@ -151,7 +151,14 @@ export default function Header(props) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    router.push(`/search?query=${query}`);
+    const queryRemoveSpace = `${query.replace(/ /g, '+')}`;
+    const addQuery = `query=${queryRemoveSpace}` 
+    console.log(router.asPath.replace(/ /g, ''));
+    if(router.pathname === '/category/[[...slug]]') {
+      router.push(`/search?query=${query}`);
+    }else {
+      router.push(router.asPath === `/search?` || router.asPath === `/` ? `/search?${addQuery}` : router.asPath + `&query=${queryRemoveSpace}` );
+    }
   };
 
   const handleClick = (event) => {
@@ -398,8 +405,8 @@ export default function Header(props) {
                     onClose={() => {
                       setOpen(false);
                     }}
-                    onChange={(option, value) => setQuery(value && value.title || value.subCategory)}
-                    isOptionEqualToValue={(option, value) => option.title === value.title || option.subCategory === value.subCategory}
+                    onChange={(option, value) => setQuery(value ? value.title : '')}
+                    isOptionEqualToValue={(option, value) => option.title === value.title}
                     getOptionLabel={(option) => option.title || option.subCategory}
                     options={options}
                     loading={loading}

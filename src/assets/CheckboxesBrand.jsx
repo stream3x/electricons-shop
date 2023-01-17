@@ -7,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
+import { Store } from '../utils/Store';
 
 let brandArray = [];
 
@@ -20,8 +21,10 @@ export default function CheckboxesBrand(props) {
     row.reduce((acc, cur, i) =>
       (acc[unique[i]] = cur, acc), {})
   );
-  const [stateBrand, setStateBrand] = React.useState(result);
+  const [stateBrand, setStateBrand] = React.useState(result[0]);
   delete stateBrand[0];
+  const { state, dispatch } = React.useContext(Store);
+  const { chips } = state;
 
   const handleChange = (item) => (event) => {
     const removeDuplicates = [];
@@ -29,19 +32,27 @@ export default function CheckboxesBrand(props) {
       ...prev,
       [item]: event.target.checked,
     }));
-
+  
     if(!stateBrand[item]) {
       brandArray.push(item);
     }else {
       removeDuplicates.push(item);
     }
-
+    
     brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
   };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  // React.useEffect(() => {
+  //     setStateBrand((prev) => ({
+  //       ...prev,
+  //       [Object.values(chips)]: false,
+  //     }));
+  //     dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: {}}});
+  // }, [chips])
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -53,7 +64,7 @@ export default function CheckboxesBrand(props) {
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
-                  <Checkbox onChange={handleChange(item)} name={item} value={item} />
+                  <Checkbox name={item} checked={stateBrand[item]} onChange={handleChange(item)} />
                 }
                 label={item}
               />

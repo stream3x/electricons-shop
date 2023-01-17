@@ -16,7 +16,8 @@ const initialState = {
   snack: {
     message: '',
     severity: ''
-  }
+  },
+  chips: {}
 };
 
 function reducer(state, action) {
@@ -88,6 +89,9 @@ function reducer(state, action) {
     }
     case 'PERSONAL_REMOVE': {
       return { ...state, cart: { ...state.cart, personalInfo: {} } };
+    }
+    case 'CHIPS': {
+      return { ...state, chips: action.payload };
     }
     default:
       return { ...state, snack: {message: '', severity: ''} };

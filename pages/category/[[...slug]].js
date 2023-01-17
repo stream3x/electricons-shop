@@ -268,56 +268,174 @@ export default function CategoryProducts(props) {
     })
   }
 
-  const [chipData, setChipData] = useState([
-    { key: 0, label: [query] },
-    { key: 1, label: [category] },
-    { key: 2, label: [brand] },
-    { key: 3, label: [subCategory] },
-    { key: 4, label: [price] }
-  ]);
+  const initialState = [
+    { key: 'query', label: [...query] },
+    { key: 'category', label: [...category] },
+    { key: 'brand', label: [...brand] },
+    { key: 'subCategory', label: [...subCategory] },
+    { key: 'price', label: [price] }
+  ];
 
-  const handleDelete = (chipToDelete) => {
-    console.log(chipToDelete.label[0], router.asPath);
-    setChipData(chips => chips.filter((chip) => chip.key !== chipToDelete.key));
-    if(chipToDelete.key === 0) {
-      router.push(`/search?query=`);
+  const [chipData, setChipData] = useState(initialState);
+  const [uncheckState, setUncheckState] = useState({
+    tags: []
+  });
+
+  const objToArray = obj => {
+    setChipData(current => [...current, obj]);
+  };
+
+  const handleDelete = (chipToDelete, index, i) => {
+    const filterLabel = chipToDelete.label.filter(e => e !== index);
+    const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
+    if(chipToDelete.key === 'query') {
+      if(chipToDelete.label.length !== 0) {
+        router.push(removeQuery);
+        setChipData((prev) => (
+          prev.map(obj => {
+            if(obj.key === 'query') {
+              return { ...obj, label: filterLabel };
+            }
+            return obj;
+          })
+        ));
+      }else {
+        setChipData((prev) => (
+          prev.filter(obj => {
+            return obj.key !== 'query';
+          })
+        ));
+        objToArray({
+          key: 'query',
+          label: []
+        });
+      }
     }
-    if(chipToDelete.key === 1) {
-      router.push(`/search?category=`);
+    if(chipToDelete.key === 'brand') {
+      setChipData((prev) => (
+        prev.map(obj => {
+          const filterLabel = obj.label.filter(e => e !== index);
+          if(obj.key === 'brand') {
+            filterSearch({ brand: filterLabel });
+            return { ...obj, label: filterLabel };
+          }          
+          return obj;
+        })
+      ));
+      setUncheckState({
+        // tags: uncheckState.tags.filter((_, index) => index !== i)
+        tags: index
+      });
+      console.log(uncheckState);
     }
-    if(chipToDelete.key === 2) {
-      router.push(`/search?brand=`);
+    if(chipToDelete.key === 'category') {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'category') {
+            const filterLabel = obj.label.filter(e => e !== index);
+            filterSearch({ category: filterLabel });
+            return { ...obj, label: filterLabel };
+          }
+          return obj;
+        })
+      ));
     }
-    if(chipToDelete.key === 3) {
-      router.push(`/search?subCategory=`);
-    }
-    if(chipToDelete.key === 4) {
-      router.push(`/search?price=`);
+    if(chipToDelete.key === 'subCategory') {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'subCategory') {
+            const filterLabel = obj.label.filter(e => e !== index);
+            filterSearch({ subCategory: filterLabel });
+            return { ...obj, label: filterLabel };
+          }
+          return obj;
+        })
+      ));
     }
   };
 
   const pageSizeHandler = (num) => {
     filterSearch({ pageSize: num })
   }
-  const categoryHandler = (item) => {
-    filterSearch({ category: item })
-  }
-  const subCategoryHandler = (item) => {
-    filterSearch({ subCategory: item })
-  }
+  const categoryHandler = (item, isChecked) => {
+    filterSearch({ category: item });
+    if(item.length !== 0 && isChecked) {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'category') {
+            return { ...obj, label: item };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'category';
+        })
+      ));
+      objToArray({
+        key: 'category',
+        label: []
+      });
+    }
+  };
+  const subCategoryHandler = (item, isChecked) => {
+    console.log(item);
+    filterSearch({ subCategory: item });
+    if(item.length !== 0 && isChecked) {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'subCategory') {
+            return { ...obj, label: item };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'subCategory';
+        })
+      ));
+      objToArray({
+        key: 'subCategory',
+        label: []
+      });
+    }
+  };
   const pageHandler = (page) => {
-    filterSearch({ page })
-  }
-  const brandHandler = (item) => {
-    filterSearch({ brand: item })
-    setChipData((prev) => [...prev, { label: item }]);
-  }
+    filterSearch({ page });
+  };
+  const brandHandler = (item, isChecked, event) => {
+    filterSearch({ brand: item });
+    if(item.length !== 0 && isChecked) {
+      setChipData((prev) => (
+        prev.map(obj => {
+          if(obj.key === 'brand') {
+            return { ...obj, label: item };
+          }
+          return obj;
+        })
+      ));
+    }else {
+      setChipData((prev) => (
+        prev.filter(obj => {
+          return obj.key !== 'brand';
+        })
+      ));
+      objToArray({
+        key: 'brand',
+        label: []
+      });
+    }
+  };
   const sortHandler = (e) => {
-    filterSearch({ sort: e.target.value })
-  }
+    filterSearch({ sort: e.target.value });
+  };
   const priceHandler = (e) => {
-    filterSearch({ price: e.target.value })
-  }
+    filterSearch({ price: e.target.value });
+  };
 
   const { state, dispatch } = useContext(Store);
   // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
@@ -426,15 +544,14 @@ export default function CategoryProducts(props) {
                 }}
                 component="ul"
               >
-                {
-                  chipData.length !== 0 &&
-                  chipData.map((data) => (
-                    data.label && data.label.map(label => (
+                 {
+                  chipData.map((data, i) => (
+                    data.label.map((label, index) => (
                     label !== '' &&
-                    <ListItem sx={{width: 'auto'}} key={data.key + label}>
+                    <ListItem sx={{width: 'auto'}} key={data.key + index}>
                       <Chip
-                        label={`${data.key === 0 ? 'query' : data.key === 1 ? 'category' : data.key === 2 ? 'brand' : data.key === 3 ? 'sub category' : data.key === 3 ? 'price' : data.key} : ${label}`}
-                        onDelete={() => handleDelete(data)}
+                        label={`${data.key} : ${label}`}
+                        onDelete={() => handleDelete(data, label, index)}
                       />
                     </ListItem>
                     ))

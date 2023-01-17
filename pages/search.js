@@ -84,21 +84,11 @@ export default function Search(props) {
     setView(nextView);
   };
 
-  // const [uncheckState, setUncheckState] = useState({
-  //   tags: []
-  // });
-
   // function onCheck(e) {
   //   let tags = [...uncheckState.tags];
   //   tags = tags.filter(tag => tag !== e.target.value);
   //   e.target.checked && tags.push(e.target.value);
   //   setUncheckState({ tags });
-  // }
-
-  // function onRemove(e, i) {
-  //   setUncheckState({
-  //     tags: uncheckState.tags.filter((_, index) => index !== i)
-  //   });
   // }
   
   const objToArray = obj => {
@@ -107,9 +97,10 @@ export default function Search(props) {
   
   const handleDelete = (chipToDelete, index, i) => {
     const filterLabel = chipToDelete.label.filter(e => e !== index);
+    const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
     if(chipToDelete.key === 'query') {
       if(chipToDelete.label.length !== 0) {
-        router.push(`/search?query=`);
+        router.push(removeQuery);
         setChipData((prev) => (
           prev.map(obj => {
             if(obj.key === 'query') {
@@ -141,6 +132,7 @@ export default function Search(props) {
           return obj;
         })
       ));
+      dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: index}});
     }
     if(chipToDelete.key === 'category') {
       setChipData((prev) => (
@@ -153,9 +145,6 @@ export default function Search(props) {
           return obj;
         })
       ));
-      // setUncheckState((prev) => (
-      //   { ...prev, filterName: [...index], uncheck: [true] }
-      // ));
     }
     if(chipToDelete.key === 'subCategory') {
       setChipData((prev) => (
@@ -168,14 +157,10 @@ export default function Search(props) {
           return obj;
         })
       ));
-      // setUncheckState((prev) => (
-      //   { ...prev, filterName: [...index], uncheck: [true] }
-      // ));
     }
   };
 
   const searchHandler = (item) => {
-    console.log(item);
     if(item.length !== 0) {
       filterSearch({ query: item});
       setChipData((prev) => (
