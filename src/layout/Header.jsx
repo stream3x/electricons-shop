@@ -152,12 +152,15 @@ export default function Header(props) {
   const submitHandler = (e) => {
     e.preventDefault();
     const queryRemoveSpace = `${query.replace(/ /g, '+')}`;
-    const addQuery = `query=${queryRemoveSpace}` 
-    console.log(router.asPath.replace(/ /g, ''));
+    const addQuery = `query=${queryRemoveSpace}`
     if(router.pathname === '/category/[[...slug]]') {
       router.push(`/search?query=${query}`);
+    }else if(router.asPath === `/search?query=`) {
+      router.push(`/search?query=${query}`);
+    }else if(router.asPath === `/search`) {
+      router.push(`/search?query=${query}`);
     }else {
-      router.push(router.asPath === `/search?` || router.asPath === `/` ? `/search?${addQuery}` : router.asPath + `&query=${queryRemoveSpace}` );
+      router.push(router.asPath === `/search?` || router.asPath === `/` ? `/search?${addQuery}` : `${router.asPath}` + `&query=${queryRemoveSpace}` );
     }
   };
 

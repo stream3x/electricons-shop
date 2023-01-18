@@ -277,9 +277,6 @@ export default function CategoryProducts(props) {
   ];
 
   const [chipData, setChipData] = useState(initialState);
-  const [uncheckState, setUncheckState] = useState({
-    tags: []
-  });
 
   const objToArray = obj => {
     setChipData(current => [...current, obj]);
@@ -322,11 +319,6 @@ export default function CategoryProducts(props) {
           return obj;
         })
       ));
-      setUncheckState({
-        // tags: uncheckState.tags.filter((_, index) => index !== i)
-        tags: index
-      });
-      console.log(uncheckState);
     }
     if(chipToDelete.key === 'category') {
       setChipData((prev) => (
@@ -582,7 +574,7 @@ export default function CategoryProducts(props) {
                         </CardMedia>
                       </Link>
                       <Box className='hover-buttons' sx={{opacity: {xs: 1, sm: 0}, transform: {xs: 'translateX(0px)', sm: 'translateX(-200px)'}}}>
-                        <ActionCardButtons view={view} />
+                        <ActionCardButtons product={prod} view={view} />
                       </Box>
                       <CardContent>
                         {
@@ -677,7 +669,7 @@ export default function CategoryProducts(props) {
                             </del>
                           </Typography>
                         </Typography>
-                        <ActionCardButtons view={view} />
+                        <ActionCardButtons product={prod} view={view} />
                       </CardContent>
                     </CardActionArea>
                 </Card>

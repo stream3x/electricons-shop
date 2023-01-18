@@ -21,73 +21,97 @@ export default function CheckboxesBrand(props) {
     row.reduce((acc, cur, i) =>
       (acc[unique[i]] = cur, acc), {})
   );
-  const [stateBrand, setStateBrand] = React.useState(result[0]);
-  delete stateBrand[0];
-  const { state, dispatch } = React.useContext(Store);
-  const { chips } = state;
+
+  const arr = Object.entries(result[0]).map(([name, value]) => {
+    return {
+      name,
+      value
+    }
+  });
+  
+  const [stateBrand, setStateBrand] = React.useState([arr][0]);
+
+  // const { state, dispatch } = React.useContext(Store);
+  // const { chips } = state;
 
   const handleChange = (item) => (event) => {
     const removeDuplicates = [];
-    setStateBrand((prev) => ({
-      ...prev,
-      [item]: event.target.checked,
-    }));
+    const update = stateBrand.map(x => {
+      if(x.name === item.name) {
+        return {
+          ...x, value: event.target.checked
+        }
+      }
+      return x;
+    })
+    setStateBrand(update);
   
-    if(!stateBrand[item]) {
-      brandArray.push(item);
+    if(!item.value) {
+      brandArray.push(item.name);
     }else {
-      removeDuplicates.push(item);
+      removeDuplicates.push(item.name);
     }
-    
-    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
+    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)));
   };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  // React.useEffect(() => {
-  //     setStateBrand((prev) => ({
-  //       ...prev,
-  //       [Object.values(chips)]: false,
-  //     }));
-  //     dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: {}}});
+  // const handleRemoveChekedBox = React.useCallback(() => {
+  //   setRun(() => false);
+  //   const update = stateBrand.map(x => {
+  //     if(x.name === [...Object.values(chips)][0]) {
+  //       return {
+  //         ...x, value: false
+  //       }
+  //     }
+  //     return x;
+  //   })
+  //   setStateBrand(update);
+  //   dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: {}}});
   // }, [chips])
+
+  // React.useEffect(() => {
+  //   handleRemoveChekedBox();
+  // }, [run]);
+
+  // console.log(stateBrand, stateBrand.map(name => name.value));
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
       <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
         <FormLabel component="legend">Brand</FormLabel>
         {
-          unique.slice(0, 3).map(item => (
-            <FormGroup key={item}>
+          stateBrand.slice(0, 3).map(item => (
+            <FormGroup key={item.name}>
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
-                  <Checkbox name={item} checked={stateBrand[item]} onChange={handleChange(item)} />
+                  <Checkbox checked={item.value} onChange={handleChange(item)} name={item.name} value={item.name} />
                 }
-                label={item}
+                label={`${item.name}`}
               />
             </FormGroup>
           ))
         }
         <Collapse in={expanded} timeout="auto" unmountOnExit>
         {
-            unique.slice(3, unique.length).map(item => (
-              <FormGroup key={item}>
+            stateBrand.slice(3, stateBrand.length).map(item => (
+              <FormGroup key={item.name}>
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
                   control={
-                    <Checkbox onChange={handleChange(item)} name={item} value={item} />
+                    <Checkbox checked={item.value} onChange={handleChange(item.name)} name={item.name} value={item.name} />
                   }
-                  label={item}
+                  label={item.name}
                 />
               </FormGroup>
             ))
           }
         </Collapse>
         {
-          unique.length > 3 &&
+          stateBrand.length > 3 &&
           <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
         }
       </FormControl>

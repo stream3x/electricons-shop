@@ -25,6 +25,7 @@ export default function Search(props) {
   const router = useRouter();
   const [selected, setSelected] = useState('');
   const { state, dispatch } = useContext(Store);
+  const { chips } = state;
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -37,13 +38,15 @@ export default function Search(props) {
     brand = '',
     price = '',
     sort = '',
+    pageSize = 40,
     page = 1
   } = router.query;
 
-  const { products, countProducts, categories, subCategories, brands, pages, pageSize } = props;
+  const { products, countProducts, categories, subCategories, brands, pages } = props;
 
   const filterSearch = ({
     page,
+    pageSize,
     category,
     subCategory,
     brand,
@@ -55,6 +58,7 @@ export default function Search(props) {
   }) => {
     const { query } = router;
     if(page) query.page = page;
+    if(pageSize) query.pageSize = pageSize;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
     if(subCategory) query.subCategory = subCategory;
@@ -83,13 +87,6 @@ export default function Search(props) {
   const handleChangeView = (event, nextView) => {
     setView(nextView);
   };
-
-  // function onCheck(e) {
-  //   let tags = [...uncheckState.tags];
-  //   tags = tags.filter(tag => tag !== e.target.value);
-  //   e.target.checked && tags.push(e.target.value);
-  //   setUncheckState({ tags });
-  // }
   
   const objToArray = obj => {
     setChipData(current => [...current, obj]);
@@ -127,7 +124,7 @@ export default function Search(props) {
           const filterLabel = obj.label.filter(e => e !== index);
           if(obj.key === 'brand') {
             filterSearch({ brand: filterLabel });
-            return { ...obj, label: filterLabel };
+            return { ...obj, label: [...filterLabel] };
           }          
           return obj;
         })
@@ -179,7 +176,7 @@ export default function Search(props) {
       ));
       objToArray({
         key: 'query',
-        label: []
+        label: [...item]
       });
     }
   };
@@ -187,6 +184,10 @@ export default function Search(props) {
   useEffect(() => {
     searchHandler(query);
   }, [query]);
+
+  const pageSizeHandler = (num) => {
+    filterSearch({ pageSize: num })
+  }
 
   const categoryHandler = (item, isChecked) => {
     filterSearch({ category: item });
@@ -207,7 +208,7 @@ export default function Search(props) {
       ));
       objToArray({
         key: 'category',
-        label: []
+        label: [...item]
       });
     }
   };
@@ -230,14 +231,14 @@ export default function Search(props) {
       ));
       objToArray({
         key: 'subCategory',
-        label: []
+        label: [...item]
       });
     }
   };
   const pageHandler = (page) => {
     filterSearch({ page });
   };
-  const brandHandler = (item, isChecked, event) => {
+  const brandHandler = (item, isChecked) => {
     filterSearch({ brand: item });
     if(item.length !== 0 && isChecked) {
       setChipData((prev) => (
@@ -256,7 +257,7 @@ export default function Search(props) {
       ));
       objToArray({
         key: 'brand',
-        label: []
+        label: [...item]
       });
     }
   };
@@ -265,18 +266,6 @@ export default function Search(props) {
   };
   const priceHandler = (e) => {
     filterSearch({ price: e.target.value });
-  };
-
-  const addToCartHandler = async (product) => {
-    const existItem = state.cart.cartItems.find(item => item._id === product._id);
-    const quantity = existItem ? existItem.quantity + 1 : 1;
-    const { data } = await axios.get(`/api/products/${product._id}`);
-    if(data.inStock < quantity) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'product is out of stock', severity: 'warning' } });
-      return;
-    }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1}});
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   };
 
   return (
@@ -388,7 +377,7 @@ export default function Search(props) {
                             </CardMedia>
                           </Link>
                           <Box className='hover-buttons' sx={{opacity: {xs: 1, sm: 0}, transform: {xs: 'translateX(0px)', sm: 'translateX(-200px)'}}}>
-                            <ActionCardButtons view={view} />
+                            <ActionCardButtons product={prod} view={view} />
                           </Box>
                           <CardContent>
                             {
@@ -483,7 +472,7 @@ export default function Search(props) {
                                 </del>
                               </Typography>
                             </Typography>
-                            <ActionCardButtons view={view} />
+                            <ActionCardButtons product={prod} view={view} />
                           </CardContent>
                         </CardActionArea>
                     </Card>
@@ -493,7 +482,7 @@ export default function Search(props) {
            <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-                  <SelectPages pageSize={pageSize} sort={sort} page={page}  />
+                  <SelectPages pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
                     products.length === 0 ?
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
