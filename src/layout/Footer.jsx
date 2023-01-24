@@ -26,7 +26,7 @@ function Copyright() {
         {new Date().getFullYear()}
         {'.'}
       </Typography>
-      <Typography sx={{width: {xs: '100%', sm: 'auto'}}} align="center" variant="body2" color="primary.contrastText">
+      <Typography sx={{width: {xs: '100%', sm: 'auto'}, p: {xs: 0, sm: 2}}} align="center" variant="body2" color="primary.contrastText">
         Ecommerce Software By{' '}
       <Link color="primary.main" href="https://explodemarket.com/">
         ExplodeMarket™
