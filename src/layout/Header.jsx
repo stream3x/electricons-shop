@@ -41,7 +41,52 @@ import Image from 'next/image';
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
 const loged = ['Profile', 'Admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
-const pages = [{name:'Sale', link: '/on-sale'}, {name:'Mobile', link: '/mobile'}, {name:'Brands', link: '/brands'}, {name:'Terms and Services', link: '/terms'}, {name:'policies privacy', link: '/privacy'} ];
+const pages = [
+  {
+    name:'Sale',
+    link: '/on-sale',
+    subItems: [
+      {subName: 'Laptops', item: [{name: 'Acer Aspire', link: 'acer-notebook'}, {name: 'Lenovo', link: 'lenovo-laptop'}, {name: 'Toshiba Sattelite', link: 'toshiba-satellite'}]}
+    ],
+    products: [{name: 'Acer Aspire', img: '/images/acer-laptop.png'}]
+  },
+  {
+    name:'Mobile',
+    link: '/mobile',
+    subItems: [
+      {subName: 'Smartphones', item: [{name: 'Nokia Seven', link: 'nokia-seven-mobile'}, {name: 'Xiaomi 10', link: 'xiaomi-10-phone'}, {name: 'Huawei 14', link: 'huawei-s14x-elite'}]},
+      {subName: 'Headphone', item: [{name: 'Bluethooth', link: ''}, {name: 'Wirelessheadphone', link: ''}, {name: 'Earbuds', link: ''}]}
+    ],
+    products: [{name: 'Huawei 14 elite', img: '/images/huawei.jpg'}]
+  },
+  {
+    name:'Brands',
+    link: '/brands',
+    subItems: null,
+    products: [
+      {name: 'AMD', img: '/images/AMD-logo.png'},
+      {name: 'Dell', img: '/images/dell-logo.png'},
+      {name: 'Acer', img: '/images/acer-logo.png'},
+      {name: 'Huawei', img: '/images/huawei-logo.jpeg'}
+    ]
+  },
+  {
+    name:'Terms and Services',
+    link: '/terms',
+    subItems: null,
+    products: [
+      {name: '', img: ''},
+    ]
+  },
+  {
+    name:'policies privacy',
+    link: '/privacy',
+    subItems: null,
+    products: [
+      {name: '', img: ''},
+    ]
+  }
+ ];
 
 const Search = styled('form')(({ theme }) => ({
   position: 'relative',
@@ -385,10 +430,10 @@ export default function Header(props) {
                       </IconButton>
                     </Tooltip>
                     <DropdownMenu
-                    openDropdown={openDropdown}
-                    anchorElDropdown={anchorElDropdown}
-                    handleCloseDropdown={handleCloseDropdown}
-                    isVisible={isVisible}
+                      openDropdown={openDropdown}
+                      anchorElDropdown={anchorElDropdown}
+                      handleCloseDropdown={handleCloseDropdown}
+                      isVisible={isVisible}
                     />
                   </React.Fragment>
                   :
