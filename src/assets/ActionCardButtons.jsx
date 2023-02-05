@@ -4,7 +4,6 @@ import Wishlist from '@mui/icons-material/FavoriteBorderOutlined';
 import CompareIcon from '@mui/icons-material/RepeatOutlined';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import theme from '../theme';
-import { maxWidth } from '@mui/system';
 import { Store } from '../utils/Store';
 import axios from 'axios';
 

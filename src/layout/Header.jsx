@@ -110,7 +110,7 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function Header(props) {
-  const { isVisible } = props;
+  const { isVisible, storeInfo } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = useState(null);
@@ -301,7 +301,7 @@ export default function Header(props) {
             <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1, }}>
               <Grid container>
                 <Grid item xs={9} sm={6} md={4} lg={3}>
-                  <Logo sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
+                  <Logo logoSrc={storeInfo[0]} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
                 </Grid>
                 <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
                   <NavTabs pages={pages} />

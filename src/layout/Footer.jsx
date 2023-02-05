@@ -14,6 +14,8 @@ import Fade from '@mui/material/Fade';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import Public from '@mui/icons-material/Public';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import StayCurrentPortraitIcon from '@mui/icons-material/StayCurrentPortrait';
+import MapFooter from '../assets/MapFooter';
 
 function Copyright() {
   return (
@@ -99,7 +101,7 @@ const products = [
   {id: '4.5', title: 'Tablets'}
 ];
 
-export default function Footer({ isVisible, setIsVisible }) {
+export default function Footer({ isVisible, setIsVisible, storeInfo }) {
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
@@ -115,6 +117,7 @@ export default function Footer({ isVisible, setIsVisible }) {
 
   return (
     <Box
+      component="footer"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -123,7 +126,13 @@ export default function Footer({ isVisible, setIsVisible }) {
     >
       <CssBaseline />
       <Container component="div" sx={{ mt: 8, mb: 2 }} maxWidth="xl">
-        <Grid sx={{m: '0 auto'}} container spacing={2}>
+        <Box sx={{p: 0}}>
+          <Divider />
+        </Box>
+        <Grid sx={{m: '0 auto', width: {xs: '100%', sm: 'inherit'}, marginLeft: {xs: 0, sm: 'inherit'} }} container spacing={2}>
+          <Grid item xs={12} sx={{paddingLeft: {xs: '0!important', sm: 'inherit'} }}>
+            <MapFooter />
+          </Grid>
           <Grid item xs={12} sm={3}>
           <Typography variant="p" component="h3" gutterBottom>
             STORE INFORMATION
@@ -132,13 +141,33 @@ export default function Footer({ isVisible, setIsVisible }) {
             component="ul"
           >
             {
-              store_information.map(info => (
-                <ListItem key={info.id}>
-                  <ListItemIcon>
-                    {info.icon}
-                  </ListItemIcon>
-                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={info.title} />
-                </ListItem>
+              storeInfo.map(info => (
+                <Box key={info._id}>
+                  <ListItem>
+                    <ListItemIcon>
+                      <Public />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${info.name}, ${info.country}`} />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DraftsIcon />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={info.email} />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <StayCurrentPortraitIcon />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${info.phone}`} />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <LocalPhoneIcon />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${info.phone_two}`} />
+                  </ListItem>
+                </Box>
               ))
             }
             </List>
@@ -196,12 +225,11 @@ export default function Footer({ isVisible, setIsVisible }) {
           <Divider />
         </Box>
         <Box sx={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>
-          <Logo sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
+          <Logo logoSrc={storeInfo[0]} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
           <Typography sx={{width: '100%', textAlign: "center"}} variant="body1">We are a global housewares product design company. We bring thought and creativity to everyday items through original design.</Typography>
         </Box>
       </Container>
       <Box
-        component="footer"
         sx={{
           py: 3,
           px: 2,

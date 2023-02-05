@@ -98,6 +98,7 @@ function HeroCarousel({ data }) {
             }
           </AutoPlaySwipeableViews>
           <MobileStepper
+            variant="progress"
             steps={singleMaxSteps}
             position="static"
             activeStep={activeStep}
@@ -132,7 +133,7 @@ function HeroCarousel({ data }) {
             alignItems: "center",
             height: 150,
             p: 3,
-            bgcolor: "background.default"
+            bgcolor: "transparent"
           }}
         >
         <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center' }}>
@@ -141,7 +142,7 @@ function HeroCarousel({ data }) {
             {categories[activeStep].categoryName}
           </Typography>
         </Link>
-          <Typography variant="h" component="h1">{categories[activeStep].categoryName}</Typography>
+          <Typography variant="p" component="h1">{categories[activeStep].categoryName}</Typography>
         </Box>
         </Paper>
         <AutoPlaySwipeableViews
@@ -163,7 +164,7 @@ function HeroCarousel({ data }) {
           steps={maxSteps}
           position="static"
           activeStep={activeStep}
-          sx={{justifyContent: 'center'}}
+          sx={{justifyContent: 'center', '& .MuiMobileStepper-dots': {display: 'none'} }}
           nextButton={
             <IconButton onClick={handleNext} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginLeft: 1}} aria-label="left" size="large" disabled={activeStep === maxSteps - 1}>
               {theme.direction === "rtl" ? (

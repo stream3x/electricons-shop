@@ -17,12 +17,12 @@ export default function CardProduct(props) {
   const handleLoading = (product) => {
     setSelected(product._id);
   };
-
+  
   return (
     <Grid container spacing={2}>
     {
       products.map((product, index) => (
-        product.inWidget === 'hero' && product.category === step.categoryName &&
+        product.inWidget === "hero" && product.category === step.categoryName &&
           <Grid key={product.title} item xs={12} md={4}>
               <Card sx={{ width: "100%", height: "100%" }}>
                   <CardActionArea sx={{position: 'relative'}}>
