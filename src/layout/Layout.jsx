@@ -11,10 +11,13 @@ import axios from 'axios';
 
 export default function Layout({ children }) {
   const [isVisible, setIsVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [storeInfo, setStoreInfo] = React.useState([]);
+  const [hostname, setHostname] = React.useState({});
 
   useEffect(() => {
+    const host = window.location.host;
+    setHostname(host);
     fetchStoreInfo();
     setTimeout(() => {
       setLoading(() => false);
@@ -26,21 +29,14 @@ export default function Layout({ children }) {
   }, []);
 
   async function fetchStoreInfo() {
-    try {
-      const config = {
-        headers: {
-          "Content-type": "application/json"
-        }
-      };
-      setLoading(() => false);
-      const { data } = await axios.get('https://electricons.vercel.app/api/store_info', config);
+    if(hostname === 'localhost:3000') {
+      const { data } = await axios.get('http://localhost:3000/api/store_info');
       setStoreInfo(data);
-      setLoading(() => true);
-    } catch (error) {
-      setLoading(() => true);
+    }else {
+      const { data } = await axios.get('https://electricons.vercel.app/api/store_info');
+      setStoreInfo(data);
     }
   }
-
   return (
     <React.Fragment>
     <CssBaseline />
@@ -54,14 +50,14 @@ export default function Layout({ children }) {
       </Backdrop>
       :
       <React.Fragment>
-        <Header storeInfo={storeInfo} isVisible={isVisible}/>
+        <Header storeInfo={storeInfo[0]} isVisible={isVisible}/>
         <Container maxWidth="xl">
           <Box component="main" sx={{ height: '100%', mt: '10rem' }}>
             {children}
           </Box>
           <Snackbars />
         </Container>
-        <Footer storeInfo={storeInfo} isVisible={isVisible} setIsVisible={setIsVisible}/>
+        <Footer storeInfo={storeInfo[0]} isVisible={isVisible} setIsVisible={setIsVisible}/>
       </React.Fragment>
     }
     </React.Fragment>

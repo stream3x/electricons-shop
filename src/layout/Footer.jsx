@@ -140,36 +140,32 @@ export default function Footer({ isVisible, setIsVisible, storeInfo }) {
           <List
             component="ul"
           >
-            {
-              storeInfo.map(info => (
-                <Box key={info._id}>
-                  <ListItem>
-                    <ListItemIcon>
-                      <Public />
-                    </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${info.name}, ${info.country}`} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <DraftsIcon />
-                    </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={info.email} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <StayCurrentPortraitIcon />
-                    </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${info.phone}`} />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <LocalPhoneIcon />
-                    </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${info.phone_two}`} />
-                  </ListItem>
-                </Box>
-              ))
-            }
+              <Box>
+                <ListItem>
+                  <ListItemIcon>
+                    <Public />
+                  </ListItemIcon>
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo.name}, ${storeInfo.country}`} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <DraftsIcon />
+                  </ListItemIcon>
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={storeInfo.email} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <StayCurrentPortraitIcon />
+                  </ListItemIcon>
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo.phone}`} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <LocalPhoneIcon />
+                  </ListItemIcon>
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo.phone_two}`} />
+                </ListItem>
+              </Box>
             </List>
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -225,7 +221,7 @@ export default function Footer({ isVisible, setIsVisible, storeInfo }) {
           <Divider />
         </Box>
         <Box sx={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>
-          <Logo logoSrc={storeInfo[0]} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
+          <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
           <Typography sx={{width: '100%', textAlign: "center"}} variant="body1">We are a global housewares product design company. We bring thought and creativity to everyday items through original design.</Typography>
         </Box>
       </Container>
