@@ -26,7 +26,7 @@ export default function Layout({ children }) {
   }, []);
 
   async function fetchStoreInfo() {
-    const { data } = await axios.get('http://localhost:3000/api/store_info');
+    const { data } = await axios.get('https://electricons.vercel.app/api/store_info');
     setStoreInfo(data);
   }
 

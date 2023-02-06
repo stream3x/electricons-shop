@@ -9,22 +9,23 @@ import { Box } from '@mui/system';
 import Link from '../Link';
 import Image from 'next/image';
 import CircularProgress from '@mui/material/CircularProgress';
+import ActionCardButtons from '../assets/ActionCardButtons';
 
 export default function WidgetCardProduct(props) {
-  const { products, steps, cardsToShow, cardsToMove } = props;
+  const { products, steps, cardsToShow, cardsToMove, cardsInView } = props;
   const [selected, setSelected] = React.useState('');
 
   const handleLoading = (product) => {
     setSelected(product._id);
   };
-  console.log(steps * (cardsToShow), (cardsToShow * (steps + 1)), steps);
+
   return (
     <Grid container spacing={2}>
     {
       cardsToShow !== 2 ?
-      products.slice(steps * (products.length - cardsToShow + steps), steps === 0 ? cardsToShow - cardsToMove : (products.length * steps)).map((product, index) => (
-          <Grid key={product.title} item xs={cardsToShow < 6 && cardsToShow > 2 ? cardsToShow : 6}>
-              <Card sx={{ width: "100%", height: "100%" }}>
+      products.slice(steps * (products.length - cardsToShow), steps === 0 ? cardsToShow : (products.length * steps)).map((product, index) => (
+          <Grid key={product.title} item xs={cardsInView}>
+              <Card sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
                   <CardActionArea sx={{position: 'relative'}}>
                     <Link href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
                     {
@@ -42,6 +43,9 @@ export default function WidgetCardProduct(props) {
                         />
                       </CardMedia>
                     </Link>
+                    <Box className='hover-buttons' sx={{opacity: {xs: 1, sm: 0}, transform: {xs: 'translateX(0px)', sm: 'translateX(-200px)'}}}>
+                        <ActionCardButtons product={product} view={"module"} />
+                    </Box>
                     <CardContent>
                       {
                         product.inStock > 0 ? 

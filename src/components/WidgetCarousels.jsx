@@ -44,20 +44,25 @@ function WidgetCarousel({ data }) {
 
   const desktop = useMediaQuery('(min-width: 1440px)');
   const laptop = useMediaQuery('(min-width: 1200px)');
-  const tablet = useMediaQuery('(min-width: 500px)');
-  const mobile = useMediaQuery('(max-width: 480px)');
+  const tablet = useMediaQuery('(min-width: 768px)');
+  const mobile = useMediaQuery('(max-width: 766px)');
 
   let cardsToShow;
   let cardsToMove;
+  let cardsInView;
   
   if(desktop) {
     cardsToShow = 6;
+    cardsInView = 12 / cardsToShow;
   }else if(laptop) {
     cardsToShow = 4;
+    cardsInView = 12 / cardsToShow;
   }else if(tablet) {
-    cardsToShow = 2;
+    cardsToShow = 3;
+    cardsInView = 12 / cardsToShow;
   }else if(mobile) {
     cardsToShow = 2;
+    cardsInView = 12 / cardsToShow;
   }
 
   const maxSteps = Math.ceil(carouselProduct.length / cardsToShow);
@@ -115,13 +120,13 @@ function WidgetCarousel({ data }) {
           index={activeStep}
           onChangeIndex={handleStepChange}
         >
-            {
-                carouselProduct.slice(0, maxSteps).map((prod, index) => (
-                  <TabPanel key={prod._id} value={activeStep} index={index} dir={theme.direction}>
-                    <WidgetCardProduct loading cardsToShow={cardsToShow} products={carouselProduct} steps={activeStep} cardsToMove={cardsToMove} />
-                  </TabPanel>
-                ))
-            }
+          {
+            carouselProduct.slice(0, maxSteps).map((prod, index) => (
+              <TabPanel key={prod._id} value={activeStep} index={index} dir={theme.direction}>
+                <WidgetCardProduct loading cardsToShow={cardsToShow} products={carouselProduct} steps={activeStep} cardsToMove={cardsToMove} cardsInView={cardsInView} />
+              </TabPanel>
+            ))
+          }
         </SwipeableViews>
           <MobileStepper
             steps={maxSteps}
