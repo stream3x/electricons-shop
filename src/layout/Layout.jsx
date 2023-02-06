@@ -11,7 +11,7 @@ import axios from 'axios';
 
 export default function Layout({ children }) {
   const [isVisible, setIsVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [storeInfo, setStoreInfo] = React.useState([]);
 
   useEffect(() => {
@@ -26,8 +26,19 @@ export default function Layout({ children }) {
   }, []);
 
   async function fetchStoreInfo() {
-    const { data } = await axios.get('https://electricons.vercel.app/api/store_info');
-    setStoreInfo(data);
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json"
+        }
+      };
+      setLoading(() => false);
+      const { data } = await axios.get('https://electricons.vercel.app/api/store_info', config);
+      setStoreInfo(data);
+      setLoading(() => true);
+    } catch (error) {
+      setLoading(() => true);
+    }
   }
 
   return (

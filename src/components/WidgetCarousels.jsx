@@ -33,8 +33,7 @@ function TabPanel(props) {
   );
 }
 
-function WidgetCarousel({ data }) {
-  const { topProducts} = data;
+function WidgetCarousel({ topProducts }) {
   const [carouselProduct, setCarouselProduct] = useState([]);
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -45,7 +44,7 @@ function WidgetCarousel({ data }) {
   const desktop = useMediaQuery('(min-width: 1440px)');
   const laptop = useMediaQuery('(min-width: 1200px)');
   const tablet = useMediaQuery('(min-width: 768px)');
-  const mobile = useMediaQuery('(max-width: 766px)');
+  const mobile = useMediaQuery('(max-width: 766px)');  
 
   let cardsToShow;
   let cardsToMove;

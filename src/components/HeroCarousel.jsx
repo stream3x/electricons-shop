@@ -38,24 +38,20 @@ function TabPanel(props) {
   );
 }
 
-function HeroCarousel({ data }) {
-  const { product } = data;
-  const [carouselPoroduct, setCarouselPoroduct] = useState([])
+function HeroCarousel({ hero_products }) {
+  const [carouselPoroduct, setCarouselPoroduct] = useState([]);
   const { categories } = category_data;
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const maxSteps = categories.length;
-  const filtered = product && product.filter(obj => {
-    return obj.inWidget === 'hero';
-  });
-  const singleMaxSteps = filtered && filtered.length;
+  const singleMaxSteps = hero_products && hero_products.length;
   const [stopSwipe, setStopSwipe] = useState(false);
   const matches = useMediaQuery('(min-width: 900px)');
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await product;
+        const res = await hero_products;
         setCarouselPoroduct(res)
       } catch (error) {
         console.log(error)
@@ -91,14 +87,13 @@ function HeroCarousel({ data }) {
             enableMouseEvents
           >
             {
-              filtered && filtered.map((prod, index) => (
+              hero_products && hero_products.map((prod, index) => (
                 Math.abs(activeStep - index) <= 2 &&
                 <SingleCardProduct key={prod.title} product={prod} />
               ))
             }
           </AutoPlaySwipeableViews>
           <MobileStepper
-            variant="progress"
             steps={singleMaxSteps}
             position="static"
             activeStep={activeStep}

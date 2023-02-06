@@ -693,18 +693,6 @@ export default function CategoryProducts(props) {
                   {
                     countProducts > 0 &&
                     <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                   {/*   <List sx={{display: 'flex'}}>
-                        {
-                          products.length > 0 &&
-                          [...Array(pages).keys()].map(pageNumber => (
-                            <ListItem key={pageNumber}>
-                              <Button onClick={() => pageHandler(pageNumber + 1)} size="small" variant='outlined' color={page == pageNumber + 1 ? "primary" : "secondary"}>
-                                <ListItemText primary={pageNumber + 1} />
-                              </Button>
-                            </ListItem>
-                          ))
-                        }
-                      </List>*/}
                       <Pagination sx={{mx: 'auto'}} count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>
                   }

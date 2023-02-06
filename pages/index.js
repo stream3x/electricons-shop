@@ -7,11 +7,11 @@ import WidgetCarousels from '../src/components/WidgetCarousels';
 
 export async function getStaticProps() {
   await db.connect();
-  const product = await Product.find({}).lean();
+  const hero_products = await Product.find({inWidget: "hero"}).lean();
   const top_products = await Product.find({inWidget: "top-product"}).lean();
   await db.disconnect();
 
-  if (!product || !top_products) {
+  if (!hero_products || !top_products) {
     return {
       notFound: true,
     };
@@ -19,19 +19,20 @@ export async function getStaticProps() {
 
   return {
     props: {
-      product: product.map(db.convertDocToObject),
+      hero_products: hero_products.map(db.convertDocToObject),
       topProducts: top_products.map(db.convertDocToObject),
     },
   };
 }
 
 export default function Index(props) {
+  const { hero_products, topProducts } = props;
   return (
     <Box sx={{ my: 4 }}>
       <Box sx={{backgroundColor: '#f9f9f9', borderRadius: '10px'}}>
-        <HeroCarousel data={props} />
+        <HeroCarousel hero_products={hero_products} />
       </Box>
-      <WidgetCarousels data={props} />
+      <WidgetCarousels topProducts={topProducts} />
     </Box>
   );
 }

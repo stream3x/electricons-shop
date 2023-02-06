@@ -100,7 +100,7 @@ export default function DropdownMenu(props) {
                     {
                       item.subCategory.map((sub, index) => ( 
                           <Grid sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }} key={index} item xs={4}>
-                            <Link href={`/category/${item.slug}/${sub.url.toLowerCase()}`} passHref>
+                            <Link href={`/category/${item.slug}/${sub.url}`} passHref>
                               <Typography sx={{pb: 2, '&:hover': {color: theme.palette.primary.main}}} color="secondary" component="h5" variant="p">
                               {sub.subCategoryName}
                               </Typography>
