@@ -5,19 +5,16 @@ import Container from '@mui/material/Container';
 import Header from './Header';
 import Snackbars from '../assets/Snackbars';
 import Footer from './Footer';
-import Logo from '../assets/Logo';
 import Backdrop from '@mui/material/Backdrop';
 import axios from 'axios';
+import LogoStatic from '../assets/LogoStatic';
 
 export default function Layout({ children }) {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [storeInfo, setStoreInfo] = React.useState([]);
-  const [hostname, setHostname] = React.useState({});
 
   useEffect(() => {
-    const host = window.location.host;
-    setHostname(host);
     fetchStoreInfo();
     setTimeout(() => {
       setLoading(() => false);
@@ -29,14 +26,10 @@ export default function Layout({ children }) {
   }, []);
 
   async function fetchStoreInfo() {
-    if(hostname === 'localhost:3000') {
-      const { data } = await axios.get('http://localhost:3000/api/store_info');
+    const { data } = await axios.get('https://electricons.vercel.app/api/store_info');
       setStoreInfo(data);
-    }else {
-      const { data } = await axios.get('https://electricons.vercel.app/api/store_info');
-      setStoreInfo(data);
-    }
   }
+
   return (
     <React.Fragment>
     <CssBaseline />
@@ -46,7 +39,7 @@ export default function Layout({ children }) {
         sx={{ bgcolor: '#fff', zIndex: 200, m: 'auto', display: 'flex', flexWrap: 'wrap' }}
         open={loading}
       >
-        <Logo logoSrc={storeInfo[0]} sx={{width: {sm: 590, xs: 306}, height: {sm: 160, xs: 76}}} viewBox="0 0 306 76" />
+        <LogoStatic sx={{width: {sm: 590, xs: 306}, height: {sm: 160, xs: 76}}} viewBox="0 0 306 76"/>
       </Backdrop>
       :
       <React.Fragment>
