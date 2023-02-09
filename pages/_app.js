@@ -11,12 +11,25 @@ import '../src/globals.css';
 import { StoreProvider } from '../src/utils/Store';
 import { Analytics } from '@vercel/analytics/react';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import axios from 'axios';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const [storeInfo, setStoreInfo] = React.useState([]);
+
+  React.useEffect(() => {
+    fetchStoreInfo();
+  }, []);
+
+  async function fetchStoreInfo() {
+    const { data } = await axios.get('/api/store_info');
+      setStoreInfo(data);
+  }
+
+console.log(storeInfo);
 
   return (
     <CacheProvider value={emotionCache}>
@@ -28,7 +41,7 @@ export default function MyApp(props) {
         <CssBaseline />
         <StoreProvider>
           <PayPalScriptProvider deferLoading={true}>
-            <Layout>
+            <Layout storeInfo={storeInfo}>
               <Component {...pageProps} />
               <Analytics />
             </Layout>

@@ -6,16 +6,13 @@ import Header from './Header';
 import Snackbars from '../assets/Snackbars';
 import Footer from './Footer';
 import Backdrop from '@mui/material/Backdrop';
-import axios from 'axios';
 import LogoStatic from '../assets/LogoStatic';
 
-export default function Layout({ children }) {
+export default function Layout({ children, storeInfo }) {
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [storeInfo, setStoreInfo] = React.useState([]);
 
   useEffect(() => {
-    fetchStoreInfo();
     setTimeout(() => {
       setLoading(() => false);
     }, 3000);
@@ -24,11 +21,6 @@ export default function Layout({ children }) {
       setLoading(() => true);
     };
   }, []);
-
-  async function fetchStoreInfo() {
-    const { data } = await axios.get('https://electricons.vercel.app/api/store_info');
-      setStoreInfo(data);
-  }
 
   return (
     <React.Fragment>
