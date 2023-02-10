@@ -155,7 +155,7 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function Header(props) {
-  const { isVisible, storeInfo } = props;
+  const { storeInfo } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = useState(null);
@@ -167,6 +167,19 @@ export default function Header(props) {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
+  const [isVisible, setIsVisible] = useState(false);
+
+  function toggleVisibility() {
+    const visibleBtn = window.scrollY;
+    visibleBtn > 50 ? setIsVisible(() => true) : setIsVisible(() => false);
+  }
+
+  React.useEffect(() => {
+    window.addEventListener('scroll', toggleVisibility);
+    return () => {
+      window.removeEventListener("scroll", toggleVisibility);
+    };
+  }, []);
 
   React.useEffect(() => {
     let active = true;

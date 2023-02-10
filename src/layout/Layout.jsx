@@ -9,7 +9,6 @@ import Backdrop from '@mui/material/Backdrop';
 import LogoStatic from '../assets/LogoStatic';
 
 export default function Layout({ children, storeInfo }) {
-  const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,14 +34,14 @@ export default function Layout({ children, storeInfo }) {
       </Backdrop>
       :
       <React.Fragment>
-        <Header storeInfo={storeInfo[0]} isVisible={isVisible}/>
+        <Header storeInfo={storeInfo[0]} />
         <Container maxWidth="xl">
           <Box component="main" sx={{ height: '100%', mt: '10rem' }}>
             {children}
           </Box>
           <Snackbars />
         </Container>
-        <Footer storeInfo={storeInfo[0]} isVisible={isVisible} setIsVisible={setIsVisible}/>
+        <Footer storeInfo={storeInfo[0]} />
       </React.Fragment>
     }
     </React.Fragment>

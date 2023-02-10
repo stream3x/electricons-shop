@@ -101,8 +101,9 @@ const products = [
   {id: '4.5', title: 'Tablets'}
 ];
 
-export default function Footer({ isVisible, setIsVisible, storeInfo }) {
-
+export default function Footer({ storeInfo }) {
+  const [isVisible, setIsVisible] = React.useState(false);
+  
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
     visibleBtn > 50 ? setIsVisible(() => true) : setIsVisible(() => false);
