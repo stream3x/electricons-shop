@@ -29,8 +29,6 @@ export default function MyApp(props) {
       setStoreInfo(data);
   }
 
-console.log(storeInfo);
-
   return (
     <CacheProvider value={emotionCache}>
       <Head>

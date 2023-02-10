@@ -11,12 +11,13 @@ import { IconButton, useMediaQuery } from "@mui/material";
 import category_data from "../utils/category";
 import Link from '../Link';
 import SwipeableViews from "react-swipeable-views";
-import { autoPlay } from 'react-swipeable-views-utils';
+// import { autoPlay } from 'react-swipeable-views-utils';
 import dynamic from 'next/dynamic';
 import { useState } from "react";
 import SingleCardProduct from "./SingleCardProduct";
+import theme from '../theme';
 
-const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
+// const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -78,7 +79,7 @@ function HeroCarousel({ hero_products }) {
       {
         !matches ? 
         <Box onMouseLeave={() => setStopSwipe(false)} onMouseEnter={() => setStopSwipe(true)} sx={{ maxWidth: "100%", flexGrow: 1 }}>
-          <AutoPlaySwipeableViews
+          <SwipeableViews
             autoplay={stopSwipe ? false : true}
             interval={4000}
             axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
@@ -92,7 +93,7 @@ function HeroCarousel({ hero_products }) {
                 <SingleCardProduct key={prod.title} product={prod} />
               ))
             }
-          </AutoPlaySwipeableViews>
+          </SwipeableViews>
           <MobileStepper
             steps={singleMaxSteps}
             position="static"
@@ -131,16 +132,18 @@ function HeroCarousel({ hero_products }) {
             bgcolor: "transparent"
           }}
         >
-        <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center' }}>
-        <Link href={categories && `/category/${categories[activeStep ? activeStep : 0].slug}`}>
-          <Typography color="primary" variant="caption">
+        <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center', '& a': {textDecoration: 'none'} }}>
+          <Link noLinkStyle href={categories && `/category/${categories[activeStep ? activeStep : 0].slug}`} passHref sx={{color: theme.palette.secondary.main}}>
+            <Typography color="primary" variant="caption">
+              {categories[activeStep].categoryName}
+            </Typography>
+          </Link>
+          <Typography variant="p" component="h1">
             {categories[activeStep].categoryName}
           </Typography>
-        </Link>
-          <Typography variant="p" component="h1">{categories[activeStep].categoryName}</Typography>
         </Box>
         </Paper>
-        <AutoPlaySwipeableViews
+        <SwipeableViews
           autoplay={stopSwipe ? false : true}
           interval={4000}
           axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
@@ -154,7 +157,7 @@ function HeroCarousel({ hero_products }) {
               </TabPanel>
             ))
           }
-        </AutoPlaySwipeableViews>
+        </SwipeableViews>
         <MobileStepper
           steps={maxSteps}
           position="static"
@@ -185,4 +188,4 @@ function HeroCarousel({ hero_products }) {
   );
 }
 
-export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: true });
+export default dynamic(() => Promise.resolve(HeroCarousel), { ssr: false });

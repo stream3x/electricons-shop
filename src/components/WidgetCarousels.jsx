@@ -156,4 +156,4 @@ function WidgetCarousel({ topProducts }) {
   );
 }
 
-export default dynamic(() => Promise.resolve(WidgetCarousel), { ssr: true });
+export default dynamic(() => Promise.resolve(WidgetCarousel), { ssr: false });

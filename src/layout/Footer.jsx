@@ -74,11 +74,6 @@ function ScrollTop(props) {
   );
 }
 
-const store_information = [
-  {id: '1.1', title: 'Elecetricons store, Serbia', icon: <Public />},
-  {id: '1.2', title: 'electricons@explodemarket.com', icon: <DraftsIcon />},
-  {id: '1.3', title: '(+381) 555 333', icon: <LocalPhoneIcon />}
-];
 const company = [
   {id: '2.1', title: 'Delivery'},
   {id: '2.2', title: 'Legal Notice'},
@@ -103,7 +98,7 @@ const products = [
 
 export default function Footer({ storeInfo }) {
   const [isVisible, setIsVisible] = React.useState(false);
-  
+
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
     visibleBtn > 50 ? setIsVisible(() => true) : setIsVisible(() => false);
@@ -223,7 +218,9 @@ export default function Footer({ storeInfo }) {
         </Box>
         <Box sx={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>
           <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
-          <Typography sx={{width: '100%', textAlign: "center"}} variant="body1">We are a global housewares product design company. We bring thought and creativity to everyday items through original design.</Typography>
+          <Typography sx={{width: '100%', textAlign: "center"}} variant="body1">
+          We are a global housewares product design company. We bring thought and creativity to everyday items through original design.
+          </Typography>
         </Box>
       </Container>
       <Box

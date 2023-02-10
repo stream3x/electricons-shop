@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { CardActionArea, Grid } from '@mui/material';
+import { CardActionArea, Grid, useMediaQuery } from '@mui/material';
 import Rating from '@mui/material/Rating';
 import { Box } from '@mui/system';
 import Link from '../Link';
@@ -12,8 +12,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ActionCardButtons from '../assets/ActionCardButtons';
 
 export default function WidgetCardProduct(props) {
-  const { products, steps, cardsToShow, cardsToMove, cardsInView } = props;
+  const { products, steps, cardsToShow, cardsInView } = props;
   const [selected, setSelected] = React.useState('');
+  const mobile = useMediaQuery('(max-width: 450px)');
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -118,7 +119,7 @@ export default function WidgetCardProduct(props) {
                         {product.title}
                         </Typography>
                         <Typography align="center" variant="body2" color="text.secondary">
-                          {product.shortDescription}
+                        {mobile ? product.shortDescription.slice(0, 45) : product.shortDescription}
                         </Typography>
                         <Box
                           sx={{

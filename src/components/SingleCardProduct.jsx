@@ -29,7 +29,7 @@ export default function SingleCardProduct({product}) {
           <CircularProgress sx={{position: 'absolute', left: '50%', top: '20%', zIndex: 1 , transform: 'translateX(-50%)'}} size={30} />
         }
           <CardMedia
-          component="img"
+            component="img"
             width="auto"
             height="168px"
             image={product.images[0].image}
