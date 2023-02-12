@@ -202,7 +202,7 @@ const data = {
       subCategory: "Lenovo Laptops",
       subCategoryUrl: "Lenovo-Laptops",
       brand: "Lenovo",
-      brandImg: "/logo/Lenovo-logo.png",
+      brandImg: "/logo/Lenovo-Logo.png",
       reviews: 3,
       inStock: 10,
       inWidget: "hero"
