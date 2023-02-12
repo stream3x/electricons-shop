@@ -1,3 +1,66 @@
 html, body {
   scroll-behavior: smooth;
 }
+
+.slick-slider {
+  position: relative;
+}
+.slick-list{
+  overflow: hidden;
+}
+.slick-track {
+  display: flex;
+}
+.slick-arrow {
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: 0%;
+  color: transparent;
+  border: none;
+  background-color: transparent;
+  width: 5px;
+  padding: 0;
+  display: flex!important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slick-arrow.slick-prev::before {
+  content: '❮';
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  background-color: #f9f9f9;
+  color: #888;
+  border: thin solid #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slick-arrow.slick-next {
+  left: 35px;
+}
+.slick-arrow.slick-next::after {
+  content: '❯';
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  border: thin solid #aaa;
+  background-color: #f9f9f9;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slick-arrow:hover.slick-next::after, .slick-arrow:hover.slick-prev::before {
+  background-color: #00bcd4;
+  border-color: #00bcd4;
+  color: #f9f9f9;
+  transition: all ease .3s;
+}

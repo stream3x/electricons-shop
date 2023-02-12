@@ -1,53 +1,14 @@
 import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
-import MobileStepper from "@mui/material/MobileStepper";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import CardProduct from "./CardProduct";
-import { IconButton, useMediaQuery } from "@mui/material";
-import category_data from "../utils/category";
-import Link from '../Link';
-import SwipeableViews from "react-swipeable-views";
-// import { autoPlay } from 'react-swipeable-views-utils';
+import { Grid, useMediaQuery } from "@mui/material";
 import dynamic from 'next/dynamic';
 import { useState } from "react";
-import SingleCardProduct from "./SingleCardProduct";
-import theme from '../theme';
-
-// const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
+import Slider from "react-slick";
 
 function HeroCarousel({ hero_products }) {
   const [carouselPoroduct, setCarouselPoroduct] = useState([]);
-  const { categories } = category_data;
-  const theme = useTheme();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = categories.length;
-  const singleMaxSteps = hero_products && hero_products.length;
-  const [stopSwipe, setStopSwipe] = useState(false);
-  const matches = useMediaQuery('(min-width: 900px)');
+  const matches = useMediaQuery('(min-width: 600px)');
 
   useEffect(() => {
     async function fetchData() {
@@ -60,131 +21,59 @@ function HeroCarousel({ hero_products }) {
     }
     fetchData();
   }, [])
-  
-  
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleStepChange = (step) => {
-    setActiveStep(step);
+  const settings = {
+    dots: false,
+    infinite: true,
+    arrows: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1
   };
 
   return (
-    <React.Fragment>
-      {
-        !matches ? 
-        <Box onMouseLeave={() => setStopSwipe(false)} onMouseEnter={() => setStopSwipe(true)} sx={{ maxWidth: "100%", flexGrow: 1 }}>
-          <SwipeableViews
-            autoplay={stopSwipe ? false : true}
-            interval={4000}
-            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-            index={activeStep}
-            onChangeIndex={handleStepChange}
-            enableMouseEvents
-          >
-            {
-              hero_products && hero_products.map((prod, index) => (
-                Math.abs(activeStep - index) <= 2 &&
-                <SingleCardProduct key={prod.title} product={prod} />
+    <Grid sx={{height: !matches ? 'auto' : '500px', p: 2}} container spacing={3}>
+      <Grid item xs={12} sm={8}>
+        <Box className="slick-wrap_box" sx={{height: '100%'}}>
+          <Slider {...settings}>
+          {
+              carouselPoroduct.map((product, index) => (
+                product.category === 'Desktop computers' &&
+                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" bgImg={'/images/slider_bgr.png'} imgHeigth={!matches ? '200px' : '400px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
               ))
             }
-          </SwipeableViews>
-          <MobileStepper
-            steps={singleMaxSteps}
-            position="static"
-            activeStep={activeStep}
-            sx={{justifyContent: 'center'}}
-            nextButton={
-              <IconButton onClick={handleNext} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginLeft: 1}} aria-label="left" size="large" disabled={activeStep === singleMaxSteps - 1}>
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowLeft />
-                ) : (
-                  <KeyboardArrowRight />
-                )}
-              </IconButton>
-            }
-            backButton={
-              <IconButton onClick={handleBack} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginRight: 1}} aria-label="right" size="large" disabled={activeStep === 0}>
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowRight />
-                ) : (
-                  <KeyboardArrowLeft />
-                )}
-              </IconButton>
-            }
-          />
-        </Box> 
-      : 
-      <Box onMouseLeave={() => setStopSwipe(false)} onMouseEnter={() => setStopSwipe(true)} sx={{ maxWidth: "100%", flexGrow: 1 }}>
-        <Paper
-          square
-          elevation={0}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            height: 150,
-            p: 3,
-            bgcolor: "transparent"
-          }}
-        >
-        <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center', '& a': {textDecoration: 'none'} }}>
-          <Link noLinkStyle href={categories && `/category/${categories[activeStep ? activeStep : 0].slug}`} passHref sx={{color: theme.palette.secondary.main}}>
-            <Typography color="primary" variant="caption">
-              {categories[activeStep].categoryName}
-            </Typography>
-          </Link>
-          <Typography variant="p" component="h1">
-            {categories[activeStep].categoryName}
-          </Typography>
+          </Slider>
         </Box>
-        </Paper>
-        <SwipeableViews
-          autoplay={stopSwipe ? false : true}
-          interval={4000}
-          axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-          index={activeStep}
-          onChangeIndex={handleStepChange}
-        >
-          {
-            categories.map((step, index) => (
-              <TabPanel key={step.categoryName} value={activeStep} index={index} dir={theme.direction}>
-                <CardProduct loading products={carouselPoroduct} step={step} />
-              </TabPanel>
-            ))
-          }
-        </SwipeableViews>
-        <MobileStepper
-          steps={maxSteps}
-          position="static"
-          activeStep={activeStep}
-          sx={{justifyContent: 'center', '& .MuiMobileStepper-dots': {display: 'none'} }}
-          nextButton={
-            <IconButton onClick={handleNext} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginLeft: 1}} aria-label="left" size="large" disabled={activeStep === maxSteps - 1}>
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowLeft />
-              ) : (
-                <KeyboardArrowRight />
-              )}
-            </IconButton>
-          }
-          backButton={
-            <IconButton onClick={handleBack} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginRight: 1}} aria-label="right" size="large" disabled={activeStep === 0}>
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowRight />
-              ) : (
-                <KeyboardArrowLeft />
-              )}
-            </IconButton>
-          }
-        />
-      </Box>
-      }
-    </React.Fragment>
+      </Grid>
+      <Grid sx={{p: 2}} item xs={12} sm={4}>
+        <Grid sx={{height: '100%'}} container spacing={3}>
+          <Grid sx={{height: {xs: 'auto', sm: '225px'}, p: 1}} item xs={12}>
+            <Box sx={{height: '100%'}}>
+              <Slider {...settings}>
+              {
+                  carouselPoroduct.map((product, index) => (
+                    product.category === 'Laptop computers' &&
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" bgImg={'/images/bgd_laptop.jpg'} imgHeigth={'150px'} variantSubtitle="caption" variantTitle="h6" />
+                  ))
+                }
+              </Slider>
+            </Box>
+          </Grid>
+          <Grid sx={{height: {xs: 'auto', sm: '225px'}, p: 1}} item xs={12}>
+            <Box>
+              <Slider {...settings}>
+              {
+                  carouselPoroduct.map((product, index) => (
+                    product.category === 'Smartphones' &&
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" bgImg={'/images/bgd_mobile.png'} imgHeigth={'200px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                  ))
+                }
+              </Slider>
+            </Box>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>   
   );
 }
 

@@ -10,6 +10,9 @@ import category_data from '../utils/category';
 import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
 import Link from '../Link';
 import theme from '../theme';
+import PersonalVideoIcon from '@mui/icons-material/PersonalVideo';
+import ComputerIcon from '@mui/icons-material/Computer';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 
 export default function DropdownMenu(props) {
   const { openDropdown, anchorElDropdown , handleCloseDropdown, isVisible } = props;
@@ -89,7 +92,11 @@ export default function DropdownMenu(props) {
                       sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}
                     >
                     <Link href={`/category/${item.slug}`} sx={{display: 'flex'}}>
-                      <Avatar onClick={handleCloseDropdown} alt={item.categoryName} src={item.avatar} /> 
+                      <Avatar sx={{ bgcolor: theme.palette.primary.white, '& svg': {color: theme.palette.secondary.main} }} onClick={handleCloseDropdown}>
+                        {
+                          item.slug === 'desktop-computers' ? <PersonalVideoIcon /> : item.slug === 'laptops' ? <ComputerIcon /> : item.slug === 'smartphones' ? <PhoneAndroidIcon /> : null
+                        }
+                      </Avatar>
                       <Typography onClick={handleCloseDropdown} color="secondary" sx={{ width: '100%', flexShrink: 0, display: 'flex', alignItems: 'center', '&:hover': {color: theme.palette.primary.main} }}>
                         {item.categoryName}
                       </Typography>

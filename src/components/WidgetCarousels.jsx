@@ -33,7 +33,7 @@ function TabPanel(props) {
   );
 }
 
-function WidgetCarousel({ topProducts }) {
+function WidgetCarousel({ widgetProducts }) {
   const [carouselProduct, setCarouselProduct] = useState([]);
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -70,7 +70,7 @@ function WidgetCarousel({ topProducts }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await topProducts;
+        const res = await widgetProducts;
         setCarouselProduct(res)
       } catch (error) {
         console.log(error)
@@ -107,7 +107,7 @@ function WidgetCarousel({ topProducts }) {
         >
         <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center' }}>
           <Typography align="left" variant="p" component="h2">
-            {topProducts[0].inWidget.replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+            {widgetProducts[0].inWidget.replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
           </Typography>
           <Box sx={{p: 0, pt: 1}}>
             <Divider />
