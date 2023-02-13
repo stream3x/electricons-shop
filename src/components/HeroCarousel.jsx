@@ -45,7 +45,7 @@ function HeroCarousel({ hero_products }) {
           </Slider>
         </Box>
       </Grid>
-      <Grid sx={{p: 2}} item xs={12} sm={4}>
+      <Grid item xs={12} sm={4}>
         <Grid sx={{height: '100%'}} container spacing={3}>
           <Grid sx={{height: {xs: 'auto', sm: '225px'}, p: 1}} item xs={12}>
             <Box sx={{height: '100%'}}>

@@ -16,6 +16,9 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import data from '../utils/data';
 import Link from '../Link';
 import theme from '../theme';
+import PersonalVideoIcon from '@mui/icons-material/PersonalVideo';
+import ComputerIcon from '@mui/icons-material/Computer';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 
 function ListsItem(props) {
   const { cat, onClose } = props;
@@ -34,7 +37,11 @@ function ListsItem(props) {
         <ListItem key={cat.categoryName} disablePadding>
           <ListItemButton sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', '& a': {textDecoration: 'none'} }} onClick={() => setOpen(!open)}>
           <Link onClick={onClose} href={`/category/${cat.slug}`} sx={{display: 'flex', alignItems: 'center', '&:hover': {color: theme.palette.primary.main} }} color="secondary">
-            <Avatar alt={cat.categoryName} src={cat.avatar} /> 
+            <Avatar sx={{ bgcolor: theme.palette.primary.white, '& svg': {color: theme.palette.secondary.main} }}>
+              {
+                cat.slug === 'desktop-computers' ? <PersonalVideoIcon /> : cat.slug === 'laptops' ? <ComputerIcon /> : cat.slug === 'smartphones' ? <PhoneAndroidIcon /> : null
+              }
+            </Avatar>
             <ListItemText primary={cat.categoryName} />
           </Link>
             {open ? 

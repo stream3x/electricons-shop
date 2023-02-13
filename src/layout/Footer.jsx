@@ -3,7 +3,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Link from '@mui/material/Link';
 import Logo from '../assets/Logo';
 import { Divider, Grid, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import MobileBottomNav from '../assets/MobileBottomNav';
@@ -16,6 +15,8 @@ import Public from '@mui/icons-material/Public';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import StayCurrentPortraitIcon from '@mui/icons-material/StayCurrentPortrait';
 import MapFooter from '../assets/MapFooter';
+import Link from '../Link';
+import theme from '../theme';
 
 function Copyright() {
   return (
@@ -75,25 +76,25 @@ function ScrollTop(props) {
 }
 
 const company = [
-  {id: '2.1', title: 'Delivery'},
-  {id: '2.2', title: 'Legal Notice'},
-  {id: '2.3', title: 'Terms and conditions of use'},
-  {id: '2.4', title: 'About us'},
-  {id: '2.5', title: 'Contact us'},
+  {id: '2.1', title: 'Delivery', link: '#'},
+  {id: '2.2', title: 'Legal Notice', link: '#'},
+  {id: '2.3', title: 'Terms and conditions of use', link: '#'},
+  {id: '2.4', title: 'About us', link: '#'},
+  {id: '2.5', title: 'Contact us', link: '#'},
 ];
 const account = [
-  {id: '3.1', title: 'Personal Info'},
-  {id: '3.2', title: 'Orders'},
-  {id: '3.3', title: 'Credit slips'},
-  {id: '3.4', title: 'Addresses'},
-  {id: '3.5', title: 'My wishlists'}
+  {id: '3.1', title: 'Personal Info', link: '#'},
+  {id: '3.2', title: 'Orders', link: '#'},
+  {id: '3.3', title: 'Credit slips', link: '#'},
+  {id: '3.4', title: 'Addresses', link: '#'},
+  {id: '3.5', title: 'My wishlists', link: '#'}
 ];
 const products = [
-  {id: '4.1', title: 'Electricons'},
-  {id: '4.2', title: 'Desktop computers'},
-  {id: '4.3', title: 'Laptop computers'},
-  {id: '4.4', title: 'Mobile'},
-  {id: '4.5', title: 'Tablets'}
+  {id: '4.1', title: 'Electricons', link: '/search'},
+  {id: '4.2', title: 'Desktop computers', link: '/category/desktop-computers'},
+  {id: '4.3', title: 'Laptop computers', link: '/category/laptops'},
+  {id: '4.4', title: 'Smartphones', link: '/category/smartphones'},
+  {id: '4.5', title: 'Xiaomi Smartphones', link: '/category/smartphones/Xiaomi-Smartphones'}
 ];
 
 export default function Footer({ storeInfo }) {
@@ -141,25 +142,31 @@ export default function Footer({ storeInfo }) {
                   <ListItemIcon>
                     <Public />
                   </ListItemIcon>
-                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo.name}, ${storeInfo.country}`} />
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.name}, ${storeInfo && storeInfo.country}`} />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <DraftsIcon />
-                  </ListItemIcon>
-                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={storeInfo.email} />
+                <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }}>
+                  <Link sx={{display: 'flex'}} href={`mailto:${storeInfo && storeInfo.email}`} passHref>
+                    <ListItemIcon>
+                      <DraftsIcon />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.email}`} />
+                  </Link>
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <StayCurrentPortraitIcon />
-                  </ListItemIcon>
-                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo.phone}`} />
+                <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }}>
+                  <Link sx={{display: 'flex'}} href={`tel:${storeInfo && storeInfo.phone}`} passHref>
+                    <ListItemIcon>
+                      <StayCurrentPortraitIcon />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.phone}`} />
+                  </Link>
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <LocalPhoneIcon />
-                  </ListItemIcon>
-                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo.phone_two}`} />
+                <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }}>
+                  <Link sx={{display: 'flex'}} href={`tel:${storeInfo && storeInfo.phone_two}`} passHref>
+                    <ListItemIcon>
+                      <LocalPhoneIcon />
+                    </ListItemIcon>
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.phone_two}`} />
+                  </Link>
                 </ListItem>
               </Box>
             </List>
@@ -173,8 +180,10 @@ export default function Footer({ storeInfo }) {
           >
             {
               company.map(company_list => (
-                <ListItem key={company_list.id}>
-                  <ListItemText primary={company_list.title} />
+                <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }} key={company_list.id}>
+                  <Link href={company_list.link} passHref>
+                    <ListItemText primary={company_list.title} />
+                  </Link>
                 </ListItem>
               ))
             }
@@ -189,8 +198,10 @@ export default function Footer({ storeInfo }) {
           >
             {
               account.map(account => (
-                <ListItem key={account.id}>
-                  <ListItemText primary={account.title} />
+                <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }} key={account.id}>
+                  <Link href={account.link} passHref>
+                    <ListItemText primary={account.title} />
+                  </Link>
                 </ListItem>
               ))
             }
@@ -205,8 +216,10 @@ export default function Footer({ storeInfo }) {
           >
             {
               products.map(product => (
-                <ListItem key={product.id}>
-                  <ListItemText primary={product.title} />
+                <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }} key={product.id}>
+                  <Link href={product.link} passHref>
+                    <ListItemText primary={product.title} />
+                  </Link>
                 </ListItem>
               ))
             }
