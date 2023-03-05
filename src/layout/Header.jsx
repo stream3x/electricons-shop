@@ -565,7 +565,7 @@ export default function Header(props) {
                       <Wishlist color="badge.bgd"/>
                     </Badge>
                   </IconButton>
-                  <SwipeableCartDrawer cart={cart}/>
+                  <SwipeableCartDrawer />
                 </Box>
               </Box>
             </Toolbar>

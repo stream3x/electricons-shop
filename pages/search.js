@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Checkbox, Chip, CircularProgress, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -17,9 +17,12 @@ import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 import SelectPages from '../src/assets/SelectPages';
 import SwipeableFilterDrawer from '../src/components/SwipeableFilterDrawer';
 import ActionCardButtons from '../src/assets/ActionCardButtons';
+import ChipFilters from '../src/assets/ChipFilters';
 
 let PAGE_SIZE = 40;
 const ratings = [1, 2, 3, 4, 5];
+let catArray = [];
+let subCatArray = [];
 
 export default function Search(props) {
   const router = useRouter();
@@ -73,112 +76,208 @@ export default function Search(props) {
     });
   };
 
-  const initialState = [
-    { key: 'query', label: [...query] },
-    { key: 'category', label: [...category] },
-    { key: 'brand', label: [...brand] },
-    { key: 'subCategory', label: [...subCategory] },
-    { key: 'price', label: [price] }
-  ];
+  // const initialState = [
+  //   { key: 'query', label: [...query] },
+  //   { key: 'category', label: [...category] },
+  //   { key: 'brand', label: [...brand] },
+  //   { key: 'subCategory', label: [...subCategory] },
+  //   { key: 'price', label: [price] }
+  // ];
 
-  const [chipData, setChipData] = useState(initialState);
+  // const [chipData, setChipData] = useState(initialState);
   const [view, setView] = React.useState('module');
 
   const handleChangeView = (event, nextView) => {
     setView(nextView);
   };
-  
-  const objToArray = obj => {
-    setChipData(current => [...current, obj]);
-  };
-  
-  const handleDelete = (chipToDelete, index, i) => {
-    const filterLabel = chipToDelete.label.filter(e => e !== index);
-    const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
-    if(chipToDelete.key === 'query') {
-      if(chipToDelete.label.length !== 0) {
-        router.push(removeQuery);
-        setChipData((prev) => (
-          prev.map(obj => {
-            if(obj.key === 'query') {
-              return { ...obj, label: filterLabel };
-            }
-            return obj;
-          })
-        ));
-      }else {
-        setChipData((prev) => (
-          prev.filter(obj => {
-            return obj.key !== 'query';
-          })
-        ));
-        objToArray({
-          key: 'query',
-          label: []
-        });
-      }
-    }
-    if(chipToDelete.key === 'brand') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          const filterLabel = obj.label.filter(e => e !== index);
-          if(obj.key === 'brand') {
-            filterSearch({ brand: filterLabel });
-            return { ...obj, label: [...filterLabel] };
-          }          
-          return obj;
-        })
-      ));
-      dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: index}});
-    }
-    if(chipToDelete.key === 'category') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'category') {
-            const filterLabel = obj.label.filter(e => e !== index);
-            filterSearch({ category: filterLabel });
-            return { ...obj, label: filterLabel };
-          }
-          return obj;
-        })
-      ));
-    }
-    if(chipToDelete.key === 'subCategory') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'subCategory') {
-            const filterLabel = obj.label.filter(e => e !== index);
-            filterSearch({ subCategory: filterLabel });
-            return { ...obj, label: filterLabel };
-          }
-          return obj;
-        })
-      ));
-    }
+
+  const topCategoryState = categories.map(item => item);
+  const subCategoryState = subCategories.map(item => item);
+  const uniqueTopCat = [...new Set(topCategoryState)];
+  const uniqueSubCat = [...new Set(subCategoryState)];
+  const createTopCatBooleans = Array(uniqueTopCat.length).fill(false);
+  const createSubCatBooleans = Array(uniqueSubCat.length).fill(false);
+
+  const resultTopCat = [createTopCatBooleans].map(row =>
+    row.reduce((acc, cur, i) => (
+      acc[uniqueTopCat[i]] = cur, acc
+    ), {}
+  ));
+
+  const resultSubCat = [createSubCatBooleans].map(row =>
+    row.reduce((acc, cur, i) => (
+      acc[uniqueSubCat[i]] = cur, acc
+    ), {}
+  ));
+
+  const newSubCat = [];
+
+  for (const key in resultSubCat[0]) {
+    let temp = {};
+      temp[key] = resultSubCat[0][key];
+      newSubCat.push(temp);
+  }
+
+  const [topCat, setTopCat] = React.useState([]);
+  const [subCat, setSubCat] = React.useState(newSubCat);
+  delete topCat[0];
+  const [chipData, setChipData] = React.useState([]);
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
   };
 
-  const searchHandler = (item) => {
-    if(item.length !== 0) {
-      filterSearch({ query: item});
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'query') {
-            return { ...obj, label: [item] };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'query';
-        })
-      ));
-      objToArray({
-        key: 'query',
-        label: [...item]
+  const handleChangeTopCat = (item) => (event) => {
+    const removeDuplicates = [];
+
+    setTopCat((prev) => {
+      return prev.map(current => {
+        if(Object.keys(current) === Object.keys(item)) {
+          return { ...current, [Object.keys(current)]: Object.values(!current)};
+        } else {
+          return { ...current }
+        }
       });
+    });
+
+    setChipData([...catArray]);
+
+    if(!topCat[item]) {
+      catArray.push(item);
+    }else {
+      removeDuplicates.push(item);
     }
+
+    categoryHandler(catArray = catArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
+  };
+
+  const handleChangeSubCat = (item) => (event) => {
+    // const removeDuplicates = [];
+console.log(item);
+    // setSubCat((prev) => {
+    //   return prev.map(current => {
+    //     if(Object.keys(current) === Object.keys(item)) {
+    //       return { ...current, [Object.keys(current)]: Object.values(current)};
+    //     } else {
+    //       return { ...current };
+    //     }
+    //   });
+    // });
+
+    // setChipData(subCatArray);
+
+    // if(!subCat[item]) {
+    //   subCatArray.push(item);
+    // }else {
+    //   removeDuplicates.push(item);
+    // }
+
+  //   function titleCase(str) {
+  //     str = str.replace(/-/g, ' ');
+  //     var splitStr = str.toLowerCase().split(' ');
+  //     for (var i = 0; i < splitStr.length; i++) {
+  //         splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+  //     }
+  //     return splitStr.join(' '); 
+  //  }
+   
+    // subCategoryHandler(subCatArray = subCatArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
+  };
+  
+  console.log(subCat.slice(0, 3), Object.values(subCat[0]));
+  // const objToArray = obj => {
+  //   setChipData(current => [...current, obj]);
+  // };
+  
+  // const handleDelete = (chipToDelete, index, i) => {
+  //   const filterLabel = chipToDelete.label.filter(e => e !== index);
+  //   const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
+  //   if(chipToDelete.key === 'query') {
+  //     if(chipToDelete.label.length !== 0) {
+  //       router.push(removeQuery);
+  //       setChipData((prev) => (
+  //         prev.map(obj => {
+  //           if(obj.key === 'query') {
+  //             return { ...obj, label: filterLabel };
+  //           }
+  //           return obj;
+  //         })
+  //       ));
+  //     }else {
+  //       setChipData((prev) => (
+  //         prev.filter(obj => {
+  //           return obj.key !== 'query';
+  //         })
+  //       ));
+  //       objToArray({
+  //         key: 'query',
+  //         label: []
+  //       });
+  //     }
+  //   }
+  //   if(chipToDelete.key === 'brand') {
+  //     setChipData((prev) => (
+  //       prev.map(obj => {
+  //         const filterLabel = obj.label.filter(e => e !== index);
+  //         if(obj.key === 'brand') {
+  //           filterSearch({ brand: filterLabel });
+  //           return { ...obj, label: [...filterLabel] };
+  //         }          
+  //         return obj;
+  //       })
+  //     ));
+  //     dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: index}});
+  //   }
+  //   if(chipToDelete.key === 'category') {
+  //     setChipData((prev) => (
+  //       prev.map(obj => {
+  //         if(obj.key === 'category') {
+  //           const filterLabel = obj.label.filter(e => e !== index);
+  //           filterSearch({ category: filterLabel });
+  //           return { ...obj, label: filterLabel };
+  //         }
+  //         return obj;
+  //       })
+  //     ));
+  //   }
+  //   if(chipToDelete.key === 'subCategory') {
+  //     setChipData((prev) => (
+  //       prev.map(obj => {
+  //         if(obj.key === 'subCategory') {
+  //           const filterLabel = obj.label.filter(e => e !== index);
+  //           filterSearch({ subCategory: filterLabel });
+  //           return { ...obj, label: filterLabel };
+  //         }
+  //         return obj;
+  //       })
+  //     ));
+  //   }
+  // };
+
+  const searchHandler = (item) => {
+    filterSearch({ query: item});
+
+    // if(item.length !== 0) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'query') {
+    //         return { ...obj, label: [item] };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'query';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'query',
+    //     label: [...item]
+    //   });
+    // }
   };
 
   useEffect(() => {
@@ -186,80 +285,80 @@ export default function Search(props) {
   }, [query]);
 
   const pageSizeHandler = (num) => {
-    filterSearch({ pageSize: num })
-  }
+    filterSearch({ pageSize: num });
+  };
 
   const categoryHandler = (item, isChecked) => {
     filterSearch({ category: item });
-    if(item.length !== 0 && isChecked) {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'category') {
-            return { ...obj, label: item };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'category';
-        })
-      ));
-      objToArray({
-        key: 'category',
-        label: [...item]
-      });
-    }
+    // if(item.length !== 0 && isChecked) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'category') {
+    //         return { ...obj, label: item };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'category';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'category',
+    //     label: [...item]
+    //   });
+    // }
   };
   const subCategoryHandler = (item, isChecked) => {
     filterSearch({ subCategory: item });
-    if(item.length !== 0 && isChecked) {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'subCategory') {
-            return { ...obj, label: item };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'subCategory';
-        })
-      ));
-      objToArray({
-        key: 'subCategory',
-        label: [...item]
-      });
-    }
+    // if(item.length !== 0 && isChecked) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'subCategory') {
+    //         return { ...obj, label: item };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'subCategory';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'subCategory',
+    //     label: [...item]
+    //   });
+    // }
   };
   const pageHandler = (page) => {
     filterSearch({ page });
   };
   const brandHandler = (item, isChecked) => {
     filterSearch({ brand: item });
-    if(item.length !== 0 && isChecked) {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'brand') {
-            return { ...obj, label: item };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'brand';
-        })
-      ));
-      objToArray({
-        key: 'brand',
-        label: [...item]
-      });
-    }
+    // if(item.length !== 0 && isChecked) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'brand') {
+    //         return { ...obj, label: item };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'brand';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'brand',
+    //     label: [...item]
+    //   });
+    // }
   };
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value });
@@ -285,10 +384,81 @@ export default function Search(props) {
                   <RangeSlider countProducts={countProducts} />
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
+                 
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                    <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                      <FormLabel component="legend">Categories</FormLabel>
+                      {
+                        // resultTopCat && resultTopCat.slice(0, 3).map((item, i) => (
+                        //   <FormGroup key={item}>
+                        //     <FormControlLabel
+                        //       sx={{'& span': {color: 'secondary.lightGrey'} }}
+                        //       control={
+                        //         <Checkbox onChange={handleChangeTopCat(item)} />
+                        //       }
+                        //       label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                        //     />
+                        //   </FormGroup>
+                        // ))
+                      }
+                      <Collapse in={expanded} timeout="auto" unmountOnExit>
+                      {
+                        // resultTopCat && resultTopCat.slice(3, resultTopCat.length).map(item => (
+                        //     <FormGroup key={item}>
+                        //       <FormControlLabel
+                        //         sx={{'& span': {color: 'secondary.lightGrey'} }}
+                        //         control={
+                        //           <Checkbox onChange={handleChangeTopCat(item)} />
+                        //         }
+                        //         label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                        //       />
+                        //     </FormGroup>
+                        //   ))
+                      }
+                      </Collapse>
+                      {
+                        // categories.length > 3 &&
+                        // <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+                      }
+                    </FormControl>
+                    <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                      <FormLabel component="legend">Brand Categories</FormLabel>
+                      {
+                        subCat && subCat.slice(0, 3).map(item => (
+                          <FormGroup key={Object.keys(item).toString()}>
+                            <FormControlLabel
+                              sx={{'& span': {color: 'secondary.lightGrey'} }}
+                              control={
+                                <Checkbox checked={Object.values(item)} onChange={handleChangeSubCat(item)} />
+                              }
+                              label={`${Object.values(item)}`}
+                            />
+                          </FormGroup>
+                        ))
+                      }
+                      <Collapse in={expanded} timeout="auto" unmountOnExit>
+                      {
+                        subCat && subCat.slice(3, subCat.length).map(item => (
+                          <FormGroup key={Object.keys(item)}>
+                            <FormControlLabel
+                              sx={{'& span': {color: 'secondary.lightGrey'} }}
+                              control={
+                                <Checkbox onChange={handleChangeSubCat(item)} />
+                              }
+                              label={Object.keys(item)}
+                            />
+                          </FormGroup>
+                        ))
+                      }
+                      </Collapse>
+                      {
+                        subCat && subCat.length > 3 &&
+                        <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+                      }
+                    </FormControl>
+                  </Box>
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -312,7 +482,7 @@ export default function Search(props) {
                     </Typography>
                     }
                   </Box>
-                  <SwipeableFilterDrawer countProducts={countProducts} brands={brands} brandHandler={brandHandler} categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                  <SwipeableFilterDrawer brands={brands} brandHandler={brandHandler} handleChangeSubCat={handleChangeSubCat} newSubCat={newSubCat} expanded={expanded} handleExpandClick={handleExpandClick} />
                   <ToggleButtons handleChangeView={handleChangeView} view={view} />
                   <SelectCategory value={sort} sortHandler={sortHandler} />
                 </Toolbar>
@@ -341,16 +511,12 @@ export default function Search(props) {
               >
                 {
                   chipData.map((data, i) => (
-                    data.label.map((label, index) => (
-                    label !== '' &&
-                    <ListItem sx={{width: 'auto'}} key={data.key + index}>
-                      <Chip
-                        label={`${data.key} : ${label}`}
-                        onDelete={() => handleDelete(data, label, index)}
-                      />
+                    <ListItem sx={{width: 'auto'}} key={data.key}>
+                      <Button onClick={handleChangeSubCat(data)}>
+                        {Object.keys(data)}
+                      </Button>
                     </ListItem>
                     ))
-                  ))
                 }
               </Paper>
             </Grid>

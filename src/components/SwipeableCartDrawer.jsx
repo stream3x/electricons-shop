@@ -12,25 +12,29 @@ import theme from '../theme';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Link from '../Link';
 import { Store } from '../utils/Store';
+import Cookies from 'js-cookie';
 
-export default function SwipeableCartDrawer({cart}) {
+export default function SwipeableCartDrawer() {
   const [drawerState, setDrawerState] = React.useState({
     right: false
   });
   const match = useMediaQuery('(max-width: 600px)');
-  const { dispatch, state } = React.useContext(Store);
-  const { userInfo, cart: {cartItems, personalInfo, shipping, addresses, payment} } = state;
+  const { state, dispatch } = React.useContext(Store);
+  const { cart, cart: {shipping} } = state;
 
   function removeItemHandler(item) {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item removed successfully', severity: 'warning' } });
   }
 
-  const subTotal = cart.cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
-  const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : 50) : 0;
+  const subTotal = cart.cartItems.length !== 0 ? cart.cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : 0;
+  const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : Cookies.get('shipping') ? JSON.parse(Cookies.get('shipping')) : '') : 0;
   let taxCost;
   let taxCount;
-  if(cartItems.length < 3) {
+
+
+
+  if(cart.cartItems.length !== 0 && cart.cartItems.length < 3) {
     taxCost = '33.33%';
     taxCount = 1.3333;
   }else {
@@ -92,7 +96,7 @@ export default function SwipeableCartDrawer({cart}) {
         </Box>
         : 
         <List sx={{ overflowY: 'auto'}}>
-          {cart.cartItems.map((item, index) => (
+          {cart.cartItems.length !== 0 && cart.cartItems.map((item, index) => (
             <React.Fragment key={item._id}>
               <ListItem sx={{pt: 1}} disablePadding>
                 <Grid container space={2}>
@@ -108,7 +112,7 @@ export default function SwipeableCartDrawer({cart}) {
                         margin: 'auto'
                       }}
                       src={item.images[0].image}
-                      alt={item.title}
+                      alt="cart is empty"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -119,7 +123,7 @@ export default function SwipeableCartDrawer({cart}) {
                       QTY: {item.quantity}
                     </Typography>
                     <Typography gutterBottom variant="h6" component="h6" align="left" color="primary" sx={{flex: 1}}>
-                      {item.price}
+                      {item.price} <Typography color="secondary.light" component="del" >{item.oldPrice}</Typography>
                     </Typography>
                   </Grid>
                   <Grid item xs={3} sx={{ display: 'flex' }}>

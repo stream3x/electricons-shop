@@ -12,7 +12,7 @@ export async function getStaticProps() {
   const best_seller = await Product.find({inWidget: "best-seller"}).lean();
   await db.disconnect();
 
-  if (!hero_products || !top_products) {
+  if (!hero_products || !top_products || !best_seller) {
     return {
       notFound: true,
     };
@@ -35,8 +35,8 @@ export default function Index(props) {
       <Box sx={{backgroundColor: '#f9f9f9', borderRadius: '10px'}}>
         <HeroCarousel hero_products={hero_products} />
       </Box>
-      <WidgetCarousels widgetProducts={topProducts} />
-      <WidgetCarousels widgetProducts={bestSeller} />
+      <WidgetCarousels title="Top Products" widgetProducts={topProducts && topProducts} />
+      <WidgetCarousels title="Best Seller" widgetProducts={bestSeller && bestSeller} />
     </Box>
   );
 }

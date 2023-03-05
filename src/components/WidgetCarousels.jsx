@@ -13,6 +13,8 @@ import { useState } from "react";
 import WidgetCardProduct from "./WidgetCardProduct";
 import SwipeableViews from "react-swipeable-views";
 
+// carouselProduct[0].inWidget.replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -33,7 +35,7 @@ function TabPanel(props) {
   );
 }
 
-function WidgetCarousel({ widgetProducts }) {
+function WidgetCarousel({ widgetProducts, title }) {
   const [carouselProduct, setCarouselProduct] = useState([]);
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
@@ -77,8 +79,7 @@ function WidgetCarousel({ widgetProducts }) {
       }
     }
     fetchData();
-  }, [])
-  
+  }, [widgetProducts])
   
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -107,7 +108,7 @@ function WidgetCarousel({ widgetProducts }) {
         >
         <Box sx={{ maxWidth: "100%", width: '100%', flexGrow: 1, flexWrap: 'wrap', textAlign: 'center' }}>
           <Typography align="left" variant="p" component="h2">
-            {widgetProducts[0].inWidget.replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+            {title}
           </Typography>
           <Box sx={{p: 0, pt: 1}}>
             <Divider />

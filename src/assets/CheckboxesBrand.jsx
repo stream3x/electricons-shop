@@ -14,7 +14,7 @@ let brandArray = [];
 export default function CheckboxesBrand(props) {
   const { brands, brandHandler } = props;
   const [expanded, setExpanded] = React.useState(false);
-  const brandState = brands.map(item => item);
+  const brandState = brands && brands.map(item => item);
   const unique = [...new Set(brandState)];
   const createBooleans = Array(unique.length).fill(false);
   const result = [createBooleans].map(row =>
@@ -83,35 +83,35 @@ export default function CheckboxesBrand(props) {
       <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
         <FormLabel component="legend">Brand</FormLabel>
         {
-          stateBrand.slice(0, 3).map(item => (
-            <FormGroup key={item.name}>
+          brands.slice(0, 3).map(item => (
+            <FormGroup key={Object.keys(item)}>
               <FormControlLabel
                 sx={{'& span': {color: 'secondary.lightGrey'} }}
                 control={
-                  <Checkbox checked={item.value} onChange={handleChange(item)} name={item.name} value={item.name} />
+                  <Checkbox onChange={handleChange(item)} name={Object.keys(item)} value={Object.keys(item)} />
                 }
-                label={`${item.name}`}
+                label={`${item}`}
               />
             </FormGroup>
           ))
         }
         <Collapse in={expanded} timeout="auto" unmountOnExit>
         {
-            stateBrand.slice(3, stateBrand.length).map(item => (
+          brands.slice(3, brands.length).map(item => (
               <FormGroup key={item.name}>
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
                   control={
                     <Checkbox checked={item.value} onChange={handleChange(item.name)} name={item.name} value={item.name} />
                   }
-                  label={item.name}
+                  label={item}
                 />
               </FormGroup>
             ))
           }
         </Collapse>
         {
-          stateBrand.length > 3 &&
+          brands.length > 3 &&
           <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
         }
       </FormControl>

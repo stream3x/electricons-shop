@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
-import { AppBar, IconButton, ToggleButton, Toolbar, Typography, useMediaQuery } from '@mui/material';
+import { AppBar, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, IconButton, ToggleButton, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import theme from '../theme';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Link from '../Link';
@@ -14,7 +14,7 @@ import CheckboxesCategory from '../assets/CheckboxesCategory';
 import TuneIcon from '@mui/icons-material/Tune';
 
 export default function SwipeableFilterDrawer(props) {
-  const { countProducts, brands, brandHandler, categories, subCategories, subCategoryHandler, categoryHandler } = props;
+  const { countProducts, brands, brandHandler, expanded, newSubCat, handleChangeSubCat, handleExpandClick } = props;
   const [drawerState, setDrawerState] = React.useState({
     left: false
   });
@@ -51,10 +51,81 @@ export default function SwipeableFilterDrawer(props) {
             <RangeSlider countProducts={countProducts} />
           </Toolbar>
           <Toolbar>
-            <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
+  {/*<CheckboxesBrand brands={brands} brandHandler={brandHandler} />*/}
           </Toolbar>
           <Toolbar>
-            <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+            <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+              <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                <FormLabel component="legend">Categories</FormLabel>
+                {
+                  // resultTopCat && resultTopCat.slice(0, 3).map((item, i) => (
+                  //   <FormGroup key={item}>
+                  //     <FormControlLabel
+                  //       sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  //       control={
+                  //         <Checkbox onChange={handleChangeTopCat(item)} />
+                  //       }
+                  //       label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                  //     />
+                  //   </FormGroup>
+                  // ))
+                }
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                {
+                  // resultTopCat && resultTopCat.slice(3, resultTopCat.length).map(item => (
+                  //     <FormGroup key={item}>
+                  //       <FormControlLabel
+                  //         sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  //         control={
+                  //           <Checkbox onChange={handleChangeTopCat(item)} />
+                  //         }
+                  //         label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                  //       />
+                  //     </FormGroup>
+                  //   ))
+                }
+                </Collapse>
+                {
+                  // categories.length > 3 &&
+                  // <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+                }
+              </FormControl>
+              <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                <FormLabel component="legend">Brand Categories</FormLabel>
+                {
+                  newSubCat && newSubCat.slice(0, 3).map(item => (
+                    <FormGroup key={Object.keys(item).toString()}>
+                      <FormControlLabel
+                        sx={{'& span': {color: 'secondary.lightGrey'} }}
+                        control={
+                          <Checkbox onChange={handleChangeSubCat(item)} />
+                        }
+                        label={`${Object.values(item)}`}
+                      />
+                    </FormGroup>
+                  ))
+                }
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                {
+                  newSubCat && newSubCat.slice(3, newSubCat.length).map(item => (
+                    <FormGroup key={Object.keys(item)}>
+                      <FormControlLabel
+                        sx={{'& span': {color: 'secondary.lightGrey'} }}
+                        control={
+                          <Checkbox onChange={handleChangeSubCat(item)} />
+                        }
+                        label={Object.keys(item)}
+                      />
+                    </FormGroup>
+                  ))
+                }
+                </Collapse>
+                {
+                  newSubCat && newSubCat.length > 3 &&
+                  <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+                }
+              </FormControl>
+            </Box>
           </Toolbar>
         </AppBar>
       </Box>
