@@ -21,8 +21,6 @@ import Toolbar from '@mui/material/Toolbar';
 import theme from '../../src/theme';
 import RangeSlider from '../../src/assets/RangeSlider';
 import ToggleButtons from '../../src/assets/ToggleButtons';
-import SelectCategory from '../../src/assets/SelectSort';
-import CheckboxesGroup from '../../src/assets/CheckboxesGroup';
 import { useRouter } from 'next/router';
 import SelectPages from '../../src/assets/SelectPages';
 import CheckboxesBrand from '../../src/assets/CheckboxesBrand';
@@ -30,8 +28,16 @@ import SelectSort from '../../src/assets/SelectSort';
 import SwipeableFilterDrawer from '../../src/components/SwipeableFilterDrawer';
 import CheckboxesCategory from '../../src/assets/CheckboxesCategory';
 import ActionCardButtons from '../../src/assets/ActionCardButtons';
+import FormLabel from '@mui/material/FormLabel';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox';
+import { Collapse } from '@mui/material';
 
 const PAGE_SIZE = 40;
+let brandArray = [];
 
 export async function getServerSideProps(context) {
   const { params, query } = context;
@@ -45,7 +51,6 @@ export async function getServerSideProps(context) {
   const price = query.price || '';
   const sort = query.sort || '';
   const searchQueary = query.query || '';
-
   const queryFilter = 
     searchQueary && searchQueary !== ''
     ? {
@@ -86,42 +91,10 @@ export async function getServerSideProps(context) {
 
   await db.connect();
   const cat = await Category.find({}).lean();
-  
-  // function replacer(key, value) {
-  //   if(value instanceof Map) {
-  //     return {
-  //       dataType: 'Map',
-  //       value: Array.from([...value]),
-  //     };
-  //   } else {
-  //     return value;
-  //   }
-  // }
 
-  // function reviver(key, value) {
-  //   if(typeof value === 'object' && value !== null) {
-  //     if (value.dataType === 'Map') {
-  //       return new Map(value.value);
-  //     }
-  //   }
-  //   return value;
-  // }
-
-  // function convertToJson() {
-  //   if(productDocsCategory) {
-  //     const org_value = JSON.stringify(productDocsCategory, replacer);
-  //     const newValue = JSON.parse(org_value, reviver);
-  //     return newValue;
-  //   }else {
-  //     const org_value = JSON.stringify(subCategoryProducts, replacer);
-  //     const newValue = JSON.parse(org_value, reviver);
-  //     return newValue;
-  //   }
-  // }
-
-    const categories = await Product.find().distinct('categoryUrl');
-    const subCategories = await Product.find().distinct('subCategoryUrl');
-    const brands = await Product.find().distinct('brand');
+    const categories = await Product.find({categoryUrl: slug[slug.length - 1]}).distinct('categoryUrl');
+    const subCategories = await Product.find({categoryUrl: slug[slug.length - 1]}).distinct('subCategoryUrl');
+    const brands = await Product.find({categoryUrl: slug[slug.length - 1]}).distinct('brand').lean();
     
     const productDocs = await Product.find(
       {
@@ -285,6 +258,7 @@ export default function CategoryProducts(props) {
   const handleDelete = (chipToDelete, index, i) => {
     const filterLabel = chipToDelete.label.filter(e => e !== index);
     const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
+    console.log(filterLabel, chipToDelete, index, chipData);
     if(chipToDelete.key === 'query') {
       if(chipToDelete.label.length !== 0) {
         router.push(removeQuery);
@@ -373,7 +347,6 @@ export default function CategoryProducts(props) {
     }
   };
   const subCategoryHandler = (item, isChecked) => {
-    console.log(item);
     filterSearch({ subCategory: item });
     if(item.length !== 0 && isChecked) {
       setChipData((prev) => (
@@ -399,7 +372,7 @@ export default function CategoryProducts(props) {
   const pageHandler = (page) => {
     filterSearch({ page });
   };
-  const brandHandler = (item, isChecked, event) => {
+  const brandHandler = (item, isChecked) => {
     filterSearch({ brand: item });
     if(item.length !== 0 && isChecked) {
       setChipData((prev) => (
@@ -429,10 +402,7 @@ export default function CategoryProducts(props) {
     filterSearch({ price: e.target.value });
   };
 
-  const { state, dispatch } = useContext(Store);
   // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
-  const { snack, cart: {cartItems} } = state;
-  const [loading, setLoading] = useState(false);
   const [selected, setSelected] = React.useState('');
   const [view, setView] = React.useState('module');
 
@@ -448,6 +418,47 @@ export default function CategoryProducts(props) {
 
   const handleLoading = (product) => {
     setSelected(product._id);
+  };
+
+  const [expanded, setExpanded] = React.useState(false);
+  const brandState = brands.map(item => item);
+  const unique = [...new Set(brandState)];
+  const createBooleans = Array(unique.length).fill(false);
+  const result = [createBooleans].map(row =>
+    row.reduce((acc, cur, i) =>
+      (acc[unique[i]] = cur, acc), {})
+  );
+
+  const arr = Object.entries(result[0]).map(([name, value]) => {
+    return {
+      name,
+      value
+    }
+  });
+  const [stateBrand, setStateBrand] = React.useState([arr][0]);
+
+  const handleChange = (item) => (event) => {
+    const removeDuplicates = [];
+    const update = stateBrand.map(x => {
+      if(x.name === item.name) {
+        return {
+          ...x, value: event.target.checked
+        }
+      }
+      return x;
+    })
+    setStateBrand(update);
+  
+    if(!item.value) {
+      brandArray.push(item.name);
+    }else {
+      removeDuplicates.push(item.name);
+    }
+    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
+  };
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
   };
 
   if(!products) {
@@ -488,7 +499,47 @@ export default function CategoryProducts(props) {
                   <RangeSlider />
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesBrand brands={brands} brandHandler={brandHandler} />
+                <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {
+                      stateBrand.length > 1 &&
+                      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+                        <FormLabel component="legend">Brand</FormLabel>
+                        {
+                          stateBrand.slice(0, 3).map(item => (
+                            <FormGroup key={item.name}>
+                              <FormControlLabel
+                                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                                control={
+                                  <Checkbox checked={item.value ? item.value : false} onChange={handleChange(item)} />
+                                }
+                                label={`${item.value}`}
+                              />
+                            </FormGroup>
+                          ))
+                        }
+                        <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        {
+                            stateBrand.slice(3, stateBrand.length).map(item => (
+                              <FormGroup key={item.name}>
+                                <FormControlLabel
+                                  sx={{'& span': {color: 'secondary.lightGrey'} }}
+                                  control={
+                                    <Checkbox checked={item.value} onChange={handleChange(item)} />
+                                  }
+                                  label={item.name}
+                                />
+                              </FormGroup>
+                            ))
+                          }
+                        </Collapse>
+                        {
+                          stateBrand.length > 3 &&
+                          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+                        }
+                      </FormControl>
+                    }
+                  </Box>
+                  
                 </Toolbar>
                 <Toolbar>
                   <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
@@ -536,14 +587,14 @@ export default function CategoryProducts(props) {
                 }}
                 component="ul"
               >
-                 {
+                {
                   chipData.map((data, i) => (
                     data.label.map((label, index) => (
                     label !== '' &&
                     <ListItem sx={{width: 'auto'}} key={data.key + index}>
                       <Chip
                         label={`${data.key} : ${label}`}
-                        onDelete={() => handleDelete(data, label, index)}
+                        onDelete={() => handleDelete(data, label)}
                       />
                     </ListItem>
                     ))

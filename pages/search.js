@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { AppBar, Box, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Product from '../models/Product';
@@ -11,7 +10,6 @@ import ToggleButtons from '../src/assets/ToggleButtons';
 import Link from '../src/Link';
 import theme from '../src/theme';
 import db from '../src/utils/db';
-import { Store } from '../src/utils/Store';
 import CheckboxesBrand from '../src/assets/CheckboxesBrand';
 import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 import SelectPages from '../src/assets/SelectPages';
@@ -24,8 +22,6 @@ const ratings = [1, 2, 3, 4, 5];
 export default function Search(props) {
   const router = useRouter();
   const [selected, setSelected] = useState('');
-  const { state, dispatch } = useContext(Store);
-  const { chips } = state;
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -129,7 +125,6 @@ export default function Search(props) {
           return obj;
         })
       ));
-      dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: index}});
     }
     if(chipToDelete.key === 'category') {
       setChipData((prev) => (

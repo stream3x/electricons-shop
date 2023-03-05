@@ -213,6 +213,8 @@ export default function Header(props) {
     const addQuery = `query=${queryRemoveSpace}`
     if(router.pathname === '/category/[[...slug]]') {
       router.push(`/search?query=${query}`);
+    }else if(router.pathname === `/product/[slug]`) {
+      router.push(`/search?query=${query}`);
     }else if(router.asPath === `/search?query=`) {
       router.push(`/search?query=${query}`);
     }else if(router.asPath === `/search`) {

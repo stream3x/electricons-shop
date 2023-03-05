@@ -86,24 +86,12 @@ export default function CheckboxesCategory(props) {
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-        <FormLabel component="legend">Categories</FormLabel>
-        {
-          uniqueTopCat.slice(0, 3).map((item, i) => (
-            <FormGroup key={item}>
-              <FormControlLabel
-                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                control={
-                  <Checkbox onChange={handleChangeTopCat(item)} />
-                }
-                label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
-              />
-            </FormGroup>
-          ))
-        }
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {
-            uniqueTopCat.slice(3, uniqueTopCat.length).map(item => (
+      {
+        uniqueTopCat.length > 1 &&
+        <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+          <FormLabel component="legend">Categories</FormLabel>
+          {
+            uniqueTopCat.slice(0, 3).map((item, i) => (
               <FormGroup key={item}>
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
@@ -115,47 +103,65 @@ export default function CheckboxesCategory(props) {
               </FormGroup>
             ))
           }
-        </Collapse>
-        {
-          categories.length > 3 &&
-          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-        }
-      </FormControl>
-      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-        <FormLabel component="legend">Brand Categories</FormLabel>
-        {
-          uniqueSubCat.slice(0, 3).map(item => (
-            <FormGroup key={item}>
-              <FormControlLabel
-                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                control={
-                  <Checkbox onChange={handleChangeSubCat(item)} />
-                }
-                label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
-              />
-            </FormGroup>
-          ))
-        }
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {
-          uniqueSubCat.slice(3, uniqueSubCat.length).map(item => (
-            <FormGroup key={item}>
-              <FormControlLabel
-                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                control={
-                  <Checkbox onChange={handleChangeSubCat(item)} />
-                }
-                label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
-              />
-            </FormGroup>
-          ))
-        }
-        </Collapse>
-        {
-          uniqueSubCat.length > 3 &&
-          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-        }
-      </FormControl>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {
+              uniqueTopCat.slice(3, uniqueTopCat.length).map(item => (
+                <FormGroup key={item}>
+                  <FormControlLabel
+                    sx={{'& span': {color: 'secondary.lightGrey'} }}
+                    control={
+                      <Checkbox onChange={handleChangeTopCat(item)} />
+                    }
+                    label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                  />
+                </FormGroup>
+              ))
+            }
+          </Collapse>
+          {
+            categories.length > 3 &&
+            <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+          }
+        </FormControl>
+      }
+      {
+        uniqueSubCat.length > 1 &&
+        <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+          <FormLabel component="legend">Brand Categories</FormLabel>
+          {
+            uniqueSubCat.slice(0, 3).map(item => (
+              <FormGroup key={item}>
+                <FormControlLabel
+                  sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  control={
+                    <Checkbox onChange={handleChangeSubCat(item)} />
+                  }
+                  label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                />
+              </FormGroup>
+            ))
+          }
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {
+            uniqueSubCat.slice(3, uniqueSubCat.length).map(item => (
+              <FormGroup key={item}>
+                <FormControlLabel
+                  sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  control={
+                    <Checkbox onChange={handleChangeSubCat(item)} />
+                  }
+                  label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+                />
+              </FormGroup>
+            ))
+          }
+          </Collapse>
+          {
+            uniqueSubCat.length > 3 &&
+            <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+          }
+        </FormControl>
+      }
     </Box>
   );
 }

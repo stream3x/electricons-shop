@@ -7,12 +7,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
-import { Store } from '../utils/Store';
+import { useRouter } from 'next/router';
 
 let brandArray = [];
 
 export default function CheckboxesBrand(props) {
-  const { brands, brandHandler } = props;
+  const { brands, brandHandler, chipData } = props;
   const [expanded, setExpanded] = React.useState(false);
   const brandState = brands.map(item => item);
   const unique = [...new Set(brandState)];
@@ -21,6 +21,8 @@ export default function CheckboxesBrand(props) {
     row.reduce((acc, cur, i) =>
       (acc[unique[i]] = cur, acc), {})
   );
+  const router = useRouter();
+  const query = router.query;
 
   const arr = Object.entries(result[0]).map(([name, value]) => {
     return {
@@ -28,11 +30,21 @@ export default function CheckboxesBrand(props) {
       value
     }
   });
-  
   const [stateBrand, setStateBrand] = React.useState([arr][0]);
-
-  // const { state, dispatch } = React.useContext(Store);
-  // const { chips } = state;
+  const [checkStatus, setCheckStatus] = React.useState(true);
+  // const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
+  React.useEffect(() => {
+    chipData && chipData.map(chip => {
+      stateBrand.map(brand => {
+        if(chip.label.toString() === brand.name) {
+          setCheckStatus(false)
+          console.log(checkStatus)
+          console.log(chipData);
+        }
+        setCheckStatus(true)
+      })
+    })
+  }, [chipData])
 
   const handleChange = (item) => (event) => {
     const removeDuplicates = [];
@@ -51,71 +63,53 @@ export default function CheckboxesBrand(props) {
     }else {
       removeDuplicates.push(item.name);
     }
-    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)));
+    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
   };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  // const handleRemoveChekedBox = React.useCallback(() => {
-  //   setRun(() => false);
-  //   const update = stateBrand.map(x => {
-  //     if(x.name === [...Object.values(chips)][0]) {
-  //       return {
-  //         ...x, value: false
-  //       }
-  //     }
-  //     return x;
-  //   })
-  //   setStateBrand(update);
-  //   dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: {}}});
-  // }, [chips])
-
-  // React.useEffect(() => {
-  //   handleRemoveChekedBox();
-  // }, [run]);
-
-  // console.log(stateBrand, stateBrand.map(name => name.value));
-
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-        <FormLabel component="legend">Brand</FormLabel>
-        {
-          stateBrand.slice(0, 3).map(item => (
-            <FormGroup key={item.name}>
-              <FormControlLabel
-                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                control={
-                  <Checkbox checked={item.value} onChange={handleChange(item)} name={item.name} value={item.name} />
-                }
-                label={`${item.name}`}
-              />
-            </FormGroup>
-          ))
-        }
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {
-            stateBrand.slice(3, stateBrand.length).map(item => (
+      {
+        stateBrand.length > 1 &&
+        <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+          <FormLabel component="legend">Brand</FormLabel>
+          {
+            stateBrand.slice(0, 3).map(item => (
               <FormGroup key={item.name}>
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
                   control={
-                    <Checkbox checked={item.value} onChange={handleChange(item.name)} name={item.name} value={item.name} />
+                    <Checkbox checked={item.value ? item.value : false} onChange={handleChange(item)} />
                   }
-                  label={item.name}
+                  label={`${item.value}`}
                 />
               </FormGroup>
             ))
           }
-        </Collapse>
-        {
-          stateBrand.length > 3 &&
-          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-        }
-      </FormControl>
-      
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {
+              stateBrand.slice(3, stateBrand.length).map(item => (
+                <FormGroup key={item.name}>
+                  <FormControlLabel
+                    sx={{'& span': {color: 'secondary.lightGrey'} }}
+                    control={
+                      <Checkbox checked={item.value} onChange={handleChange(item)} />
+                    }
+                    label={item.name}
+                  />
+                </FormGroup>
+              ))
+            }
+          </Collapse>
+          {
+            stateBrand.length > 3 &&
+            <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+          }
+        </FormControl>
+      }
     </Box>
   );
 }
