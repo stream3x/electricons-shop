@@ -14,7 +14,7 @@ let brandArray = [];
 export default function CheckboxesBrand(props) {
   const { brands, brandHandler, chipData } = props;
   const [expanded, setExpanded] = React.useState(false);
-  const brandState = brands.map(item => item);
+  const brandState = brands && brands.map(item => item);
   const unique = [...new Set(brandState)];
   const createBooleans = Array(unique.length).fill(false);
   const result = [createBooleans].map(row =>
@@ -72,23 +72,49 @@ export default function CheckboxesBrand(props) {
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+<<<<<<< HEAD
       {
         stateBrand.length > 1 &&
         <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
           <FormLabel component="legend">Brand</FormLabel>
           {
             stateBrand.slice(0, 3).map(item => (
+=======
+      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+        <FormLabel component="legend">Brand</FormLabel>
+        {
+          brands.slice(0, 3).map(item => (
+            <FormGroup key={Object.keys(item)}>
+              <FormControlLabel
+                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                control={
+                  <Checkbox onChange={handleChange(item)} name={Object.keys(item)} value={Object.keys(item)} />
+                }
+                label={`${item}`}
+              />
+            </FormGroup>
+          ))
+        }
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {
+          brands.slice(3, brands.length).map(item => (
+>>>>>>> 34fccb6a86753a4334d00aaf2a132fa485df59cc
               <FormGroup key={item.name}>
                 <FormControlLabel
                   sx={{'& span': {color: 'secondary.lightGrey'} }}
                   control={
                     <Checkbox checked={item.value ? item.value : false} onChange={handleChange(item)} />
                   }
+<<<<<<< HEAD
                   label={`${item.value}`}
+=======
+                  label={item}
+>>>>>>> 34fccb6a86753a4334d00aaf2a132fa485df59cc
                 />
               </FormGroup>
             ))
           }
+<<<<<<< HEAD
           <Collapse in={expanded} timeout="auto" unmountOnExit>
           {
               stateBrand.slice(3, stateBrand.length).map(item => (
@@ -110,6 +136,15 @@ export default function CheckboxesBrand(props) {
           }
         </FormControl>
       }
+=======
+        </Collapse>
+        {
+          brands.length > 3 &&
+          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+        }
+      </FormControl>
+      
+>>>>>>> 34fccb6a86753a4334d00aaf2a132fa485df59cc
     </Box>
   );
 }

@@ -51,8 +51,7 @@ const data = {
       brandImg: "/logo/AMD-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero",
-      inStock: 10
+      inWidget: "hero"
     },
     {
       title: "AMD Acer Aspire",
@@ -72,7 +71,6 @@ const data = {
       reviews: 5,
       inStock: 10,
       inWidget: "top-product",
-      inStock: 0
     },
     {
       title: "AMD Dell Desktop",
@@ -186,7 +184,7 @@ const data = {
       brandImg: "/logo/acer-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "best-seller"
     },
     {
       title: "Lenovo laptop",
@@ -319,8 +317,7 @@ const data = {
       brandImg: "/logo/huawei-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero",
-      inStock: 15
+      inWidget: "hero"
     }
   ]
 }
