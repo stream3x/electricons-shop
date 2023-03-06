@@ -35,7 +35,59 @@ import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
 
 const PAGE_SIZE = 40;
-let brandArray = [];
+let brandArry = [];
+let subCatArray = [];
+
+function FilterRow(props) {
+  const { items, title, handleChange } = props;
+  const [expanded, setExpanded] = React.useState(false);
+  
+  return (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+      <FormLabel component="legend">{title}</FormLabel>
+        {
+          items && items.slice(0, 3).map(item => (
+            <FormGroup key={Object.keys(item)}>
+              <FormControlLabel
+                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                control={
+                  Object.values(item)[0] ?
+                  <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
+                  :
+                  <Checkbox checked={false} onChange={handleChange(item)} />
+                }
+                label={Object.keys(item)}
+              />
+            </FormGroup>
+          ))
+        }
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {
+          items && items.slice(3, items.length).map(item => (
+            <FormGroup key={Object.keys(item)}>
+              <FormControlLabel
+                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                control={
+                  Object.values(item)[0] ?
+                  <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
+                  :
+                  <Checkbox checked={false} onChange={handleChange(item)} />
+                }
+                label={Object.keys(item)}
+              />
+            </FormGroup>
+          ))
+        }
+        </Collapse>
+        {
+          items && items.length > 3 &&
+          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={() => setExpanded(!expanded)}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+        }
+      </FormControl>
+    </Box>
+  )
+}
 
 export async function getServerSideProps(context) {
   const { params, query } = context;
@@ -90,9 +142,8 @@ export async function getServerSideProps(context) {
   await db.connect();
   const cat = await Category.find({}).lean();
 
-    const categories = await Product.find({categoryUrl: slug[slug.length - 1]}).distinct('categoryUrl');
-    const subCategories = await Product.find({categoryUrl: slug[slug.length - 1]}).distinct('subCategoryUrl');
-    const brands = await Product.find({categoryUrl: slug[slug.length - 1]}).distinct('brand').lean();
+    const subCategories = await Product.find().distinct('subCategory');
+    const brands = await Product.find().distinct('brand');
     
     const productDocs = await Product.find(
       {
@@ -122,7 +173,6 @@ export async function getServerSideProps(context) {
         countProducts: productDocsByCategory.length,
         page,
         pages: Math.ceil(productDocsByCategory.length / pageSize),
-        categories,
         subCategories,
         brands,
         slug
@@ -239,151 +289,125 @@ export default function CategoryProducts(props) {
     })
   }
 
-  const [chipData, setChipData] = useState(initialState);
+  const subCategoryState = subCategories.map(item => item);
+  const uniqueSubCat = [...new Set(subCategoryState)];
+  const createBrandBooleans = Array(brands.length).fill(false);
+  const createSubCatBooleans = Array(uniqueSubCat.length).fill(false);
 
-  const objToArray = obj => {
-    setChipData(current => [...current, obj]);
+  const resultBrands = [createBrandBooleans].map(row =>
+    row.reduce((acc, cur, i) => (
+      acc[brands[i]] = cur, acc
+    ), {}
+  ));
+
+  const resultSubCat = [createSubCatBooleans].map(row =>
+    row.reduce((acc, cur, i) => (
+      acc[uniqueSubCat[i]] = cur, acc
+    ), {}
+  ));
+
+  const newBrands = [];
+
+  for (const key in resultBrands[0]) {
+    let temp = {};
+      temp[key] = resultBrands[0][key];
+      newBrands.push(temp);
+  }
+  
+  const newSubCat = [];
+
+  for (const key in resultSubCat[0]) {
+    let temp = {};
+      temp[key] = resultSubCat[0][key];
+      newSubCat.push(temp);
+  }
+
+  const [brandFilter, setBrandFilter] = React.useState(newBrands);
+  const [subCat, setSubCat] = React.useState(newSubCat);  
+console.log(brandFilter, subCat);
+  const handleChangeBrand = (item) => (event) => {
+    const removeDuplicates = [];
+    setBrandFilter(prev => {
+      return prev.map(sub => {
+        if (Object.keys(sub).toString() === Object.keys(item).toString()) {
+          return { ...sub, [`${Object.keys(sub).toString()}`]: !Object.values(item)[0] }
+        }else {
+          return { ...sub }
+        }
+      })
+    })
+    if(!Object.values(item)[0]) {
+      brandArry.push(Object.keys(item)[0])
+    }else {
+      removeDuplicates.push(Object.keys(item)[0])
+    }
+    brandHandler(brandArry = brandArry.filter(val => !removeDuplicates.includes(val)))
   };
 
-  // const handleDelete = (chipToDelete, index, i) => {
-  //   const filterLabel = chipToDelete.label.filter(e => e !== index);
-  //   const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
-  //   console.log(filterLabel, chipToDelete, index, chipData);
-  //   if(chipToDelete.key === 'query') {
-  //     if(chipToDelete.label.length !== 0) {
-  //       router.push(removeQuery);
-  //       setChipData((prev) => (
-  //         prev.map(obj => {
-  //           if(obj.key === 'query') {
-  //             return { ...obj, label: filterLabel };
-  //           }
-  //           return obj;
-  //         })
-  //       ));
-  //     }else {
-  //       setChipData((prev) => (
-  //         prev.filter(obj => {
-  //           return obj.key !== 'query';
-  //         })
-  //       ));
-  //       objToArray({
-  //         key: 'query',
-  //         label: []
-  //       });
-  //     }
-  //   }
-  //   if(chipToDelete.key === 'brand') {
-  //     setChipData((prev) => (
-  //       prev.map(obj => {
-  //         const filterLabel = obj.label.filter(e => e !== index);
-  //         if(obj.key === 'brand') {
-  //           filterSearch({ brand: filterLabel });
-  //           return { ...obj, label: filterLabel };
-  //         }          
-  //         return obj;
-  //       })
-  //     ));
-  //   }
-  //   if(chipToDelete.key === 'category') {
-  //     setChipData((prev) => (
-  //       prev.map(obj => {
-  //         if(obj.key === 'category') {
-  //           const filterLabel = obj.label.filter(e => e !== index);
-  //           filterSearch({ category: filterLabel });
-  //           return { ...obj, label: filterLabel };
-  //         }
-  //         return obj;
-  //       })
-  //     ));
-  //   }
-  //   if(chipToDelete.key === 'subCategory') {
-  //     setChipData((prev) => (
-  //       prev.map(obj => {
-  //         if(obj.key === 'subCategory') {
-  //           const filterLabel = obj.label.filter(e => e !== index);
-  //           filterSearch({ subCategory: filterLabel });
-  //           return { ...obj, label: filterLabel };
-  //         }
-  //         return obj;
-  //       })
-  //     ));
-  //   }
-  // };
+  const renderChipsBrand = () => {
+    return brandFilter.map(item => {
+      if(Object.values(item)[0]) {
+        return (
+          <ListItem sx={{width: 'auto'}} key={Object.keys(item).toString()}>
+            <Chip
+              label={Object.keys(item).toString()}
+              onDelete={handleChangeBrand(item)}
+            />
+        </ListItem>
+        )
+      }else {
+        return null;
+      }
+    })
+  }
+
+  const handleChangeSubCat = (item) => (event) => {
+    const removeDuplicates = [];
+    setSubCat(prev => {
+      return prev.map(sub => {
+        if (Object.keys(sub).toString() === Object.keys(item).toString()) {
+          return { ...sub, [`${Object.keys(sub).toString()}`]: !Object.values(item)[0] }
+        }else {
+          return { ...sub }
+        }
+      })
+    })
+    if(!Object.values(item)[0]) {
+      subCatArray.push(Object.keys(item)[0])
+    }else {
+      removeDuplicates.push(Object.keys(item)[0])
+    }
+    subCategoryHandler(subCatArray = subCatArray.filter(val => !removeDuplicates.includes(val)))
+  };
+
+  const renderChips = () => {
+    return subCat.map(item => {
+      if(Object.values(item)[0]) {
+        return (
+          <ListItem sx={{width: 'auto'}} key={Object.keys(item).toString()}>
+          <Chip
+            label={Object.keys(item).toString()}
+            onDelete={handleChangeSubCat(item)}
+          />
+        </ListItem>
+        )
+      }else {
+        return null;
+      }
+    })
+  }
 
   const pageSizeHandler = (num) => {
     filterSearch({ pageSize: num })
   }
-  const categoryHandler = (item, isChecked) => {
-    filterSearch({ category: item });
-    // if(item.length !== 0 && isChecked) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'category') {
-    //         return { ...obj, label: item };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'category';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'category',
-    //     label: []
-    //   });
-    // }
-  };
-  const subCategoryHandler = (item, isChecked) => {
+  const subCategoryHandler = (item) => {
     filterSearch({ subCategory: item });
-    // if(item.length !== 0 && isChecked) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'subCategory') {
-    //         return { ...obj, label: item };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'subCategory';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'subCategory',
-    //     label: []
-    //   });
-    // }
   };
   const pageHandler = (page) => {
     filterSearch({ page });
   };
-  const brandHandler = (item, isChecked) => {
+  const brandHandler = (item) => {
     filterSearch({ brand: item });
-    // if(item.length !== 0 && isChecked) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'brand') {
-    //         return { ...obj, label: item };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'brand';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'brand',
-    //     label: []
-    //   });
-    // }
   };
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value });
@@ -408,47 +432,6 @@ export default function CategoryProducts(props) {
 
   const handleLoading = (product) => {
     setSelected(product._id);
-  };
-
-  const [expanded, setExpanded] = React.useState(false);
-  const brandState = brands.map(item => item);
-  const unique = [...new Set(brandState)];
-  const createBooleans = Array(unique.length).fill(false);
-  const result = [createBooleans].map(row =>
-    row.reduce((acc, cur, i) =>
-      (acc[unique[i]] = cur, acc), {})
-  );
-
-  const arr = Object.entries(result[0]).map(([name, value]) => {
-    return {
-      name,
-      value
-    }
-  });
-  const [stateBrand, setStateBrand] = React.useState([arr][0]);
-
-  const handleChange = (item) => (event) => {
-    const removeDuplicates = [];
-    const update = stateBrand.map(x => {
-      if(x.name === item.name) {
-        return {
-          ...x, value: event.target.checked
-        }
-      }
-      return x;
-    })
-    setStateBrand(update);
-  
-    if(!item.value) {
-      brandArray.push(item.name);
-    }else {
-      removeDuplicates.push(item.name);
-    }
-    brandHandler(brandArray = brandArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
-  };
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
   };
 
   if(!products) {
@@ -489,50 +472,10 @@ export default function CategoryProducts(props) {
                   <RangeSlider />
                 </Toolbar>
                 <Toolbar>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {
-                      stateBrand.length > 1 &&
-                      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                        <FormLabel component="legend">Brand</FormLabel>
-                        {
-                          stateBrand.slice(0, 3).map(item => (
-                            <FormGroup key={item.name}>
-                              <FormControlLabel
-                                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                                control={
-                                  <Checkbox checked={item.value ? item.value : false} onChange={handleChange(item)} />
-                                }
-                                label={`${item.value}`}
-                              />
-                            </FormGroup>
-                          ))
-                        }
-                        <Collapse in={expanded} timeout="auto" unmountOnExit>
-                        {
-                            stateBrand.slice(3, stateBrand.length).map(item => (
-                              <FormGroup key={item.name}>
-                                <FormControlLabel
-                                  sx={{'& span': {color: 'secondary.lightGrey'} }}
-                                  control={
-                                    <Checkbox checked={item.value} onChange={handleChange(item)} />
-                                  }
-                                  label={item.name}
-                                />
-                              </FormGroup>
-                            ))
-                          }
-                        </Collapse>
-                        {
-                          stateBrand.length > 3 &&
-                          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-                        }
-                      </FormControl>
-                    }
-                  </Box>
-                  
+                  <FilterRow items={brandFilter} title={"Brand"} handleChange={handleChangeBrand} />
                 </Toolbar>
                 <Toolbar>
-                  
+                  <FilterRow items={subCat} title={"Categories"} handleChange={handleChangeSubCat} />
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -558,7 +501,13 @@ export default function CategoryProducts(props) {
                     </Typography>
                     }
                   </Box>
-                  <SwipeableFilterDrawer />
+                  <SwipeableFilterDrawer
+                    countProducts={countProducts}
+                    handleChange={handleChangeBrand}
+                    brandFilter={brandFilter}
+                    subCat={subCat}
+                    handleChangeSubCat={handleChangeSubCat}
+                  />
                   <ToggleButtons handleChangeView={handleChangeView} view={view} />
                   <SelectSort sort={sort} sortHandler={sortHandler} />
                 </Toolbar>
@@ -577,19 +526,7 @@ export default function CategoryProducts(props) {
                 }}
                 component="ul"
               >
-                {
-                  chipData.map((data, i) => (
-                    data.label.map((label, index) => (
-                    label !== '' &&
-                    <ListItem sx={{width: 'auto'}} key={data.key + index}>
-                      <Chip
-                        label={`${data.key} : ${label}`}
-                        onDelete={() => handleDelete(data, label)}
-                      />
-                    </ListItem>
-                    ))
-                  ))
-                }
+                {renderChipsBrand()} {renderChips()}
               </Paper>
             </Grid>
           {

@@ -14,7 +14,6 @@ import db from '../src/utils/db';
 import SelectPages from '../src/assets/SelectPages';
 import SwipeableFilterDrawer from '../src/components/SwipeableFilterDrawer';
 import ActionCardButtons from '../src/assets/ActionCardButtons';
-import ChipFilters from '../src/assets/ChipFilters';
 
 let PAGE_SIZE = 40;
 const ratings = [1, 2, 3, 4, 5];
