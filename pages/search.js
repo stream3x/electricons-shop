@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
-import { AppBar, Box, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
-=======
 import React, { useContext, useEffect, useState } from 'react';
 import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Checkbox, Chip, CircularProgress, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, ListItem, Pagination, Paper, Rating, Stack, Toolbar, Typography } from '@mui/material';
 import axios from 'axios';
->>>>>>> 34fccb6a86753a4334d00aaf2a132fa485df59cc
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Product from '../models/Product';
@@ -16,8 +11,6 @@ import ToggleButtons from '../src/assets/ToggleButtons';
 import Link from '../src/Link';
 import theme from '../src/theme';
 import db from '../src/utils/db';
-import CheckboxesBrand from '../src/assets/CheckboxesBrand';
-import CheckboxesCategory from '../src/assets/CheckboxesCategory';
 import SelectPages from '../src/assets/SelectPages';
 import SwipeableFilterDrawer from '../src/components/SwipeableFilterDrawer';
 import ActionCardButtons from '../src/assets/ActionCardButtons';
@@ -25,8 +18,60 @@ import ChipFilters from '../src/assets/ChipFilters';
 
 let PAGE_SIZE = 40;
 const ratings = [1, 2, 3, 4, 5];
+let brandArry = [];
 let catArray = [];
 let subCatArray = [];
+
+function FilterRow(props) {
+  const { items, title, handleChange } = props;
+  const [expanded, setExpanded] = React.useState(false);
+  
+  return (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+      <FormLabel component="legend">{title}</FormLabel>
+        {
+          items && items.slice(0, 3).map(item => (
+            <FormGroup key={Object.keys(item)}>
+              <FormControlLabel
+                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                control={
+                  Object.values(item)[0] ?
+                  <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
+                  :
+                  <Checkbox checked={false} onChange={handleChange(item)} />
+                }
+                label={Object.keys(item)}
+              />
+            </FormGroup>
+          ))
+        }
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        {
+          items && items.slice(3, items.length).map(item => (
+            <FormGroup key={Object.keys(item)}>
+              <FormControlLabel
+                sx={{'& span': {color: 'secondary.lightGrey'} }}
+                control={
+                  Object.values(item)[0] ?
+                  <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
+                  :
+                  <Checkbox checked={false} onChange={handleChange(item)} />
+                }
+                label={Object.keys(item)}
+              />
+            </FormGroup>
+          ))
+        }
+        </Collapse>
+        {
+          items && items.length > 3 &&
+          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={() => setExpanded(!expanded)}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+        }
+      </FormControl>
+    </Box>
+  )
+}
 
 export default function Search(props) {
   const router = useRouter();
@@ -78,96 +123,25 @@ export default function Search(props) {
     });
   };
 
-  // const initialState = [
-  //   { key: 'query', label: [...query] },
-  //   { key: 'category', label: [...category] },
-  //   { key: 'brand', label: [...brand] },
-  //   { key: 'subCategory', label: [...subCategory] },
-  //   { key: 'price', label: [price] }
-  // ];
-
-  // const [chipData, setChipData] = useState(initialState);
   const [view, setView] = React.useState('module');
 
   const handleChangeView = (event, nextView) => {
     setView(nextView);
   };
-<<<<<<< HEAD
-  
-  const objToArray = obj => {
-    setChipData(current => [...current, obj]);
-  };
-  
-  const handleDelete = (chipToDelete, index, i) => {
-    const filterLabel = chipToDelete.label.filter(e => e !== index);
-    const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
-    if(chipToDelete.key === 'query') {
-      if(chipToDelete.label.length !== 0) {
-        router.push(removeQuery);
-        setChipData((prev) => (
-          prev.map(obj => {
-            if(obj.key === 'query') {
-              return { ...obj, label: filterLabel };
-            }
-            return obj;
-          })
-        ));
-      }else {
-        setChipData((prev) => (
-          prev.filter(obj => {
-            return obj.key !== 'query';
-          })
-        ));
-        objToArray({
-          key: 'query',
-          label: []
-        });
-      }
-    }
-    if(chipToDelete.key === 'brand') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          const filterLabel = obj.label.filter(e => e !== index);
-          if(obj.key === 'brand') {
-            filterSearch({ brand: filterLabel });
-            return { ...obj, label: [...filterLabel] };
-          }          
-          return obj;
-        })
-      ));
-    }
-    if(chipToDelete.key === 'category') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'category') {
-            const filterLabel = obj.label.filter(e => e !== index);
-            filterSearch({ category: filterLabel });
-            return { ...obj, label: filterLabel };
-          }
-          return obj;
-        })
-      ));
-    }
-    if(chipToDelete.key === 'subCategory') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'subCategory') {
-            const filterLabel = obj.label.filter(e => e !== index);
-            filterSearch({ subCategory: filterLabel });
-            return { ...obj, label: filterLabel };
-          }
-          return obj;
-        })
-      ));
-    }
-=======
 
   const topCategoryState = categories.map(item => item);
   const subCategoryState = subCategories.map(item => item);
   const uniqueTopCat = [...new Set(topCategoryState)];
   const uniqueSubCat = [...new Set(subCategoryState)];
+  const createBrandBooleans = Array(brands.length).fill(false);
   const createTopCatBooleans = Array(uniqueTopCat.length).fill(false);
   const createSubCatBooleans = Array(uniqueSubCat.length).fill(false);
+
+  const resultBrands = [createBrandBooleans].map(row =>
+    row.reduce((acc, cur, i) => (
+      acc[brands[i]] = cur, acc
+    ), {}
+  ));
 
   const resultTopCat = [createTopCatBooleans].map(row =>
     row.reduce((acc, cur, i) => (
@@ -181,6 +155,22 @@ export default function Search(props) {
     ), {}
   ));
 
+  const newBrands = [];
+
+  for (const key in resultBrands[0]) {
+    let temp = {};
+      temp[key] = resultBrands[0][key];
+      newBrands.push(temp);
+  }
+
+  const newCat = [];
+
+  for (const key in resultTopCat[0]) {
+    let temp = {};
+      temp[key] = resultTopCat[0][key];
+      newCat.push(temp);
+  }
+  
   const newSubCat = [];
 
   for (const key in resultSubCat[0]) {
@@ -189,167 +179,120 @@ export default function Search(props) {
       newSubCat.push(temp);
   }
 
-  const [topCat, setTopCat] = React.useState([]);
+  const [brandFilter, setBrandFilter] = React.useState(newBrands);
+  const [topCat, setTopCat] = React.useState(newCat);
   const [subCat, setSubCat] = React.useState(newSubCat);
-  delete topCat[0];
-  const [chipData, setChipData] = React.useState([]);
-  const [expanded, setExpanded] = React.useState(false);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
->>>>>>> 34fccb6a86753a4334d00aaf2a132fa485df59cc
+  const handleChangeBrand = (item) => (event) => {
+    const removeDuplicates = [];
+    setBrandFilter(prev => {
+      return prev.map(sub => {
+        if (Object.keys(sub).toString() === Object.keys(item).toString()) {
+          return { ...sub, [`${Object.keys(sub).toString()}`]: !Object.values(item)[0] }
+        }else {
+          return { ...sub }
+        }
+      })
+    })
+    if(!Object.values(item)[0]) {
+      brandArry.push(Object.keys(item)[0])
+    }else {
+      removeDuplicates.push(Object.keys(item)[0])
+    }
+    brandHandler(brandArry = brandArry.filter(val => !removeDuplicates.includes(val)))
   };
+
+  const renderChipsBrand = () => {
+    return brandFilter.map(item => {
+      if(Object.values(item)[0]) {
+        return (
+          <ListItem sx={{width: 'auto'}} key={Object.keys(item).toString()}>
+            <Chip
+              label={Object.keys(item).toString()}
+              onDelete={handleChangeBrand(item)}
+            />
+        </ListItem>
+        )
+      }else {
+        return null;
+      }
+    })
+  }
 
   const handleChangeTopCat = (item) => (event) => {
     const removeDuplicates = [];
-
-    setTopCat((prev) => {
-      return prev.map(current => {
-        if(Object.keys(current) === Object.keys(item)) {
-          return { ...current, [Object.keys(current)]: Object.values(!current)};
-        } else {
-          return { ...current }
+    setTopCat(prev => {
+      return prev.map(sub => {
+        if (Object.keys(sub).toString() === Object.keys(item).toString()) {
+          return { ...sub, [`${Object.keys(sub).toString()}`]: !Object.values(item)[0] }
+        }else {
+          return { ...sub }
         }
-      });
-    });
-
-    setChipData([...catArray]);
-
-    if(!topCat[item]) {
-      catArray.push(item);
+      })
+    })
+    if(!Object.values(item)[0]) {
+      catArray.push(Object.keys(item)[0])
     }else {
-      removeDuplicates.push(item);
+      removeDuplicates.push(Object.keys(item)[0])
     }
-
-    categoryHandler(catArray = catArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
+    categoryHandler(catArray = catArray.filter(val => !removeDuplicates.includes(val)))
   };
+
+  const renderChipsCat = () => {
+    return topCat.map(item => {
+      if(Object.values(item)[0]) {
+        return (
+          <ListItem sx={{width: 'auto'}} key={Object.keys(item).toString()}>
+          <Chip
+            label={Object.keys(item).toString()}
+            onDelete={handleChangeTopCat(item)}
+          />
+        </ListItem>
+        )
+      }else {
+        return null;
+      }
+    })
+  }
 
   const handleChangeSubCat = (item) => (event) => {
-    // const removeDuplicates = [];
-console.log(item);
-    // setSubCat((prev) => {
-    //   return prev.map(current => {
-    //     if(Object.keys(current) === Object.keys(item)) {
-    //       return { ...current, [Object.keys(current)]: Object.values(current)};
-    //     } else {
-    //       return { ...current };
-    //     }
-    //   });
-    // });
-
-    // setChipData(subCatArray);
-
-    // if(!subCat[item]) {
-    //   subCatArray.push(item);
-    // }else {
-    //   removeDuplicates.push(item);
-    // }
-
-  //   function titleCase(str) {
-  //     str = str.replace(/-/g, ' ');
-  //     var splitStr = str.toLowerCase().split(' ');
-  //     for (var i = 0; i < splitStr.length; i++) {
-  //         splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
-  //     }
-  //     return splitStr.join(' '); 
-  //  }
-   
-    // subCategoryHandler(subCatArray = subCatArray.filter(val => !removeDuplicates.includes(val)), event.target.checked);
+    const removeDuplicates = [];
+    setSubCat(prev => {
+      return prev.map(sub => {
+        if (Object.keys(sub).toString() === Object.keys(item).toString()) {
+          return { ...sub, [`${Object.keys(sub).toString()}`]: !Object.values(item)[0] }
+        }else {
+          return { ...sub }
+        }
+      })
+    })
+    if(!Object.values(item)[0]) {
+      subCatArray.push(Object.keys(item)[0])
+    }else {
+      removeDuplicates.push(Object.keys(item)[0])
+    }
+    subCategoryHandler(subCatArray = subCatArray.filter(val => !removeDuplicates.includes(val)))
   };
-  
-  console.log(subCat.slice(0, 3), Object.values(subCat[0]));
-  // const objToArray = obj => {
-  //   setChipData(current => [...current, obj]);
-  // };
-  
-  // const handleDelete = (chipToDelete, index, i) => {
-  //   const filterLabel = chipToDelete.label.filter(e => e !== index);
-  //   const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
-  //   if(chipToDelete.key === 'query') {
-  //     if(chipToDelete.label.length !== 0) {
-  //       router.push(removeQuery);
-  //       setChipData((prev) => (
-  //         prev.map(obj => {
-  //           if(obj.key === 'query') {
-  //             return { ...obj, label: filterLabel };
-  //           }
-  //           return obj;
-  //         })
-  //       ));
-  //     }else {
-  //       setChipData((prev) => (
-  //         prev.filter(obj => {
-  //           return obj.key !== 'query';
-  //         })
-  //       ));
-  //       objToArray({
-  //         key: 'query',
-  //         label: []
-  //       });
-  //     }
-  //   }
-  //   if(chipToDelete.key === 'brand') {
-  //     setChipData((prev) => (
-  //       prev.map(obj => {
-  //         const filterLabel = obj.label.filter(e => e !== index);
-  //         if(obj.key === 'brand') {
-  //           filterSearch({ brand: filterLabel });
-  //           return { ...obj, label: [...filterLabel] };
-  //         }          
-  //         return obj;
-  //       })
-  //     ));
-  //     dispatch({ type: 'CHIPS', payload: { ...state.chips, chips: index}});
-  //   }
-  //   if(chipToDelete.key === 'category') {
-  //     setChipData((prev) => (
-  //       prev.map(obj => {
-  //         if(obj.key === 'category') {
-  //           const filterLabel = obj.label.filter(e => e !== index);
-  //           filterSearch({ category: filterLabel });
-  //           return { ...obj, label: filterLabel };
-  //         }
-  //         return obj;
-  //       })
-  //     ));
-  //   }
-  //   if(chipToDelete.key === 'subCategory') {
-  //     setChipData((prev) => (
-  //       prev.map(obj => {
-  //         if(obj.key === 'subCategory') {
-  //           const filterLabel = obj.label.filter(e => e !== index);
-  //           filterSearch({ subCategory: filterLabel });
-  //           return { ...obj, label: filterLabel };
-  //         }
-  //         return obj;
-  //       })
-  //     ));
-  //   }
-  // };
+
+  const renderChips = () => {
+    return subCat.map(item => {
+      if(Object.values(item)[0]) {
+        return (
+          <ListItem sx={{width: 'auto'}} key={Object.keys(item).toString()}>
+          <Chip
+            label={Object.keys(item).toString()}
+            onDelete={handleChangeSubCat(item)}
+          />
+        </ListItem>
+        )
+      }else {
+        return null;
+      }
+    })
+  }
 
   const searchHandler = (item) => {
     filterSearch({ query: item});
-
-    // if(item.length !== 0) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'query') {
-    //         return { ...obj, label: [item] };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'query';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'query',
-    //     label: [...item]
-    //   });
-    // }
   };
 
   useEffect(() => {
@@ -360,77 +303,17 @@ console.log(item);
     filterSearch({ pageSize: num });
   };
 
-  const categoryHandler = (item, isChecked) => {
+  const categoryHandler = (item) => {
     filterSearch({ category: item });
-    // if(item.length !== 0 && isChecked) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'category') {
-    //         return { ...obj, label: item };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'category';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'category',
-    //     label: [...item]
-    //   });
-    // }
   };
-  const subCategoryHandler = (item, isChecked) => {
+  const subCategoryHandler = (item) => {
     filterSearch({ subCategory: item });
-    // if(item.length !== 0 && isChecked) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'subCategory') {
-    //         return { ...obj, label: item };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'subCategory';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'subCategory',
-    //     label: [...item]
-    //   });
-    // }
   };
   const pageHandler = (page) => {
     filterSearch({ page });
   };
-  const brandHandler = (item, isChecked) => {
+  const brandHandler = (item) => {
     filterSearch({ brand: item });
-    // if(item.length !== 0 && isChecked) {
-    //   setChipData((prev) => (
-    //     prev.map(obj => {
-    //       if(obj.key === 'brand') {
-    //         return { ...obj, label: item };
-    //       }
-    //       return obj;
-    //     })
-    //   ));
-    // }else {
-    //   setChipData((prev) => (
-    //     prev.filter(obj => {
-    //       return obj.key !== 'brand';
-    //     })
-    //   ));
-    //   objToArray({
-    //     key: 'brand',
-    //     label: [...item]
-    //   });
-    // }
   };
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value });
@@ -456,81 +339,13 @@ console.log(item);
                   <RangeSlider countProducts={countProducts} />
                 </Toolbar>
                 <Toolbar>
-                 
+                  <FilterRow items={brandFilter} title={"Brand"} handleChange={handleChangeBrand} />
                 </Toolbar>
                 <Toolbar>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                    <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                      <FormLabel component="legend">Categories</FormLabel>
-                      {
-                        // resultTopCat && resultTopCat.slice(0, 3).map((item, i) => (
-                        //   <FormGroup key={item}>
-                        //     <FormControlLabel
-                        //       sx={{'& span': {color: 'secondary.lightGrey'} }}
-                        //       control={
-                        //         <Checkbox onChange={handleChangeTopCat(item)} />
-                        //       }
-                        //       label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
-                        //     />
-                        //   </FormGroup>
-                        // ))
-                      }
-                      <Collapse in={expanded} timeout="auto" unmountOnExit>
-                      {
-                        // resultTopCat && resultTopCat.slice(3, resultTopCat.length).map(item => (
-                        //     <FormGroup key={item}>
-                        //       <FormControlLabel
-                        //         sx={{'& span': {color: 'secondary.lightGrey'} }}
-                        //         control={
-                        //           <Checkbox onChange={handleChangeTopCat(item)} />
-                        //         }
-                        //         label={item.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
-                        //       />
-                        //     </FormGroup>
-                        //   ))
-                      }
-                      </Collapse>
-                      {
-                        // categories.length > 3 &&
-                        // <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-                      }
-                    </FormControl>
-                    <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-                      <FormLabel component="legend">Brand Categories</FormLabel>
-                      {
-                        subCat && subCat.slice(0, 3).map(item => (
-                          <FormGroup key={Object.keys(item).toString()}>
-                            <FormControlLabel
-                              sx={{'& span': {color: 'secondary.lightGrey'} }}
-                              control={
-                                <Checkbox checked={Object.values(item)} onChange={handleChangeSubCat(item)} />
-                              }
-                              label={`${Object.values(item)}`}
-                            />
-                          </FormGroup>
-                        ))
-                      }
-                      <Collapse in={expanded} timeout="auto" unmountOnExit>
-                      {
-                        subCat && subCat.slice(3, subCat.length).map(item => (
-                          <FormGroup key={Object.keys(item)}>
-                            <FormControlLabel
-                              sx={{'& span': {color: 'secondary.lightGrey'} }}
-                              control={
-                                <Checkbox onChange={handleChangeSubCat(item)} />
-                              }
-                              label={Object.keys(item)}
-                            />
-                          </FormGroup>
-                        ))
-                      }
-                      </Collapse>
-                      {
-                        subCat && subCat.length > 3 &&
-                        <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={handleExpandClick}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-                      }
-                    </FormControl>
-                  </Box>
+                  <FilterRow items={topCat} title={"Top Categories"} handleChange={handleChangeTopCat} />
+                </Toolbar>
+                <Toolbar>
+                  <FilterRow items={subCat} title={"Categories"} handleChange={handleChangeSubCat} />
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -554,7 +369,15 @@ console.log(item);
                     </Typography>
                     }
                   </Box>
-                  <SwipeableFilterDrawer brands={brands} brandHandler={brandHandler} handleChangeSubCat={handleChangeSubCat} newSubCat={newSubCat} expanded={expanded} handleExpandClick={handleExpandClick} />
+                  <SwipeableFilterDrawer
+                    countProducts={countProducts}
+                    handleChange={handleChangeBrand}
+                    brandFilter={brandFilter}
+                    topCat={topCat}
+                    subCat={subCat}
+                    handleChangeTopCat={handleChangeTopCat}
+                    handleChangeSubCat={handleChangeSubCat}
+                  />
                   <ToggleButtons handleChangeView={handleChangeView} view={view} />
                   <SelectCategory value={sort} sortHandler={sortHandler} />
                 </Toolbar>
@@ -581,15 +404,7 @@ console.log(item);
                 }}
                 component="ul"
               >
-                {
-                  chipData.map((data, i) => (
-                    <ListItem sx={{width: 'auto'}} key={data.key}>
-                      <Button onClick={handleChangeSubCat(data)}>
-                        {Object.keys(data)}
-                      </Button>
-                    </ListItem>
-                    ))
-                }
+                {renderChipsBrand()} {renderChips()} {renderChipsCat()}
               </Paper>
             </Grid>
             {

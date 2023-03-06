@@ -23,10 +23,8 @@ import RangeSlider from '../../src/assets/RangeSlider';
 import ToggleButtons from '../../src/assets/ToggleButtons';
 import { useRouter } from 'next/router';
 import SelectPages from '../../src/assets/SelectPages';
-import CheckboxesBrand from '../../src/assets/CheckboxesBrand';
 import SelectSort from '../../src/assets/SelectSort';
 import SwipeableFilterDrawer from '../../src/components/SwipeableFilterDrawer';
-import CheckboxesCategory from '../../src/assets/CheckboxesCategory';
 import ActionCardButtons from '../../src/assets/ActionCardButtons';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
@@ -241,159 +239,151 @@ export default function CategoryProducts(props) {
     })
   }
 
-  const initialState = [
-    { key: 'query', label: [...query] },
-    { key: 'category', label: [...category] },
-    { key: 'brand', label: [...brand] },
-    { key: 'subCategory', label: [...subCategory] },
-    { key: 'price', label: [price] }
-  ];
-
   const [chipData, setChipData] = useState(initialState);
 
   const objToArray = obj => {
     setChipData(current => [...current, obj]);
   };
 
-  const handleDelete = (chipToDelete, index, i) => {
-    const filterLabel = chipToDelete.label.filter(e => e !== index);
-    const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
-    console.log(filterLabel, chipToDelete, index, chipData);
-    if(chipToDelete.key === 'query') {
-      if(chipToDelete.label.length !== 0) {
-        router.push(removeQuery);
-        setChipData((prev) => (
-          prev.map(obj => {
-            if(obj.key === 'query') {
-              return { ...obj, label: filterLabel };
-            }
-            return obj;
-          })
-        ));
-      }else {
-        setChipData((prev) => (
-          prev.filter(obj => {
-            return obj.key !== 'query';
-          })
-        ));
-        objToArray({
-          key: 'query',
-          label: []
-        });
-      }
-    }
-    if(chipToDelete.key === 'brand') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          const filterLabel = obj.label.filter(e => e !== index);
-          if(obj.key === 'brand') {
-            filterSearch({ brand: filterLabel });
-            return { ...obj, label: filterLabel };
-          }          
-          return obj;
-        })
-      ));
-    }
-    if(chipToDelete.key === 'category') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'category') {
-            const filterLabel = obj.label.filter(e => e !== index);
-            filterSearch({ category: filterLabel });
-            return { ...obj, label: filterLabel };
-          }
-          return obj;
-        })
-      ));
-    }
-    if(chipToDelete.key === 'subCategory') {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'subCategory') {
-            const filterLabel = obj.label.filter(e => e !== index);
-            filterSearch({ subCategory: filterLabel });
-            return { ...obj, label: filterLabel };
-          }
-          return obj;
-        })
-      ));
-    }
-  };
+  // const handleDelete = (chipToDelete, index, i) => {
+  //   const filterLabel = chipToDelete.label.filter(e => e !== index);
+  //   const removeQuery = `${router.asPath}`.replace(`query=${query.replace(/ /g, '+')}`, '');
+  //   console.log(filterLabel, chipToDelete, index, chipData);
+  //   if(chipToDelete.key === 'query') {
+  //     if(chipToDelete.label.length !== 0) {
+  //       router.push(removeQuery);
+  //       setChipData((prev) => (
+  //         prev.map(obj => {
+  //           if(obj.key === 'query') {
+  //             return { ...obj, label: filterLabel };
+  //           }
+  //           return obj;
+  //         })
+  //       ));
+  //     }else {
+  //       setChipData((prev) => (
+  //         prev.filter(obj => {
+  //           return obj.key !== 'query';
+  //         })
+  //       ));
+  //       objToArray({
+  //         key: 'query',
+  //         label: []
+  //       });
+  //     }
+  //   }
+  //   if(chipToDelete.key === 'brand') {
+  //     setChipData((prev) => (
+  //       prev.map(obj => {
+  //         const filterLabel = obj.label.filter(e => e !== index);
+  //         if(obj.key === 'brand') {
+  //           filterSearch({ brand: filterLabel });
+  //           return { ...obj, label: filterLabel };
+  //         }          
+  //         return obj;
+  //       })
+  //     ));
+  //   }
+  //   if(chipToDelete.key === 'category') {
+  //     setChipData((prev) => (
+  //       prev.map(obj => {
+  //         if(obj.key === 'category') {
+  //           const filterLabel = obj.label.filter(e => e !== index);
+  //           filterSearch({ category: filterLabel });
+  //           return { ...obj, label: filterLabel };
+  //         }
+  //         return obj;
+  //       })
+  //     ));
+  //   }
+  //   if(chipToDelete.key === 'subCategory') {
+  //     setChipData((prev) => (
+  //       prev.map(obj => {
+  //         if(obj.key === 'subCategory') {
+  //           const filterLabel = obj.label.filter(e => e !== index);
+  //           filterSearch({ subCategory: filterLabel });
+  //           return { ...obj, label: filterLabel };
+  //         }
+  //         return obj;
+  //       })
+  //     ));
+  //   }
+  // };
 
   const pageSizeHandler = (num) => {
     filterSearch({ pageSize: num })
   }
   const categoryHandler = (item, isChecked) => {
     filterSearch({ category: item });
-    if(item.length !== 0 && isChecked) {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'category') {
-            return { ...obj, label: item };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'category';
-        })
-      ));
-      objToArray({
-        key: 'category',
-        label: []
-      });
-    }
+    // if(item.length !== 0 && isChecked) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'category') {
+    //         return { ...obj, label: item };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'category';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'category',
+    //     label: []
+    //   });
+    // }
   };
   const subCategoryHandler = (item, isChecked) => {
     filterSearch({ subCategory: item });
-    if(item.length !== 0 && isChecked) {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'subCategory') {
-            return { ...obj, label: item };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'subCategory';
-        })
-      ));
-      objToArray({
-        key: 'subCategory',
-        label: []
-      });
-    }
+    // if(item.length !== 0 && isChecked) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'subCategory') {
+    //         return { ...obj, label: item };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'subCategory';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'subCategory',
+    //     label: []
+    //   });
+    // }
   };
   const pageHandler = (page) => {
     filterSearch({ page });
   };
   const brandHandler = (item, isChecked) => {
     filterSearch({ brand: item });
-    if(item.length !== 0 && isChecked) {
-      setChipData((prev) => (
-        prev.map(obj => {
-          if(obj.key === 'brand') {
-            return { ...obj, label: item };
-          }
-          return obj;
-        })
-      ));
-    }else {
-      setChipData((prev) => (
-        prev.filter(obj => {
-          return obj.key !== 'brand';
-        })
-      ));
-      objToArray({
-        key: 'brand',
-        label: []
-      });
-    }
+    // if(item.length !== 0 && isChecked) {
+    //   setChipData((prev) => (
+    //     prev.map(obj => {
+    //       if(obj.key === 'brand') {
+    //         return { ...obj, label: item };
+    //       }
+    //       return obj;
+    //     })
+    //   ));
+    // }else {
+    //   setChipData((prev) => (
+    //     prev.filter(obj => {
+    //       return obj.key !== 'brand';
+    //     })
+    //   ));
+    //   objToArray({
+    //     key: 'brand',
+    //     label: []
+    //   });
+    // }
   };
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value });
@@ -542,7 +532,7 @@ export default function CategoryProducts(props) {
                   
                 </Toolbar>
                 <Toolbar>
-                  <CheckboxesCategory categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                  
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -568,7 +558,7 @@ export default function CategoryProducts(props) {
                     </Typography>
                     }
                   </Box>
-                  <SwipeableFilterDrawer countProducts={countProducts} brands={brands} brandHandler={brandHandler} categories={categories} subCategories={subCategories} subCategoryHandler={subCategoryHandler} categoryHandler={categoryHandler} />
+                  <SwipeableFilterDrawer />
                   <ToggleButtons handleChangeView={handleChangeView} view={view} />
                   <SelectSort sort={sort} sortHandler={sortHandler} />
                 </Toolbar>
