@@ -46,7 +46,7 @@ export default function CartTotal({
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment, cupon_discount} } = state;
   const router = useRouter();
-  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * c.price, 0) : cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkedPolicy, setCheckedPolicy] = useState(false);

@@ -3,10 +3,58 @@ import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
-import { AppBar, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, IconButton, ToggleButton, Toolbar, Typography, useMediaQuery } from '@mui/material';
+import { AppBar, Button, Checkbox, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, IconButton, Input, Slider, ToggleButton, Toolbar, Typography, useMediaQuery } from '@mui/material';
 import theme from '../theme';
-import RangeSlider from '../assets/RangeSlider';
 import TuneIcon from '@mui/icons-material/Tune';
+
+function PriceSlider(props) {
+  const { value, minPrice, maxPrice, handleInputMaxChange, handleInputMinChange, handleChangePrice } = props;
+
+  return (
+    <Box sx={{ width: 300 }}>
+      <Typography component="p" color="secondary" id="input-slider" gutterBottom>
+        Filter by price
+      </Typography>
+      <Box sx={{ my: 2, display: 'flex' }}>
+        <Input
+          sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
+          value={value[0]}
+          size="small"
+          onChange={handleInputMinChange}
+          inputProps={{
+            min: minPrice,
+            max: maxPrice,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
+        />
+        <Typography component="span" color="secondary">
+          -
+        </Typography>
+        <Input
+          sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
+          value={value[1]}
+          size="small"
+          onChange={handleInputMaxChange}
+          inputProps={{
+            min: minPrice,
+            max: maxPrice,
+            type: 'number',
+            'aria-labelledby': 'input-slider',
+          }}
+        />
+      </Box>
+      <Slider
+        getAriaLabel={() => 'Filter by price'}
+        value={[value[0], value[1]]}
+        onChange={handleChangePrice}
+        valueLabelDisplay="auto"
+        min={minPrice}
+        max={maxPrice}
+      />
+    </Box>
+  )
+}
 
 function FilterRow(props) {
   const { items, title, handleChange } = props;
@@ -60,7 +108,7 @@ function FilterRow(props) {
 }
 
 export default function SwipeableFilterDrawer(props) {
-  const { handleChange, brandFilter, topCat, subCat, handleChangeBrand, handleChangeTopCat, handleChangeSubCat, countProducts } = props;
+  const { handleChange, brandFilter, topCat, subCat, handleChangeTopCat, handleChangeSubCat, value, maxPrice, minPrice, handleChangePrice, handleInputMaxChange, handleInputMinChange, setPriceFilter } = props;
   const [drawerState, setDrawerState] = React.useState({
     left: false
   });
@@ -93,8 +141,11 @@ export default function SwipeableFilterDrawer(props) {
         </Box>
         <Divider />
         <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white, mt: 3}} position="static">
-          <Toolbar>
-            <RangeSlider countProducts={countProducts} />
+          <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+            <PriceSlider value={value} minPrice={minPrice} maxPrice={maxPrice} handleInputMaxChange={handleInputMaxChange} handleInputMinChange={handleInputMinChange} handleChangePrice={handleChangePrice} />
+            <Box>
+              <Button variant='outlined' onClick={setPriceFilter}>set price</Button>
+            </Box>
           </Toolbar>
           <Toolbar>
             <FilterRow title="Brand" items={brandFilter} handleChange={handleChange} />

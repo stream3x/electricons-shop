@@ -13,7 +13,7 @@ export default function Layout({ children, storeInfo }) {
     <CssBaseline />
       <Header storeInfo={storeInfo[0]} />
       <Container maxWidth="xl">
-        <Box component="main" sx={{ height: '100%', mt: '10rem' }}>
+        <Box component="main" sx={{ height: '100%', mt: {xs: '8rem', sm: '10rem'} }}>
           {children}
         </Box>
         <Snackbars />

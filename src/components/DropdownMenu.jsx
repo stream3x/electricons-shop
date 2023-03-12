@@ -2,23 +2,30 @@ import * as React from 'react';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import Avatar from '@mui/material/Avatar';
-import ExpandMore from '@mui/icons-material/ExpandMore';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import data from '../utils/data';
 import category_data from '../utils/category';
-import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Collapse, Grid, ListItem, ListItemButton, ListItemIcon, Typography } from '@mui/material';
+import ListItemText from '@mui/material/ListItemText';
 import Link from '../Link';
 import theme from '../theme';
 import PersonalVideoIcon from '@mui/icons-material/PersonalVideo';
 import ComputerIcon from '@mui/icons-material/Computer';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 export default function DropdownMenu(props) {
   const { openDropdown, anchorElDropdown , handleCloseDropdown, isVisible } = props;
   const { products } = data;
   const { categories } = category_data;
   const [expanded, setExpanded] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -69,7 +76,7 @@ export default function DropdownMenu(props) {
             component="ul"
             aria-labelledby="nested-list-subheader"
             subheader={
-              <ListSubheader component="div" id="nested-list-subheader">
+              <ListSubheader sx={{backgroundColor: 'transparent!important'}} component="div" id="nested-list-subheader">
                 Categories
               </ListSubheader>
             }
@@ -84,12 +91,14 @@ export default function DropdownMenu(props) {
                     component="li"
                     expanded={expanded === item.categoryName}
                     onChange={handleChange(item.categoryName)}
+                    sx={{position: 'relative'}}
                     >
                     <AccordionSummary
                       expandIcon={<ExpandMore />}
                       aria-controls={`${item.categoryName} controls`}
                       id={`${item.categoryName} panel`}
                       sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}
+
                     >
                     <Link href={`/category/${item.slug}`} sx={{display: 'flex'}}>
                       <Avatar sx={{ bgcolor: theme.palette.primary.white, '& svg': {color: theme.palette.secondary.main} }} onClick={handleCloseDropdown}>

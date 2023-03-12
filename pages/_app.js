@@ -12,7 +12,6 @@ import { StoreProvider } from '../src/utils/Store';
 import { Analytics } from '@vercel/analytics/react';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import axios from 'axios';
-import LogoStatic from '../src/assets/LogoStatic';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -20,7 +19,6 @@ const clientSideEmotionCache = createEmotionCache();
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const [storeInfo, setStoreInfo] = React.useState([]);
-
   const [isSSR, setIsSsr] = React.useState(true);
 
   React.useEffect(() => {
@@ -30,7 +28,7 @@ export default function MyApp(props) {
 
   if(isSSR) {
     return (
-      <div style={{width: '100vw', height: '100vh', display: 'flex'}}>
+      <div style={{width: '100%', height: '100vh', display: 'flex'}}>
         <svg style={{margin: 'auto'}} width="306" height="76" viewBox="0 0 306 76" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M28.1201 67.0002L28.3601 65.7402C30.5601 65.7402 31.8801 65.3402 32.3201 64.5402L37.3601 34.3602C37.1201 33.5602 35.9201 33.1602 33.7601 33.1602L34.0001 31.9002H58.1801L57.2201 37.7202H55.9601C56.0801 36.8802 56.1401 36.2002 56.1401 35.6802C56.1401 34.7602 55.8801 34.1802 55.3601 33.9402H42.9401L40.6601 47.7402H49.0601C49.9001 47.4202 50.5001 46.1602 50.8601 43.9602H52.1201L50.5001 53.5602H49.2401C49.4001 52.4402 49.4801 51.7602 49.4801 51.5202C49.4801 50.6002 49.2201 50.0202 48.7001 49.7802H40.3001L37.7801 64.9602H51.4601C52.5001 64.5602 53.6001 63.3002 54.7601 61.1802H55.9601L53.5601 67.0002H28.1201Z" fill="#222222"/>
           <path d="M65.6689 33.4602C63.1889 33.2602 61.9289 33.1602 61.8889 33.1602L62.1289 31.7802C62.8889 31.7802 64.4489 31.3602 66.8089 30.5202C69.1689 29.6402 70.8089 29.2002 71.7289 29.2002L66.5089 60.6402C66.4289 61.2802 66.3889 61.7202 66.3889 61.9602C66.3889 63.1202 66.6489 64.0202 67.1689 64.6602C67.7289 65.3002 68.4889 65.6202 69.4489 65.6202L69.2089 67.0002C66.4089 67.0002 64.3089 66.6402 62.9089 65.9202C61.5489 65.2002 60.8689 64.0402 60.8689 62.4402C60.8689 62.2002 60.9089 61.8002 60.9889 61.2402L65.6689 33.4602Z" fill="#222222"/>
@@ -51,6 +49,7 @@ export default function MyApp(props) {
   }
 
   async function fetchStoreInfo() {
+    if(!isSSR) return;
     const { data } = await axios.get('/api/store_info');
       setStoreInfo(data);
   }
@@ -61,7 +60,6 @@ export default function MyApp(props) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <StoreProvider>
           <PayPalScriptProvider deferLoading={true}>

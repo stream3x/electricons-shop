@@ -195,9 +195,9 @@ export default function SingleProduct(props) {
           </Item>
           <Item elevation={0}>
             <Typography sx={{fontWeight: 'bolder'}} align="left" component="h3" variant="h4" color="primary">
-              {product.price}
+            {'$'}{product.price}
               <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
-                <del>{product.oldPrice && product.oldPrice}</del>
+                <del>{'$'}{product.oldPrice && product.oldPrice}</del>
               </Typography>
             </Typography>
           </Item>

@@ -81,7 +81,7 @@ export default function OrderItems({order_items}) {
   const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * c.price, 0) : cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
 
   const total = subTotal;
 
@@ -109,7 +109,7 @@ export default function OrderItems({order_items}) {
               <TableRow>
               {
                 headCells.map(cell => (
-                  <TableCell align={cell.id === 'image' ? 'left' : 'right'} key={cell.id}>{cell.label}</TableCell>
+                  <TableCell align={cell.id === 'image' || cell.id === 'title' ? 'left' : 'right'} key={cell.id}>{cell.label}</TableCell>
                 ))
               }
               </TableRow>
@@ -120,7 +120,7 @@ export default function OrderItems({order_items}) {
               {order_items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
-                  const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
+                  const subtotal = row.price * row.quantity;
 
                   return (
                     <TableRow
@@ -149,7 +149,7 @@ export default function OrderItems({order_items}) {
                             id={labelId}
                             scope="row"
                             padding="none"
-                            align="right"
+                            align="left"
                           >
                             {row.title}
                           </TableCell>
@@ -159,7 +159,7 @@ export default function OrderItems({order_items}) {
                             id={labelId}
                             scope="row"
                             padding="none"
-                            align="right"
+                            align="left"
                           >
                             <Link href={`/product/${row.slug}`}>
                               {row.title}
@@ -185,13 +185,12 @@ export default function OrderItems({order_items}) {
                 </TableRow>
               )}
             </TableBody>
-            
             :
             <TableBody>
               {cartItems && cartItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
-                  const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
+                  const subtotal = row.price * row.quantity;
 
                   return (
                     <TableRow
@@ -199,39 +198,42 @@ export default function OrderItems({order_items}) {
                       key={row._id}
                     >
                       <TableCell align="left" sx={{maxWidth: 100}}>
-                        <Box
-                          component="img"
-                          sx={{
-                            height: 70,
-                            display: 'block',
-                            maxWidth: 100,
-                            overflow: 'hidden',
-                            width: 'auto',
-                            margin: 'auto'
-                          }}
-                          src={row.images[0].image}
-                          alt={row.title}
-                        />
+                        <Box sx={{ width: '100px' }}>
+                          <Box
+                            component="img"
+                            sx={{
+                              height: 50,
+                              display: 'block',
+                              maxWidth: 100,
+                              overflow: 'hidden',
+                              width: 'auto',
+                              margin: 'auto'
+                            }}
+                            src={row.images[0].image}
+                            alt={row.title}
+                          />
+                        </Box>
                       </TableCell>
                       <TableCell
                         component="th"
                         id={labelId}
                         scope="row"
                         padding="none"
-                        align="right"
+                        align="left"
+                        sx={{ '& > a': {textDecoration: 'none' }}}
                       >
-                        <Link href={`/product/${row.slug}`}>
+                        <Link noLinkStyle sx={{ color: theme.palette.primary.main }} href={`/product/${row.slug}`}>
                           {row.title}
                         </Link>
                       </TableCell>
                       <TableCell color='primary' align="right">
-                        {row.price}
+                        {'$'}{row.price}
                       </TableCell>
                       <TableCell align="right">
                         {row.quantity}
                       </TableCell>
                       <TableCell align="right">
-                        ${subtotal}
+                      {'$'}{subtotal}
                       </TableCell>
                     </TableRow>
                   );
@@ -248,7 +250,7 @@ export default function OrderItems({order_items}) {
               <TableRow>
                 <TableCell colSpan={6}>
                   <Typography component="p" variant="h6" align="right" sx={{ fontSize: 14 }} color="secondary" gutterBottom>
-                    Total: ${total}
+                    Total: {'$'}{total}
                   </Typography>
                 </TableCell>
               </TableRow>

@@ -102,8 +102,8 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
 function descendingComparator(a, b, orderBy) {
   
   if(a[orderBy] === undefined) {
-    const subB = Number(b.price.replace(/[^0-9.-]+/g,"")) * b.quantity;
-    const subA = Number(a.price.replace(/[^0-9.-]+/g,"")) * a.quantity;
+    const subB = b.price * b.quantity;
+    const subA = a.price * a.quantity;
     console.log(subA > subB)
     if (subB < subA) {
       return -1;
@@ -460,14 +460,12 @@ export default function CartTable() {
                 rowCount={cartItems && cartItems.length}
               />
               <TableBody>
-                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                  rows.slice().sort(getComparator(order, orderBy)) */}
                 {cartItems && stableSort(cartItems, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.title);
                     const labelId = `enhanced-table-checkbox-${index}`;
-                    const subtotal = Number(row.price.replace(/[^0-9.-]+/g,"")) * row.quantity;
+                    const subtotal = row.price * row.quantity;
 
                     return (
                       <TableRow
@@ -491,19 +489,21 @@ export default function CartTable() {
                           />
                         </TableCell>
                         <TableCell align="left" sx={{maxWidth: 100}}>
-                          <Box
-                            component="img"
-                            sx={{
-                              height: 70,
-                              display: 'block',
-                              maxWidth: 100,
-                              overflow: 'hidden',
-                              width: 'auto',
-                              margin: 'auto'
-                            }}
-                            src={row.images[0].image}
-                            alt={row.title}
-                          />
+                          <Box sx={{ width: '100px' }}>
+                            <Box
+                              component="img"
+                              sx={{
+                                height: 50,
+                                display: 'block',
+                                maxWidth: 100,
+                                overflow: 'hidden',
+                                width: 'auto',
+                                margin: 'auto'
+                              }}
+                              src={row.images[0].image}
+                              alt={row.title}
+                            />
+                          </Box>
                         </TableCell>
                         <TableCell
                           component="th"
@@ -511,19 +511,20 @@ export default function CartTable() {
                           scope="row"
                           padding="none"
                           align="right"
+                          sx={{ '& > a': {textDecoration: 'none' }}}
                         >
-                          <Link href={`/product/${row.slug}`}>
+                          <Link noLinkStyle sx={{ color: theme.palette.primary.main }} href={`/product/${row.slug}`}>
                             {row.title}
                           </Link>
                         </TableCell>
                         <TableCell color='primary' align="right">
-                          {row.price}
+                        {'$'}{row.price}
                         </TableCell>
                         <TableCell align="right">
                           <CountQuantity item={row} quantityItem={row.quantity} maxItem={row.inStock} size="small"/>
                         </TableCell>
                         <TableCell align="right">
-                          {subtotal}
+                        {'$'}{subtotal}
                         </TableCell>
                       </TableRow>
                     );

@@ -72,10 +72,10 @@ export default function WidgetCardProduct(props) {
                         <Rating size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
                       </Box>
                       <Typography align="center" component="h3" variant="h6" color="secondary">
-                        {product.price}
+                      {'$'}{product.price}
                         <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
                           <del>
-                          {product.oldPrice && product.oldPrice}
+                          {'$'}{product.oldPrice && product.oldPrice}
                           </del>
                         </Typography>
                       </Typography>
@@ -130,10 +130,10 @@ export default function WidgetCardProduct(props) {
                           <Rating size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
                         </Box>
                         <Typography align="center" component="h3" variant="h6" color="secondary">
-                          {product.price}
+                        {'$'}{product.price}
                           <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
                             <del>
-                            {product.oldPrice && product.oldPrice}
+                            {'$'}{product.oldPrice && product.oldPrice}
                             </del>
                           </Typography>
                         </Typography>

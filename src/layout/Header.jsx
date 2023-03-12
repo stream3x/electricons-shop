@@ -159,7 +159,7 @@ export default function Header(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = useState(null);
-  const matches = useMediaQuery('(min-width: 600px)');
+  const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { cart, userInfo } = state;
@@ -210,7 +210,7 @@ export default function Header(props) {
   const submitHandler = (e) => {
     e.preventDefault();
     const queryRemoveSpace = `${query.replace(/ /g, '+')}`;
-    const addQuery = `query=${queryRemoveSpace}`
+    const addQuery = `query=${queryRemoveSpace}`;
     if(router.pathname === '/category/[[...slug]]') {
       router.push(`/search?query=${query}`);
     }else if(router.pathname === `/product/[slug]`) {
@@ -505,7 +505,7 @@ export default function Header(props) {
                             </Typography>
                             <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
                               | price:  
-                              <Typography color="primary" component="span" variant='caption'> {option.price}
+                              <Typography color="primary" component="span" variant='caption'> {"$"}{option.price}
                               </Typography>
                             </Typography>             
                             <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
@@ -513,7 +513,7 @@ export default function Header(props) {
                           </Box>
                           :
                           <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 0 }, display: 'flex' }} {...props}>
-                            <Box sx={{width: {xs: '30px', md: '30px'}, height: {xs: '30px', md: '30px'}, position: 'relative'}}>
+                            <Box sx={{width: {xs: '40px', md: '40px'}, height: {xs: 'auto', md: 'auto'}, minHeight: '60px', position: 'relative'}}>
                               <Image
                                 loading="lazy"
                                 fill
@@ -525,7 +525,7 @@ export default function Header(props) {
                             <Typography sx={{px: 1, flex: '0 0 70%', maxWidth: '70%', fontSize: '10px', overflow: 'hidden' }} color="primary" component="span">
                               <Link sx={{overflow: 'hidden'}} href={`product/${option.slug}`} passHref> {option.title}</Link>
                             </Typography>
-                            <Typography sx={{px: 1, fontSize: '10px', overflow: 'hidden' }} color="secondary" component="span"> {option.price}
+                            <Typography sx={{px: 1, fontSize: '10px', overflow: 'hidden' }} color="secondary" component="span">     {"$"}{option.price}
                             </Typography>
                           </Box>
                         }

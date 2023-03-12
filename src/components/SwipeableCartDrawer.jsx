@@ -27,7 +27,7 @@ export default function SwipeableCartDrawer() {
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item removed successfully', severity: 'warning' } });
   }
 
-  const subTotal = cart.cartItems.length !== 0 ? cart.cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0) : 0;
+  const subTotal = cart.cartItems.length !== 0 ? cart.cartItems.reduce((a, c) => a + c.quantity * c.price, 0) : 0;
   const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : Cookies.get('shipping') ? JSON.parse(Cookies.get('shipping')) : '') : 0;
   let taxCost;
   let taxCount;
@@ -123,7 +123,7 @@ export default function SwipeableCartDrawer() {
                       QTY: {item.quantity}
                     </Typography>
                     <Typography gutterBottom variant="h6" component="h6" align="left" color="primary" sx={{flex: 1}}>
-                      {item.price} <Typography color="secondary.light" component="del" >{item.oldPrice}</Typography>
+                      {'$'}{item.price} <Typography color="secondary.light" component="del" >{'$'}{item.oldPrice}</Typography>
                     </Typography>
                   </Grid>
                   <Grid item xs={3} sx={{ display: 'flex' }}>

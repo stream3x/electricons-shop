@@ -14,13 +14,13 @@ function HeroCarousel({ hero_products }) {
     async function fetchData() {
       try {
         const res = await hero_products;
-        setCarouselPoroduct(res)
+        setCarouselPoroduct(res);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
     fetchData();
-  }, [])
+  }, []);
 
   const settings = {
     dots: false,

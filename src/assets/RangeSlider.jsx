@@ -10,9 +10,11 @@ function valuetext(value) {
 const minDistance = 10;
 
 export default function RangeSlider(props) {
-  const { countProducts, price, priceHandler } = props;
+  const { products, priceHandler, countProducts } = props;
 
-  const [value, setValue] = React.useState([0, 10000]);
+  const [value, setValue] = React.useState([0, 1500]);
+
+
 
   const handleChange = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
@@ -21,7 +23,7 @@ export default function RangeSlider(props) {
 
     if (newValue[1] - newValue[0] < minDistance) {
       if (activeThumb === 0) {
-        const clamped = Math.min(newValue[0], 10000 - minDistance);
+        const clamped = Math.min(newValue[0], maxPrice - minDistance);
         setValue([clamped, clamped + minDistance]);
       } else {
         const clamped = Math.max(newValue[1], minDistance);
@@ -38,12 +40,12 @@ export default function RangeSlider(props) {
 
   const handleBlur = () => {
     if (value < 0) {
-      setValue(0);
-    } else if (value > 10000) {
-      setValue(10000);
+      setValue(minPrice);
+    } else if (value > maxPrice) {
+      setValue(maxPrice);
     }
   };
-
+  
   return (
     <Box sx={{ width: 300 }}>
       <Typography component="p" color="secondary" id="input-slider" gutterBottom>
@@ -58,8 +60,8 @@ export default function RangeSlider(props) {
           onBlur={handleBlur}
           inputProps={{
             step: 10,
-            min: 0,
-            max: 9990,
+            min: value[0],
+            max: value[1] - 10,
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
@@ -75,8 +77,8 @@ export default function RangeSlider(props) {
           onBlur={handleBlur}
           inputProps={{
             step: 10,
-            min: 10,
-            max: 10000,
+            min: value[0] + 10,
+            max: value[1],
             type: 'number',
             'aria-labelledby': 'input-slider',
           }}
@@ -85,7 +87,7 @@ export default function RangeSlider(props) {
       <Slider
         getAriaLabel={() => 'Filter by price'}
         value={[value[0], value[1]]}
-        max={10000}
+        max={value[1]}
         onChange={handleChange}
         valueLabelDisplay="auto"
         getAriaValueText={valuetext}

@@ -5,13 +5,14 @@ import TabPanel from '@mui/lab/TabPanel';
 import Box from '@mui/material/Box';
 import Link from '../Link';
 import { useRouter } from 'next/router';
-import { Button, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText, Menu, MenuItem, useMediaQuery } from '@mui/material';
+import { Button, Collapse, Divider, Grid, IconButton, List, ListItem, ListItemText, ListSubheader, Menu, MenuItem, useMediaQuery } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import theme from '../theme';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Image from 'next/image';
 import { TabContext } from '@mui/lab';
 import SwipeableViews from 'react-swipeable-views';
+import axios from 'axios';
 
 export default function NavTabs(props) {
   const router = useRouter();
@@ -20,6 +21,25 @@ export default function NavTabs(props) {
   const [value, setValue] = React.useState(0);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const [isFetched, setIsFetched] = React.useState(true);
+  const [storePromo, setStorePromo] = React.useState(null);
+
+  React.useEffect(() => {
+    setIsFetched(false);
+    fetchStorePromo();
+  }, []);
+
+  async function fetchStorePromo() {
+    if(!isFetched) return;
+    try {
+      const res = await axios.get('/api/products');
+      setStorePromo(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const laptopPromo = storePromo && storePromo.data.filter(promo => promo.category === 'Laptop computers');
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -51,7 +71,7 @@ export default function NavTabs(props) {
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
         >
-          <Tab label="Item One" onClick={handleClick} />
+          <Tab label="Laptops" onClick={handleClick} />
           <Tab label="Item Two" onClick={handleClick} />
           <Tab label="Item Three" onClick={handleClick} />
           <Tab label="Item Four" onClick={handleClick} />
@@ -74,29 +94,45 @@ export default function NavTabs(props) {
             }}
           >
             <MenuItem onClick={handleClose}>
-              <TabPanel value={value} index={0} dir={theme.direction}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                  <List>
-                    <ListItem disablePadding>
-                      <ListItemText primary="Inbox" />
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <ListItemText primary="Draft" />
-                    </ListItem>
-                  </List>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <List>
-                      <ListItem disablePadding>
-                        <ListItemText primary="Inbox" />
-                      </ListItem>
-                      <ListItem disablePadding>
-                        <ListItemText primary="Draft" />
-                      </ListItem>
-                    </List>
-                  </Grid>
-                  <Grid item xs={4}>
+              <TabPanel sx={{px: 0}} value={value} index={0} dir={theme.direction}>
+                <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
+                {
+                  laptopPromo && laptopPromo.map(laptop => (
+                    <Grid key={laptop._id} sx={{pr: '1rem'}} item xs={4}>
+                      <Link passHref noLinkStyle href={`/product/${laptop.slug}`}>
+                        <List
+                          sx={{ border: `thin solid ${theme.palette.badge.bgd}`, borderRadius: '3px' }}
+                          subheader={
+                            <ListSubheader sx={{ bgcolor: theme.palette.badge.bgd }} component="div" id="nested-list-subheader">
+                              {laptop.brand}
+                            </ListSubheader>
+                          }
+                        >
+                          <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgd, overflow: 'hidden'}}>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '120px!important', position: 'relative!important'}, p: 2 }}>
+                              <Image
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                priority
+                                src={laptop.images[0].image}
+                                alt={laptop.title}
+                                quality={35}
+                              />
+                            </Box>
+                          </Box>
+                          <ListItem disablePadding>
+                            <ListItemText sx={{'& span': { fontSize: '.75rem', fontWeight: 'bold', color: 'secondary.main', px: 2} }} primary={laptop.title} />
+                          </ListItem>
+                          <ListItem disablePadding>
+                            <ListItemText sx={{'& span': {color: 'primary.main', px: 2} }} primary={`$${laptop.price}`} />
+                          </ListItem>
+                        </List>
+                      </Link>
+                    </Grid>
+
+                  ))
+                }
+                  {/*<Grid item xs={4}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }}>
                       <Image
                         fill
@@ -107,7 +143,7 @@ export default function NavTabs(props) {
                         quality={35}
                       />
                     </Box>
-                  </Grid>
+              </Grid>*/}
                 </Grid>
               </TabPanel>
             </MenuItem>

@@ -21,7 +21,7 @@ const bull = (
 export default function PaymentInstruction() {
   const { state } = useContext(Store);
   const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
-  const subTotal = cartItems.reduce((a, c) => a + c.quantity * (Number(c.price.replace(/[^0-9.-]+/g,""))), 0);
+  const subTotal = cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
 
   const emptyShipping = Object.keys(shipping).length === 0;
   const total = subTotal + (!emptyShipping && shipping.shippingMethod !== 'store' ? 50 : 0);

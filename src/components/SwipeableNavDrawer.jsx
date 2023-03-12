@@ -28,7 +28,6 @@ function ListsItem(props) {
   function collapseHeandler(e, i) {
     if(e.currentTarget.tabIndex === i) {
       setOpenSub(`open ${i}`);
-      console.log(`open ${i}`);
     }
   }
 

@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, List, ListItem, ListItemText, Pagination, Stack, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Input, List, ListItem, ListItemText, Pagination, Slider, Stack, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import Rating from '@mui/material/Rating';
@@ -37,6 +37,7 @@ import { Collapse } from '@mui/material';
 const PAGE_SIZE = 40;
 let brandArry = [];
 let subCatArray = [];
+const minDistance = 10;
 
 function FilterRow(props) {
   const { items, title, handleChange } = props;
@@ -118,8 +119,8 @@ export async function getServerSideProps(context) {
     price && price !== ''
     ? {
       price: {
-        $fromPrice: Number(price.split('-')[0]),
-        $toPrice: Number(price.splite('-')[1])
+        $gte: Number(price.split('-')[0]),
+        $lte:  Number(price.split('-')[1])
       }
     }
     : {};
@@ -289,6 +290,73 @@ export default function CategoryProducts(props) {
     })
   }
 
+  const memoPrice = React.useMemo(() => getAllPrice(products), [products])
+
+  function getAllPrice(prodz) {
+    const allPrices = [];
+    for (const key in prodz) {
+      const element = prodz[key].price;
+      allPrices.push(element)
+    }
+    return allPrices;
+  }
+
+  const minPrice = Math.min(...memoPrice);
+  const maxPrice = Math.max(...memoPrice);
+  const [value, setValue] = React.useState([]);
+  const [priceChip, setPriceChip] = React.useState([]);
+
+  const handlePriceDelete = () => {
+    setPriceChip([]);
+    priceHandler(priceChip);
+  };
+
+  const renderChipPrice = () => {
+    return priceChip.map(item => {
+      if(priceChip.length >= 1) {
+        return (
+          <ListItem sx={{width: 'auto'}} key={Object.keys(item)}>
+            <Chip
+              label={item && `price from: ${Number(item.price_one)} price to: ${Number(item.price_two)}`}
+              onDelete={handlePriceDelete}
+            />
+          </ListItem>
+        )
+      }else {
+        return null;
+      }
+    })
+  }
+
+  const handleChangePrice = (event, newValue, activeThumb) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (activeThumb === 0) {
+      setValue([newValue[0] - minDistance, value[1]]);
+    } else {
+      setValue([value[0], newValue[1] + minDistance]);
+    }
+  };
+
+  function setPriceFilter() {
+    priceHandler(value.join('-'));
+    if(value.length !== 0) {
+      console.log('la', value);
+      setPriceChip([{price_one: value[0], price_two: value[1]}])
+    }else {
+      setPriceChip([])
+    }
+  }
+
+  const handleInputMinChange = (event) => {
+    setValue([Number(event.target.value), value[1]]);
+  };
+  const handleInputMaxChange = (event) => {
+    setValue([value[0], Number(event.target.value)]);
+  };
+
   const subCategoryState = subCategories.map(item => item);
   const uniqueSubCat = [...new Set(subCategoryState)];
   const createBrandBooleans = Array(brands.length).fill(false);
@@ -324,7 +392,7 @@ export default function CategoryProducts(props) {
 
   const [brandFilter, setBrandFilter] = React.useState(newBrands);
   const [subCat, setSubCat] = React.useState(newSubCat);  
-console.log(brandFilter, subCat);
+
   const handleChangeBrand = (item) => (event) => {
     const removeDuplicates = [];
     setBrandFilter(prev => {
@@ -412,8 +480,8 @@ console.log(brandFilter, subCat);
   const sortHandler = (e) => {
     filterSearch({ sort: e.target.value });
   };
-  const priceHandler = (e) => {
-    filterSearch({ price: e.target.value });
+  const priceHandler = (val) => {
+    filterSearch({ price: val });
   };
 
   // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
@@ -469,7 +537,55 @@ console.log(brandFilter, subCat);
                   </Typography>
                 </Toolbar>
                 <Toolbar>
-                  <RangeSlider />
+                    <Typography sx={{width: '100%', m: 0}} color="secondary" gutterBottom variant="h6" component="h2" textAlign="center">
+                      Filters
+                    </Typography>
+                  </Toolbar>
+                  <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                    <Box sx={{ width: 300 }}>
+                      <Typography component="p" color="secondary" id="input-slider" gutterBottom>
+                        Filter by price
+                      </Typography>
+                      <Box sx={{ my: 2, display: 'flex' }}>
+                        <Input
+                          sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
+                          value={value.length ? value[0] : minPrice}
+                          size="small"
+                          onChange={handleInputMinChange}
+                          inputProps={{
+                            min: minPrice,
+                            max: maxPrice,
+                            type: 'number',
+                            'aria-labelledby': 'input-slider',
+                          }}
+                        />
+                        <Typography component="span" color="secondary">
+                          -
+                        </Typography>
+                        <Input
+                          sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
+                          value={value.length ? value[1] : maxPrice}
+                          size="small"
+                          onChange={handleInputMaxChange}
+                          inputProps={{
+                            min: minPrice,
+                            max: maxPrice,
+                            type: 'number',
+                            'aria-labelledby': 'input-slider',
+                          }}
+                        />
+                      </Box>
+                      <Slider
+                        getAriaLabel={() => 'Filter by price'}
+                        value={[value[0], value[1]]}
+                        onChange={handleChangePrice}
+                        min={minPrice}
+                        max={maxPrice}
+                      />
+                    </Box>
+                  <Box>
+                  <Button variant='outlined' onClick={setPriceFilter}>set price</Button>
+                  </Box>
                 </Toolbar>
                 <Toolbar>
                   <FilterRow items={brandFilter} title={"Brand"} handleChange={handleChangeBrand} />
@@ -497,11 +613,18 @@ console.log(brandFilter, subCat);
                       </Typography>
                       :
                       <Typography sx={{ m: 0, ml: 2, fontSize: {xs: '12px', sm: '16px'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                      There are {products.length} {products.length === 1 ? "product" : "products"}.
+                      There {products.length === 1 ? " is" : " are"} {products.length} {products.length === 1 ? " product" : " products"}.
                     </Typography>
                     }
                   </Box>
                   <SwipeableFilterDrawer
+                    value={value}
+                    minPrice={minPrice}
+                    maxPrice={maxPrice}
+                    setPriceFilter={setPriceFilter}
+                    handleInputMaxChange={handleInputMaxChange}
+                    handleInputMinChange={handleInputMinChange}
+                    handleChangePrice={handleChangePrice}
                     countProducts={countProducts}
                     handleChange={handleChangeBrand}
                     brandFilter={brandFilter}
@@ -526,7 +649,7 @@ console.log(brandFilter, subCat);
                 }}
                 component="ul"
               >
-                {renderChipsBrand()} {renderChips()}
+                {renderChipsBrand()} {renderChips()} {renderChipPrice()}
               </Paper>
             </Grid>
           {
