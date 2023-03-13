@@ -17,7 +17,7 @@ export default function MobileBottomNav({ isVisible }) {
   return (
     <Box sx={{ display: {xs: 'block', sm: 'none'}, pb: 7 }} ref={ref}>
       <CssBaseline />
-      <Paper sx={{ transform: isVisible ? 'translateY(0px)' : 'translateY(50px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', zIndex: 0, position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+      <Paper sx={{ transform: isVisible ? 'translateY(0px)' : 'translateY(50px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', zIndex: 2, position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         <BottomNavigation
           showLabels
         >
