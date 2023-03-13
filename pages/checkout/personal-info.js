@@ -54,6 +54,7 @@ export default function PersonalInfo() {
 
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
   const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
+  const emptyCartItems = Object.keys(cartItems).length === 0;
 
   function orderLoginHandler() {
     setWillLogin(true);
@@ -97,7 +98,11 @@ export default function PersonalInfo() {
       });
 
       setErrors({ ...errors, name: false, email: false, birthday: false, password: false, company: false, vatNumber: false });
-
+      if(emptyCartItems) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        router.push('/');
+        return;
+      }
       if(formOutput.get('name') === '') {
         setErrors({ ...errors, firstName: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
@@ -146,6 +151,11 @@ export default function PersonalInfo() {
       setConfirmPassword({
         confirmError: false,
       });
+      if(emptyCartItems) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        router.push('/');
+        return;
+      }
       if(formOutput.get('name') === '') {
         setErrors({ ...errors, name: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});

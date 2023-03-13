@@ -42,7 +42,7 @@ export default function SignIn() {
     confirmPassword: false
   });
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  const passwordPattern = /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{8, 22}$/;
+  // const passwordPattern = /^(?!.*\s)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).{8, 22}$/;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
@@ -86,6 +86,9 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    
+    
+    
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
@@ -104,14 +107,27 @@ export default function SignIn() {
         vatNumber: '',
         newsletter: '',
       };
+      const existUser = await axios.get('/api/users/');
+      const existEmail = await existUser.data.map(user => user.email);
+      const findDuplicate = (existEmail.filter(x => x == formData.email)).toString();
       if(formData.name === '') {
         setErrors({
           name: true,
-          email: true,
+          email: false,
           password: false,
           confirmPassword: false
         });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
+        return;
+      }
+      if(formData.email === findDuplicate) {
+        setErrors({
+          name: false,
+          email: true,
+          password: false,
+          confirmPassword: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email already exist", severity: "error" }});
         return;
       }
       if(!pattern.test(formData.email)) {
@@ -124,14 +140,24 @@ export default function SignIn() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
         return;
       }
-      if(passwordPattern.test(formData.password)) {
+      if(formData.password.search(/[a-z]/i) < 0) {
         setErrors({
           name: false,
           email: false,
           password: true,
           confirmPassword: false
         });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password is too weak", severity: "error" }});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password must contain at least one letter", severity: "error" }});
+        return;
+      }
+      if(formData.password.search(/[0-9]/) < 0) {
+        setErrors({
+          name: false,
+          email: false,
+          password: true,
+          confirmPassword: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password must contain at least one digit", severity: "error" }});
         return;
       }
       if(formData.password === '') {
@@ -142,6 +168,16 @@ export default function SignIn() {
           confirmPassword: false
         });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password is required", severity: "error" }});
+        return;
+      }
+      if(formData.password < 6) {
+        setErrors({
+          name: false,
+          email: false,
+          password: true,
+          confirmPassword: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "password must have more than 6 characters", severity: "error" }});
         return;
       }
       if(formData.password !== formOutput.get('password-confirmed')) {
@@ -165,7 +201,7 @@ export default function SignIn() {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
     } catch (error) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data : error, severity: "error" }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response : error, severity: "error" }});
     }
   };
 
@@ -297,7 +333,7 @@ export default function SignIn() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href='/login' variant="body2">
+                <Link sx={{textDecorationColor: theme.palette.primary.main}} href='/login' variant="body2">
                   Already have an account? Login
                 </Link>
               </Grid>

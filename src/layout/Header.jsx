@@ -358,10 +358,10 @@ export default function Header(props) {
                 </Menu>
               </Box>
             </Toolbar>
-            <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1, }}>
-              <Grid container>
-                <Grid item xs={9} sm={6} md={4} lg={3}>
-                  <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
+            <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
+              <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
+                <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
+                  <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 290 60"/>
                 </Grid>
                 <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
                   <NavTabs pages={pages} />
@@ -477,11 +477,11 @@ export default function Header(props) {
                       option.inStock === 0
                     }
                     renderOption={(props, option) => (
-                      <React.Fragment>
+                      <Box>
                         {
                           matches ?
-                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 1 } }} {...props}>
-                            <Box sx={{ minWidth: '30px', width: '30px', height: '30px', position: 'relative', mr: .25}}>
+                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 1 }, width: '100%' }} {...props}>
+                            <Box sx={{ minWidth: '40px', width: '40px', height: '40px', position: 'relative', '& > img': {objectFit: 'contain'}, position: 'relative', mr: .25}}>
                               <Image
                                 loading="lazy"
                                 fill
@@ -490,10 +490,10 @@ export default function Header(props) {
                                 alt={option.title}
                               />
                             </Box>
-                            <Typography component="span" variant='caption' sx={{ p: 0, mr: .25 }} color="primary">
+                            <Typography component="span" variant='caption' sx={{ p: 0, mr: .25, felxGrow: 1 }} color="primary">
                               <Link href={`product/${option.slug}`} passHref> {option.title}</Link>
                             </Typography>      
-                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
+                            <Typography sx={{ p: 0, mr: .25, felxGrow: 1 }} color="secondary" component="span" variant='caption'>
                             | brand:
                               <Typography color="primary" component="span" variant='caption'>{option.brand}</Typography>
                             </Typography>
@@ -508,12 +508,12 @@ export default function Header(props) {
                               <Typography color="primary" component="span" variant='caption'> {"$"}{option.price}
                               </Typography>
                             </Typography>             
-                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
+                            <Typography sx={{ p: 0, mr: .25 }} color={option.inStock > 0 ? "secondary" : "error"} component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
                             </Typography>
                           </Box>
                           :
-                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 0 }, display: 'flex' }} {...props}>
-                            <Box sx={{width: {xs: '40px', md: '40px'}, height: {xs: 'auto', md: 'auto'}, minHeight: '60px', position: 'relative'}}>
+                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink:  1 }, display: 'flex', position: 'relative' }} {...props}>
+                            <Box sx={{ minWidth: '40px', width: '40px', height: '40px', position: 'relative', '& > img': {objectFit: 'contain'} }}>
                               <Image
                                 loading="lazy"
                                 fill
@@ -522,14 +522,16 @@ export default function Header(props) {
                                 alt={option.title}
                               />
                             </Box>
-                            <Typography sx={{px: 1, flex: '0 0 70%', maxWidth: '70%', fontSize: '10px', overflow: 'hidden' }} color="primary" component="span">
+                            <Typography sx={{px: 1, flex: 1, fontSize: '10px', overflow: 'hidden' }} color="primary" component="span">
                               <Link sx={{overflow: 'hidden'}} href={`product/${option.slug}`} passHref> {option.title}</Link>
                             </Typography>
-                            <Typography sx={{px: 1, fontSize: '10px', overflow: 'hidden' }} color="secondary" component="span">     {"$"}{option.price}
+                            <Typography sx={{px: 1, fontSize: '12px', overflow: 'hidden' }} color="secondary" component="span">     {"$"}{option.price}
+                            </Typography>
+                            <Typography sx={{ p: 0, mr: .25 }} color={option.inStock > 0 ? "secondary" : "error"} component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
                             </Typography>
                           </Box>
                         }
-                      </React.Fragment>
+                      </Box>
                     )}
                     renderInput={(params) => (
                       <StyledInputBase

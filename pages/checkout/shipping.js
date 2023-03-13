@@ -34,7 +34,7 @@ const LabelButton = styled(Button)(({ theme }) => ({
 export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack, cart } = state;
+  const { snack, cart, cart: {cartItems} } = state;
   const [value, setValue] = useState('Post Express');
   const [city, setCity] = useState('');
   const [store, setStore] = useState('');
@@ -63,6 +63,7 @@ export default function Shipping() {
  
   const shippingCost = 50;
   const emptyShipping = cart.shipping && Object.keys(cart.shipping).length === 0;
+  const emptyCartItems = Object.keys(cartItems).length === 0;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -74,6 +75,11 @@ export default function Shipping() {
         store: formOutput.get('shipping-method') !== 'Electricons Store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };
+      if(emptyCartItems) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        router.push('/');
+        return;
+      }
       if(formData.shippingCity === '' && formData.shippingMethod === 'Electricons Store') {
         setErrors({ ...errors, city: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select city', severity: 'warning'}});

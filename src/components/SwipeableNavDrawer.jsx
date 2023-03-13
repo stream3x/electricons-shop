@@ -55,11 +55,10 @@ function ListsItem(props) {
           {
             cat.subCategory.map((sub, i) => (
               <React.Fragment key={sub.url}>
-                
                   <ListItem key={sub.url} disablePadding>
                     <ListItemButton tabIndex={i} onClick={(e) => collapseHeandler(e, i)} sx={{ pl: 4, justifyContent: 'space-between' }}>
                       <Link href={`/category/${cat.slug}/${sub.url}`} sx={{display: 'flex', '&:hover': {color: theme.palette.primary.main} }} color="secondary">
-                        <ListItemText sx={{'& span': {fontSize: '14px', fontWeight: 'bold', ml: 2} }} onClick={onClose} primary={sub.subCategoryName} />
+                        <ListItemText sx={{'& span': {fontSize: '14px', ml: 2} }} onClick={onClose} primary={sub.subCategoryName} />
                       </Link>
                       {openSub === `open ${i}` ? 
                         <ExpandLess />
@@ -75,7 +74,7 @@ function ListsItem(props) {
                         sub.url === prod.subCategoryUrl &&
                         <Link onClick={onClose} underline="none" key={prod.slug} href={`/product/${prod.slug}`} sx={{display: 'flex', pb: 1, '&:hover': {color: theme.palette.primary.main} }} color="secondary.lightGrey">
                           <ListItemButton key={prod.slug} sx={{ pl: 4 }}>                   
-                            <ListItemText sx={{'& span': {fontSize: '13px', ml: 2} }} primary={prod.title} />
+                            <ListItemText sx={{'& span': {fontSize: '13px', ml: 2, fontWeight: 'bold'} }} primary={prod.title} />
                           </ListItemButton>
                         </Link>
                       ))

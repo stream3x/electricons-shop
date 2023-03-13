@@ -22,7 +22,7 @@ export default function Addresses() {
   const router = useRouter();
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
-  const { userInfo, cart: { personalInfo, addresses} } = state;
+  const { userInfo, cart: { personalInfo, addresses, cartItems} } = state;
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -58,6 +58,7 @@ export default function Addresses() {
   const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
   const emptyAddresses = addresses && Object.keys(addresses).length === 0;
   const emptyUserInfo = userInfo && userInfo === null && Object.keys(userInfo).length === 0;
+  const emptyCartItems = Object.keys(cartItems).length === 0;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -69,6 +70,11 @@ export default function Addresses() {
         postalcode: formOutput.get('postalcode'),
         phone: formOutput.get('phone')
       };
+      if(emptyCartItems) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        router.push('/');
+        return;
+      }
       if(formOutput.get('address') === '') {
         setErrors({ ...errors, address: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill address', severity: 'warning'}});

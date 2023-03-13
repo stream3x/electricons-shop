@@ -1,15 +1,13 @@
 import Image from 'next/image';
 import Link from '../Link';
-import LogoStatic from './LogoStatic';
 
 export default function Logo(props) {
   const { logoSrc } = props;
 
   return (
-    <Link href="/">
+    <Link href="/" sx={{display: 'block', "& > a": {display: 'block'}, width: '290px', height: '60px', "& img": {objetFit: "contain"}, position: 'relative' }}>
       <Image
-        width= {290}
-        height= {60}
+        fill
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         priority
         src={logoSrc ? logoSrc.logo : '/logo/electricons_logo.svg'}

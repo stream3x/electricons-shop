@@ -228,7 +228,7 @@ export default function Footer({ storeInfo }) {
         </Box>
         <Box sx={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>
           <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
-          <Typography sx={{width: '100%', textAlign: "center"}} variant="body1">
+          <Typography color="secondary.lightGrey" sx={{width: '100%', textAlign: "center", pt: 2}} variant="body1" component="p">
           We are a global housewares product design company. We bring thought and creativity to everyday items through original design.
           </Typography>
         </Box>

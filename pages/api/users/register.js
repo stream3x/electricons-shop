@@ -10,7 +10,7 @@ const handler = nc({
 });
 
 handler.post(async (req, res) => {
-  await db.connect();
+  await db.connect(); 
   const newUser = new User({
     name: req.body.name,
     email: req.body.email,
@@ -46,6 +46,7 @@ handler.post(async (req, res) => {
       vatNumber: user.vatNumber,
       newsletter: user.newsletter,
     });
+   await db.disconnect();
 });
 
 
