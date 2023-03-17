@@ -33,7 +33,7 @@ export default function WidgetCardProduct(props) {
                       product._id === selected &&
                       <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
                     }
-                      <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                      <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', '& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                         <Image
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -105,6 +105,9 @@ export default function WidgetCardProduct(props) {
                           />
                         </CardMedia>
                       </Link>
+                      <Box className='hover-buttons' sx={{opacity: {xs: 1, sm: 0}, transform: {xs: 'translateX(0px)', sm: 'translateX(-200px)'}}}>
+                        <ActionCardButtons product={product} view={"module"} />
+                      </Box>
                       <CardContent>
                         {
                           product.inStock > 0 ? 

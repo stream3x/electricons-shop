@@ -191,7 +191,7 @@ export default function CompareTable(props) {
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} component="td" style={{ width: 160 }} align="left">
+            <TableCell key={row._id} component="td" style={{ width: 160 }} align="justify">
               {row.shortDescription}
             </TableCell>
             ))}
@@ -205,15 +205,17 @@ export default function CompareTable(props) {
               : compareItems
             ).map((row) => (
             <TableCell key={row._id} component="td" style={{ width: 160 }} align="center">
-              <Box sx={{ width: 'auto', height: '70px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'} }}>
-                <Image
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority
-                  src={row.brandImg}
-                  alt={row.brand}
-                />
-              </Box>
+              <Link href={`/search?brand=${row.brand}`}>
+                <Box sx={{ width: 'auto', height: '70px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'} }}>
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
+                    src={row.brandImg}
+                    alt={row.brand}
+                  />
+                </Box>
+              </Link>
             </TableCell>
             ))}
           </TableRow>

@@ -8,11 +8,13 @@ import Wishlist from '@mui/icons-material/FavoriteBorderOutlined';
 import CompareIcon from '@mui/icons-material/RepeatOutlined';
 import SwipeableCartDrawer from '../components/SwipeableCartDrawer';
 import { Store } from '../utils/Store';
+import { Badge } from '@mui/material';
+import Link from '../Link';
 
 export default function MobileBottomNav({ isVisible }) {
   const ref = React.useRef(null);
   const { state, dispatch } = React.useContext(Store);
-  const { cart, userInfo } = state;
+  const { cart, comparasion:{compareItems} } = state;
 
   return (
     <Box sx={{ display: {xs: 'block', sm: 'none'}, pb: 7 }} ref={ref}>
@@ -21,7 +23,9 @@ export default function MobileBottomNav({ isVisible }) {
         <BottomNavigation
           showLabels
         >
-          <BottomNavigationAction label="Comparasion" icon={<CompareIcon />} />
+          <Link sx={{width: '100%', height: '100%'}} href={'/compare'}>
+            <BottomNavigationAction label="Comparasion" icon={<Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary"><CompareIcon /></Badge> } />
+          </Link>
           <BottomNavigationAction label="Wishlist" icon={<Wishlist />} />
           <BottomNavigationAction label="Cart" icon={<SwipeableCartDrawer cart={cart}/>} />
         </BottomNavigation>

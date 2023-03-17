@@ -166,7 +166,6 @@ export default function SingleProduct(props) {
   }
 
   async function addToComparasion() {
-    setLoading(true)
     const { data } = await axios.get(`/api/products/${product._id}`);
     dispatch({ type: 'COMPARE_ADD_ITEM', payload: { ...product, data }});
     if(comparation && comparation.compareItems.find(i => i._id === data._id)) {
@@ -175,7 +174,6 @@ export default function SingleProduct(props) {
       return;
     }
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
-    setLoading(false);
   }
 
   return (    

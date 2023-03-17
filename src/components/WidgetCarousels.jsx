@@ -94,7 +94,7 @@ function WidgetCarousel({ widgetProducts, title }) {
   };
 
   return (
-      <Box onMouseLeave={() => setStopSwipe(false)} onMouseEnter={() => setStopSwipe(true)} sx={{ maxWidth: "100%", flexGrow: 1, position: 'relative' }}>
+      <Box onMouseLeave={() => setStopSwipe(false)} onMouseEnter={() => setStopSwipe(true)} sx={{ maxWidth: "100%", flexGrow: 1, position: 'relative', '& .MuiBox-root': {p: {xs: 0, lg: 'default'}} }}>
         <Paper
           square
           elevation={0}

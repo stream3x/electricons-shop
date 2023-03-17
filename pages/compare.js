@@ -27,11 +27,14 @@ const Item = styled(Paper)(({ theme }) => ({
     <Box sx={{ my: 4 }}>
       <BreadcrumbNav />
       <Grid container space={2}>
-        <Grid xs={12}>
-          <Item elevation={0}>
-            <CompareTable compareItems={compareItems} cartItems={cartItems} />
-          </Item>
-        </Grid>
+        {
+          compareItems.length !== 0 &&
+          <Grid xs={12}>
+            <Item elevation={0}>
+              <CompareTable compareItems={compareItems} cartItems={cartItems} />
+            </Item>
+          </Grid>
+        }
         <Grid xs={12}>
           {
             compareItems.length !== 0 ?
@@ -44,9 +47,9 @@ const Item = styled(Paper)(({ theme }) => ({
             </Item>
             :
             <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
-              <Typography component="p" variant="p">Nothing to compare</Typography>
+              <Typography component="p" variant="h6">Nothing to compare</Typography>
               <Link noLinkStyle href="/" passHref>
-                <Button sx={{width: '100%', '&:hover': {color: theme.palette.secondary.main}}} size="large" startIcon={<ReplyIcon />}>
+                <Button sx={{ '&:hover': {color: theme.palette.secondary.main} }} size="large" startIcon={<ReplyIcon />}>
                   Continue shoping
                 </Button>
               </Link>
