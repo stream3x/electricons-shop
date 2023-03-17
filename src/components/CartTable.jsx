@@ -489,17 +489,11 @@ export default function CartTable() {
                           />
                         </TableCell>
                         <TableCell align="left" sx={{maxWidth: 100}}>
-                          <Box sx={{ width: '100px' }}>
-                            <Box
-                              component="img"
-                              sx={{
-                                height: 50,
-                                display: 'block',
-                                maxWidth: 100,
-                                overflow: 'hidden',
-                                width: 'auto',
-                                margin: 'auto'
-                              }}
+                          <Box sx={{ width: 'auto', height: '50px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px'} }}>
+                            <Image
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              priority
                               src={row.images[0].image}
                               alt={row.title}
                             />

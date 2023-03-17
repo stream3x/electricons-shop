@@ -24,6 +24,16 @@ const minDistance = 10;
 function FilterRow(props) {
   const { items, title, handleChange } = props;
   const [expanded, setExpanded] = React.useState(false);
+  const router = useRouter()
+
+  React.useEffect(() => {
+    // Always do navigations after the first render
+    router.push('/search?counter=10', undefined, { shallow: true })
+  }, [])
+
+  React.useEffect(() => {
+    // The counter changed!
+  }, [router.query.counter])
   
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>

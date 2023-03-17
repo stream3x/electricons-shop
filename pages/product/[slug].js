@@ -32,7 +32,7 @@ import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
 import ProductTabs from '../../src/components/ProductTabs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import theme from '../../src/theme';
+import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -114,8 +114,18 @@ color: theme.palette.text.secondary,
 export default function SingleProduct(props) {
   const { product } = props;
   const { state, dispatch } = useContext(Store);
-  const { cart: {cartItems} } = state;
+  const { cart: {cartItems}, comparation } = state;
   const [loading, setLoading] = useState(false);
+  const router = useRouter()
+
+  React.useEffect(() => {
+    // Always do navigations after the first render
+    router.push(`/product/${product.slug}?counter=10`, undefined, { shallow: true })
+  }, [])
+
+  React.useEffect(() => {
+    // The counter changed!
+  }, [router.query.counter])
 
   if(!product) {
     return (
@@ -145,8 +155,21 @@ export default function SingleProduct(props) {
       dispatch({ type: 'CART_ADD_ITEM', payload: { ...state.snack, message: 'Sorry Product is out of stock', severity: 'success'}});
       return;
     }
-    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1}});
+    dispatch({ type: 'CART_ADD_ITEM', payload: { ...product, quantity: 1 } });
     if(cartItems.find(i => i._id === product._id)) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
+      setLoading(false);
+      return;
+    }
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
+    setLoading(false);
+  }
+
+  async function addToComparasion() {
+    setLoading(true)
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    dispatch({ type: 'COMPARE_ADD_ITEM', payload: { ...product, data }});
+    if(comparation && comparation.compareItems.find(i => i._id === data._id)) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
       setLoading(false);
       return;
@@ -268,7 +291,7 @@ export default function SingleProduct(props) {
                 </Box>
                 <Box sx={{display: 'flex', justifyContent: 'left',width: {xs: '100%', sm: 'auto'}}}>
                   <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
-                    <ActionButtons aria-label="add-to-compare" size="small">
+                    <ActionButtons onClick={addToComparasion} aria-label="add-to-compare" size="small">
                       <CompareIcon fontSize="inherit" />
                     </ActionButtons>
                   </LightTooltip>

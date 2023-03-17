@@ -12,6 +12,9 @@ const initialState = {
     payment: Cookies.get('payment') ? JSON.parse(Cookies.get('payment')) : {},
     cupon_discount: Cookies.get('cupon_discount') ? Cookies.get('cupon_discount') : {},
   },
+  comparasion: {
+    compareItems: Cookies.get('compareItems') ? JSON.parse(Cookies.get('compareItems')) : []
+  },
   userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
   snack: {
     message: '',
@@ -39,6 +42,26 @@ function reducer(state, action) {
         const cartItems = state.cart.cartItems.filter(item => item._id !== action.payload._id);
         Cookies.set('cartItems', JSON.stringify(cartItems));
         return { ...state, cart: { ...state.cart, cartItems }, snack: { ...state.snack, message: 'item successfully removed', severity: 'warning'}};
+      }
+    }
+    case 'COMPARE_ADD_ITEM': {
+      const newItem = action.payload;
+      const existItem = state.comparasion.compareItems.find(item => item._id === newItem._id);
+      const compareItems = existItem ? state.comparasion.compareItems.map(item => item._id === existItem._id ? newItem : item)
+      : [...state.comparasion.compareItems, newItem];
+      Cookies.set('compareItems', JSON.stringify(compareItems));
+      return { ...state, comparasion: { ...state.comparasion, compareItems }, snack: { ...state.snack, message: 'item successfully added', severity: 'success'}};
+    }
+    case 'COMPARE_REMOVE_ITEM': {
+      if(action.payload.length > 0) {
+        const arr = action.payload.map(a => a._id);
+        const compareItems = state.comparasion.compareItems.filter( item => !arr.includes(item._id));
+        Cookies.set('compareItems', JSON.stringify(compareItems));
+        return { ...state, comparasion: { ...state.comparasion, compareItems }, snack: { ...state.snack, message: 'item successfully removed', severity: 'warning'} };
+      }else {
+        const compareItems = state.comparasion.compareItems.filter(item => item._id !== action.payload._id);
+        Cookies.set('cartItems', JSON.stringify(compareItems));
+        return { ...state, comparasion: { ...state.comparasion, compareItems }, snack: { ...state.snack, message: 'item successfully removed', severity: 'warning'}};
       }
     }
     case 'PERSONAL_INFO': {

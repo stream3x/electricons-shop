@@ -7,12 +7,10 @@ import { CardActionArea } from '@mui/material';
 import Link from '../Link';
 import Image from 'next/image';
 import CircularProgress from '@mui/material/CircularProgress';
-import theme from '../theme';
 
 export default function CardProduct(props) {
   const { product, cardHeight, bgImg, imgHeigth, variantTitle, variantSubtitle, moveContent, widthContent } = props;
   const [selected, setSelected] = React.useState('');
-
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -38,7 +36,7 @@ export default function CardProduct(props) {
           </CardMedia>
           <CardContent sx={{overflow: 'visible', width: `${widthContent}`, transform: `${moveContent}`}}>
             <Typography gutterBottom variant={variantTitle} component="h2" align="left">
-            {product.title}
+              {product.title}
             </Typography>
             <Typography align="left" variant={variantSubtitle} component="h3" color="secondary" sx={{wordBreak: 'keep-all'}}>
               {product.shortDescription}

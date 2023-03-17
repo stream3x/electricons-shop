@@ -38,9 +38,20 @@ export default function ActionCardButtons(props) {
 
   }
 
+  async function addToComparasion() {
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    dispatch({ type: 'COMPARE_ADD_ITEM', payload: { ...product, data }});
+    if(state.comparation && state.comparation.compareItems.find(i => i._id === data._id)) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
+      setLoading(false);
+      return;
+    }
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
+  }
+
   return (
     <Box className='card-buttons' sx={{ display: 'flex', justifyContent: 'center', minWidth: BoxWidth }}>
-      <IconButton size={iconSize} sx={{backgroundColor: theme.palette.secondary.main, '&:hover': {backgroundColor: theme.palette.primary.main} }}>
+      <IconButton onClick={addToComparasion} size={iconSize} sx={{backgroundColor: theme.palette.secondary.main, '&:hover': {backgroundColor: theme.palette.primary.main} }}>
         <CompareIcon fontSize={iconSize} color='white'/>
       </IconButton>
       <IconButton

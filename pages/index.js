@@ -4,6 +4,7 @@ import HeroCarousel from '../src/components/HeroCarousel';
 import Product from '../models/Product';
 import db from '../src/utils/db';
 import WidgetCarousels from '../src/components/WidgetCarousels';
+import { useRouter } from 'next/router';
 
 export async function getStaticProps() {
   await db.connect();
@@ -29,6 +30,17 @@ export async function getStaticProps() {
 
 export default function Index(props) {
   const { hero_products, topProducts, bestSeller } = props;
+
+  const router = useRouter()
+
+  React.useEffect(() => {
+    // Always do navigations after the first render
+    router.push('/?counter=10', undefined, { shallow: true })
+  }, [])
+
+  React.useEffect(() => {
+    // The counter changed!
+  }, [router.query.counter])
 
   return (
     <Box sx={{ my: 4 }}>

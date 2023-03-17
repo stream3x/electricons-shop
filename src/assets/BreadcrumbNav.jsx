@@ -42,6 +42,7 @@ const Page = () => {
 };
 
 export default function BreadcrumbNav({productData, categoryData}) {
+  const location = useRouter();
 
   return (
     <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 12, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>
@@ -106,6 +107,17 @@ export default function BreadcrumbNav({productData, categoryData}) {
         >
           {productData.title}
         </Typography>
+      }
+      {
+        !productData && !categoryData &&
+          <Link
+            underline="none"
+            sx={{ display: 'flex', alignItems: 'center' }}
+            color="primary"
+            href={`${location.pathname}`}
+          >
+            {`${location.pathname.replace('/', '')}`}
+          </Link>
       }
     </Breadcrumbs>
   );

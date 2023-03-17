@@ -162,7 +162,7 @@ export default function Header(props) {
   const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { cart, userInfo } = state;
+  const { cart, userInfo, comparasion: { compareItems } } = state;
   const [query, setQuery] = useState('');
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -554,11 +554,13 @@ export default function Header(props) {
                 </Search>
                 <Box sx={{ flexGrow: 1 }} />
                 <Box sx={{ display: { xs: 'none', sm: 'flex', md: 'flex' } }}>
-                  <IconButton size="large" aria-label="show 4 new mails" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
-                    <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={4} color="secondary">
-                      <CompareIcon color="badge" />
-                    </Badge>
-                  </IconButton>
+                  <Link sx={{width: '100%', height: '100%'}} href={'/compare'}>
+                    <IconButton size="large" aria-label="show 4 new mails" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
+                      <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary">
+                        <CompareIcon color="badge" />
+                      </Badge>
+                    </IconButton>
+                  </Link>
                   <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
