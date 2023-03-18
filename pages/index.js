@@ -5,6 +5,7 @@ import Product from '../models/Product';
 import db from '../src/utils/db';
 import WidgetCarousels from '../src/components/WidgetCarousels';
 import { useRouter } from 'next/router';
+import theme from '../src/theme';
 
 export async function getStaticProps() {
   await db.connect();
@@ -44,7 +45,7 @@ export default function Index(props) {
 
   return (
     <Box sx={{ my: 4 }}>
-      <Box sx={{backgroundColor: '#f9f9f9', borderRadius: '10px'}}>
+      <Box sx={{boxShadow: '0 10px 10px 5px #f4f4f4', borderRadius: '10px'}}>
         <HeroCarousel hero_products={hero_products} />
       </Box>
       <WidgetCarousels title="Top Products" widgetProducts={topProducts && topProducts} />

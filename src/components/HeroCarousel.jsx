@@ -32,14 +32,14 @@ function HeroCarousel({ hero_products }) {
   };
 
   return (
-    <Grid sx={{height: !matches ? 'auto' : '500px', p: 2}} container spacing={3}>
-      <Grid item xs={12} sm={8}>
+    <Grid sx={{height: !matches ? 'auto' : '500px', p: 2, mt: 0}} container spacing={3}>
+      <Grid sx={{}} item xs={12} sm={8}>
         <Box className="slick-wrap_box" sx={{height: '100%'}}>
           <Slider {...settings}>
           {
               carouselPoroduct.map((product, index) => (
                 product.category === 'Desktop computers' &&
-                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" bgImg={'/images/slider_bgr.png'} imgHeigth={!matches ? '200px' : '400px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
+                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" bgImg={`/images/slider_bgr${index}.jpg`} imgHeigth={!matches ? '200px' : '400px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
               ))
             }
           </Slider>
@@ -53,7 +53,7 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Laptop computers' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" bgImg={'/images/bgd_laptop.jpg'} imgHeigth={'150px'} variantSubtitle="caption" variantTitle="h6" />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" bgImg={`/images/bgd_laptop${index}.jpg`} imgHeigth={'150px'} variantSubtitle="caption" variantTitle="h4" />
                   ))
                 }
               </Slider>
@@ -65,7 +65,7 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" bgImg={'/images/bgd_mobile.png'} imgHeigth={'200px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" bgImg={`/images/bgd_mobile${index}.jpg`} imgHeigth={'200px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
                   ))
                 }
               </Slider>

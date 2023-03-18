@@ -15,7 +15,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Typography } from '@mui/material';
+import { Typography, useMediaQuery } from '@mui/material';
 import Image from 'next/image';
 import { styled } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -25,6 +25,7 @@ import { Store } from '../utils/Store';
 import Link from '../Link';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 
 const AddToCartButton = styled(LoadingButton)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
@@ -33,6 +34,9 @@ const AddToCartButton = styled(LoadingButton)(({ theme }) => ({
   borderRadius: theme.palette.addToCartButtonShape.borderRadius,
   margin: '-1px',
   padding: '.5em 2em',
+  [theme.breakpoints.down('lg')]: {
+    padding: '.5em 1em',
+  },
   '&:hover': {
     color: theme.palette.primary.contrastText,
     backgroundColor: theme.palette.secondary.main,
@@ -106,6 +110,7 @@ export default function CompareTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [loading, setLoading] = React.useState(false);
+  const matches = useMediaQuery('(min-width: 600px)');
 
   async function addToCartHandler(item) {
     setLoading(true)
@@ -147,15 +152,15 @@ export default function CompareTable(props) {
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableBody>
           <TableRow>
-            <TableCell sx={{minWidth: '200px'}} component="th">
+            <TableCell sx={{minWidth: {xs: '100px', lg:'200px'}}} component="th">
               {'Product'}
             </TableCell>
             {(rowsPerPage > 0
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} sx={{minWidth: '300px'}} component="td" scope="row">
-              <Box sx={{ width: 'auto', height: '180px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
+            <TableCell key={row._id} sx={{minWidth: {xs: '180px', lg: '450px'}}} component="td" scope="row">
+              <Box sx={{ width: '100%', height: {xs: '80px', lg: '180px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
                 <Image
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -164,12 +169,12 @@ export default function CompareTable(props) {
                   alt={row.title}
                 />
               </Box>
-              <Typography variant='h6' align='center'>{row.title}</Typography>
+              <Typography variant={matches ? 'h6' : 'p'} align='center'>{row.title}</Typography>
             </TableCell>
             ))}
           </TableRow>
           <TableRow>
-            <TableCell sx={{width: '200px'}} component="th">
+            <TableCell component="th">
               {'Price'}
             </TableCell>
             {(rowsPerPage > 0
@@ -184,29 +189,29 @@ export default function CompareTable(props) {
             ))}
           </TableRow>
           <TableRow>
-            <TableCell sx={{width: '200px'}} component="th">
+            <TableCell component="th">
               {'Deskription'}
             </TableCell>
             {(rowsPerPage > 0
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} component="td" style={{ width: 160 }} align="justify">
-              {row.shortDescription}
+            <TableCell key={row._id} component="td" align="justify">
+              <Typography variant={matches ? 'p' : 'caption'}>{row.shortDescription}</Typography>
             </TableCell>
             ))}
           </TableRow>
           <TableRow>
-            <TableCell sx={{width: '200px'}} component="th">
+            <TableCell component="th">
               {'Brand'}
             </TableCell>
             {(rowsPerPage > 0
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} component="td" style={{ width: 160 }} align="center">
+            <TableCell key={row._id} component="td" align="center">
               <Link href={`/search?brand=${row.brand}`}>
-                <Box sx={{ width: 'auto', height: '70px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'} }}>
+                <Box sx={{ width: 'auto', height: {xs: '30px', lg: '70px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'} }}>
                   <Image
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -227,7 +232,7 @@ export default function CompareTable(props) {
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} component="td" style={{ width: 160 }} align="center">
+            <TableCell key={row._id} component="td" align="center">
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', '& > a': {textDecoration: 'none', width: {xs:'100%', sm: 'auto'}} }}>
               {
                 row.inStock !== 0 ? (cartItems.find(item => item._id === row._id) ? 
@@ -258,7 +263,7 @@ export default function CompareTable(props) {
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} sx={{width: '300px'}} component="td" style={{ width: 160 }} align="center">
+            <TableCell key={row._id} component="td" style={{ width: 160 }} align="center">
               <IconButton onClick={() => removeCompareItemHandler(row)} sx={{ margin: 'auto' }}>
                 <DeleteForeverIcon />
               </IconButton>

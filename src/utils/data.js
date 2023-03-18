@@ -55,7 +55,7 @@ const data = {
     },
     {
       title: "AMD Acer Aspire",
-      images: [{image: "/images/acer_desktop/acer_desk.png"}, {image: "/images/acer_desktop/amd-acer-desktop.jpg"}, {image: "/images/acer_desktop/acer_desk_full-set"}, {image: "/images/acer_desktop/acer_desktop.png"}, {image: "/images/acer_desktop/amd-acer-desktop.png"}],
+      images: [{image: "/images/acer_desktop/acer_desk.png"}, {image: "/images/acer_desktop/amd-acer-desktop.png"}, {image: "/images/acer_desktop/acer_desk_full-set.png"}, {image: "/images/acer_desktop/acer_desktop.png"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
