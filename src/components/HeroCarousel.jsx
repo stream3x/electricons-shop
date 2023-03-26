@@ -97,7 +97,7 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'360px'} imgHeigth={'217px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'auto'} imgHeigth={'387px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
                   ))
                 }
               </Slider>

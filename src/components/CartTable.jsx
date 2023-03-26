@@ -494,7 +494,7 @@ export default function CartTable() {
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               priority
-                              src={row.images[0].image}
+                              src={row.images[1].image ? row.images[1].image : row.images[0].image}
                               alt={row.title}
                             />
                           </Box>

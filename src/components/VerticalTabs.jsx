@@ -42,17 +42,12 @@ function a11yProps(index) {
 
 export default function VerticalTabs({productData}) {
   const [value, setValue] = React.useState(0);
-  const [activeStep, setActiveStep] = React.useState(0);
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  const handleStepChange = (step) => {
-    setActiveStep(step);
-  };
-
+console.log(value);
   return (
     <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 240,  width: '100%', flexWrap: {xs: 'wrap', sm: 'nowrap'}}}
@@ -66,7 +61,7 @@ export default function VerticalTabs({productData}) {
         sx={{ borderRight: {xs: 0, sm: `thin solid ${theme.palette.secondary.borderColor}`}, minWidth: '80px' }}
       >
       {
-        productData.images.slice(1, -1).map((img, index) => (
+        productData.images.slice(1, productData.images.lenght).map((img, index) => (
           <Tab key={img.image + index} label="" {...a11yProps(index)} sx={{ backgroundImage: img.image ? `url(${img.image})` : '/images/no-image.jpg', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', my: 1, minWidth: '70px', maxWidth: '70px'}}>
           </Tab>
         ))
@@ -80,7 +75,7 @@ export default function VerticalTabs({productData}) {
       enableMouseEvents
       >
       {
-        productData.images.slice(1, -1).map((img, index) => (
+        productData.images.slice(1, productData.images.lenght).map((img, index) => (
           <TabPanel key={img.image} value={value} index={index}>
               <Box
                 component="img"

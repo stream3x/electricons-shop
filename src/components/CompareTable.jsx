@@ -146,10 +146,10 @@ export default function CompareTable(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+console.log(compareItems);
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+      <Table sx={{ minWidth: compareItems.length > 1 ? 530 : 350 }} aria-label="custom pagination table">
         <TableBody>
           <TableRow>
             <TableCell sx={{width: {xs: '80px', lg:'200px'}}} component="th">
@@ -159,7 +159,7 @@ export default function CompareTable(props) {
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} sx={{width: {xs: '80px', lg: '450px'}}} component="td" scope="row">
+            <TableCell key={row._id} sx={{width: {xs: '100px', lg: '450px'}}} component="td" scope="row">
               <Box sx={{ width: 'auto', height: {xs: '80px', lg: '180px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
                 <Image
                   fill
@@ -232,7 +232,7 @@ export default function CompareTable(props) {
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} component="td" align="center">
+            <TableCell sx={{width: '200px'}} key={row._id} component="td" align="center">
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', '& > a': {textDecoration: 'none', width: {xs:'100%', sm: 'auto'}} }}>
               {
                 row.inStock !== 0 ? (cartItems.find(item => item._id === row._id) ? 

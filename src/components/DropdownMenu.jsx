@@ -6,14 +6,12 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import data from '../utils/data';
 import category_data from '../utils/category';
-import { Accordion, AccordionDetails, AccordionSummary, Collapse, Grid, ListItem, ListItemButton, ListItemIcon, Typography } from '@mui/material';
-import ListItemText from '@mui/material/ListItemText';
+import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
 import Link from '../Link';
 import theme from '../theme';
 import PersonalVideoIcon from '@mui/icons-material/PersonalVideo';
 import ComputerIcon from '@mui/icons-material/Computer';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
-import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
 export default function DropdownMenu(props) {
@@ -21,11 +19,6 @@ export default function DropdownMenu(props) {
   const { products } = data;
   const { categories } = category_data;
   const [expanded, setExpanded] = React.useState(false);
-  const [open, setOpen] = React.useState(true);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);

@@ -31,7 +31,7 @@ export default function CardProduct(props) {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
-                src={product.images[0].image !== '/images/no-image.jpg' ? product.images[0].image : '/images/no-image.jpg'}
+                src={product.images[0].image !== '/images/no-image.jpg' ? product.images[1].image : '/images/no-image.jpg'}
                 alt={product.title}
                 quality={100}
               />
