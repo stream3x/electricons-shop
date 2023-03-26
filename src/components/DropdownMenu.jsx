@@ -94,7 +94,7 @@ export default function DropdownMenu(props) {
                     sx={{position: 'relative'}}
                     >
                     <AccordionSummary
-                      expandIcon={<ExpandMore />}
+                      expandIcon={<ExpandMore color={expanded === item.categoryName ? "primary" : 'secondary'} />}
                       aria-controls={`${item.categoryName} controls`}
                       id={`${item.categoryName} panel`}
                       sx={{ '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}
@@ -111,7 +111,7 @@ export default function DropdownMenu(props) {
                       </Typography>
                     </Link>
                     </AccordionSummary>
-                    <AccordionDetails onClick={handleCloseDropdown} sx={{position: 'absolute', left: '106%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', height: 'auto', py: 5, px: 3, marginLeft: '8px'}}>
+                    <AccordionDetails onClick={handleCloseDropdown} sx={{position: 'fixed', left: '100%', top: 0, backgroundColor: theme.palette.primary.contrastText, width: '500px', height: 'auto', py: 5, px: 3, marginLeft: '8px'}}>
                       <Grid container spacing={2}>
                     {
                       item.subCategory.map((sub, index) => ( 

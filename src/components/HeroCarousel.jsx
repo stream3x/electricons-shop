@@ -8,7 +8,7 @@ import Slider from "react-slick";
 
 function HeroCarousel({ hero_products }) {
   const [carouselPoroduct, setCarouselPoroduct] = useState([]);
-  const matches = useMediaQuery('(min-width: 600px)');
+  const matches = useMediaQuery('(min-width: 1390px)');
 
   useEffect(() => {
     async function fetchData() {
@@ -33,19 +33,19 @@ function HeroCarousel({ hero_products }) {
 
   return (
     <Grid sx={{height: !matches ? 'auto' : '500px', p: 0, mt: 0}} container spacing={3}>
-      <Grid className="grid-slider" item xs={12} sm={8}>
+      <Grid sx={{display: {xs: 'none', lg: 'block'}}} className="grid-slider" item xs={12} sm={8}>
         <Box className="slick-wrap_box" sx={{height: '100%'}}>
           <Slider {...settings}>
           {
               carouselPoroduct.map((product, index) => (
                 product.category === 'Desktop computers' &&
-                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'980px'} imgHeigth={'442px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
+                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'883px'} imgHeigth={'480px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
               ))
             }
           </Slider>
         </Box>
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid sx={{display: {xs: 'none', lg: 'block'}}} item xs={12} sm={4}>
         <Grid sx={{height: '100%'}} container spacing={3}>
           <Grid sx={{height: {xs: 'auto', sm: '225px'}}} item xs={12}>
             <Box sx={{height: '100%'}}>
@@ -53,7 +53,7 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Laptop computers' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'480px'} imgHeigth={'217px'} variantSubtitle="caption" variantTitle="h4" index={index} />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} imgHeigth={'202px'} variantSubtitle="caption" variantTitle="h4" index={index} />
                   ))
                 }
               </Slider>
@@ -65,7 +65,39 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'480px'} imgHeigth={'217px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} imgHeigth={'202px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                  ))
+                }
+              </Slider>
+            </Box>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid sx={{display: {xs: 'none', md: 'block', lg: 'none'}}} item xs={12}>
+        <Grid sx={{height: '100%'}} container spacing={3}>
+          <Grid sx={{height: {xs: 'auto', sm: '450px'}}} item xs={12}>
+            <Box sx={{height: '100%'}}>
+              <Slider {...settings}>
+              {
+                  carouselPoroduct.map((product, index) => (
+                    product.category === 'Laptop computers' &&
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'871px'} imgHeigth={'410px'} variantSubtitle="caption" variantTitle="h4" index={index} />
+                  ))
+                }
+              </Slider>
+            </Box>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid sx={{display: {xs: 'block', md: 'none'}}} item xs={12}>
+        <Grid sx={{height: '100%'}} container spacing={3}>
+          <Grid sx={{height: {xs: 'auto', sm: '225px'}}} item xs={12}>
+            <Box>
+              <Slider {...settings}>
+              {
+                  carouselPoroduct.map((product, index) => (
+                    product.category === 'Smartphones' &&
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'360px'} imgHeigth={'217px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
                   ))
                 }
               </Slider>

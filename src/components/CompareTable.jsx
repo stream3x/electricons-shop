@@ -152,15 +152,15 @@ export default function CompareTable(props) {
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableBody>
           <TableRow>
-            <TableCell sx={{minWidth: {xs: '100px', lg:'200px'}}} component="th">
+            <TableCell sx={{width: {xs: '80px', lg:'200px'}}} component="th">
               {'Product'}
             </TableCell>
             {(rowsPerPage > 0
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} sx={{minWidth: {xs: '180px', lg: '450px'}}} component="td" scope="row">
-              <Box sx={{ width: '100%', height: {xs: '80px', lg: '180px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
+            <TableCell key={row._id} sx={{width: {xs: '80px', lg: '450px'}}} component="td" scope="row">
+              <Box sx={{ width: 'auto', height: {xs: '80px', lg: '180px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
                 <Image
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -169,7 +169,7 @@ export default function CompareTable(props) {
                   alt={row.title}
                 />
               </Box>
-              <Typography variant={matches ? 'h6' : 'p'} align='center'>{row.title}</Typography>
+              <Typography variant={matches ? 'h6' : 'inherit'} sx={{textAlign: 'center'}}>{row.title}</Typography>
             </TableCell>
             ))}
           </TableRow>

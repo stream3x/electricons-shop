@@ -26,7 +26,7 @@ export default function CardProduct(props) {
       }
         <CardActionArea sx={{display: {xs: 'block', sm: 'flex'}, flexDirection: {xs: 'row', sm: 'row-reverse'}, minHeight: cardHeight, position: 'relative'}}>
           {
-            <CardMedia sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'flex-end'}, alignItems: 'center','& img': {objectFit: 'cover', width: `${imgWidth}!important`, height: `${imgHeigth}!important`, position: 'relative!important'}, overflow: 'hidden' }} component="div">
+            <CardMedia sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'flex-end'}, alignItems: 'center','& img': {width: `${imgWidth}!important`, height: `${imgHeigth}!important`, position: 'relative!important'}, overflow: 'hidden' }} component="div">
               <Image
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

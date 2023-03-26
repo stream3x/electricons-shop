@@ -99,7 +99,7 @@ export default function WidgetCardProduct(props) {
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             priority
-                            src={product.images[0].image}
+                            src={product.images[1].image}
                             alt={product.title}
                             quality={35}
                           />
