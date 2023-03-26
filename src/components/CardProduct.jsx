@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import theme from '../theme';
 
 export default function CardProduct(props) {
-  const { product, cardHeight, bgImg, imgHeigth, variantTitle, variantSubtitle, moveContent, widthContent } = props;
+  const { product, cardHeight, imgHeigth, imgWidth } = props;
   const [selected, setSelected] = React.useState('');
 
   const handleLoading = (product) => {
@@ -18,7 +18,7 @@ export default function CardProduct(props) {
   };
   
   return (
-    <Card sx={{ width: "100%", maxHeight: {xs: 'auto', sm: cardHeight}, minHeight: cardHeight, '& a': {textDecoration: 'none'}, backgroundImage: `url(${bgImg})`, backgroundPosition: 'right top', backgroundRepeat: 'no-repeat', backgroundSize: {xs: '210% 100%', sm: 'cover'} }}>
+    <Card sx={{ width: "100%", '& a': {textDecoration: 'none'},  }}>
       <Link sx={{position: 'relative'}} href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
       {
         product._id === selected &&
@@ -26,40 +26,17 @@ export default function CardProduct(props) {
       }
         <CardActionArea sx={{display: {xs: 'block', sm: 'flex'}, flexDirection: {xs: 'row', sm: 'row-reverse'}, minHeight: cardHeight, position: 'relative'}}>
           {
-            product.category !== 'Laptop computers' ?
-            <CardMedia sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'flex-end'}, alignItems: 'center','& img': {objectFit: 'contain', width: 'auto!important', height: `${imgHeigth}!important`, position: 'relative!important', p: 2} }} component="div">
+            <CardMedia sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'flex-end'}, alignItems: 'center','& img': {objectFit: 'cover', width: `${imgWidth}!important`, height: `${imgHeigth}!important`, position: 'relative!important'}, overflow: 'hidden' }} component="div">
               <Image
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
-                src={product.images[0].image}
+                src={product.images[0].image !== '/images/no-image.jpg' ? product.images[0].image : '/images/no-image.jpg'}
                 alt={product.title}
-                quality={35}
+                quality={100}
               />
             </CardMedia>
-            : null
           }
-          {
-            product.category !== 'Laptop computers' ?
-            <CardContent sx={{overflow: 'visible', width: `${widthContent}`, transform: `${moveContent}`}}>
-              <Typography gutterBottom variant={variantTitle} component="h2" align="left">
-                {product.title}
-              </Typography>
-              <Typography align="left" variant={variantSubtitle} component="h3" color="secondary" sx={{wordBreak: 'keep-all'}}>
-                {product.shortDescription}
-              </Typography>
-            </CardContent>
-            : 
-            <CardContent sx={{overflow: 'visible', width: `${widthContent}`, transform: `${moveContent}`}}>
-              <Typography color={bgImg == '/images/bgd_laptop2.jpg' ? 'secondary' : theme.palette.primary.contrastText} gutterBottom variant={variantTitle} component="h3" align="left">
-                {product.title}
-              </Typography>
-              <Typography color={bgImg == '/images/bgd_laptop2.jpg' ? 'secondary' : theme.palette.primary.contrastText} align="left" variant={variantSubtitle} component="h3" sx={{wordBreak: 'keep-all'}}>
-                {product.shortDescription}
-              </Typography>
-            </CardContent>
-          }
-          
         </CardActionArea>
       </Link>
     </Card>

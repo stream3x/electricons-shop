@@ -201,7 +201,7 @@ export default function SingleProduct(props) {
                   width: 'auto',
                   margin: 'auto'
                 }}
-                src={product.brandImg}
+                src={product.brandImg ? product.brandImg : '/images/no-image.jpg'}
                 alt={product.title}
               />
             </Box>

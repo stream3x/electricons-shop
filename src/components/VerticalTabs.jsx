@@ -66,8 +66,8 @@ export default function VerticalTabs({productData}) {
         sx={{ borderRight: {xs: 0, sm: `thin solid ${theme.palette.secondary.borderColor}`}, minWidth: '80px' }}
       >
       {
-        productData.images.map((img, index) => (
-          <Tab key={img.image + index} label="" {...a11yProps(index)} sx={{ backgroundImage: `url(${img.image})`, backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', my: 1, minWidth: '70px', maxWidth: '70px'}}>
+        productData.images.slice(1, -1).map((img, index) => (
+          <Tab key={img.image + index} label="" {...a11yProps(index)} sx={{ backgroundImage: img.image ? `url(${img.image})` : '/images/no-image.jpg', backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', backgroundSize: 'contain', my: 1, minWidth: '70px', maxWidth: '70px'}}>
           </Tab>
         ))
       }
@@ -80,7 +80,7 @@ export default function VerticalTabs({productData}) {
       enableMouseEvents
       >
       {
-        productData.images.map((img, index) => (
+        productData.images.slice(1, -1).map((img, index) => (
           <TabPanel key={img.image} value={value} index={index}>
               <Box
                 component="img"
@@ -92,7 +92,7 @@ export default function VerticalTabs({productData}) {
                   width: 'auto',
                   margin: 'auto'
                 }}
-                src={img.image}
+                src={img.image ? img.image : '/images/no-image.jpg'}
                 alt={productData.title}
               />
           </TabPanel>

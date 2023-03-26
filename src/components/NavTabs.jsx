@@ -103,18 +103,18 @@ export default function NavTabs(props) {
                         <List
                           sx={{ border: `thin solid ${theme.palette.badge.bgd}`, borderRadius: '3px' }}
                           subheader={
-                            <ListSubheader sx={{ bgcolor: theme.palette.badge.bgd }} component="div" id="nested-list-subheader">
+                            <ListSubheader sx={{ bgcolor: theme.palette.badge.bgdLight }} component="div" id="nested-list-subheader">
                               {laptop.brand}
                             </ListSubheader>
                           }
                         >
-                          <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgd, overflow: 'hidden'}}>
+                          <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgdLight, overflow: 'hidden'}}>
                             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '120px!important', position: 'relative!important'}, p: 2 }}>
                               <Image
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 priority
-                                src={laptop.images[0].image}
+                                src={laptop.images.length > 1 ? laptop.images[1].image : '/images/no-image.jpg'}
                                 alt={laptop.title}
                                 quality={35}
                               />

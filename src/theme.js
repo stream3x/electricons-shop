@@ -29,7 +29,8 @@ const theme = createTheme({
     },
     badge: {
       main: grey[900],
-      bgd: grey[300]
+      bgd: grey[300],
+      bgdLight: '#F5F5F5'
     },
     success: {
       main: green.A100,

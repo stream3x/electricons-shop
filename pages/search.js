@@ -24,12 +24,7 @@ const minDistance = 10;
 function FilterRow(props) {
   const { items, title, handleChange } = props;
   const [expanded, setExpanded] = React.useState(false);
-  const router = useRouter()
-
-  React.useEffect(() => {
-    // Always do navigations after the first render
-    router.push('/search?counter=10', undefined, { shallow: true })
-  }, [])
+  const router = useRouter();
 
   React.useEffect(() => {
     // The counter changed!
@@ -581,7 +576,7 @@ export default function Search(props) {
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 priority
-                                src={prod.images[0].image}
+                                src={prod.images.length > 1 ? prod.images[1].image : '/images/no-image.jpg'}
                                 alt={prod.title}
                                 quality={35}
                               />

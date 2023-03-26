@@ -668,7 +668,7 @@ export default function CategoryProducts(props) {
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             priority
-                            src={prod.images[0].image}
+                            src={prod.images.length > 1 ? `${prod.images.slice(1, 2).map(img => img.image)}` : '/images/no-image.jpg'}
                             alt={prod.title}
                             quality={35}
                           />

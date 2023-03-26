@@ -111,7 +111,7 @@ export default function SwipeableCartDrawer() {
                         width: 'auto',
                         margin: 'auto'
                       }}
-                      src={item.images[0].image}
+                      src={item.images[1].image}
                       alt="cart is empty"
                     />
                   </Grid>
