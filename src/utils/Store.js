@@ -91,6 +91,8 @@ function reducer(state, action) {
         return { ...state, cart: { ...state.cart, addresses }, snack: { ...state.snack, message: 'address successfully removed', severity: 'warning'}};
       }
     }
+    case 'CART_CLEAR':
+      return { ...state, cart: { ...state.cart, cartItems: [] } };
     case 'SHIPPING': {
       return { ...state, cart: { ...state.cart, shipping: action.payload } };
     }

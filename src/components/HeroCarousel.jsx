@@ -33,13 +33,13 @@ function HeroCarousel({ hero_products }) {
 
   return (
     <Grid sx={{height: !matches ? 'auto' : '500px', p: 0, mt: 0}} container spacing={3}>
-      <Grid sx={{display: {xs: 'none', lg: 'block'}}} className="grid-slider" item xs={12} sm={8}>
+      <Grid sx={{display: {xs: 'none', lg: 'block'}, height: '100%!important', boxSizing: 'border-box'}} className="grid-slider" item xs={12} sm={8}>
         <Box className="slick-wrap_box" sx={{height: '100%'}}>
           <Slider {...settings}>
           {
               carouselPoroduct.map((product, index) => (
                 product.category === 'Desktop computers' &&
-                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'883px'} imgHeigth={'480px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
+                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'883px'} imgHeigth={'100%'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
               ))
             }
           </Slider>

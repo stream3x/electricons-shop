@@ -32,12 +32,12 @@ export async function getStaticProps() {
 export default function Index(props) {
   const { hero_products, topProducts, bestSeller } = props;
 
-  const router = useRouter()
+  const router = useRouter();
 
   React.useEffect(() => {
     // Always do navigations after the first render
     router.push('/?counter=10', undefined, { shallow: true })
-  }, [])
+  }, [hero_products, topProducts, bestSeller]);
 
   React.useEffect(() => {
     // The counter changed!

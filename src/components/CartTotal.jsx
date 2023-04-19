@@ -146,6 +146,8 @@ export default function CartTotal({
       setErrors({ ...errors, policy: false});
       router.push(`/order/${data._id}`);
       setLoading(false);
+      dispatch({ type: 'CART_CLEAR' });
+      Cookies.remove('cartItems');
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});
@@ -204,6 +206,8 @@ export default function CartTotal({
       })
       router.push(`/order_guest/${data._id}`);
       setLoading(false);
+      dispatch({ type: 'CART_CLEAR' });
+      Cookies.remove('cartItems');
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});

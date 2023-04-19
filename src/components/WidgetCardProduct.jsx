@@ -20,6 +20,11 @@ export default function WidgetCardProduct(props) {
     setSelected(product._id);
   };
 
+  // if(products) {
+  //   console.log(products[0].images[0]);
+  //   return;
+  // }
+
   return (
     <Grid container spacing={2}>
     {
@@ -38,7 +43,7 @@ export default function WidgetCardProduct(props) {
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority
-                          src={product.images[1].image}
+                          src={product.images && product.images[1].image}
                           alt={product.title}
                           quality={35}
                         />
@@ -99,7 +104,7 @@ export default function WidgetCardProduct(props) {
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             priority
-                            src={product.images[1].image}
+                            src={product.images && product.images[1].image}
                             alt={product.title}
                             quality={35}
                           />

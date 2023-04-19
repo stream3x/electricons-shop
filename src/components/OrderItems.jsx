@@ -138,7 +138,7 @@ export default function OrderItems({order_items}) {
                             width: 'auto',
                             margin: 'auto'
                           }}
-                          src={row.images[0].image}
+                          src={row.images[1].image}
                           alt={row.title}
                         />
                       </TableCell>
@@ -209,7 +209,7 @@ export default function OrderItems({order_items}) {
                               width: 'auto',
                               margin: 'auto'
                             }}
-                            src={row.images[0].image}
+                            src={row.images[1].image}
                             alt={row.title}
                           />
                         </Box>

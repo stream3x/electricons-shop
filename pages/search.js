@@ -28,7 +28,7 @@ function FilterRow(props) {
 
   React.useEffect(() => {
     // The counter changed!
-  }, [router.query.counter])
+  }, [router.query.counter]);
   
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -194,7 +194,6 @@ export default function Search(props) {
   function setPriceFilter() {
     priceHandler(value.join('-'));
     if(value.length !== 0) {
-      console.log('la', value);
       setPriceChip([{price_one: value[0], price_two: value[1]}])
     }else {
       setPriceChip([])
