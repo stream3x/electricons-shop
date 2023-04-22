@@ -62,13 +62,10 @@ function OrderHistory() {
         dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     };
-  
-    return () => {
-      fetchOrders();
-    };
+    fetchOrders();
 
   }, []);
-
+console.log(loading, error, orders);
   return (
     <Box sx={{ flexGrow: 1, my: 4  }}>
       <BreadcrumbNav />
@@ -92,7 +89,7 @@ function OrderHistory() {
               <ProfileNavigation />
             </Grid>
             <Grid item xs={12} md={9}>
-              <OrderTable />
+              <OrderTable orders={orders} />
             </Grid>
           </Grid>
         )

@@ -7,6 +7,10 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
+import InfoIcon from '@mui/icons-material/Info';
+import HomeIcon from '@mui/icons-material/Home';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
 export default function ProfileNavigation() {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
@@ -23,35 +27,42 @@ export default function ProfileNavigation() {
           onClick={(event) => handleListItemClick(event, 0)}
         >
           <ListItemIcon>
-            <InboxIcon />
+            <InfoIcon />
           </ListItemIcon>
-          <ListItemText primary="Inbox" />
+          <ListItemText primary="Info" />
         </ListItemButton>
+        <Divider />
         <ListItemButton
           selected={selectedIndex === 1}
           onClick={(event) => handleListItemClick(event, 1)}
         >
           <ListItemIcon>
-            <DraftsIcon />
+            <HomeIcon />
           </ListItemIcon>
-          <ListItemText primary="Drafts" />
+          <ListItemText primary="Addresses" />
+        </ListItemButton>
+        <Divider />
+        <ListItemButton
+          selected={selectedIndex === 1}
+          onClick={(event) => handleListItemClick(event, 1)}
+        >
+          <ListItemIcon>
+            <FavoriteIcon />
+          </ListItemIcon>
+          <ListItemText primary="Wishlist" />
+        </ListItemButton>
+        <Divider />
+        <ListItemButton
+          selected={selectedIndex === 1}
+          onClick={(event) => handleListItemClick(event, 1)}
+        >
+          <ListItemIcon>
+            <ShoppingBasketIcon />
+          </ListItemIcon>
+          <ListItemText primary="Order History" />
         </ListItemButton>
       </List>
-      <Divider />
-      <List component="nav" aria-label="secondary mailbox folder">
-        <ListItemButton
-          selected={selectedIndex === 2}
-          onClick={(event) => handleListItemClick(event, 2)}
-        >
-          <ListItemText primary="Trash" />
-        </ListItemButton>
-        <ListItemButton
-          selected={selectedIndex === 3}
-          onClick={(event) => handleListItemClick(event, 3)}
-        >
-          <ListItemText primary="Spam" />
-        </ListItemButton>
-      </List>
+      
     </Box>
   );
 }
