@@ -15,8 +15,10 @@ import Public from '@mui/icons-material/Public';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import StayCurrentPortraitIcon from '@mui/icons-material/StayCurrentPortrait';
 import MapFooter from '../assets/MapFooter';
+import NavigationIcon from '@mui/icons-material/Navigation';
 import Link from '../Link';
 import theme from '../theme';
+import TelegramChat from '../assets/TelegramChat';
 
 function Copyright() {
   return (
@@ -250,6 +252,9 @@ export default function Footer({ storeInfo }) {
           </Box>
         </Container>
       </Box>
+      <Fab variant="extended" sx={{ position: 'fixed', bottom: {xs: 170, sm: 130}, right: 16, width:  134, height: 91 }}>
+        <TelegramChat />
+      </Fab>
       <ScrollTop>
         <Fab size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />

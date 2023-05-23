@@ -222,7 +222,7 @@ export default function Header(props) {
     }else if(router.asPath === `/search`) {
       router.push(`/search?query=${query}`);
     }else {
-      router.push(router.asPath === `/search?` || router.asPath === `/` ? `/search?${addQuery}` : `${router.asPath}` + `&query=${queryRemoveSpace}` );
+      router.push(router.asPath === `/search?` || router.asPath === `/?counter=10` ? `/search?${addQuery}` : `${router.asPath}` + `&query=${queryRemoveSpace}` );
     }
   };
 
