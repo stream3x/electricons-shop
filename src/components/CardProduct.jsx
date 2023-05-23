@@ -2,16 +2,15 @@ import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import { CardActionArea } from '@mui/material';
+import { CardActionArea, useMediaQuery } from '@mui/material';
 import Link from '../Link';
 import Image from 'next/image';
 import CircularProgress from '@mui/material/CircularProgress';
-import theme from '../theme';
 
 export default function CardProduct(props) {
   const { product, cardHeight, imgHeigth, imgWidth } = props;
   const [selected, setSelected] = React.useState('');
+  const matches = useMediaQuery('(min-width: 1024px)');
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -31,7 +30,7 @@ export default function CardProduct(props) {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
-                src={product.images[0].image}
+                src={matches ? product.images[0].image : product.images[1].image}
                 alt={product.title}
                 quality={100}
               />

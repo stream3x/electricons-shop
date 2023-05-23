@@ -264,7 +264,7 @@ const data = {
     },
     {
       title: "Nokia Seven",
-      images: [{image: "/images/hero/nokia_mobile/nokia-7.jpg"}, {image: "/images/nokia_mobile/nokia_quad.webp"}, {image: "/images/nokia_mobile/nokia-smartphone.png"}, {image: "/images/nokia_mobile/nokia_quad_front.webp"}, {image: "/images/nokia_mobile/nokia_quad_back.webp"}],
+      images: [{image: "/images/nokia_mobile/hero/nokia-7.jpg"},{image: "/images/nokia_mobile/hero/nokia-7-mobile.jpg"}, {image: "/images/nokia_mobile/nokia_quad.webp"}, {image: "/images/nokia_mobile/nokia-smartphone.png"}, {image: "/images/nokia_mobile/nokia_quad_front.webp"}, {image: "/images/nokia_mobile/nokia_quad_back.webp"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,

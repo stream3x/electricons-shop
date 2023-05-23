@@ -30,7 +30,7 @@ function HeroCarousel({ hero_products }) {
     slidesToShow: 1,
     slidesToScroll: 1
   };
-
+console.log(carouselPoroduct.map(product => product.category));
   return (
     <Grid sx={{height: !matches ? 'auto' : '500px', p: 0, mt: 0}} container spacing={3}>
       <Grid sx={{display: {xs: 'none', lg: 'block'}, height: '100%!important', boxSizing: 'border-box'}} className="grid-slider" item xs={12} sm={8}>
