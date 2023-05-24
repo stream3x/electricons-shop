@@ -39,7 +39,7 @@ import axios from 'axios';
 import Image from 'next/image';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
-const loged = ['Profile', 'Admin', 'Logout'];
+const loged = ['Profile', 'Order History', 'Admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [
   {
@@ -162,7 +162,7 @@ export default function Header(props) {
   const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { cart, userInfo, comparasion: { compareItems } } = state;
+  const { cart, userInfo, comparasion: { compareItems }, wishlist: { wishItems } } = state;
   const [query, setQuery] = useState('');
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
@@ -222,7 +222,7 @@ export default function Header(props) {
     }else if(router.asPath === `/search`) {
       router.push(`/search?query=${query}`);
     }else {
-      router.push(router.asPath === `/search?` || router.asPath === `/?counter=10` ? `/search?${addQuery}` : `${router.asPath}` + `&query=${queryRemoveSpace}` );
+      router.push(router.asPath === `/search?` || router.asPath === `/?counter=10` || router.asPath === `/` ? `/search?${addQuery}` : `${router.asPath}` + `&query=${queryRemoveSpace}` );
     }
   };
 
@@ -275,8 +275,7 @@ export default function Header(props) {
     </Menu>
   );
   
- 
-  
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -330,15 +329,21 @@ export default function Header(props) {
                         </Link>
                       </MenuItem>
                       {
-                        userInfo.isAdmin &&
+                        userInfo.isAdmin ?
                         <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                           <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
+                            {loged[2]}
+                          </Link>
+                        </MenuItem>
+                        :
+                        <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                          <Link href={`/order-history`} passHref>
                             {loged[1]}
                           </Link>
                         </MenuItem>
                       }
                       <MenuItem onClick={handleLogout}>
-                          {loged[2]}
+                          {loged[3]}
                       </MenuItem>
                     </Box>
 
@@ -400,12 +405,18 @@ export default function Header(props) {
                               </Link>
                             </MenuItem>
                             {
-                              userInfo.isAdmin &&
+                              userInfo.isAdmin ?
                               <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                              <Link href={`/admin/${userInfo._id}`}>
-                                {loged[1]}
-                              </Link>
-                            </MenuItem>
+                                <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
+                                  {loged[2]}
+                                </Link>
+                              </MenuItem>
+                              :
+                              <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                <Link href={`/order-history`} passHref>
+                                  {loged[1]}
+                                </Link>
+                              </MenuItem>
                             }
                             <MenuItem onClick={handleLogout}>
                                 {loged[2]}
@@ -557,22 +568,24 @@ export default function Header(props) {
                 <Box sx={{ flexGrow: 1 }} />
                 <Box sx={{ display: { xs: 'none', sm: 'flex', md: 'flex' } }}>
                   <Link sx={{width: '100%', height: '100%'}} href={'/compare'}>
-                    <IconButton size="large" aria-label="show 4 new mails" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
+                    <IconButton size="large" aria-label="show compare items" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
                       <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary">
                         <CompareIcon color="badge" />
                       </Badge>
                     </IconButton>
                   </Link>
-                  <IconButton
-                    size="large"
-                    aria-label="show 17 new notifications"
-                    color="inherit"
-                    sx={{ backgroundColor: theme.palette.badge.bgd, ml: 2 }}
-                  >
-                    <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={7} color="secondary">
-                      <Wishlist color="badge.bgd"/>
-                    </Badge>
-                  </IconButton>
+                  <Link sx={{width: '100%', height: '100%'}} href={'/wishlist'}>
+                    <IconButton
+                      size="large"
+                      aria-label="show wishlist items"
+                      color="secondary"
+                      sx={{ backgroundColor: theme.palette.badge.bgd, ml: 2 }}
+                    >
+                      <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={wishItems.length > 0 ? wishItems.length : "0"} color="secondary">
+                        <Wishlist color="badge.bgd"/>
+                      </Badge>
+                    </IconButton>
+                  </Link>
                   <SwipeableCartDrawer />
                 </Box>
               </Box>

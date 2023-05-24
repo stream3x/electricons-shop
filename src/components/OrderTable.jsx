@@ -117,8 +117,7 @@ export default function OrderTable(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-console.log(orders.map(order => order.userInfo._id), userInfo._id);
-console.log(orders.filter(order => order.userInfo._id === userInfo._id));
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">

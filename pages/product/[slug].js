@@ -176,6 +176,17 @@ export default function SingleProduct(props) {
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   }
 
+  async function addToWishlist() {
+    const { data } = await axios.get(`/api/products/${product._id}`);
+    dispatch({ type: 'WISHLIST_ADD_ITEM', payload: { ...product, data }});
+    if(state.wishlist && state.wishlist.wishItems.find(i => i._id === data._id)) {
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item already added', severity: 'warning' } });
+      setLoading(false);
+      return;
+    }
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
+  }
+
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
       <BreadcrumbNav productData={product} />
@@ -279,7 +290,7 @@ export default function SingleProduct(props) {
               <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 65%'}, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                 <Box sx={{display: 'flex', justifyContent: 'left', width: {xs: '100%', sm: 'auto'}, mb: {xs: 2, sm: 0}}}>
                   <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
-                    <ActionButtons color="secondary" aria-label="add-to-wishlist" size="small">
+                    <ActionButtons onClick={addToWishlist} color="secondary" aria-label="add-to-wishlist" size="small">
                       <Wishlist fontSize="inherit" />
                     </ActionButtons>
                   </LightTooltip>

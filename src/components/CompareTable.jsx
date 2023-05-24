@@ -146,7 +146,7 @@ export default function CompareTable(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-console.log(compareItems);
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: compareItems.length > 1 ? 530 : 350 }} aria-label="custom pagination table">
@@ -159,17 +159,19 @@ console.log(compareItems);
               ? compareItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : compareItems
             ).map((row) => (
-            <TableCell key={row._id} sx={{width: {xs: '100px', lg: '450px'}}} component="td" scope="row">
-              <Box sx={{ width: 'auto', height: {xs: '80px', lg: '180px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
-                <Image
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority
-                  src={row.images[1].image}
-                  alt={row.title}
-                />
-              </Box>
-              <Typography variant={matches ? 'h6' : 'inherit'} sx={{textAlign: 'center'}}>{row.title}</Typography>
+            <TableCell key={row._id} sx={{width: {xs: '100px', lg: '450px'}, '& a': {textDecoration: 'none' } }} component="td" scope="row">
+              <Link href={`/product/${row.slug}`} passHref>
+                <Box sx={{ width: 'auto', height: {xs: '80px', lg: '180px'}, position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px', margin: 'auto'}, mb: 3 }}>
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
+                    src={row.images[1].image}
+                    alt={row.title}
+                  />
+                </Box>
+                <Typography variant={matches ? 'h6' : 'inherit'} sx={{textAlign: 'center'}}>{row.title}</Typography>
+              </Link>
             </TableCell>
             ))}
           </TableRow>

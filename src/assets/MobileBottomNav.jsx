@@ -13,8 +13,8 @@ import Link from '../Link';
 
 export default function MobileBottomNav({ isVisible }) {
   const ref = React.useRef(null);
-  const { state, dispatch } = React.useContext(Store);
-  const { cart, comparasion:{compareItems} } = state;
+  const { state } = React.useContext(Store);
+  const { cart, comparasion:{compareItems}, wishlist: {wishItems} } = state;
 
   return (
     <Box sx={{ display: {xs: 'block', sm: 'none'}, pb: 7 }} ref={ref}>
@@ -22,11 +22,10 @@ export default function MobileBottomNav({ isVisible }) {
       <Paper sx={{ transform: isVisible ? 'translateY(0px)' : 'translateY(50px)', transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', zIndex: 2, position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
         <BottomNavigation
           showLabels
+          sx={{justifyContent: 'space-between'}}
         >
-          <Link sx={{width: '100%', height: '100%'}} href={'/compare'}>
-            <BottomNavigationAction label="Comparasion" icon={<Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary"><CompareIcon /></Badge> } />
-          </Link>
-          <BottomNavigationAction label="Wishlist" icon={<Wishlist />} />
+            <BottomNavigationAction label="Comparasion" icon={<Link sx={{width: '100%', height: '100%', '& span': {opacity: 1}}} href={'/compare'}><Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary"><CompareIcon color="secondary" /></Badge></Link>} />
+            <BottomNavigationAction label="Wishlist" icon={<Link sx={{width: '100%', height: '100%', '& span': {opacity: 1} }} href={'/wishlist'}><Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={wishItems.length > 0 ? wishItems.length : "0"} color="secondary"><Wishlist color="secondary"/></Badge></Link>} />
           <BottomNavigationAction label="Cart" icon={<SwipeableCartDrawer cart={cart}/>} />
         </BottomNavigation>
       </Paper>

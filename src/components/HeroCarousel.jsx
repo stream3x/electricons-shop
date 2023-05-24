@@ -39,7 +39,7 @@ console.log(carouselPoroduct.map(product => product.category));
           {
               carouselPoroduct.map((product, index) => (
                 product.category === 'Desktop computers' &&
-                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'883px'} imgHeigth={'100%'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
+                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'883px'} imgHeight={'110%!important'} marginTop={'-20px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
               ))
             }
           </Slider>
@@ -53,7 +53,7 @@ console.log(carouselPoroduct.map(product => product.category));
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Laptop computers' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} imgHeigth={'202px'} variantSubtitle="caption" variantTitle="h4" index={index} />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} marginTop={'5px'} imgHeight={'100%!important'} variantSubtitle="caption" variantTitle="h4" index={index} />
                   ))
                 }
               </Slider>
@@ -65,7 +65,7 @@ console.log(carouselPoroduct.map(product => product.category));
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} imgHeigth={'202px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} imgHeight={'100%!important'} marginTop={'5px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
                   ))
                 }
               </Slider>
@@ -81,7 +81,7 @@ console.log(carouselPoroduct.map(product => product.category));
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Laptop computers' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'871px'} imgHeigth={'410px'} variantSubtitle="caption" variantTitle="h4" index={index} />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'871px'} marginTop={'-10px'} imgHeight={'100%!important'} variantSubtitle="caption" variantTitle="h4" index={index} />
                   ))
                 }
               </Slider>
@@ -90,14 +90,14 @@ console.log(carouselPoroduct.map(product => product.category));
         </Grid>
       </Grid>
       <Grid sx={{display: {xs: 'block', md: 'none'}}} item xs={12}>
-        <Grid sx={{height: '100%'}} container spacing={3}>
-          <Grid sx={{height: {xs: 'auto', sm: '225px'}}} item xs={12}>
+        <Grid sx={{height: 'auto'}} container spacing={3}>
+          <Grid sx={{height: {xs: 'auto', sm: 'auto'}}} item xs={12}>
             <Box>
               <Slider {...settings}>
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'auto'} imgHeigth={'387px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                      <CardProduct key={index} loading product={product} cardHeight="450px" imgWidth={'100%!important'} marginTop={'0px'} imgHeight={'auto!important'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
                   ))
                 }
               </Slider>

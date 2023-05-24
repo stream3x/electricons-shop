@@ -15,6 +15,9 @@ const initialState = {
   comparasion: {
     compareItems: Cookies.get('compareItems') ? JSON.parse(Cookies.get('compareItems')) : []
   },
+  wishlist: {
+    wishItems: Cookies.get('wishItems') ? JSON.parse(Cookies.get('wishItems')) : []
+  },
   userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
   snack: {
     message: '',
@@ -62,6 +65,26 @@ function reducer(state, action) {
         const compareItems = state.comparasion.compareItems.filter(item => item._id !== action.payload._id);
         Cookies.set('cartItems', JSON.stringify(compareItems));
         return { ...state, comparasion: { ...state.comparasion, compareItems }, snack: { ...state.snack, message: 'item successfully removed', severity: 'warning'}};
+      }
+    }
+    case 'WISHLIST_ADD_ITEM': {
+      const newItem = action.payload;
+      const existItem = state.wishlist.wishItems.find(item => item._id === newItem._id);
+      const wishItems = existItem ? state.wishlist.wishItems.map(item => item._id === existItem._id ? newItem : item)
+      : [...state.wishlist.wishItems, newItem];
+      Cookies.set('wishItems', JSON.stringify(wishItems));
+      return { ...state, wishlist: { ...state.wishlist, wishItems }, snack: { ...state.snack, message: 'item successfully added', severity: 'success'}};
+    }
+    case 'WISHLIST_REMOVE_ITEM': {
+      if(action.payload.length > 0) {
+        const arr = action.payload.map(a => a._id);
+        const wishItems = state.wishlist.wishItems.filter( item => !arr.includes(item._id));
+        Cookies.set('wishItems', JSON.stringify(wishItems));
+        return { ...state, wishlist: { ...state.wishlist, wishItems }, snack: { ...state.snack, message: 'item successfully removed', severity: 'warning'} };
+      }else {
+        const wishItems = state.wishlist.wishItems.filter(item => item._id !== action.payload._id);
+        Cookies.set('wishItems', JSON.stringify(wishItems));
+        return { ...state, wishlist: { ...state.wishlist, wishItems }, snack: { ...state.snack, message: 'item successfully removed', severity: 'warning'}};
       }
     }
     case 'PERSONAL_INFO': {

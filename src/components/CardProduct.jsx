@@ -8,7 +8,7 @@ import Image from 'next/image';
 import CircularProgress from '@mui/material/CircularProgress';
 
 export default function CardProduct(props) {
-  const { product, cardHeight, imgHeigth, imgWidth } = props;
+  const { product, cardHeight, marginTop, imgHeight, imgWidth } = props;
   const [selected, setSelected] = React.useState('');
   const matches = useMediaQuery('(min-width: 1024px)');
 
@@ -23,9 +23,9 @@ export default function CardProduct(props) {
         product._id === selected &&
         <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
       }
-        <CardActionArea sx={{display: {xs: 'block', sm: 'flex'}, flexDirection: {xs: 'row', sm: 'row-reverse'}, minHeight: cardHeight, position: 'relative'}}>
+        <CardActionArea sx={{display: {xs: 'block', sm: 'flex'}, flexDirection: {xs: 'row', sm: 'row-reverse'}, minHeight: cardHeight}}>
           {
-            <CardMedia sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'flex-end'}, alignItems: 'center','& img': {width: `${imgWidth}!important`, height: `${imgHeigth}!important`, position: 'relative!important'}, overflow: 'hidden' }} component="div">
+            <CardMedia sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'flex-end'}, alignItems: 'center','& img': {width: `${imgWidth}!important`, height: `${imgHeight}`, marginTop: `${marginTop}`}, overflow: 'hidden'  }} component="div">
               <Image
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

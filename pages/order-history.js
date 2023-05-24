@@ -65,7 +65,7 @@ function OrderHistory() {
     fetchOrders();
 
   }, []);
-console.log(loading, error, orders);
+
   return (
     <Box sx={{ flexGrow: 1, my: 4  }}>
       <BreadcrumbNav />

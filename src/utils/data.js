@@ -226,7 +226,7 @@ const data = {
     },
     {
       title: "Xiaomi Redmi Note 9",
-      images: [{image: "/images/xiaomi_mobile/hero/redmi-note-9.jpg"}, {image: "/images/xiaomi_mobile/Redmi-Note-9-1pro.png"}, {image: "/images/xiaomi_mobile/xiaomi_5G.webp"}, {image: "/images/xiaomi_mobile/xiaomi_5G_front.webp"}],
+      images: [{image: "/images/xiaomi_mobile/hero/redmi-note-9.jpg"}, {image: "/images/xiaomi_mobile/hero/redmi-note-mobile.jpg"}, {image: "/images/xiaomi_mobile/Redmi-Note-9-1pro.png"}, {image: "/images/xiaomi_mobile/xiaomi_5G.webp"}, {image: "/images/xiaomi_mobile/xiaomi_5G_front.webp"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -302,7 +302,7 @@ const data = {
     },
     {
       title: "Huawei 14x Elite",
-      images: [{image: "/images/huawei_mobile/hero/huawei-20mp.jpg"}, {image: "/images/huawei_mobile/huawei.png"}],
+      images: [{image: "/images/huawei_mobile/hero/huawei-20mp.jpg"},{image: "/images/huawei_mobile/hero/huawei-14pro-mobile.jpg"}, {image: "/images/huawei_mobile/huawei.png"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 3,
@@ -321,7 +321,7 @@ const data = {
     },
     {
       title: "Huawei P30 Pro",
-      images: [{image: "/images/huawei_mobile/hero/huawei-p30-pro.jpg"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}, {image: "/images/huawei_mobile/huawei_smart.png"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}],
+      images: [{image: "/images/huawei_mobile/hero/huawei-p30-pro.jpg"}, {image: "/images/huawei_mobile/hero/huawei-p30-mobile.jpg"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}, {image: "/images/huawei_mobile/huawei_smart.png"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 3,
