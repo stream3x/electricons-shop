@@ -69,13 +69,22 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-function Order({params}) {
+function Order(props) {
+  const { params } = props;
   const orderId = params.id;
+  const { state: { userInfo } } = useContext(Store);
   const [{isPending}, paypalDispatch] = usePayPalScriptReducer();
   const [loader, setLoader] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
+  const randomNumber = getRandomInt(1, 999999);
+
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+  }
 
   const buttonSx = {
     ...(success && {
@@ -109,6 +118,9 @@ function Order({params}) {
   };
 
   useEffect(() => {
+    if(!userInfo) {
+      return router.push('/login');
+    }
     const fetchOrder = async () => {
       try {
         dispatch({type: 'FETCH_REQUEST'});
@@ -123,7 +135,7 @@ function Order({params}) {
       }
     };
 
-    if(!order._id || (order._id && order._id !== orderId)) {
+    if(!order || (order && order._id !== orderId)) {
       fetchOrder();
     }else {
       const loadPayPalScript = async () => {
@@ -181,178 +193,228 @@ function Order({params}) {
 
   return (
     <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
-      <LabelButton sx={{width: '100%', my: 5, p: 2}}>
-        <Box sx={{ m: 1, position: 'relative' }}>
-          <Fab
-            aria-label="save"
-            color="primary"
-            sx={buttonSx}
-            onClick={handleButtonClick}
-          >
-            {success ? <CheckIcon /> : <CartIcon />}
-          </Fab>
-          {loader && (
-            <CircularProgress
-              size={68}
-              sx={{
-                color: theme.palette.success,
-                position: 'absolute',
-                top: -6,
-                left: -6,
-                zIndex: 1,
-              }}
-            />
-          )}
-          </Box>
-        <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
-          Thank you. Your order has been created.
-        </Typography>
+    {
+      error &&
+      <LabelButton sx={{width: '100%', my: 5, p: 2, borderLeft: '5px solid red!important'}}>
+          <Typography color="error" sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+            {`${error}`} Pera Peric
+          </Typography>
       </LabelButton>
-      <Grid container space={2}>
-        <Grid xs={12} lg={8}>
-          <Item elevation={0}>
-            <Card variant="outlined">
-              <CardContent>
-                <OrderItems />
-              </CardContent>
-            </Card>
-          </Item>
-        </Grid>
-        <Grid xs={12} lg={4}>
-          <Item elevation={0}>
-            <CartTotal />
-          </Item>
-          <Item elevation={0}>
-          {/*
-            params.paid ?
-            <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay Order</PaymentButton>
-            :
-            params.payment.paymentMethod === 'PayPal' ?
-            <PayPalButtons
-            createOrder={createOrder}
-            onApprove={onApprove}
-            onError={onError}
-            ></PayPalButtons>
-            : 
-            <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
-            */}
-          </Item>
-        </Grid>
-      </Grid>
-      <Grid container space={2}>
-        <Grid xs={12} lg={6}>
-          <Item elevation={0}>
-            <Box sx={{ minWidth: 275 }}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
-                    Payment{bull}Info
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
-                    <Typography component="span">Order number:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span"></Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                  <Typography component="span">Order ID:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span"></Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                    <Typography align="left" component="span">Name of account owner: </Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                      Electricons Phd
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                    <Typography align="left" component="span">Aaccount number: </Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                      980-555062201787-58
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                    <Typography align="left" component="span">Model: </Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                      
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                    <Typography align="left" component="span">Bank name: </Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                      Banka Postanska Stedionica
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography align="left" sx={{pt: 2}} color="secondary" gutterBottom>
-                    <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="span">
-                      Your order will be sent as soon as we receive payment.
-                    </Typography>
-                    <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="p">
-                    The deadline for payment is 5 days from the creation of the order.
-                    </Typography>
-                    <Typography align="left" sx={{ fontSize: 14 }} variant="body" component="p">
-                    If you have questions, comments or concerns, please contact our expert customer support team.
-                    </Typography>
-                  </Typography>
-                </CardContent>
-              </Card>
+    }
+    {
+      loading && loader ?
+        <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+            <Box sx={{ m: 1, position: 'relative' }}>
+              <Fab
+                aria-label="save"
+                color="primary"
+                sx={buttonSx}
+                onClick={handleButtonClick}
+              >
+                {success ? <CheckIcon /> : <CartIcon />}
+              </Fab>
+                <CircularProgress
+                  size={68}
+                  sx={{
+                    color: theme.palette.success,
+                    position: 'absolute',
+                    top: -6,
+                    left: -6,
+                    zIndex: 1,
+                  }}
+              />
             </Box>
-          </Item>
-        </Grid>
-        <Grid xs={12} lg={6}>
-          <Item elevation={0}>
-            <Box sx={{ minWidth: 275 }}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
-                    Customer{bull}Info
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
-                    <Typography component="span">Name:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span"></Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                  <Typography component="span">Address:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                     
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                  <Typography component="span">City:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                      
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                  <Typography component="span">Postal Code:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                      
-                    </Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                  <Typography component="span">Country:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span"></Typography>
-                  </Typography>
-                  <Divider />
-                  <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-                  <Typography component="span">Phone:</Typography>
-                    <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span"></Typography>
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Box>
-          </Item>
-        </Grid>
-      </Grid>
+            <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+              Thank you. Your order has been created.
+            </Typography>
+        </LabelButton>
+      : (
+        <React.Fragment>
+            <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+              <Box sx={{ m: 1, position: 'relative' }}>
+                <Fab
+                  aria-label="save"
+                  color="primary"
+                  sx={buttonSx}
+                  onClick={handleButtonClick}
+                >
+                  {<CartIcon />}
+                </Fab>
+                {
+                  !success &&
+                  <CircularProgress
+                    size={68}
+                    sx={{
+                      color: theme.palette.success,
+                      position: 'absolute',
+                      top: -6,
+                      left: -6,
+                      zIndex: 1,
+                    }}
+                />
+                }
+              </Box>
+              <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+                Thank you. Your order has been created.
+              </Typography>
+            </LabelButton>
+          <Grid container space={2}>
+            <Grid xs={12} lg={8}>
+              <Item elevation={0}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <OrderItems order_items={order.orderItems}/>
+                  </CardContent>
+                </Card>
+              </Item>
+            </Grid>
+            <Grid xs={12} lg={4}>
+              <Item elevation={0}>
+                <CartTotal
+                order_items={order.orderItems}
+                paid={order.paid}
+                delivered={order.isDelevered}
+                shippingMethod={order.shippingMethod}
+                shippingPrice={order.shippingMethod}
+                taxToPaid={order.tax}
+                payment_method={order.paymantMethod}
+                 />
+              </Item>
+              <Item elevation={0}>
+              {/*
+                order.paid ?
+                <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay Order</PaymentButton>
+                :
+                order.payment.paymentMethod === 'PayPal' ?
+                <PayPalButtons
+                createOrder={createOrder}
+                onApprove={onApprove}
+                onError={onError}
+                ></PayPalButtons>
+                : 
+                <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
+                */}
+              </Item>
+            </Grid>
+          </Grid>
+          <Grid container space={2}>
+            <Grid xs={12} lg={6}>
+              <Item elevation={0}>
+                <Box sx={{ minWidth: 275 }}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
+                        Payment{bull}Info
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
+                        <Typography component="span">Order number:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order.orderNumber}</Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Order ID:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{order._id}</Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                        <Typography align="left" component="span">Name of account owner: </Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                          Electricons Phd
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                        <Typography align="left" component="span">Aaccount number: </Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                          980-555062201787-58
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                        <Typography align="left" component="span">Model: </Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                          {`97-${randomNumber}`}
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                        <Typography align="left" component="span">Bank name: </Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                          Banka Postanska Stedionica
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography align="left" sx={{pt: 2}} color="secondary" gutterBottom>
+                        <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="span">
+                          Your order will be sent as soon as we receive payment.
+                        </Typography>
+                        <Typography align="left" sx={{ fontSize: 14 }} variant="h6" component="p">
+                        The deadline for payment is 5 days from the creation of the order.
+                        </Typography>
+                        <Typography align="left" sx={{ fontSize: 14 }} variant="body" component="p">
+                        If you have questions, comments or concerns, please contact our expert customer support team.
+                        </Typography>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
+              </Item>
+            </Grid>
+            <Grid xs={12} lg={6}>
+              <Item elevation={0}>
+                <Box sx={{ minWidth: 275 }}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
+                        Customer{bull}Info
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
+                        <Typography component="span">Name:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{userInfo.name}</Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Address:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                          {addresses && addresses.address}
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">City:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                        {addresses && addresses.city}
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Postal Code:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
+                        {addresses && addresses.postalcode}
+                        </Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Country:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{addresses && addresses.country}</Typography>
+                      </Typography>
+                      <Divider />
+                      <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+                      <Typography component="span">Phone:</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{addresses && addresses.phone}</Typography>
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Box>
+              </Item>
+            </Grid>
+          </Grid>
+        </React.Fragment>
+        )
+      }
+
       <Item elevation={0} sx={{display: 'flex'}}>
         <Link href="/" passHref>
           <Button sx={{'&:hover': {backgroundColor: theme.palette.secondary.main}}} size="large" variant="contained" startIcon={<ReplyIcon />}>

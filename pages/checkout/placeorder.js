@@ -22,7 +22,7 @@ const Item = styled(Paper)(({ theme }) => ({
   export default function Placeorder() {
   const { state } = useContext(Store);
   const { cart: {cartItems, payment} } = state;
-
+  
   return (
     <CheckoutLayout>
       <CheckoutStepper activeStep={4} />
@@ -31,7 +31,7 @@ const Item = styled(Paper)(({ theme }) => ({
           <Grid container space={2}>
             <Grid xs={12}>
               <Item elevation={0}>
-                <OrderItems />
+                <OrderItems order_items={cartItems} />
               </Item>
             </Grid>
             <Grid xs={12}>

@@ -41,10 +41,6 @@ export default function PaymentInstruction() {
             Payment{bull}Instruction
           </Typography>
           <Divider />
-          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
-            <Typography component="span">Amount: </Typography>
-            <Typography variant="h6" component="span">${total}</Typography>
-          </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">Name of account owner: </Typography>
             <Typography variant="h6" component="span">

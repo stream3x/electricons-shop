@@ -20,11 +20,6 @@ export default function WidgetCardProduct(props) {
     setSelected(product._id);
   };
 
-  // if(products) {
-  //   console.log(products[0].images[0]);
-  //   return;
-  // }
-
   return (
     <Grid container spacing={2}>
     {

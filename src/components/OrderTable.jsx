@@ -16,6 +16,8 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { Store } from '../utils/Store';
+import { TableHead } from '@mui/material';
+import Image from 'next/image';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -78,25 +80,56 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-function createData(name, calories, fat) {
-  return { name, calories, fat };
-}
-
-// const rows = [
-//   createData('Cupcake', 305, 3.7),
-//   createData('Donut', 452, 25.0),
-//   createData('Eclair', 262, 16.0),
-//   createData('Frozen yoghurt', 159, 6.0),
-//   createData('Gingerbread', 356, 16.0),
-//   createData('Honeycomb', 408, 3.2),
-//   createData('Ice cream sandwich', 237, 9.0),
-//   createData('Jelly Bean', 375, 0.0),
-//   createData('KitKat', 518, 26.0),
-//   createData('Lollipop', 392, 0.2),
-//   createData('Marshmallow', 318, 0),
-//   createData('Nougat', 360, 19.0),
-//   createData('Oreo', 437, 18.0),
-// ].sort((a, b) => (a.calories < b.calories ? -1 : 1));
+const headCells = [
+  {
+    id: 'image',
+    label: 'Product',
+  },
+  {
+    id: 'title',
+    label: 'Name',
+  },
+  {
+    id: 'price',
+    label: 'Price',
+  },
+  {
+    id: 'payment',
+    label: 'Payment',
+  },
+  {
+    id: 'shipping',
+    label: 'Shipping',
+  },
+  {
+    id: 'shippingCost',
+    label: 'Shipping Cost',
+  },
+  {
+    id: 'tax',
+    label: 'Tax Cost',
+  },
+  {
+    id: 'delevered',
+    label: 'Delevered',
+  },
+  {
+    id: 'paid',
+    label: 'Paid',
+  },
+  {
+    id: 'OrderNumber',
+    label: 'Order',
+  },
+  {
+    id: 'quantity',
+    label: 'Quantity',
+  },
+  {
+    id: 'total',
+    label: 'Total',
+  },
+];
 
 export default function OrderTable(props) {
   const { orders } = props;
@@ -121,20 +154,64 @@ export default function OrderTable(props) {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+        <TableHead>
+          <TableRow>
+          {
+            headCells.map(cell => (
+              <TableCell align={cell.id === 'image' || cell.id === 'title' ? 'left' : 'right'} key={cell.id}>{cell.label}</TableCell>
+            ))
+          }
+          </TableRow>
+        </TableHead>
         <TableBody>
           {(rowsPerPage > 0
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row) => (
             <TableRow key={row._id}>
-              <TableCell component="th" scope="row">
-                {row.name}
+              <TableCell>
+                <Box sx={{ width: 'auto', height: '50px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px'} }}>
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
+                    src={row && row.orderItems[0].images[1].image}
+                    alt={row.title}
+                  />
+                </Box>
+              </TableCell>
+              <TableCell style={{ width: 200 }} align="left">
+                {row.orderItems[0].title}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {row.calories}
+              {'$'}{row.orderItems[0].price}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {row.fat}
+                {row.payment.paymentMethod}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {row.shipping.shippingMethod}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+              {'$'}{row.shippingCost}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+              {row.taxCost}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+              {row.isDelevered ? 'delevered' : 'not delevered'}
+              </TableCell>
+              <TableCell style={{ width: 100 }} align="right">
+              {row.isPaid ? 'paid' : 'not paid'}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+              {row.orderNumber}
+              </TableCell>
+              <TableCell style={{ width: 30 }} align="right">
+                {row.orderItems[0].quantity}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {'$'}{row.total}
               </TableCell>
             </TableRow>
           ))}

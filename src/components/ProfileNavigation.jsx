@@ -13,7 +13,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
 export default function ProfileNavigation() {
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
@@ -62,7 +62,6 @@ export default function ProfileNavigation() {
           <ListItemText primary="Order History" />
         </ListItemButton>
       </List>
-      
     </Box>
   );
 }

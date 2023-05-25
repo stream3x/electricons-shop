@@ -8,8 +8,9 @@ import { onError } from '../src/utils/error';
 import CircularProgress from '@mui/material/CircularProgress';
 import OrderTable from '../src/components/OrderTable';
 import styled from '@emotion/styled';
-import theme from '../src/theme';
+// import theme from '../src/theme';
 import ProfileNavigation from '../src/components/ProfileNavigation';
+import dynamic from 'next/dynamic';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -56,7 +57,9 @@ function OrderHistory() {
     const fetchOrders = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/api/orders/history`);
+        const { data } = await axios.get(`/api/orders/history`, {
+          headers: { autorization: `Bearer ${userInfo.token}`}
+        });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (error) {
         dispatch({ type: 'FETCH_FAIL', payload: error.message });
@@ -85,10 +88,7 @@ function OrderHistory() {
         </LabelButton>
         ) : (
           <Grid container spacing={2}>
-            <Grid item xs={12} md={3}>
-              <ProfileNavigation />
-            </Grid>
-            <Grid item xs={12} md={9}>
+            <Grid item xs={12}>
               <OrderTable orders={orders} />
             </Grid>
           </Grid>
@@ -99,4 +99,4 @@ function OrderHistory() {
 }
 
 OrderHistory.auth = true;
-export default OrderHistory;
+export default dynamic(() => Promise.resolve(OrderHistory), { ssr: false });

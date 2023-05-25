@@ -11,9 +11,8 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import Link from '../Link';
-import { Store } from '../utils/Store';
-import { useRouter } from 'next/router';
 import theme from '../theme';
+import Image from 'next/image';
 
 const headCells = [
   {
@@ -77,11 +76,9 @@ const MyTablePagination = styled(TablePagination)({
 });
 
 export default function OrderItems({order_items}) {
-  const { state } = useContext(Store);
-  const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * c.price, 0) : cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
+  const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * c.price, 0) : '';
 
   const total = subTotal;
 
@@ -121,26 +118,21 @@ export default function OrderItems({order_items}) {
                 .map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
                   const subtotal = row.price * row.quantity;
-
                   return (
                     <TableRow
                       hover
                       key={row._id}
                     >
                       <TableCell align="left" sx={{maxWidth: 100}}>
-                        <Box
-                          component="img"
-                          sx={{
-                            height: 70,
-                            display: 'block',
-                            maxWidth: 100,
-                            overflow: 'hidden',
-                            width: 'auto',
-                            margin: 'auto'
-                          }}
-                          src={row.images[1].image}
-                          alt={row.title}
-                        />
+                        <Box sx={{ width: 'auto', height: '50px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px'} }}>
+                          <Image
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority
+                            src={row.images[1].image ? row.images[1].image : row.images[0].image}
+                            alt={row.title}
+                          />
+                        </Box>
                       </TableCell>
                       {
                           order_items ?
@@ -167,7 +159,7 @@ export default function OrderItems({order_items}) {
                           </TableCell>
                       }
                       <TableCell color='primary' align="right">
-                        {row.price}
+                       {'$'}{row.price}
                       </TableCell>
                       <TableCell align="right">
                         {row.quantity}
@@ -187,7 +179,7 @@ export default function OrderItems({order_items}) {
             </TableBody>
             :
             <TableBody>
-              {cartItems && cartItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {order_items && order_items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
                   const subtotal = row.price * row.quantity;
@@ -261,7 +253,7 @@ export default function OrderItems({order_items}) {
         <MyTablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={order_items ? order_items.length : cartItems && cartItems.length}
+          count={order_items ? order_items.length : '0'}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

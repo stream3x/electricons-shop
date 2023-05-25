@@ -64,7 +64,7 @@ export default function CartTotal({
     )
   }, [date]);
   
-
+console.log(route.asPath.includes('checkout'));
   const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
   const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
   const emptyAddresses = Object.keys(addresses).length === 0;
@@ -296,7 +296,7 @@ export default function CartTotal({
           </Typography>
         </CardContent>
         {
-          route.pathname !== '/cart' && route.pathname === '/order_guest/[id]' || route.pathname === '/order/[id]' &&
+          route.pathname.includes('checkout') &&
           <React.Fragment>
             <CardActions>
               <Button onClick={handleExpandClick} size="small">
@@ -319,7 +319,7 @@ export default function CartTotal({
                           width: 'auto',
                           margin: '5px auto'
                         }}
-                        src={row.images[0].image}
+                        src={row.images[1].image}
                         alt={row.title}
                       />
                     </Box>

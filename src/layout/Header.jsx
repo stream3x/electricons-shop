@@ -246,6 +246,10 @@ export default function Header(props) {
     dispatch({ type: 'USER_LOGOUT'});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
     Cookies.remove('userInfo');
+    Cookies.remove('cartItems');
+    Cookies.remove('addresses');
+    Cookies.remove('payment');
+    Cookies.remove('shipping');
     router.push('/');
   };  
 
