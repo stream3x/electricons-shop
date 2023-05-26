@@ -1,12 +1,9 @@
 import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
-import Link from '../Link';
 import { Store } from '../utils/Store';
 
 const bull = (
@@ -20,18 +17,19 @@ const bull = (
 
 export default function PaymentInstruction() {
   const { state } = useContext(Store);
-  const { cart: {cartItems, personalInfo, addresses, shipping, payment} } = state;
+  const { cart: {cartItems, personalInfo, addresses, shipping, payment}, userInfo } = state;
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
 
   const emptyShipping = Object.keys(shipping).length === 0;
   const total = subTotal + (!emptyShipping && shipping.shippingMethod !== 'store' ? 50 : 0);
-  const randomNumber = getRandomInt(1, 999999);
+  // const randomNumber = getRandomInt(1, 999999);
+  const modelNumber = `${new Date().getFullYear()}-${userInfo._id.substr(userInfo._id.length - 6)}`;
 
-  function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min);
-  }
+  // function getRandomInt(min, max) {
+  //   min = Math.ceil(min);
+  //   max = Math.floor(max);
+  //   return Math.floor(Math.random() * (max - min) + min);
+  // }
 
   return (
     <Box sx={{ minWidth: 275 }}>
@@ -58,7 +56,7 @@ export default function PaymentInstruction() {
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">Model: </Typography>
             <Typography variant="h6" component="span">
-              {`97-${randomNumber}`}
+              {modelNumber}
             </Typography>
           </Typography>
           <Divider />

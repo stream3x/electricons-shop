@@ -137,7 +137,12 @@ export default function OrderTable(props) {
   const { userInfo } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const rows = orders.filter(order => order.userInfo._id === userInfo._id)
+  let rows = [];
+  if (userInfo) {
+    rows = orders.filter(order => order.userInfo.email === userInfo.email);
+  }else {
+    rows = [];
+  }
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -176,7 +181,7 @@ export default function OrderTable(props) {
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority
                     src={row && row.orderItems[0].images[1].image}
-                    alt={row.title}
+                    alt={row.orderItems[0].title}
                   />
                 </Box>
               </TableCell>

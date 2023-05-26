@@ -21,6 +21,7 @@ import theme from '../src/theme';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Fab from '@mui/material/Fab';
+import { Alert } from '@mui/material';
 
 export default function LogIn() {
   const router = useRouter();
@@ -34,6 +35,8 @@ export default function LogIn() {
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const [updateEmail, setUpdateEmail] = useState('');
+  const [updatePassword, setUpdatePassword] = useState('');
 
   const buttonSx = {
     ...(success && {
@@ -97,6 +100,20 @@ export default function LogIn() {
     }
   };
 
+  function handleChangeEmail(e) {
+    setUpdateEmail(e.target.value)
+  }
+  function handleChangePassword(e) {
+    setUpdatePassword(e.target.value)
+  }
+
+  function copyEmail(e) {
+    setUpdateEmail(e.target.value)
+  }
+  function copyPassword(e) {
+    setUpdatePassword(e.target.value)
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -133,6 +150,35 @@ export default function LogIn() {
           <Typography component="h1" variant="h5">
             Login
           </Typography>
+          <Box sx={{width: {xs: '100%', sm: 'auto'}, '& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', mt: 3}}>
+            <Alert severity="info">
+              Get these accounts!
+              <Box>
+                <Button color='indigo' value="sinan.sakic@gmail.com" onClick={copyEmail}>
+                  email: sinan.sakic@gmail.com
+                </Button>
+                <Button color='indigo' value="Sinana123" onClick={copyPassword}>
+                  password: Sinana123
+                </Button>
+              </Box>
+              <Box>
+                <Button color='indigo' value="super.admin@gmail.com" onClick={copyEmail}>
+                  email: super.admin@gmail.com
+                </Button>
+                <Button color='indigo' value="Dmdevelo123" onClick={copyPassword}>
+                  password: Dmdevelo123
+                </Button>
+              </Box>
+              <Box>
+                <Button color='indigo' value="zokac.pokac@gmail.com" onClick={copyEmail}>
+                  email: zokac.pokac@gmail.com
+                </Button>
+                <Button color='indigo' value="Z@kula03" onClick={copyPassword}>
+                  password: Z@kula03
+                </Button>
+              </Box>
+            </Alert>
+          </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
@@ -144,6 +190,8 @@ export default function LogIn() {
               autoComplete="email"
               autoFocus
               error={errors.email}
+              onChange={handleChangeEmail}
+              value={updateEmail}
             />
             {
               errors.email && 
@@ -159,6 +207,8 @@ export default function LogIn() {
               id="password"
               autoComplete="current-password"
               error={errors.password}
+              onChange={handleChangePassword}
+              value={updatePassword}
             />
             {
               errors.password && 

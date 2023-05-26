@@ -19,7 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
 import CountQuantity from '../assets/CountQuantity';
 import ReplyIcon from '@mui/icons-material/Reply';
-import { Button, FormHelperText } from '@mui/material';
+import { Alert, Button, FormHelperText } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import Link from '../Link';
 import { Store } from '../utils/Store';
@@ -30,6 +30,7 @@ import Cookies from 'js-cookie';
 import Backdrop from '@mui/material/Backdrop';
 import Image from 'next/image';
 import Slide from '@mui/material/Slide';
+import InfoIcon from '@mui/icons-material/Info';
 
 const MyTableContainer = styled(TableContainer)({
   overflowY: "auto",
@@ -314,6 +315,7 @@ export default function CartTable() {
   });
   const [open, setOpen] = React.useState(false);
   const [cuponNum, setCuponNum] = React.useState(Number);
+  const [updateCupon, setUpdateCupon] = React.useState('');
 
   const handleToggle = () => {
     setOpen(true);
@@ -329,7 +331,6 @@ export default function CartTable() {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-    console.log(property)
   };
 
   const handleSelectAllClick = (event) => {
@@ -429,11 +430,20 @@ export default function CartTable() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'cupon code is not valid', severity: 'error'}});
         return;
       }
+      setCuponNum(null);
       setErrors({ 
         ...errors,
         cupon: false
       });
   };
+
+  function handleChangeCupon(e) {
+    setUpdateCupon(e.target.value)
+  }
+
+  function copyCupon(e) {
+    setUpdateCupon(e.target.value)
+  }
 
   return (
     <React.Fragment>
@@ -554,6 +564,8 @@ export default function CartTable() {
             id="cupon-code"
             placeholder="Coupon code"
             inputProps={{ 'aria-label': 'coupon' }}
+            onChange={handleChangeCupon}
+            value={updateCupon}
             error={errors.cupon}
           />
           <StyledInputButton type="submit">Apply coupon</StyledInputButton>
@@ -562,6 +574,26 @@ export default function CartTable() {
             errors.cupon && 
             <FormHelperText sx={{width: '100%', ml: 3}} error>{snack.message && snack.message}</FormHelperText>
           }
+      </Box>
+      <Box sx={{width: {xs: '100%', sm: 'auto'}, '& a': {textDecoration: 'none'}, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', mt: 3}}>
+        <Alert severity="info">
+          Get these coupon codes!
+          <Box>
+          <Button color='indigo' value="789456" onClick={copyCupon}>
+            10%: 789456
+          </Button>
+          </Box>
+          <Box>
+          <Button color='indigo' value="123789" onClick={copyCupon}>
+            25%: 123789
+          </Button>
+          </Box>
+          <Box>
+          <Button color='indigo' value="456132" onClick={copyCupon}>
+            30%: 456132
+          </Button>
+          </Box>
+        </Alert>
       </Box>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

@@ -423,7 +423,7 @@ export default function Header(props) {
                               </MenuItem>
                             }
                             <MenuItem onClick={handleLogout}>
-                                {loged[2]}
+                                {loged[3]}
                             </MenuItem>
                           </Box>
       

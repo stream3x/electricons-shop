@@ -520,13 +520,13 @@ export default function WishTable(props) {
                             {
                               row.inStock !== 0 ? (compareItems.find(item => item._id === row._id) ? 
                                 <Link noLinkStyle href="/compare" passHref>
-                                  <AddToCartButton loading={loadingCompare} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" startIcon={<VisibilityIcon />}>
+                                  <AddToCartButton size='small' loading={loadingCompare} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" startIcon={<VisibilityIcon />}>
                                     View Compare
                                   </AddToCartButton>
                                 </Link>
                               :
-                                <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={() => addToComparasion(row)} startIcon={<CompareIcon color='white'/>}>
-                                  Add To Cart
+                                <AddToCartButton size='small' loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={() => addToComparasion(row)} startIcon={<CompareIcon color='white'/>}>
+                                  Compare
                                 </AddToCartButton>
                               )
                               :
@@ -541,12 +541,12 @@ export default function WishTable(props) {
                           {
                             row.inStock !== 0 ? (cartItems.find(item => item._id === row._id) ? 
                               <Link noLinkStyle href="/cart" passHref>
-                                <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" startIcon={<VisibilityIcon />}>
+                                <AddToCartButton size='small' loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" startIcon={<VisibilityIcon />}>
                                   View Cart
                                 </AddToCartButton>
                               </Link>
                             : 
-                              <AddToCartButton loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={() => addToCartHandler(row)} startIcon={<CartIcon />}>
+                              <AddToCartButton size='small' loading={loading} loadingPosition="start" sx={{width: {xs: '100%', sm: 'auto'}}} variant="contained" onClick={() => addToCartHandler(row)} startIcon={<CartIcon />}>
                                 Add To Cart
                               </AddToCartButton>
                             )

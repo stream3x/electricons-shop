@@ -64,7 +64,6 @@ export default function CartTotal({
     )
   }, [date]);
   
-console.log(route.asPath.includes('checkout'));
   const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
   const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
   const emptyAddresses = Object.keys(addresses).length === 0;

@@ -43,8 +43,8 @@ export default function ProfileNavigation() {
         </ListItemButton>
         <Divider />
         <ListItemButton
-          selected={selectedIndex === 1}
-          onClick={(event) => handleListItemClick(event, 1)}
+          selected={selectedIndex === 2}
+          onClick={(event) => handleListItemClick(event, 2)}
         >
           <ListItemIcon>
             <FavoriteIcon />
@@ -53,8 +53,8 @@ export default function ProfileNavigation() {
         </ListItemButton>
         <Divider />
         <ListItemButton
-          selected={selectedIndex === 1}
-          onClick={(event) => handleListItemClick(event, 1)}
+          selected={selectedIndex === 3}
+          onClick={(event) => handleListItemClick(event, 3)}
         >
           <ListItemIcon>
             <ShoppingBasketIcon />

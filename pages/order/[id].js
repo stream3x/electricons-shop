@@ -78,13 +78,14 @@ function Order(props) {
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
-  const randomNumber = getRandomInt(1, 999999);
+  // const randomNumber = getRandomInt(1, 999999);
+  const modelNumber = `${new Date().getFullYear()}-${userInfo._id.substr(userInfo._id.length - 6)}`;
 
-  function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min) + min);
-  }
+  // function getRandomInt(min, max) {
+  //   min = Math.ceil(min);
+  //   max = Math.floor(max);
+  //   return Math.floor(Math.random() * (max - min) + min);
+  // }
 
   const buttonSx = {
     ...(success && {
@@ -334,7 +335,7 @@ function Order(props) {
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                         <Typography align="left" component="span">Model: </Typography>
                         <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                          {`97-${randomNumber}`}
+                          {modelNumber}
                         </Typography>
                       </Typography>
                       <Divider />
