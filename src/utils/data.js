@@ -51,7 +51,9 @@ const data = {
       brandImg: "/logo/AMD-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo'}]
     },
     {
       title: "AMD Acer Aspire",
@@ -71,6 +73,8 @@ const data = {
       reviews: 5,
       inStock: 10,
       inWidget: "top-product",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "AMD Dell Inspirion Desktop ",
@@ -89,7 +93,9 @@ const data = {
       brandImg: "/logo/dell-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo'}]
     },
     {
       title: "Dell PRO",
@@ -108,7 +114,9 @@ const data = {
       brandImg: "/logo/dell-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "best-seller"
+      inWidget: "best-seller",
+      online: 'true',
+      stores: [{store: 'storeOne', store: 'storeTwo'}]
     },
     {
       title: "Dell business",
@@ -127,7 +135,9 @@ const data = {
       brandImg: "/logo/dell-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "top-product"
+      inWidget: "top-product",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "HP server",
@@ -146,7 +156,9 @@ const data = {
       brandImg: "/logo/hp-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "top-product"
+      inWidget: "top-product",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "HP Envy Desktop",
@@ -165,7 +177,9 @@ const data = {
       brandImg: "/logo/hp-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "top-product"
+      inWidget: "top-product",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Acer laptop",
@@ -184,7 +198,9 @@ const data = {
       brandImg: "/logo/acer-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "best-seller"
+      inWidget: "best-seller",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Lenovo laptop",
@@ -203,7 +219,9 @@ const data = {
       brandImg: "/logo/Lenovo-Logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Toshiba Satellite",
@@ -222,7 +240,9 @@ const data = {
       brandImg: "/logo/Toshiba-Logo.png",
       reviews: 10,
       inStock: 0,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Xiaomi Redmi Note 9",
@@ -241,7 +261,9 @@ const data = {
       brandImg: "/logo/Xiaomi_logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Xiaomi 10",
@@ -260,7 +282,9 @@ const data = {
       brandImg: "/logo/Xiaomi_logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "top-product"
+      inWidget: "top-product",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Nokia Seven",
@@ -279,7 +303,9 @@ const data = {
       brandImg: "/logo/nokia-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Nokia Spring",
@@ -298,7 +324,9 @@ const data = {
       brandImg: "/logo/nokia-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "top-product"
+      inWidget: "top-product",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Huawei 14x Elite",
@@ -317,7 +345,9 @@ const data = {
       brandImg: "/logo/huawei-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo', store: 'storeOne'}]
     },
     {
       title: "Huawei P30 Pro",
@@ -336,7 +366,9 @@ const data = {
       brandImg: "/logo/huawei-logo.png",
       reviews: 3,
       inStock: 10,
-      inWidget: "hero"
+      inWidget: "hero",
+      online: 'true',
+      stores: [{store: 'storeTwo'}, {store: 'storeOne'}]
     }
   ]
 }

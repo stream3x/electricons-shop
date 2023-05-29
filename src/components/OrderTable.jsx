@@ -216,7 +216,7 @@ export default function OrderTable(props) {
                 {row.orderItems[0].quantity}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {'$'}{row.total}
+                {'$'}{row.total.toFixed(2)}
               </TableCell>
             </TableRow>
           ))}

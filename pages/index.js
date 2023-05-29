@@ -5,7 +5,6 @@ import Product from '../models/Product';
 import db from '../src/utils/db';
 import WidgetCarousels from '../src/components/WidgetCarousels';
 import { useRouter } from 'next/router';
-import theme from '../src/theme';
 
 export async function getStaticProps() {
   await db.connect();

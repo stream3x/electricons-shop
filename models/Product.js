@@ -9,6 +9,15 @@ const imageSchema = new mongoose.Schema(
   }
 );
 
+const storeSchema = new mongoose.Schema(
+  {
+    store: {type: String, required: true}
+  },
+  {
+    timestamps: true
+  }
+);
+
 const productSchema = new mongoose.Schema(
   {
     title: {type: String, required: true},
@@ -27,7 +36,9 @@ const productSchema = new mongoose.Schema(
     brandImg: {type: String, required: true},
     reviews: {type: Number, required: true, default: 0},
     inStock: {type: Number, required: true, default: 0},
-    inWidget: {type: String, required: true}      
+    inWidget: {type: String, required: true},
+    online: {type: Boolean, required: true},
+    stores: [storeSchema]
   },
   {
     timestamps: true

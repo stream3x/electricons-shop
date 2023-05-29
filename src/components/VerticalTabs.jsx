@@ -47,7 +47,7 @@ export default function VerticalTabs({productData}) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-console.log(value);
+
   return (
     <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 240,  width: '100%', flexWrap: {xs: 'wrap', sm: 'nowrap'}}}

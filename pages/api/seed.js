@@ -17,6 +17,7 @@ const handler = async (req, res) => {
   await Product.insertMany(data.products);
   await StoreInfo.deleteMany();
   await StoreInfo.insertMany(stores.storeOne);
+  await StoreInfo.insertMany(stores.storeTwo);
   await db.disconnect();
   res.send({message: 'seeded successfuly'});
 };

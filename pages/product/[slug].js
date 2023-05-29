@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import VerticalTabs from '../../src/components/VerticalTabs';
@@ -21,7 +21,7 @@ import Zoom from '@mui/material/Zoom';
 import axios from 'axios';
 import { Store } from '../../src/utils/Store';
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded';
-import GoogleIcon from '@mui/icons-material/Google';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
@@ -33,6 +33,8 @@ import ProductTabs from '../../src/components/ProductTabs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/router';
+import theme from '../../src/theme';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -42,7 +44,7 @@ export async function getServerSideProps(context) {
   await db.disconnect();
   return {
     props: {
-      product: db.convertDocToObject(product),
+      product: db.convertDocToObject(product)
     },
   };
 }
@@ -116,7 +118,14 @@ export default function SingleProduct(props) {
   const { state, dispatch } = useContext(Store);
   const { cart: {cartItems}, comparation } = state;
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
+  const [storeInfo, setStoreInfo] = React.useState([]);
+  const [isSSR, setIsSsr] = React.useState(true);
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   React.useEffect(() => {
     // Always do navigations after the first render
@@ -126,6 +135,17 @@ export default function SingleProduct(props) {
   React.useEffect(() => {
     // The counter changed!
   }, [router.query.counter])
+
+  React.useEffect(() => {
+    setIsSsr(false);
+    fetchStoreInfo();
+  }, []);
+
+  async function fetchStoreInfo() {
+    if(!isSSR) return;
+    const { data } = await axios.get('/api/store_info');
+      setStoreInfo(data);
+  }
 
   if(!product) {
     return (
@@ -246,7 +266,7 @@ export default function SingleProduct(props) {
                 <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<TapAndPlayIcon />}>
                   online shopping
                 </LabelButton>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<StoreIcon />}>
+                <LabelButton href='#available-store' sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<StoreIcon />}>
                   store shopping
                 </LabelButton>
             </Box>  
@@ -316,18 +336,18 @@ export default function SingleProduct(props) {
               <Typography gutterBottom variant="p" component="span" align="left" color="secondary.lightGray" sx={{marginRight: 1}}>
                 Share on:
               </Typography>
-              <LightTooltip arrow title="add to wishlist" placement="top" TransitionComponent={Zoom}>
-                <ShareButtons aria-label="add-to-wishlist" size="medium">
+              <LightTooltip arrow title="Share to Facebook" placement="top" TransitionComponent={Zoom}>
+                <ShareButtons aria-label="Share to Facebook" size="medium">
                   <FacebookRoundedIcon fontSize="inherit" />
                 </ShareButtons>
               </LightTooltip>
-              <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
-                <ShareButtons aria-label="add-to-compare" size="medium">
-                  <GoogleIcon fontSize="inherit" />
+              <LightTooltip arrow title="Share to LinkedIn" placement="top" TransitionComponent={Zoom}>
+                <ShareButtons aria-label="Share to LinkedIn" size="medium">
+                  <LinkedInIcon fontSize="inherit" />
                 </ShareButtons>
               </LightTooltip>
-              <LightTooltip arrow title="add to comparasion" placement="top" TransitionComponent={Zoom}>
-                <ShareButtons aria-label="add-to-compare" size="medium">
+              <LightTooltip arrow title="Share to Twitter" placement="top" TransitionComponent={Zoom}>
+                <ShareButtons aria-label="Share to Twitter" size="medium">
                   <TwitterIcon fontSize="inherit" />
                 </ShareButtons>
               </LightTooltip>
@@ -335,20 +355,92 @@ export default function SingleProduct(props) {
           </Item>
           <Item elevation={0}>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<LocalShippingIcon />}>
-                  Delivery policy
-                </LabelButton>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<GppGoodIcon />}>
-                  Security Policy
-                </LabelButton>
-                <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<CreditCardIcon />}>
-                  Security Payment
-                </LabelButton>
+              <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<LocalShippingIcon />}>
+                Delivery policy
+              </LabelButton>
+              <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<GppGoodIcon />}>
+                Security Policy
+              </LabelButton>
+              <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}} startIcon={<CreditCardIcon />}>
+                Security Payment
+              </LabelButton>
             </Box>  
           </Item>
         </Grid>
         <Grid item xs={12}>
           <ProductTabs product={product} />
+        </Grid>
+        <Grid id="available-store" item xs={12}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Item elevation={0} sx={{bgcolor: theme.palette.badge.bgdLight}}>
+                <Typography gutterBottom variant="h5" component="h2" align="left" color="secondary" sx={{flex: 1, m: 0}}>
+                  Available in stores
+                </Typography>
+              </Item>
+            </Grid>
+            {
+              storeInfo.map(store => (
+                <Grid key={store._id} item xs={12} md={4}>
+                  <Item elevation={1}>
+                    <Typography gutterBottom variant="h6" component="h3" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.name}
+                    </Typography>
+                    <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.address}
+                    </Typography>
+                    <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.city}
+                    </Typography>
+                    <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.country}
+                    </Typography>
+                    <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.phone}
+                    </Typography>
+                    <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.phone_two}
+                    </Typography>
+                    <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
+                      {store.email}
+                    </Typography>
+                    <Box key={store._id} sx={{width: '100%', display: 'flex'}}>
+                      <Accordion elevation={0} sx={{width: '100%'}} expanded={expanded === `panel${store._id}`} onChange={handleChange(`panel${store._id}`)}>
+                        <AccordionSummary
+                          aria-controls="panel1bh-content"
+                          id={store._id}
+                          sx={{display: 'flex', justifyContent: 'left', p: 0}}
+                        >
+                          <Button
+                            variant='contained'
+                            disableElevation
+                            sx={{
+                              borderTopLeftRadius: '0',
+                              borderTopRightRadius: '0',
+                              backgroundColor: theme.palette.primary.main,
+                              '&:hover': {backgroundColor: theme.palette.secondary.main}
+                            }}
+                          >
+                            <FmdGoodIcon />
+                            see map
+                          </Button>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{p: 0}}>
+                            <Box
+                              component="iframe"
+                              width="100%"
+                              height="150px"
+                              src={store.map}
+                            >
+                            </Box>
+                        </AccordionDetails>
+                      </Accordion>
+                    </Box>
+                  </Item>
+                </Grid>
+              ))
+            }
+          </Grid>
         </Grid>
       </Grid>
     </Box>

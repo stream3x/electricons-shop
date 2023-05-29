@@ -162,7 +162,7 @@ export default function Header(props) {
   const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { cart, userInfo, comparasion: { compareItems }, wishlist: { wishItems } } = state;
+  const { userInfo, comparasion: { compareItems }, wishlist: { wishItems } } = state;
   const [query, setQuery] = useState('');
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
