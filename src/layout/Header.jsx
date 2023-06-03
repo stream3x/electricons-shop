@@ -39,7 +39,7 @@ import axios from 'axios';
 import Image from 'next/image';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
-const loged = ['Profile', 'Order History', 'Admin', 'Logout'];
+const loged = ['Profile', 'Admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [
   {
@@ -328,26 +328,20 @@ export default function Header(props) {
                   (
                     <Box>
                       <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                        <Link href={`/user/${userInfo._id}`} passHref>
+                        <Link href={`/profile/info`} passHref>
                           {loged[0]}
                         </Link>
                       </MenuItem>
                       {
-                        userInfo.isAdmin ?
+                        userInfo.isAdmin &&
                         <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                           <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
-                            {loged[2]}
-                          </Link>
-                        </MenuItem>
-                        :
-                        <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                          <Link href={`/order-history`} passHref>
                             {loged[1]}
                           </Link>
                         </MenuItem>
                       }
                       <MenuItem onClick={handleLogout}>
-                          {loged[3]}
+                          {loged[2]}
                       </MenuItem>
                     </Box>
 
@@ -404,26 +398,20 @@ export default function Header(props) {
                         (
                           <Box>
                             <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                              <Link href="/user/${id}">
+                              <Link href="/profile/info">
                                 {loged[0]}
                               </Link>
                             </MenuItem>
                             {
-                              userInfo.isAdmin ?
+                              userInfo.isAdmin &&
                               <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                                 <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
-                                  {loged[2]}
-                                </Link>
-                              </MenuItem>
-                              :
-                              <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                <Link href={`/order-history`} passHref>
                                   {loged[1]}
                                 </Link>
                               </MenuItem>
                             }
                             <MenuItem onClick={handleLogout}>
-                                {loged[3]}
+                                {loged[2]}
                             </MenuItem>
                           </Box>
       

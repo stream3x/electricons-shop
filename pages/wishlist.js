@@ -22,6 +22,19 @@ const Item = styled(Paper)(({ theme }) => ({
   const { state } = useContext(Store);
   const { cart: { cartItems }, wishlist: {wishItems} } = state;
 
+  if(wishItems.length === 0) {
+    return (
+      <Box sx={{ flexGrow: 1, my: 4, '& a': {textDecoration: 'none'} }}>
+        <Typography gutterBottom variant="h6" component="h3" textAlign="center">
+          There are no items in your wishlist
+        </Typography>
+        <Button onClick={()=> router.push('/')} variant="contained" startIcon={<ReplyIcon />}>
+          back to shop
+        </Button>
+      </Box>
+    )
+  }
+
   return (
     <Box sx={{ my: 4 }}>
       <Grid container space={2}>

@@ -394,19 +394,6 @@ export default function WishTable(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wishItems.length) : 0;
 
-  if(wishItems.length === 0) {
-    return (
-      <Box sx={{ flexGrow: 1, my: 4, '& a': {textDecoration: 'none'} }}>
-        <Typography gutterBottom variant="h6" component="h3" textAlign="center">
-          There are no items in your wishlist
-        </Typography>
-        <Button onClick={()=> router.push('/')} variant="contained" startIcon={<ReplyIcon />}>
-          back to shop
-        </Button>
-      </Box>
-    )
-  }
-
   async function addToCartHandler(item) {
     setLoading(true)
     const { data } = await axios.get(`/api/products/${item._id}`)

@@ -73,7 +73,8 @@ function Order(props) {
   const { params } = props;
   const orderId = params.id;
   const { state: { userInfo } } = useContext(Store);
-  const [{isPending}, paypalDispatch] = usePayPalScriptReducer();
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
+  const [isPayPal, setIsPayPal] = useState(false);
   const [loader, setLoader] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
@@ -142,7 +143,8 @@ function Order(props) {
       const loadPayPalScript = async () => {
         const {data: clientId} = await axios.get('/api/keys/paypal', {
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            autorization: `Bearer ${userInfo.token}`
           }
         });
         paypalDispatch({type: 'resetOptions', value: {
@@ -157,15 +159,19 @@ function Order(props) {
   
     return () => {
       console.log('return something in order');
+      
     };
-
   }, [order]);
+
+  useEffect(() => {
+    paidType();
+  }, [order])
 
   function createOrder(data, actions) {
     return actions.order.create({
       purchase_units: [
         {
-          amount: { value: total.toFixed(2) }
+          amount: { value: order.total.toFixed(2) }
         }
       ]
     }).then((orderID) => {
@@ -176,13 +182,17 @@ function Order(props) {
   function onApprove(data, actions) {
     return actions.order.capture().then(async function(details) {
       try {
-        const {data} = await axios.put(`/api/guest/${order._id}/pay`, details, {
+        dispatch({ type: 'PAY_REQIEST'});
+        const { data } = await axios.put(`/api/guest/${order._id}/pay`, details, {
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            autorization: `Bearer ${userInfo.token}`
           }
         })
+        dispatch({ type: 'PAY_SUCCESS', payload: data });
         dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: 'paid successfuly', severity: 'success'}});
       } catch (error) {
+        dispatch({ type: 'PAY_FAIL', payload: { message: 'Payment fiald' } });
         dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
       }
     })
@@ -190,6 +200,11 @@ function Order(props) {
 
   function onError(error) {
     dispatch({type: 'SNACK_MESSAGE', payload: {...state.snack, message: error ? error.response.data : error , severity: 'error'}});
+  }
+
+  async function paidType() {
+    const {payment} = await order;
+    setIsPayPal(payment === "PayPal");
   }
 
   return (
@@ -273,7 +288,7 @@ function Order(props) {
               <Item elevation={0}>
                 <CartTotal
                 order_items={order.orderItems}
-                paid={order.paid}
+                paid={order.isPaid}
                 delivered={order.isDelevered}
                 shippingMethod={order.shippingMethod}
                 shippingPrice={order.shippingMethod}
@@ -282,19 +297,19 @@ function Order(props) {
                  />
               </Item>
               <Item elevation={0}>
-              {/*
-                order.paid ?
+              {
+                order.isPaid ?
                 <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay Order</PaymentButton>
                 :
-                order.payment.paymentMethod === 'PayPal' ?
-                <PayPalButtons
-                createOrder={createOrder}
-                onApprove={onApprove}
-                onError={onError}
-                ></PayPalButtons>
+                isPayPal ?
+                  <PayPalButtons
+                  createOrder={createOrder}
+                  onApprove={onApprove}
+                  onError={onError}
+                  ></PayPalButtons>
                 : 
                 <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
-                */}
+              }
               </Item>
             </Grid>
           </Grid>

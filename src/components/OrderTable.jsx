@@ -192,7 +192,7 @@ export default function OrderTable(props) {
               {'$'}{row.orderItems[0].price}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {row.payment.paymentMethod}
+                {row.payment}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.shipping.shippingMethod}

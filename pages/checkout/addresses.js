@@ -40,7 +40,6 @@ export default function Addresses() {
 
   const handleChange = (event) => {
     setChecked(() => event.target.checked);
-    console.log(checked);
     if(!checked) {
       setForInvoice(() => Number(event.target.value));
       Cookies.set('forInvoice', Number(event.target.value));

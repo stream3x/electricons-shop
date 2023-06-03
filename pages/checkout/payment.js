@@ -40,7 +40,7 @@ export default function Payment() {
   };
 
   useEffect(() => {
-    !emptyPayment ? setValue(payment.paymentMethod) : setValue(() => 'Dina Card')
+    !emptyPayment ? setValue(payment) : setValue(() => 'Dina Card')
   }, []);
 
   const handleSubmit = async (event) => {

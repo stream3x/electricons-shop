@@ -11,8 +11,8 @@ const steps = [{ tab: 'Personal info', slug: 'personal-info' }, { tab: 'Addresse
 
 export default function CheckoutStepper({ activeStep = 0 }) {
   const match = useMediaQuery('(max-width: 600px)');
-  const { state, dispatch } = useContext(Store);
-  const { userInfo, cart: { personalInfo } } = state;
+  const { state } = useContext(Store);
+  const { userInfo } = state;
 
   const handleStep = (step) => {
     activeStep = step;

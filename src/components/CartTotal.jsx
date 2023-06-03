@@ -149,7 +149,7 @@ export default function CartTotal({
       Cookies.remove('cartItems');
     } catch (error) {
       setLoading(false);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});
       setErrors({ ...errors, policy: false});
     }
   }

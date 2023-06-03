@@ -41,9 +41,7 @@ const orderSchema = new mongoose.Schema(
       store: {type: String, required: false},
       comment: {type: String, required: false},
     },
-    payment: {
-      paymentMethod: {type: String, required: true}
-    },
+    payment: {type: String, required: true},
     total: {type: Number, required: true},
     shippingCost: {type: Number, required: true},
     taxCost: {type: String, required: true},
