@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import theme from '../../src/theme';
 import { Store } from '../../src/utils/Store';
-import CheckoutLayout from '../../src/components/CheckoutLayout';
+import CheckoutLayout from '../../src/layout/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
 import AddressCard from '../../src/assets/AddressCard';
 import RadioGroup from '@mui/material/RadioGroup';

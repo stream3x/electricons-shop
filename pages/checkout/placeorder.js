@@ -4,10 +4,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
 import { Store } from '../../src/utils/Store';
-import Link from '../../src/Link';
 import theme from '../../src/theme';
 import OrderItems from '../../src/components/OrderItems';
-import CheckoutLayout from '../../src/components/CheckoutLayout';
+import CheckoutLayout from '../../src/layout/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
 import PaymentInstruction from '../../src/components/PaymentInstruction';
 

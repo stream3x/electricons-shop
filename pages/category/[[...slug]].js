@@ -532,18 +532,13 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
-                  <Typography sx={{width: '100%', m: 0}} color="secondary" gutterBottom variant="h6" component="h2" textAlign="center">
-                    Filters
-                  </Typography>
-                </Toolbar>
-                <Toolbar>
                     <Typography sx={{width: '100%', m: 0}} color="secondary" gutterBottom variant="h6" component="h2" textAlign="center">
                       Filters
                     </Typography>
                   </Toolbar>
                   <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                     <Box sx={{ width: 300 }}>
-                      <Typography component="p" color="secondary" id="input-slider" gutterBottom>
+                      <Typography align='center' component="p" color="secondary" id="input-slider" gutterBottom>
                         Filter by price
                       </Typography>
                       <Box sx={{ my: 2, display: 'flex' }}>

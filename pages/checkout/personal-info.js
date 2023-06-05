@@ -17,7 +17,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { Divider } from '@mui/material';
 import theme from '../../src/theme';
 import { Store } from '../../src/utils/Store';
-import CheckoutLayout from '../../src/components/CheckoutLayout';
+import CheckoutLayout from '../../src/layout/CheckoutLayout';
 import CheckoutStepper from '../../src/components/CheckoutStepper';
 import { FormControl, InputLabel } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';

@@ -2,7 +2,7 @@ import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
-import CartTotal from './CartTotal';
+import CartTotal from '../components/CartTotal';
 import dynamic from 'next/dynamic';
 
 const Item = styled(Paper)(({ theme }) => ({
