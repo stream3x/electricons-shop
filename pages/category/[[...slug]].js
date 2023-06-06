@@ -343,7 +343,6 @@ export default function CategoryProducts(props) {
   function setPriceFilter() {
     priceHandler(value.join('-'));
     if(value.length !== 0) {
-      console.log('la', value);
       setPriceChip([{price_one: value[0], price_two: value[1]}])
     }else {
       setPriceChip([])

@@ -53,7 +53,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo'}]
+      stores: [{store: 'Electricons store'}]
     },
     {
       title: "AMD Acer Aspire",
@@ -74,7 +74,7 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}]
     },
     {
       title: "AMD Dell Inspirion Desktop ",
@@ -95,7 +95,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Dell PRO",
@@ -116,7 +116,7 @@ const data = {
       inStock: 10,
       inWidget: "best-seller",
       online: 'true',
-      stores: [{store: 'storeOne', store: 'storeTwo'}]
+      stores: [{store: 'Electricons store'}]
     },
     {
       title: "Dell business",
@@ -137,7 +137,7 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "HP server",
@@ -158,7 +158,7 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}]
     },
     {
       title: "HP Envy Desktop",
@@ -179,7 +179,7 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Acer laptop",
@@ -200,7 +200,7 @@ const data = {
       inStock: 10,
       inWidget: "best-seller",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Lenovo laptop",
@@ -221,7 +221,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Toshiba Satellite",
@@ -242,7 +242,7 @@ const data = {
       inStock: 0,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Xiaomi Redmi Note 9",
@@ -263,7 +263,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Xiaomi 10",
@@ -284,7 +284,7 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Nokia Seven",
@@ -305,7 +305,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Nokia Spring",
@@ -326,7 +326,7 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Huawei 14x Elite",
@@ -347,7 +347,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo', store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     },
     {
       title: "Huawei P30 Pro",
@@ -368,7 +368,7 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'storeTwo'}, {store: 'storeOne'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
     }
   ]
 }

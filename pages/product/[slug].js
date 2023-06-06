@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -122,6 +122,7 @@ export default function SingleProduct(props) {
   const [storeInfo, setStoreInfo] = React.useState([]);
   const [isSSR, setIsSsr] = React.useState(true);
   const [expanded, setExpanded] = React.useState(false);
+  const [productWithStoreInfo, setProductWithStoreInfo] = React.useState([]);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -137,14 +138,34 @@ export default function SingleProduct(props) {
   }, [router.query.counter])
 
   React.useEffect(() => {
-    setIsSsr(false);
+   
     fetchStoreInfo();
   }, []);
 
   async function fetchStoreInfo() {
-    if(!isSSR) return;
-    const { data } = await axios.get('/api/store_info');
+    try {
+      const { data } = await axios.get('/api/store_info');
       setStoreInfo(data);
+
+      if (product) {
+        const updatedStores = product.stores.map((store) => {
+          const foundStore = data.find((info) => info.name === store.store);
+          return foundStore;
+        });
+
+        const updatedProductWithStoreInfo = {
+          ...product,
+          stores: updatedStores
+        };
+
+        setProductWithStoreInfo(updatedProductWithStoreInfo.stores);
+      } else {
+        console.log('Proizvod nije pronađen.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    
   }
 
   if(!product) {
@@ -206,7 +227,7 @@ export default function SingleProduct(props) {
     }
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   }
-
+  
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
       <BreadcrumbNav productData={product} />
@@ -380,11 +401,11 @@ export default function SingleProduct(props) {
               </Item>
             </Grid>
             {
-              storeInfo.map(store => (
+              productWithStoreInfo.map(store => (
                 <Grid key={store._id} item xs={12} md={4}>
                   <Item elevation={1}>
                     <Typography gutterBottom variant="h6" component="h3" align="left" color="secondary" sx={{flex: 1}}>
-                      {store.name}
+                      {store && store.name}
                     </Typography>
                     <Typography gutterBottom variant="p" component="p" align="left" color="secondary" sx={{flex: 1}}>
                       {store.address}
@@ -412,12 +433,11 @@ export default function SingleProduct(props) {
                           sx={{display: 'flex', justifyContent: 'left', p: 0}}
                         >
                           <Button
-                            variant='contained'
+                            variant='outlined'
                             disableElevation
                             sx={{
                               borderTopLeftRadius: '0',
                               borderTopRightRadius: '0',
-                              backgroundColor: theme.palette.primary.main,
                               '&:hover': {backgroundColor: theme.palette.secondary.main}
                             }}
                           >

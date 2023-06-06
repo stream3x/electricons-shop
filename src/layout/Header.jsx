@@ -211,19 +211,7 @@ export default function Header(props) {
     e.preventDefault();
     const queryRemoveSpace = `${query.replace(/ /g, '+')}`;
     const addQuery = `query=${queryRemoveSpace}`;
-    if(router.pathname === '/category/[[...slug]]') {
-      router.push(`/search?query=${query}`);
-    }else if(router.pathname === `/product/[slug]`) {
-      router.push(`/search?query=${query}`);
-    }else if(router.pathname === `/compare`) {
-      router.push(`/search?query=${query}`);
-    }else if(router.asPath === `/search?query=`) {
-      router.push(`/search?query=${query}`);
-    }else if(router.asPath === `/search`) {
-      router.push(`/search?query=${query}`);
-    }else {
-      router.push(router.asPath === `/search?` || router.asPath === `/?counter=10` || router.asPath === `/` ? `/search?${addQuery}` : `${router.asPath}` + `&query=${queryRemoveSpace}` );
-    }
+    router.push(`/search?${addQuery}`);
   };
 
   const handleClick = (event) => {
