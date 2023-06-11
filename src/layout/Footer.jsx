@@ -17,6 +17,7 @@ import StayCurrentPortraitIcon from '@mui/icons-material/StayCurrentPortrait';
 import MapFooter from '../assets/MapFooter';
 import Link from '../Link';
 import theme from '../theme';
+import { useRouter } from 'next/router';
 
 function Copyright() {
   return (
@@ -96,6 +97,10 @@ const products = [
 
 export default function Footer({ storeInfo }) {
   const [isVisible, setIsVisible] = React.useState(false);
+  const router = useRouter();
+  const isNotBlog = router.pathname !== '/blog' && router.pathname !== '/blog/[slug]';
+  const isNotPost = router.pathname !== '/post/[slug]';
+
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
@@ -124,9 +129,12 @@ export default function Footer({ storeInfo }) {
           <Divider />
         </Box>
         <Grid sx={{m: '0 auto', width: {xs: '100%', sm: 'inherit'}, marginLeft: {xs: 0, sm: 'inherit'} }} container spacing={2}>
-          <Grid item xs={12} sx={{paddingLeft: {xs: '0!important', sm: 'inherit'} }}>
-            <MapFooter />
-          </Grid>
+          {
+            isNotPost && isNotBlog &&
+            <Grid item xs={12} sx={{paddingLeft: {xs: '0!important', sm: 'inherit'} }}>
+              <MapFooter />
+            </Grid>
+          }
           <Grid item xs={12} sm={3}>
           <Typography variant="p" component="h3" gutterBottom>
             STORE INFORMATION

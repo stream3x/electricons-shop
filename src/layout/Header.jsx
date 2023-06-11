@@ -22,6 +22,7 @@ import { Divider, Grid, useMediaQuery } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import BusinessIcon from '@mui/icons-material/Business';
 import RssFeedIcon from '@mui/icons-material/RssFeed';
+import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import theme from '../theme';
 import Logo from '../assets/Logo';
 import NavTabs from '../components/NavTabs';
@@ -39,6 +40,7 @@ import axios from 'axios';
 import Image from 'next/image';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
+const pagesTopInBlog = [{name:'About', link: '/about', icon: <InfoIcon sx={{color: '#fff'}} />}, {name:'Shop', link: '/', icon: <CartIcon sx={{color: '#fff'}} />}];
 const loged = ['Profile', 'Admin', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [
@@ -168,6 +170,8 @@ export default function Header(props) {
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
   const [isVisible, setIsVisible] = useState(false);
+  const isNotBlog = router.pathname !== '/blog/[[...slug]]';
+  const isNotPost = router.pathname !== '/post/[slug]';
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
@@ -266,30 +270,66 @@ export default function Header(props) {
       <MenuItem>My account</MenuItem>
     </Menu>
   );
-  
 
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-80px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: theme.palette.primary.white }} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-80px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
             <Toolbar sx={{ display: { xs: 'none', sm: 'flex' } }}>
-              <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
-                {pagesTop.map((page) => (
-                  <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'} }}>
-                  {page.icon}
-                      <Link
-                        href={page.link}
-                        sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0 }}
-                        passHref
-                      >
-                      {page.name}
-                      </Link>
-                    <Divider variant="middle" orientation="vertical" flexItem />
+              {
+                isNotPost && isNotBlog ?
+                <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
+                  {
+                    pagesTop.map((page) => (
+                      <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'} }}>
+                      {page.icon}
+                          <Link
+                            href={page.link}
+                            sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0 }}
+                            passHref
+                          >
+                          {page.name}
+                          </Link>
+                        <Divider variant="middle" orientation="vertical" flexItem />
+                      </Box>
+                    ))
+                  }
+                </Box>
+                :
+                <React.Fragment>
+                  <Link href="/">
+                    <Image
+                      width= {280}
+                      height= {50}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority
+                      src='/logo/electricons_logo_blog.svg'
+                      alt="logo"
+                      quality={35}
+                      loading="eager"
+                    />
+                  </Link>
+                  <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
+                    {
+                      pagesTopInBlog.map((page) => (
+                        <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'} }}>
+                          {page.icon}
+                          <Link
+                            href={page.link}
+                            sx={{ my: 2, color: isNotPost && isNotBlog ? theme.palette.secondary.main : '#fff', display: 'block', m: 0 }}
+                            passHref
+                          >
+                          {page.name}
+                          </Link>
+                          <Divider color="#fff" variant="middle" orientation="vertical" flexItem />
+                        </Box>
+                      ))
+                    }
                   </Box>
-                ))}
-              </Box>
+                </React.Fragment>
+              }
               <Box sx={{ flexGrow: 0, display: { xs: 'none', sm: 'flex'} }}>
                 <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -351,225 +391,317 @@ export default function Header(props) {
                 </Menu>
               </Box>
             </Toolbar>
-            <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
-              <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
-                <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
-                  <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 290 60"/>
-                </Grid>
-                <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
-                  <NavTabs pages={pages} />
-                </Grid>
-                <Grid item xs={3} sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
-                  <Box sx={{ flexGrow: 0 }}>
-                    <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
-                      <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
-                      </IconButton>
-                    </Tooltip>
-                    <Menu
-                      sx={{ mt: '45px', display: { xs: 'flex', md: 'none' } }}
-                      id="menu-appbar"
-                      anchorEl={anchorElUser}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      open={isMenuUserOpen}
-                      onClose={handleCloseUserMenu}
-                    >
-                      {
-                        userInfo ?
-                        (
-                          <Box>
-                            <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                              <Link href="/profile/info">
-                                {loged[0]}
-                              </Link>
-                            </MenuItem>
-                            {
-                              userInfo.isAdmin &&
+            {
+              !isNotPost && !isNotBlog && !matches &&
+              <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
+                <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
+                  <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
+                    <Link href="/">
+                      <Image
+                        width= {290}
+                        height= {60}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority
+                        src='/logo/electricons_logo_blog.svg'
+                        alt="logo"
+                        quality={35}
+                        loading="eager"
+                      />
+                    </Link>
+                  </Grid>
+                  <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
+                    <NavTabs pages={pages} />
+                  </Grid>
+                  <Grid item xs={3} sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
+                    <Box sx={{ flexGrow: 0 }}>
+                      <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                          <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                        </IconButton>
+                      </Tooltip>
+                      <Menu
+                        sx={{ mt: '45px', display: { xs: 'flex', md: 'none' } }}
+                        id="menu-appbar"
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        open={isMenuUserOpen}
+                        onClose={handleCloseUserMenu}
+                      >
+                        {
+                          userInfo ?
+                          (
+                            <Box>
                               <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
-                                  {loged[1]}
+                                <Link href="/profile/info">
+                                  {loged[0]}
                                 </Link>
                               </MenuItem>
-                            }
-                            <MenuItem onClick={handleLogout}>
-                                {loged[2]}
-                            </MenuItem>
-                          </Box>
-      
-                        ) : (
-                          <Box>
-                            <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                              <Link href="/login">
-                                {logedout[0]}
-                              </Link>
-                            </MenuItem>
-                            <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main} }} onClick={handleCloseUserMenu}>
-                              <Link href="/signin">
-                                {logedout[1]}
-                              </Link>
-                            </MenuItem>
-                          </Box>
-                        )
-                      }
-                    </Menu>
-                  </Box>     
-                </Grid>
-              </Grid>    
-            </Toolbar>
-            <Toolbar sx={{p: {xs: 0, sm: 'inherit'}}}>
-              <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%', postion: 'relative' }}>
-                {
-                  matches ? 
-                  <React.Fragment>
-                    <Tooltip title="Dropdown menu">
-                      <IconButton
-                        onClick={handleClick}
-                        size="small"
-                        sx={{ ml: 2 }}
-                      >
-                        <MenuIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <DropdownMenu
-                      openDropdown={openDropdown}
-                      anchorElDropdown={anchorElDropdown}
-                      handleCloseDropdown={handleCloseDropdown}
-                      isVisible={isVisible}
-                    />
-                  </React.Fragment>
-                  :
-                  <SwipeableNavDrawer />
-                }
-                <Search onSubmit={submitHandler}>
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <Autocomplete
-                    id="asynchronous"
-                    sx={{ width: '100%' }}
-                    open={open}
-                    onOpen={() => {
-                      setOpen(true);
-                    }}
-                    onClose={() => {
-                      setOpen(false);
-                    }}
-                    onChange={(option, value) => setQuery(value ? value.title : '')}
-                    isOptionEqualToValue={(option, value) => option.title === value.title}
-                    getOptionLabel={(option) => option.title || option.subCategory}
-                    options={options}
-                    loading={loading}
-                    getOptionDisabled={(option) =>
-                      option.inStock === 0
-                    }
-                    renderOption={(props, option) => (
-                      <Box>
-                        {
-                          matches ?
-                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 1 }, width: '100%' }} {...props}>
-                            <Box sx={{ minWidth: '40px', width: '40px', height: '40px', position: 'relative', '& > img': {objectFit: 'contain'}, position: 'relative', mr: .25}}>
-                              <Image
-                                loading="lazy"
-                                fill
-                                sizes="(max-width: 768px) 50vw, (min-width: 1200px) 50vw, 33vw"
-                                src={option.images[1].image ? option.images[1].image : '/images/no-image.jpg'}
-                                alt={option.title}
-                              />
+                              {
+                                userInfo.isAdmin &&
+                                <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                  <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
+                                    {loged[1]}
+                                  </Link>
+                                </MenuItem>
+                              }
+                              <MenuItem onClick={handleLogout}>
+                                  {loged[2]}
+                              </MenuItem>
                             </Box>
-                            <Typography component="span" variant='caption' sx={{ p: 0, mr: .25, felxGrow: 1 }} color="primary">
-                              <Link href={`product/${option.slug}`} passHref> {option.title}</Link>
-                            </Typography>      
-                            <Typography sx={{ p: 0, mr: .25, felxGrow: 1 }} color="secondary" component="span" variant='caption'>
-                            | brand:
-                              <Typography color="primary" component="span" variant='caption'>{option.brand}</Typography>
-                            </Typography>
-                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
-                            | category: 
-                              <Link href={`category/${option.categoryUrl}`} passHref> {option.category}</Link>
-                              /
-                              <Link href={`category/${option.categoryUrl}/${option.subCategoryUrl}`} passHref> {option.subCategory}</Link>
-                            </Typography>
-                            <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
-                              | price:  
-                              <Typography color="primary" component="span" variant='caption'> {"$"}{option.price}
-                              </Typography>
-                            </Typography>             
-                            <Typography sx={{ p: 0, mr: .25 }} color={option.inStock > 0 ? "secondary" : "error"} component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
-                            </Typography>
-                          </Box>
-                          :
-                          <Box key={option.title} component="li" sx={{ '& > img': { flexShrink:  1 }, display: 'flex', position: 'relative' }} {...props}>
-                            <Box sx={{ minWidth: '40px', width: '40px', height: '40px', position: 'relative', '& > img': {objectFit: 'contain'} }}>
-                              <Image
-                                loading="lazy"
-                                fill
-                                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
-                                src={option.images[1].image ? option.images[1].image : '/images/no-image.jpg'}
-                                alt={option.title}
-                              />
+        
+                          ) : (
+                            <Box>
+                              <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                <Link href="/login">
+                                  {logedout[0]}
+                                </Link>
+                              </MenuItem>
+                              <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main} }} onClick={handleCloseUserMenu}>
+                                <Link href="/signin">
+                                  {logedout[1]}
+                                </Link>
+                              </MenuItem>
                             </Box>
-                            <Typography sx={{px: 1, flex: 1, fontSize: '10px', overflow: 'hidden' }} color="primary" component="span">
-                              <Link sx={{overflow: 'hidden'}} href={`product/${option.slug}`} passHref> {option.title}</Link>
-                            </Typography>
-                            <Typography sx={{px: 1, fontSize: '12px', overflow: 'hidden' }} color="secondary" component="span">     {"$"}{option.price}
-                            </Typography>
-                            <Typography sx={{ p: 0, mr: .25 }} color={option.inStock > 0 ? "secondary" : "error"} component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
-                            </Typography>
-                          </Box>
+                          )
                         }
-                      </Box>
-                    )}
-                    renderInput={(params) => (
-                      <StyledInputBase
-                        {...params}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Search…"
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <React.Fragment>
-                              {loading ? <CircularProgress color="primary" size={20} /> : null}
-                              {params.InputProps.endAdornment}
-                            </React.Fragment>
-                          ),
+                      </Menu>
+                    </Box>     
+                  </Grid>
+                </Grid>    
+              </Toolbar>
+            }
+            {
+              isNotPost && isNotBlog &&
+              <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
+                <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
+                  <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
+                      <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 290 60"/>
+                  </Grid>
+                  <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
+                    <NavTabs pages={pages} />
+                  </Grid>
+                  <Grid item xs={3} sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
+                    <Box sx={{ flexGrow: 0 }}>
+                      <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
+                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                          <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                        </IconButton>
+                      </Tooltip>
+                      <Menu
+                        sx={{ mt: '45px', display: { xs: 'flex', md: 'none' } }}
+                        id="menu-appbar"
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
                         }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        open={isMenuUserOpen}
+                        onClose={handleCloseUserMenu}
+                      >
+                        {
+                          userInfo ?
+                          (
+                            <Box>
+                              <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                <Link href="/profile/info">
+                                  {loged[0]}
+                                </Link>
+                              </MenuItem>
+                              {
+                                userInfo.isAdmin &&
+                                <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                  <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
+                                    {loged[1]}
+                                  </Link>
+                                </MenuItem>
+                              }
+                              <MenuItem onClick={handleLogout}>
+                                  {loged[2]}
+                              </MenuItem>
+                            </Box>
+        
+                          ) : (
+                            <Box>
+                              <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                <Link href="/login">
+                                  {logedout[0]}
+                                </Link>
+                              </MenuItem>
+                              <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main} }} onClick={handleCloseUserMenu}>
+                                <Link href="/signin">
+                                  {logedout[1]}
+                                </Link>
+                              </MenuItem>
+                            </Box>
+                          )
+                        }
+                      </Menu>
+                    </Box>     
+                  </Grid>
+                </Grid>    
+              </Toolbar>
+            }
+            {
+              isNotPost && isNotBlog &&
+              <Toolbar sx={{p: {xs: 0, sm: 'inherit'}}}>
+                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%', postion: 'relative' }}>
+                  {
+                    matches ? 
+                    <React.Fragment>
+                      <Tooltip title="Dropdown menu">
+                        <IconButton
+                          onClick={handleClick}
+                          size="small"
+                          sx={{ ml: 2 }}
+                        >
+                          <MenuIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <DropdownMenu
+                        openDropdown={openDropdown}
+                        anchorElDropdown={anchorElDropdown}
+                        handleCloseDropdown={handleCloseDropdown}
+                        isVisible={isVisible}
                       />
-                    )}
-                  />
-                  <StyledInputButton type='submit'>Search</StyledInputButton>
-                </Search>
-                <Box sx={{ flexGrow: 1 }} />
-                <Box sx={{ display: { xs: 'none', sm: 'flex', md: 'flex' } }}>
-                  <Link sx={{width: '100%', height: '100%'}} href={'/compare'}>
-                    <IconButton size="large" aria-label="show compare items" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
-                      <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary">
-                        <CompareIcon color="badge" />
-                      </Badge>
-                    </IconButton>
-                  </Link>
-                  <Link sx={{width: '100%', height: '100%'}} href={'/wishlist'}>
-                    <IconButton
-                      size="large"
-                      aria-label="show wishlist items"
-                      color="secondary"
-                      sx={{ backgroundColor: theme.palette.badge.bgd, ml: 2 }}
-                    >
-                      <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={wishItems.length > 0 ? wishItems.length : "0"} color="secondary">
-                        <Wishlist color="badge.bgd"/>
-                      </Badge>
-                    </IconButton>
-                  </Link>
-                  <SwipeableCartDrawer />
+                    </React.Fragment>
+                    :
+                    <SwipeableNavDrawer />
+                  }
+                  <Search onSubmit={submitHandler}>
+                    <SearchIconWrapper>
+                      <SearchIcon />
+                    </SearchIconWrapper>
+                    <Autocomplete
+                      id="asynchronous"
+                      sx={{ width: '100%' }}
+                      open={open}
+                      onOpen={() => {
+                        setOpen(true);
+                      }}
+                      onClose={() => {
+                        setOpen(false);
+                      }}
+                      onChange={(option, value) => setQuery(value ? value.title : '')}
+                      isOptionEqualToValue={(option, value) => option.title === value.title}
+                      getOptionLabel={(option) => option.title || option.subCategory}
+                      options={options}
+                      loading={loading}
+                      getOptionDisabled={(option) =>
+                        option.inStock === 0
+                      }
+                      renderOption={(props, option) => (
+                        <Box>
+                          {
+                            matches ?
+                            <Box key={option.title} component="li" sx={{ '& > img': { flexShrink: 1 }, width: '100%' }} {...props}>
+                              <Box sx={{ minWidth: '40px', width: '40px', height: '40px', position: 'relative', '& > img': {objectFit: 'contain'}, position: 'relative', mr: .25}}>
+                                <Image
+                                  loading="lazy"
+                                  fill
+                                  sizes="(max-width: 768px) 50vw, (min-width: 1200px) 50vw, 33vw"
+                                  src={option.images[1].image ? option.images[1].image : '/images/no-image.jpg'}
+                                  alt={option.title}
+                                />
+                              </Box>
+                              <Typography component="span" variant='caption' sx={{ p: 0, mr: .25, felxGrow: 1 }} color="primary">
+                                <Link href={`product/${option.slug}`} passHref> {option.title}</Link>
+                              </Typography>      
+                              <Typography sx={{ p: 0, mr: .25, felxGrow: 1 }} color="secondary" component="span" variant='caption'>
+                              | brand:
+                                <Typography color="primary" component="span" variant='caption'>{option.brand}</Typography>
+                              </Typography>
+                              <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
+                              | category: 
+                                <Link href={`category/${option.categoryUrl}`} passHref> {option.category}</Link>
+                                /
+                                <Link href={`category/${option.categoryUrl}/${option.subCategoryUrl}`} passHref> {option.subCategory}</Link>
+                              </Typography>
+                              <Typography sx={{ p: 0, mr: .25 }} color="secondary" component="span" variant='caption'>
+                                | price:  
+                                <Typography color="primary" component="span" variant='caption'> {"$"}{option.price}
+                                </Typography>
+                              </Typography>             
+                              <Typography sx={{ p: 0, mr: .25 }} color={option.inStock > 0 ? "secondary" : "error"} component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
+                              </Typography>
+                            </Box>
+                            :
+                            <Box key={option.title} component="li" sx={{ '& > img': { flexShrink:  1 }, display: 'flex', position: 'relative' }} {...props}>
+                              <Box sx={{ minWidth: '40px', width: '40px', height: '40px', position: 'relative', '& > img': {objectFit: 'contain'} }}>
+                                <Image
+                                  loading="lazy"
+                                  fill
+                                  sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
+                                  src={option.images[1].image ? option.images[1].image : '/images/no-image.jpg'}
+                                  alt={option.title}
+                                />
+                              </Box>
+                              <Typography sx={{px: 1, flex: 1, fontSize: '10px', overflow: 'hidden' }} color="primary" component="span">
+                                <Link sx={{overflow: 'hidden'}} href={`product/${option.slug}`} passHref> {option.title}</Link>
+                              </Typography>
+                              <Typography sx={{px: 1, fontSize: '12px', overflow: 'hidden' }} color="secondary" component="span">     {"$"}{option.price}
+                              </Typography>
+                              <Typography sx={{ p: 0, mr: .25 }} color={option.inStock > 0 ? "secondary" : "error"} component="span" variant='caption'> {option.inStock > 0 ? "- in stock" : "- out of stock"}
+                              </Typography>
+                            </Box>
+                          }
+                        </Box>
+                      )}
+                      renderInput={(params) => (
+                        <StyledInputBase
+                          {...params}
+                          onChange={(e) => setQuery(e.target.value)}
+                          placeholder="Search…"
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {loading ? <CircularProgress color="primary" size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                              </React.Fragment>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                    <StyledInputButton type='submit'>Search</StyledInputButton>
+                  </Search>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <Box sx={{ display: { xs: 'none', sm: 'flex', md: 'flex' } }}>
+                    <Link sx={{width: '100%', height: '100%'}} href={'/compare'}>
+                      <IconButton size="large" aria-label="show compare items" sx={{ backgroundColor: theme.palette.badge.bgd }} color="inherit">
+                        <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary">
+                          <CompareIcon color="badge" />
+                        </Badge>
+                      </IconButton>
+                    </Link>
+                    <Link sx={{width: '100%', height: '100%'}} href={'/wishlist'}>
+                      <IconButton
+                        size="large"
+                        aria-label="show wishlist items"
+                        color="secondary"
+                        sx={{ backgroundColor: theme.palette.badge.bgd, ml: 2 }}
+                      >
+                        <Badge sx={{ 'span': {top:'-20%', right:'-50%'} }} badgeContent={wishItems.length > 0 ? wishItems.length : "0"} color="secondary">
+                          <Wishlist color="badge.bgd"/>
+                        </Badge>
+                      </IconButton>
+                    </Link>
+                    <SwipeableCartDrawer />
+                  </Box>
                 </Box>
-              </Box>
-            </Toolbar>
+              </Toolbar>
+            }
           </Container>
         </AppBar>
         {renderMenu}
