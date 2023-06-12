@@ -6,7 +6,7 @@ import Select from '@mui/material/Select';
 import { Box, useMediaQuery } from '@mui/material';
 
 export default function SelectPages(props) {
-  const { pageSizeHandler, pageSize } = props;
+  const { pageSizeHandler, pageSize, values } = props;
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event) => {
@@ -26,9 +26,11 @@ export default function SelectPages(props) {
           autoWidth
           label="Sort by"
         >
-          <MenuItem value={12}>12 per page</MenuItem>
-          <MenuItem value={20}>20 per page</MenuItem>
-          <MenuItem value={40}>40 per page</MenuItem>
+          {
+            values.map(val => (
+              <MenuItem value={val}>{`${val} per page`}</MenuItem>
+            ))
+          }
         </Select>
       </FormControl>
     </Box>

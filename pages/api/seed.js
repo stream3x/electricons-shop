@@ -1,11 +1,13 @@
 import db from '../../src/utils/db';
 import Product from '../../models/Product';
 import data from "../../src/utils/data";
+import blogData from "../../src/utils/bologData";
 import stores from "../../src/utils/store_info";
 import category_data from "../../src/utils/category";
 import User from '../../models/User';
 import Category from '../../models/Category';
 import StoreInfo from '../../models/StoreInfo';
+import Blog from '../../models/Blog';
 
 const handler = async (req, res) => {
   await db.connect();
@@ -15,6 +17,8 @@ const handler = async (req, res) => {
   await Category.insertMany(category_data.categories);
   await Product.deleteMany();
   await Product.insertMany(data.products);
+  await Blog.deleteMany();
+  await Blog.insertMany(blogData.blogs);
   await StoreInfo.deleteMany();
   await StoreInfo.insertMany(stores.storeOne);
   await StoreInfo.insertMany(stores.storeTwo);

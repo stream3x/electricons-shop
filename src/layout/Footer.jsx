@@ -98,7 +98,7 @@ const products = [
 export default function Footer({ storeInfo }) {
   const [isVisible, setIsVisible] = React.useState(false);
   const router = useRouter();
-  const isNotBlog = router.pathname !== '/blog' && router.pathname !== '/blog/[slug]';
+  const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/post/[slug]';
 
 

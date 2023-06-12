@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 
 export default function Layout({ children, storeInfo }) {
   const router = useRouter();
-  const isNotBlog = router.pathname !== '/blog/[[...slug]]';
+  const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/post/[slug]';
   const mainStore = storeInfo.filter(store => store._id === '647456d0ef1a547ad11c0429');
 

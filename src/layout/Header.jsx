@@ -170,7 +170,7 @@ export default function Header(props) {
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
   const [isVisible, setIsVisible] = useState(false);
-  const isNotBlog = router.pathname !== '/blog/[[...slug]]';
+  const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/post/[slug]';
 
   function toggleVisibility() {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Checkbox, Chip, CircularProgress, Collapse, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, Input, ListItem, Pagination, Paper, Rating, Slider, Stack, Toolbar, Typography } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -687,7 +687,7 @@ export default function Search(props) {
            <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-                  <SelectPages pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                  <SelectPages values={['6', '12', '24', '36']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
                     products.length === 0 ?
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">

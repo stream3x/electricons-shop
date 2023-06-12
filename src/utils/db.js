@@ -38,11 +38,13 @@ function convertDocToObject(doc) {
     img.createdAt = img.createdAt.toString();
     img.updatedAt = img.updatedAt.toString();
   });
-  doc.stores.forEach(store => {
-    store._id = store._id.toString();
-    store.createdAt = store.createdAt.toString();
-    store.updatedAt = store.updatedAt.toString();
-  });
+  if(doc.stores) {
+    doc.stores.forEach(store => {
+      store._id = store._id.toString();
+      store.createdAt = store.createdAt.toString();
+      store.updatedAt = store.updatedAt.toString();
+    });
+  }
   doc.createdAt = doc.createdAt.toString();
   doc.updatedAt = doc.updatedAt.toString();
   return doc;

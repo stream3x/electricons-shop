@@ -1,9 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Input, List, ListItem, ListItemText, Pagination, Slider, Stack, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Input, ListItem, Pagination, Slider, Stack, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import Rating from '@mui/material/Rating';
@@ -11,7 +11,6 @@ import BreadcrumbNav from '../../src/assets/BreadcrumbNav';
 import db from '../../src/utils/db';
 import IconButton from '@mui/material/IconButton';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
-import { Store } from '../../src/utils/Store';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Category from '../../models/Category';
 import Product from '../../models/Product';
@@ -19,7 +18,6 @@ import Image from 'next/image';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import theme from '../../src/theme';
-import RangeSlider from '../../src/assets/RangeSlider';
 import ToggleButtons from '../../src/assets/ToggleButtons';
 import { useRouter } from 'next/router';
 import SelectPages from '../../src/assets/SelectPages';
@@ -258,7 +256,7 @@ export default function CategoryProducts(props) {
     page = 1
   } = router.query;
 
-  const { slug, products, countProducts, categories, subCategories, brands, pages, productDocsCategory } = props;
+  const { slug, products, countProducts, categories, subCategories, brands, pages } = props;
 
   const filterSearch = ({
     page,
@@ -774,7 +772,7 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-                  <SelectPages sx={{order: 2}} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                  <SelectPages values={['6', '12', '24', '36']} sx={{order: 2}} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
                     countProducts === 0 ?
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">

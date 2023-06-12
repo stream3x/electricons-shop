@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const storeSchema = new mongoose.Schema(
   {
     name: {type: String, required: true},
-    num: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     logo: {type: String, required: false},
     favicon: {type: String, required: false},
