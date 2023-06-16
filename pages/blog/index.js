@@ -97,7 +97,7 @@ export default function BlogPages(props) {
   } = router.query;
 
   const { slug, blogs, countBlogs, categories, subCategories, pages } = props;
-console.log(categories);
+
   const filterSearch = ({
     page,
     pageSize,
@@ -161,25 +161,31 @@ console.log(categories);
   return (
     <Box sx={{ my: 4 }}>
       <Box sx={{height: '600px'}}>
-        <Box sx={{ bgcolor: theme.palette.primary.main, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', marginTop: '-3rem', py: '4rem', px: '1.5rem', height: '500px' }}>
+        <Box sx={{ bgcolor: theme.palette.primary.main, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', marginTop: '-3rem', py: '4rem', px: '1.5rem', height: {xs: '620px', sm: '500px'} }}>
           <Container maxWidth="xl">
             <Box sx={{display: 'flex'}}>
-              <Box sx={{ position: 'relative', width: '500px', height: '500px'}}>
-                <Image
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority
-                  src='/images/amd_desktop/desktop_ryzen.png'
-                  alt="amd desktop"
-                  quality={75}
-                  loading="eager"
-                />
-              </Box>
-              <Box sx={{flexGrow: 1, my: 'auto', ml: '8rem'}}>
-                <Typography component="p" variant="h6" color={theme.palette.primary.contrastText}>Gaming 4K*</Typography>
-                <Typography component="h1" variant="h2" color={theme.palette.primary.contrastText} sx={{fontWeight: 'bolder'}}>Desktops Computer</Typography>
-                <Typography sx={{pt: '2rem'}} component="p" variant="h6">#GamingTechMarket</Typography>
-              </Box>
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ position: 'relative', width: {xs: '300px', sm:'600px'}, height: {xs: '300px', sm:'600px'}}}>
+                    <Image
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority
+                      src='/images/amd_desktop/desktop_ryzen.png'
+                      alt="amd desktop"
+                      quality={75}
+                      loading="eager"
+                    />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{display: 'flex'}}>
+                  <Box sx={{flexGrow: 1, my: 'auto', ml: {xs: '0', sm:'8rem'}}}>
+                    <Typography component="p" variant="h6" color={theme.palette.primary.contrastText}>Gaming 4K*</Typography>
+                    <Typography component="h1" variant="h2" color={theme.palette.primary.contrastText} sx={{fontWeight: 'bolder'}}>Desktops Computer</Typography>
+                    <Typography sx={{pt: '2rem'}} component="p" variant="h6">#GamingTechMarket</Typography>
+                  </Box>
+                </Grid>
+              </Grid>
             </Box>
           </Container>
         </Box>
@@ -190,16 +196,20 @@ console.log(categories);
         </Typography>
         {
           categories.map(cat => (
-          <LabelButton key={cat._id} onClick={() => categoryHandler(cat)} sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
-            {cat}
-          </LabelButton>
+          <Link key={cat._id} href={`/category/${cat}`}>
+            <LabelButton onClick={() => categoryHandler(cat)} sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
+              {cat}
+            </LabelButton>
+          </Link>
           ))
         }
         {
-          subCategories.map(cat => (
-          <LabelButton key={cat._id} onClick={() => subCategoryHandler(cat)} sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
-            {cat}
-          </LabelButton>
+          subCategories.map((sub, i) => (
+            <Link key={sub._id} href={`/category/${categories[i]}/${sub}`}>
+              <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
+                {sub}
+              </LabelButton>
+            </Link>
           ))
         }
         <LabelButton onClick={handleDelete} sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
@@ -208,12 +218,13 @@ console.log(categories);
       </Box>
       <Box component="section" sx={{mt: 5}}>
         <Container maxWidth="xl">
-          <Grid container spacing={0}>
+          <Grid container spacing={3}>
             {
               blogs.map(blog => (
-                <Grid sx={{display: {xs: 'none', md: 'block'}}} key={blog._id} item xs={12}>
+                blog.category === 'Desktop computers' &&
+                <Grid key={blog._id} item xs={12}>
                     <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important' }}>
-                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%'} }}>
+                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > a': { width: {xs: '100%',sm: '25%'}} }}>
                           <Link sx={{position: 'relative', display: 'flex', flex: 0}} href={`/post/${blog.slug}`}>
                             <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                               <Image
@@ -226,7 +237,7 @@ console.log(categories);
                               />
                             </CardMedia>
                           </Link>
-                          <CardContent sx={{display: 'flex', flex: '0 0 75%', flexWrap: 'wrap'}}>
+                          <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, flexWrap: 'wrap'}}>
                             <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
                             {blog.title}
                             </Typography>
@@ -251,6 +262,91 @@ console.log(categories);
                     :
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     There are {blogs.length} {blogs.length === 1 ? "blog" : "blogs"}.
+                  </Typography>
+                  }
+                  {
+                    blogs.length > 0 &&
+                    <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
+                      <Pagination sx={{mx: 'auto'}} count={pages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                    </Stack>
+                  }
+                </Toolbar>
+              </AppBar>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+      {/* Laptops */}
+      <Box component="section" sx={{mt: 5}}>
+        <Box sx={{bgcolor: theme.palette.badge.bgdLight, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', mt: {xs: '-35rem', sm: '-20rem'}}}>
+          <Container maxWidth="xl">
+            <Grid container spacing={0}>
+              <Grid item xs={12} sm={8} sx={{py: '2rem', order: {xs: 1, sm: 2}}}>
+                <Typography component="h2" variant='h4' sx={{fontWeight: 'bolder', pt: '2rem'}}>Laptops Computers</Typography>
+                <Typography sx={{color: theme.palette.secondary.lightGrey, py: '2rem'}}>Donec id malesuada elit. Donec tempor sit amet est ac blandit. Phasellus ac sem nisl. Vestibulum aliquam, ligula in pretium congue, massa felis ultrices metus, nec mattis elit diam lobortis justo. Ut dapibus gravida eros ac bibendum. Phasellus ac tempus libero. Mauris eleifend, mi at viverra scelerisque, dolor leo luctus justo, id fermentum tellus nisl eget est.</Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box sx={{ position: 'relative', width: {xs: '300px', sm: '500px'}, height: {xs: '200px', sm: '300px'}, mt: '-2rem' }}>
+                  <Image
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
+                    src='/images/toshiba_laptop/toshiba_satellite.png'
+                    alt="amd desktop"
+                    quality={75}
+                    loading="eager"
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </Container>
+          <Box sx={{display: {xs: 'none', sm: 'block'}, width: '50px', height: '50px', bgcolor: theme.palette.badge.bgdLight, position: 'absolute', bottom: -20, left: 100, transform: 'rotate(45deg)'}}></Box>
+        </Box>
+        <Container maxWidth="xl" sx={{mt: {xs: '40rem!important', sm: '25rem!important'}}}>
+          <Grid container spacing={3}>
+            {
+              blogs.map(blog => (
+                blog.category === 'Laptop computers' &&
+                <Grid key={blog._id} item xs={12}>
+                    <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important' }}>
+                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > a': { width: {xs: '100%',sm: '25%'}} }}>
+                          <Link sx={{position: 'relative', display: 'flex', justifyContent: 'center' }} href={`/post/${blog.slug}`}>
+                            <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                              <Image
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                priority
+                                src={blog.images[0].image}
+                                alt={blog.title}
+                                quality={35}
+                              />
+                            </CardMedia>
+                          </Link>
+                          <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, maxWidth: {xs: '100%', sm: '75%'}, flexWrap: 'wrap'}}>
+                            <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                            {blog.title}
+                            </Typography>
+                            <Typography align="left" variant="body2" color="text.secondary">
+                              {blog.shortDescription}
+                            </Typography>
+                          </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+              ))
+            }
+            <Grid item xs={12}>
+              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                  <SelectPages values={['6', '12', '24']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                  {
+                    blogs.filter(blog => blog.category === 'Laptop computers').length === 0 ?
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    "No products"
+                    </Typography>
+                    :
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    There are {blogs.filter(blog => blog.category === 'Laptop computers').length} {blogs.filter(blog => blog.category === 'Laptop computers').length === 1 ? "blog" : "blogs"}.
                   </Typography>
                   }
                   {
