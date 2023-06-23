@@ -171,7 +171,8 @@ export default function Header(props) {
   const loading = open && options.length === 0;
   const [isVisible, setIsVisible] = useState(false);
   const isNotBlog = router.pathname !== '/blog';
-  const isNotPost = router.pathname !== '/post/[slug]';
+  const isNotPost = router.pathname !== '/blog/post/[slug]';
+  const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
@@ -274,12 +275,12 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-80px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-80px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog && isNotCat ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
-            <Toolbar sx={{ display: { xs: 'none', sm: 'flex' } }}>
+            <Toolbar sx={{ display: { xs: isNotPost && isNotBlog && isNotCat && 'none', sm: 'flex' }, pt: '1rem' }}>
               {
-                isNotPost && isNotBlog ?
+                isNotPost && isNotBlog && isNotCat ?
                 <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
                   {
                     pagesTop.map((page) => (
@@ -301,7 +302,7 @@ export default function Header(props) {
                 <React.Fragment>
                   <Link href="/">
                     <Image
-                      width= {280}
+                      width= {matches ? 280 : 130}
                       height= {50}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority
@@ -318,16 +319,79 @@ export default function Header(props) {
                           {page.icon}
                           <Link
                             href={page.link}
-                            sx={{ my: 2, color: isNotPost && isNotBlog ? theme.palette.secondary.main : '#fff', display: 'block', m: 0 }}
+                            sx={{ my: 2, color: isNotPost && isNotBlog && isNotCat ? theme.palette.secondary.main : '#fff', display: {xs: 'none', md: 'block'}, m: 0 }}
                             passHref
                           >
-                          {page.name}
+                          {page.name}                          
                           </Link>
                           <Divider color="#fff" variant="middle" orientation="vertical" flexItem />
                         </Box>
                       ))
                     }
                   </Box>
+                  {
+                      !matches &&
+                      <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
+                          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                            <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                          </IconButton>
+                        </Tooltip>
+                        <Menu
+                          sx={{ mt: '45px', display: { xs: 'flex', md: 'none' } }}
+                          id="menu-appbar"
+                          anchorEl={anchorElUser}
+                          anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                          transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                          }}
+                          open={isMenuUserOpen}
+                          onClose={handleCloseUserMenu}
+                        >
+                          {
+                            userInfo ?
+                            (
+                              <Box>
+                                <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                  <Link href="/profile/info">
+                                    {loged[0]}
+                                  </Link>
+                                </MenuItem>
+                                {
+                                  userInfo.isAdmin &&
+                                  <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                    <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
+                                      {loged[1]}
+                                    </Link>
+                                  </MenuItem>
+                                }
+                                <MenuItem onClick={handleLogout}>
+                                    {loged[2]}
+                                </MenuItem>
+                              </Box>
+          
+                            ) : (
+                              <Box>
+                                <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                                  <Link href="/login">
+                                    {logedout[0]}
+                                  </Link>
+                                </MenuItem>
+                                <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main} }} onClick={handleCloseUserMenu}>
+                                  <Link href="/signin">
+                                    {logedout[1]}
+                                  </Link>
+                                </MenuItem>
+                              </Box>
+                            )
+                          }
+                        </Menu>
+                      </Box>     
+                    }
                 </React.Fragment>
               }
               <Box sx={{ flexGrow: 0, display: { xs: 'none', sm: 'flex'} }}>
@@ -392,7 +456,7 @@ export default function Header(props) {
               </Box>
             </Toolbar>
             {
-              !isNotPost && !isNotBlog && !matches &&
+              !isNotPost && !isNotBlog && !isNotCat && !matches &&
               <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
                 <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
                   <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
@@ -478,7 +542,7 @@ export default function Header(props) {
               </Toolbar>
             }
             {
-              isNotPost && isNotBlog &&
+              isNotPost && isNotBlog && isNotCat &&
               <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
                 <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
                   <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
@@ -553,7 +617,7 @@ export default function Header(props) {
               </Toolbar>
             }
             {
-              isNotPost && isNotBlog &&
+              isNotPost && isNotBlog && isNotCat &&
               <Toolbar sx={{p: {xs: 0, sm: 'inherit'}}}>
                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', width: '100%', postion: 'relative' }}>
                   {
@@ -576,7 +640,7 @@ export default function Header(props) {
                       />
                     </React.Fragment>
                     :
-                    <SwipeableNavDrawer />
+                    <SwipeableNavDrawer pagesTop={pagesTop} />
                   }
                   <Search onSubmit={submitHandler}>
                     <SearchIconWrapper>

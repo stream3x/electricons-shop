@@ -165,10 +165,9 @@ color: theme.palette.text.secondary,
 
 export default function CategoryProducts(props) {
   const router = useRouter();
+  const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
   const {
     query = '',
-    category = '',
-    subCategory = '',
     sort = '',
     pageSize = 40,
     page = 1
@@ -201,9 +200,6 @@ export default function CategoryProducts(props) {
   const pageSizeHandler = (num) => {
     filterSearch({ pageSize: num })
   }
-  const subCategoryHandler = (item) => {
-    filterSearch({ subCategory: item });
-  };
   const pageHandler = (page) => {
     filterSearch({ page });
   };
@@ -245,7 +241,7 @@ export default function CategoryProducts(props) {
 
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
-      <BreadcrumbNav categoryData={slug} />
+      <BreadcrumbNav blogData={slug} />
       <Grid container spacing={2}>
         <Grid item xs={12} lg={9}>
           <Grid container spacing={2}>
@@ -267,16 +263,16 @@ export default function CategoryProducts(props) {
                     </Typography>
                     }
                   </Box>
-                  <SelectSort sort={sort} sortHandler={sortHandler} />
+                  <SelectSort isNotCat={isNotCat} sort={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
             </Grid>
         {
           products.map(prod => (
-            <Grid sx={{display: {xs: 'none', md: 'block'}}} key={prod._id} item xs={12}>
+            <Grid key={prod._id} item xs={12}>
                 <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
-                    <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%'} }}>
-                      <Link sx={{position: 'relative', display: 'flex', flex: 0}} href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
+                    <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%', textDecoration: 'none'} }}>
+                      <Link sx={{position: 'relative', display: 'flex', flex: 0, flexWrap: {xs: 'wrap', md: 'nowrap'} }} href={`/blog/post/${prod.slug}`} onClick={() => handleLoading(prod)}>
                       {
                         prod._id === selected &&
                         <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
@@ -291,41 +287,15 @@ export default function CategoryProducts(props) {
                             quality={35}
                           />
                         </CardMedia>
-                      </Link>
-                      <CardContent sx={{display: 'flex', flex: '0 0 75%', flexWrap: 'wrap'}}>
-                        <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
-                        {prod.title}
-                        </Typography>
-                        <Typography align="center" variant="body2" color="text.secondary">
-                          {prod.shortDescription}
-                        </Typography>
-                        {
-                          prod.inStock > 0 ? 
-                          ( <Typography sx={{width: '100%', py: 2}} color="primary" gutterBottom variant="caption" component="p" align="left">
-                          in Stock
-                          </Typography>) :
-                          ( <Typography sx={{width: '100%', py: 2}} color="secondary" gutterBottom variant="caption" component="p" align="left">
-                          out of Stock
-                          </Typography>)
-                        }
-                        <Box
-                          sx={{
-                            textAlign: 'left',
-                            my: 1,
-                            width: '100%'
-                          }}
-                          >
-                          <Rating size="small" name="read-only" value={prod.rating} readOnly precision={0.5} />
-                        </Box>
-                        <Typography align="center" component="h3" variant="h6" color="secondary">
-                          {prod.price}
-                          <Typography align="right" component="span" variant="body2" color="secondary.lightGrey" sx={{marginLeft: 1}}>
-                            <del>
-                            {prod.oldPrice && prod.oldPrice}
-                            </del>
+                        <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', md: '0 0 75%'}, flexWrap: 'wrap'}}>
+                          <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                          {prod.title}
                           </Typography>
-                        </Typography>
-                      </CardContent>
+                          <Typography align="justify" variant="body2" color="text.secondary">
+                            {prod.shortDescription}
+                          </Typography>
+                        </CardContent>
+                      </Link>
                     </CardActionArea>
                 </Card>
             </Grid>

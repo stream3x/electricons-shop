@@ -4,32 +4,54 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Box, useMediaQuery } from '@mui/material';
+import { useRouter } from 'next/router';
 
 export default function SelectSort(props) {
   const { sort, sortHandler } = props;
   const matches = useMediaQuery('(min-width: 600px)');
+  const router = useRouter();
+  const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
 
   return (
     <Box sx={{ flex: {xs: 1, sm: 0} }}>
-      <FormControl sx={{ m: 1, minWidth: {xs: '100%', sm: 100} }}>
-        <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Sort by</InputLabel>
-        <Select
-          size={!matches ? 'small' : 'medium'}
-          labelId="select-label"
-          id="select-label"
-          value={sort ? sort : ''}
-          onChange={sortHandler}
-          autoWidth
-          label="Sort by"
-        >
-          <MenuItem value='availability'>In Stock</MenuItem>
-          <MenuItem value="lowest">Price: Hight to Low</MenuItem>
-          <MenuItem value="highest">Price: Low to Hight</MenuItem>
-          <MenuItem value="namelowest">Name: A - Z</MenuItem>
-          <MenuItem value="namehighest">Name: Z - A</MenuItem>
-          <MenuItem defaultValue="latest" value="latest">Featured Products</MenuItem>
-        </Select>
-      </FormControl>
+      {
+            isNotCat && isNotCat ?
+            <FormControl sx={{ m: 1, minWidth: {xs: '100%', sm: 100} }}>
+              <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Sort by</InputLabel>
+              <Select
+                size={!matches ? 'small' : 'medium'}
+                labelId="select-label"
+                id="select-label"
+                value={sort ? sort : ''}
+                onChange={sortHandler}
+                autoWidth
+                label="Sort by"
+              >
+                <MenuItem value='availability'>In Stock</MenuItem>
+                <MenuItem value="lowest">Price: Hight to Low</MenuItem>
+                <MenuItem value="highest">Price: Low to Hight</MenuItem>
+                <MenuItem value="namelowest">Name: A - Z</MenuItem>
+                <MenuItem value="namehighest">Name: Z - A</MenuItem>
+                <MenuItem defaultValue="latest" value="latest">Featured Products</MenuItem>
+              </Select>
+            </FormControl>
+            :
+            <FormControl sx={{ m: 1, minWidth: {xs: '100%', sm: 100} }}>
+            <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Sort by</InputLabel>
+            <Select
+              size={!matches ? 'small' : 'medium'}
+              labelId="select-label"
+              id="select-label"
+              value={sort ? sort : ''}
+              onChange={sortHandler}
+              autoWidth
+              label="Sort by"
+            >
+              <MenuItem value="namelowest">Name: A - Z</MenuItem>
+              <MenuItem value="namehighest">Name: Z - A</MenuItem>
+            </Select>
+          </FormControl>
+          }
     </Box>
   );
 }

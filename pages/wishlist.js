@@ -9,6 +9,7 @@ import Link from '../src/Link';
 import theme from '../src/theme';
 import ReplyIcon from '@mui/icons-material/Reply';
 import WishTable from '../src/components/WishTable';
+import { useRouter } from 'next/router';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -20,6 +21,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
  function Wishlist() {
   const { state } = useContext(Store);
+  const router = useRouter();
   const { cart: { cartItems }, wishlist: {wishItems} } = state;
 
   if(wishItems.length === 0) {

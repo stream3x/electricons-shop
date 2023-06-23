@@ -99,7 +99,8 @@ export default function Footer({ storeInfo }) {
   const [isVisible, setIsVisible] = React.useState(false);
   const router = useRouter();
   const isNotBlog = router.pathname !== '/blog';
-  const isNotPost = router.pathname !== '/post/[slug]';
+  const isNotPost = router.pathname !== '/blog/post/[slug]';
+  const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
 
 
   function toggleVisibility() {
@@ -130,7 +131,7 @@ export default function Footer({ storeInfo }) {
         </Box>
         <Grid sx={{m: '0 auto', width: {xs: '100%', sm: 'inherit'}, marginLeft: {xs: 0, sm: 'inherit'} }} container spacing={2}>
           {
-            isNotPost && isNotBlog &&
+            isNotPost && isNotBlog && isNotCat &&
             <Grid item xs={12} sx={{paddingLeft: {xs: '0!important', sm: 'inherit'} }}>
               <MapFooter />
             </Grid>

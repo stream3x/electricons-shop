@@ -41,8 +41,63 @@ const Page = () => {
   );
 };
 
-export default function BreadcrumbNav({productData, categoryData}) {
+export default function BreadcrumbNav({productData, categoryData, blogData, blogPost}) {
   const location = useRouter();
+  const isBlogData = blogData === undefined;
+
+  if(isBlogData && blogPost) {
+    return (
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 12, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>
+        <Link
+          underline="none"
+          sx={{ display: 'flex', alignItems: 'center' }}
+          color="primary"
+          href="/blog"
+        >
+          <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+          Blog
+        </Link>
+      </Breadcrumbs>
+    );
+  }
+
+  if(!isBlogData) {
+    return (
+      <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 12, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>
+        <Link
+          underline="none"
+          sx={{ display: 'flex', alignItems: 'center' }}
+          color="primary"
+          href="/blog"
+        >
+          <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+          Blog
+        </Link>
+        {
+          !isBlogData && blogData[0] && !blogPost &&
+            <Link
+              underline="none"
+              sx={{ display: 'flex', alignItems: 'center' }}
+              color="primary"
+              href={`/blog/category/${blogData[0]}`}
+            >
+              {blogData[0].replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+            </Link>
+        }
+        {
+          !isBlogData && blogData[1] && !blogPost &&
+            <Link
+              underline="none"
+              sx={{ display: 'flex', alignItems: 'center' }}
+              color="primary"
+              href={`/blog/category/${blogData[0]}/${blogData[1]}`}
+            >
+              {blogData[1].replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})}
+            </Link>
+        }
+      </Breadcrumbs>
+    );
+  }
 
   return (
     <Breadcrumbs aria-label="breadcrumb" separator={<NavigateNextIcon fontSize="small" />} sx={{ fontSize: {xs: 12, sm: 'inherit'}, my: 4, 'a' : { textDecoration: 'none'} }}>

@@ -6,11 +6,14 @@ import Header from './Header';
 import Snackbars from '../assets/Snackbars';
 import Footer from './Footer';
 import { useRouter } from 'next/router';
+import { useMediaQuery } from '@mui/material';
 
 export default function Layout({ children, storeInfo }) {
   const router = useRouter();
+  const matches = useMediaQuery('(min-width: 1200px)');
   const isNotBlog = router.pathname !== '/blog';
-  const isNotPost = router.pathname !== '/post/[slug]';
+  const isNotPost = router.pathname !== '/blog/post/[slug]';
+  const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
   const mainStore = storeInfo.filter(store => store.name === "Electricons store");
 
   return (
@@ -18,7 +21,7 @@ export default function Layout({ children, storeInfo }) {
       <CssBaseline />
       <Header storeInfo={mainStore[0]} />
       <Container maxWidth="xl">
-        <Box component="main" sx={{ height: '100%', mt: {xs: isNotBlog ? '8rem' : '4rem', sm: isNotPost && isNotBlog ? '10rem' : '2rem'} }}>
+        <Box component="main" sx={{ height: '100%', mt: {xs: isNotPost && isNotBlog && isNotCat ? '8rem' : matches ? '5rem' : '2rem', sm: isNotPost && isNotBlog && isNotCat ? '10rem' : '2rem'} }}>
           {children}
         </Box>
         <Snackbars />

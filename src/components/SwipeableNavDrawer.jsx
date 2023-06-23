@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Avatar, IconButton } from '@mui/material';
+import { Avatar, Grid, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import category_data from '../utils/category';
@@ -89,7 +89,7 @@ function ListsItem(props) {
       </React.Fragment>
   )
 }
-export default function SwipeableNavDrawer() {
+export default function SwipeableNavDrawer({ pagesTop }) {
   const [state, setState] = React.useState({
     left: false
   });
@@ -124,7 +124,7 @@ export default function SwipeableNavDrawer() {
             onOpen={toggleDrawer(anchor, true)}
           >
             <Box
-              sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+              sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250, display: 'flex', flexDirection: 'column', height: '100%' }}
               role="presentation"
               onKeyDown={toggleDrawer(anchor, false)}
             >
@@ -135,13 +135,38 @@ export default function SwipeableNavDrawer() {
               </Box>
               <Divider />
               <List 
-              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', flexGrow: 0, flexShrink: 0 }}
               component="ul"
               aria-labelledby="nested-list-sub-nav"
               >
                {category_data.categories.map((cat, index) => (
                 <ListsItem key={cat.categoryName} cat={cat} onClose={toggleDrawer(anchor, false)}/>
                ))}
+              </List>
+              <Box sx={{ display: 'flex', alignItems: 'stretch', minHeight: '1px', flexGrow: 1 }}></Box>
+              <List 
+              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', flexGrow: 0, flexShrink: 0, transform: 'scale(.8)' }}
+              component="ul"
+              aria-labelledby="nested-list-sub-nav"
+              >
+                <Grid container>
+                  {
+                    pagesTop.map((page) => (
+                      <Grid item xs={4}>
+                        <ListItem key={page.name} sx={{ '& a': {textDecoration: 'none'} }}>
+                        {page.icon}
+                          <Link
+                            href={page.link}
+                            sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0 }}
+                            passHref
+                          >
+                          {page.name}
+                          </Link>
+                        </ListItem>
+                      </Grid>
+                    ))
+                  }
+                </Grid>
               </List>
             </Box>
           </SwipeableDrawer>

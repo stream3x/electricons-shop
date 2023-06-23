@@ -1,14 +1,11 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import theme from '../../src/theme';
-import Blog from '../../models/Blog';
-import db from '../../src/utils/db';
 import { Container, Divider } from '@mui/material';
 import Image from 'next/image';
-import Link from '../../src/Link';
-import RssFeedIcon from '@mui/icons-material/RssFeed';
+import db from '../../../src/utils/db';
+import Blog from '../../../models/Blog';
+import BreadcrumbNav from '../../../src/assets/BreadcrumbNav';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -42,19 +39,10 @@ export default function SinglePost(props) {
   return (
       <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
         <Container maxWidth="xl">
-          <Link
-            href="/blog"
-            sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0, display: 'flex' }}
-            passHref
-          >
-            <RssFeedIcon /> 
-            <Box component="span" variant="caption">
-              {"Blog"}
-            </Box>
-          </Link>
+          <BreadcrumbNav blogPost={blog.title} />
           <Box component="section" sx={{my: 5}}>
             <Box sx={{display: 'flex', justifyContent: 'center', pb: 3}}>
-              <Box sx={{ position: 'relative!important', width: '500px', height: '300px', '& > img': {objectFit: 'contain'}}}>
+              <Box sx={{ position: 'relative!important', width: {xs: '200px', md: '500px'}, height: {xs: '200px', md: '300px'}, '& > img': {objectFit: 'contain'}}}>
                 <Image
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
