@@ -1,7 +1,7 @@
 const blogData = {
   blogs: [
     {
-      title: "What desktop computer shuld use for graphic desing",
+      title: "What desktop computer shuld use for graphic design",
       images: [{image: "/images/amd_desktop/amd-desktop-ryzen.png"}, {image: "/images/amd_desktop/amd_ryzen.png"}, {image: "/images/amd_desktop/desktopAvatar.png"}, {image: "/images/amd_desktop/desktop_ryzen.png"}],
       shortDescription: "With new technology being released every year, designers frequently wonder what is the best desktop computer for graphic design, so I reviewed them all to give my top picks.",
       description: "As a graphic designer, you want to have a smooth workflow, easy multitasking, and quick rendering, but without going overboard with specs or features that you might not use. Choosing the best computer for graphic design comes down to what you’ll need to use it for, as well as your ideal desk configuration and budget. Once you find the one you like, I recommend getting slightly higher specs than you need right now, so that it’s “future-proof” to some extent and it will be able to keep up as your programs and workloads become more intensive. Also keep in mind that some of these computers come with a monitor as a package, but the rest won’t — so you’ll need to set aside a budget for a good monitor as well.",
@@ -9,6 +9,7 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 3,
+      tags: [{tag: 'graphic design'}, {tag: 'desktop computer'}]
     },
     {
       title: "Building the Best PC for Grand Theft Auto V",
@@ -19,6 +20,7 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 10,
+      tags: [{tag: 'Grand Theft Auto V'}, {tag: 'desktop computer'}]
     },
     {
       title: "Best gaming PC build under $800 in 2023",
@@ -29,9 +31,10 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 1,
+      tags: [{tag: 'Best gaming PC'}]
     },
     {
-      title: "Is a AMD Ryzen 5 5500 a good idea or should i go for a better one?",
+      title: "Is a AMD Ryzen 5 5500 a good idea or should I go for a better one?",
       images: [{image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/dell_desktop/dell_desktop.png"}],
       shortDescription: "Find out if AMD's Ryzen 5 5500 processor is good for gaming based on our evaluation and comparison in terms of core type, core count, frequencies, and cache capacity, along with its overclocking, PCIe, and DDR support.",
       description: "When selecting a CPU for gaming, we have experienced that the most important characteristics are the single-core clock speed (or frequency), number of cores and threads, cache size, and type of memory it supports. Additional considerations like integrated graphics and overclocking needs may also influence your selection. This article evaluates AMD's Ryzen 5 5500 desktop CPU. We evaluated AMD's Ryzen 5 5500 and compared it to others to determine which provides the best value as a gaming CPU. We shaped our testing methodology to focus on each CPU's attributes rather than solely on benchmarks. This article helps you make an informed decision by comparing the CPU's attributes, such as the core types, core counts, frequencies, cache capacities, overclocking capabilities, PCIe support, and DDR support. We've examined these attributes for multiple CPUs to help you compare their abilities. By understanding these key factors, you can determine which CPU will best suit your needs and provide the performance you desire. When selecting a CPU, it's essential to consider your specific needs and use case. For example, most gamers will want to prioritize high clock speeds and single-threaded performance. However, suppose we have additional video editing or rendering needs. In that case, we like to get a CPU with a high core count and multi-core boost frequency. We investigated the capabilities of multiple AMD and Intel CPUs to compare them objectively. Your CPU selection will ultimately depend on your specific requirements, budget, and priorities. However, by examining the attributes of each CPU, we aim to provide you with the information needed to make an informed decision when choosing a gaming CPU.",
@@ -39,6 +42,7 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 5,
+      tags: [{tag: 'AMD Ryzen 5 5500'}]
     },
     {
       title: "The best Huawei phones - our top 10 list",
@@ -49,6 +53,7 @@ const blogData = {
       category: "Smartphones",
       subCategory: "Huawei Smartphones",
       reviews: 5,
+      tags: [{tag: 'Huawei phones'}, {tag: 'top 10 list Huawei phones'}]
     },
     {
       title: "Best Lenovo laptops in 2023",
@@ -59,6 +64,7 @@ const blogData = {
       category: "Laptop computers",
       subCategory: "Lenovo Laptops",
       reviews: 5,
+      tags: [{tag: 'Lenovo laptops'}]
     }
   ]
 }

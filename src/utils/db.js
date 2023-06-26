@@ -45,6 +45,13 @@ function convertDocToObject(doc) {
       store.updatedAt = store.updatedAt.toString();
     });
   }
+  if(doc.tags) {
+    doc.tags.forEach(tag => {
+      tag._id = tag._id.toString();
+      tag.createdAt = tag.createdAt.toString();
+      tag.updatedAt = tag.updatedAt.toString();
+    });
+  }
   doc.createdAt = doc.createdAt.toString();
   doc.updatedAt = doc.updatedAt.toString();
   return doc;

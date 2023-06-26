@@ -1,11 +1,9 @@
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Input, ListItem, Pagination, Slider, Stack, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, CardMedia, Chip, CircularProgress, Divider, Input, List, ListItem, ListItemButton, ListItemText, Pagination, Stack, Typography } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
-import Rating from '@mui/material/Rating';
 import IconButton from '@mui/material/IconButton';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -20,6 +18,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
+import styled from '@emotion/styled';
+import { alpha } from '@mui/material/styles';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
 import Blog from '../../../models/Blog';
 import db from '../../../src/utils/db';
 import Link from '../../../src/Link';
@@ -41,11 +43,23 @@ export async function getServerSideProps(context) {
   const subCategory = query.subCategory || '';
   const sort = query.sort || '';
   const searchQueary = query.query || '';
+  const tagQueary = query.tag || [];
+
   const queryFilter = 
     searchQueary && searchQueary !== ''
     ? {
       title: {
         $regex: searchQueary,
+        $options: 'i'
+      }
+    }
+    : {};
+
+  const tagsFilter =
+    tagQueary && tagQueary !== []
+    ? {
+      tag: {
+        $regex: tagQueary,
         $options: 'i'
       }
     }
@@ -65,11 +79,13 @@ export async function getServerSideProps(context) {
 
   await db.connect();
 
+    const categories = await Blog.find().distinct('category');
     const subCategories = await Blog.find().distinct('subCategory');
     
     const productDocs = await Blog.find(
       {
         ...queryFilter,
+        ...tagsFilter,
         ...categoryFilter,
         ...subCategoryFilter
       },
@@ -94,10 +110,72 @@ export async function getServerSideProps(context) {
         page,
         pages: Math.ceil(productDocsByCategory.length / pageSize),
         subCategories,
+        categories,
         slug
       }
     };
 }
+
+const Search = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  width: 'auto',
+  [theme.breakpoints.down('sm')]: {
+    marginLeft: theme.spacing(0),
+    width: '100%',
+  },
+  border: 'thin solid lightGrey',
+  boxSizing: 'border-box',
+  display: 'flex',
+  margin: '.2rem 0' 
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '22ch',
+      },
+    },
+  },
+}));
+
+const StyledInputButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.primary.contrastText,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.main,
+  margin: '-1px',
+  padding: '.5em 2em',
+  '&:hover': {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.secondary.main,
+  },
+  [theme.breakpoints.down('sm')]: {
+    display: 'none'
+  },
+}));
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -165,7 +243,11 @@ color: theme.palette.text.secondary,
 
 export default function CategoryProducts(props) {
   const router = useRouter();
+  const [searchQueary, setSearchQuery] = React.useState('');
+  const [searchFilter, setSearchFilter] = React.useState([]);
+  const [similarTags, setSimilarTags] = React.useState([]);
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
+
   const {
     query = '',
     sort = '',
@@ -173,18 +255,20 @@ export default function CategoryProducts(props) {
     page = 1
   } = router.query;
 
-  const { slug, products, countProducts, categories, subCategories, brands, pages } = props;
+  const { slug, products, countProducts, categories, subCategories, pages } = props;
 
   const filterSearch = ({
     page,
     pageSize,
     category,
     subCategory,
+    tagQueary,
     sort,
     searchQueary
   }) => {
     const { query } = router;
     if(pageSize) query.pageSize = pageSize;
+    if(tagQueary) query.tagQueary = tagQueary;
     if(page) query.page = page;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
@@ -196,6 +280,31 @@ export default function CategoryProducts(props) {
       query: query
     })
   }
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    const queryRemoveSpace = `${searchQueary.replace(/ /g, '+')}`;
+    const addQuery = `query=${queryRemoveSpace}`;
+    router.push(`/blog?${addQuery}`);
+  };
+
+  const searchHandler = (item) => {
+    if(item) {
+      setSearchFilter([item])
+    }else {
+      setSearchFilter([])
+    }
+    filterSearch({ query: item});
+  };
+
+  React.useEffect(() => {
+    searchHandler(query);
+  }, [query]);
+
+  React.useEffect(() => {
+    const tags = [...new Set(products.flatMap(p => p.tags.map(t => t.tag)))];
+    setSimilarTags(tags);
+  }, [products]);
 
   const pageSizeHandler = (num) => {
     filterSearch({ pageSize: num })
@@ -217,7 +326,7 @@ export default function CategoryProducts(props) {
   const handleLoading = (product) => {
     setSelected(product._id);
   };
-
+console.log(similarTags);
   if(!products) {
     return (
       <Box sx={{ flexGrow: 1, my: 4  }}>
@@ -248,9 +357,9 @@ export default function CategoryProducts(props) {
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-                  <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center'}}>
-                    <Typography color="secondary.lightGrey" component="h2" variant="p">
-                      Category
+                  <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
+                    <Typography sx={{paddingBottom: {xs: '1rem', md: '0'} }} color="secondary.lightGrey" component="h2" variant="p">
+                      {slug[1] ? slug[1] : slug[0]}
                     </Typography>
                     {
                       products.length === 0 ?
@@ -325,6 +434,74 @@ export default function CategoryProducts(props) {
               </AppBar>
             </Grid>
           </Grid>
+        </Grid>
+        <Grid xs={12} lg={3}>
+          <Box className='sidebar' component="section">
+            <Box component="nav">
+              <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap'}}>
+                <Search component="form" onSubmit={submitHandler}>
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                  <StyledInputButton type='submit'>Search</StyledInputButton>
+                </Search>
+              </Box>
+            </Box>
+            {/* Categories */}
+            <Box component="nav">
+              <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', borderBottom: `thin solid ${theme.palette.badge.bgd}`}}>
+                <Typography color="secondary.lightGrey" component="h3" variant='h6'>Categories</Typography>
+              </Box>
+              <List sx={{ '& a': {textDecoration: 'none'} }}>
+                {
+                  categories.map(cat => (
+                  <Link color='secondary.lightGrey' key={cat} href={`/blog/category/${cat}`}>
+                    <ListItem disablePadding>
+                      <ListItemButton>
+                        <ListItemText primary={cat} />
+                      </ListItemButton>
+                    </ListItem>
+                    <Divider />
+                  </Link>
+                  ))
+                }
+                {
+                  subCategories.map((sub, i) => (
+                  <Link color='secondary.lightGrey' key={sub} href={`/blog/category/${categories[i]}/${sub}`}>
+                    <ListItem disablePadding>
+                      <ListItemButton>
+                        <ListItemText primary={sub} />
+                      </ListItemButton>
+                    </ListItem>
+                    <Divider />
+                  </Link>
+                  ))
+                }
+              </List>
+            </Box>
+            {/* Tags */}
+            <Box component="nav">
+              <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', borderBottom: `thin solid ${theme.palette.badge.bgd}`}}>
+                <Typography color="secondary.lightGrey" component="h3" variant='h6'>Tags</Typography>
+              </Box>
+              <List sx={{ '& a': {textDecoration: 'none'} }}>
+                {
+                  similarTags.map(tag => (
+                    <Link key={tag._id} href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                      <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
+                        {tag}
+                      </LabelButton>
+                    </Link>
+                  ))
+                }   
+              </List>
+            </Box>
+          </Box>
         </Grid>
       </Grid>
     </Box>

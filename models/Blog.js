@@ -9,6 +9,15 @@ const imageSchema = new mongoose.Schema(
   }
 );
 
+const tagSchema = new mongoose.Schema(
+  {
+    tag: {type: String, required: true}
+  },
+  {
+    timestamps: true
+  }
+);
+
 const blogSchema = new mongoose.Schema(
   {
     title: {type: String, required: true},
@@ -19,6 +28,7 @@ const blogSchema = new mongoose.Schema(
     category: {type: String, required: true},
     subCategory: {type: String, required: true},
     reviews: {type: Number, required: true, default: 0},
+    tags: [tagSchema]
   },
   {
     timestamps: true

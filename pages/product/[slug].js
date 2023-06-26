@@ -138,7 +138,6 @@ export default function SingleProduct(props) {
   }, [router.query.counter])
 
   React.useEffect(() => {
-   
     fetchStoreInfo();
   }, []);
 

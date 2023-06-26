@@ -19,16 +19,16 @@ const Search = styled(Box)(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
+  width: 'auto',
+  [theme.breakpoints.down('sm')]: {
     marginLeft: theme.spacing(1),
-    width: 'auto',
+    width: '100%',
   },
   border: 'thin solid lightGrey',
   boxSizing: 'border-box',
   display: 'flex',
-  margin: '.2rem 0' 
+  margin: '.2rem 0',
+  marginLeft: 5,
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -91,6 +91,7 @@ export async function getServerSideProps({ query }) {
   const subCategory = query.subCategory || '';
   const sort = query.sort || '';
   const searchQueary = query.query || '';
+  const tag = query.tag || '';
 
   const queryFilter = 
     searchQueary && searchQueary !== ''
@@ -104,6 +105,7 @@ export async function getServerSideProps({ query }) {
 
   const categoryFilter = category && category !== '' ? { category } : {};
   const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
+  const tagsFilter = tag.length !== 0 ? { 'tags.tag': tag } : {};
 
     const order = 
     sort === 'namelowest'
@@ -115,9 +117,11 @@ export async function getServerSideProps({ query }) {
     await db.connect();
     const categories = await Blog.find().distinct('category');
     const subCategories = await Blog.find().distinct('subCategory');
+    const tags = await Blog.distinct('tags.tag');
     const blogDocs = await Blog.find(
       {
         ...queryFilter,
+        ...tagsFilter,
         ...categoryFilter,
         ...subCategoryFilter
       },
@@ -125,6 +129,7 @@ export async function getServerSideProps({ query }) {
 
     const countBlogs = await Blog.countDocuments({
       ...queryFilter,
+      ...tagsFilter,
       ...categoryFilter,
       ...subCategoryFilter
     });
@@ -140,20 +145,20 @@ export async function getServerSideProps({ query }) {
         page,
         pages: Math.ceil(countBlogs / pageSize),
         categories,
-        subCategories
+        subCategories,
+        tags
       }
     }
 }
 
 export default function BlogPages(props) {
-  const [topCat, setTopCat] = React.useState();
-  const [subCat, setSubCat] = React.useState();
   const [searchFilter, setSearchFilter] = React.useState([]);
   const [searchQueary, setSearchQuery] = React.useState('');
 
   const router = useRouter();
   const {
     query = '',
+    tag = '',
     category = '',
     subCategory = '',
     sort = '',
@@ -161,13 +166,14 @@ export default function BlogPages(props) {
     page = 1
   } = router.query;
 
-  const { slug, blogs, countBlogs, categories, subCategories, pages } = props;
+  const { slug, blogs, countBlogs, categories, subCategories, tags, pages } = props;
 
   const filterSearch = ({
     page,
     pageSize,
     category,
     subCategory,
+    tag,
     sort,
     min,
     max,
@@ -179,6 +185,7 @@ export default function BlogPages(props) {
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
     if(subCategory) query.subCategory = subCategory.toString().replace(/-/g, ' ');
+    if(tag) query.tag = tag.toString().replace(/-/g, ' ');
     if(sort) query.sort = sort;
     if(min) query.min ? query.min : query.min === 0 ? 0 : min;
     if(max) query.max ? query.max : query.max === 0 ? 0 : max;
@@ -203,6 +210,10 @@ export default function BlogPages(props) {
       setSearchFilter([])
     }
     filterSearch({ query: item});
+  };
+
+  const tagHandler = (item) => {
+    filterSearch({ tag: item});
   };
 
   useEffect(() => {
@@ -334,7 +345,7 @@ export default function BlogPages(props) {
                   <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                     <SelectPages values={['6', '12', '24']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                     {
-                      blogs.filter(blog => blog.category === 'Desktop Computers').length === 0 ?
+                      blogs.filter(blog => blog.category === 'Desktop computers').length === 0 ?
                       <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                       "No products"
                       </Typography>
