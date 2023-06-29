@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+import * as mongoose from 'mongoose';
+import Comment from './Comment.js';
 
 const imageSchema = new mongoose.Schema(
   {
@@ -28,7 +29,8 @@ const blogSchema = new mongoose.Schema(
     category: {type: String, required: true},
     subCategory: {type: String, required: true},
     reviews: {type: Number, required: true, default: 0},
-    tags: [tagSchema]
+    tags: [tagSchema],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
   },
   {
     timestamps: true

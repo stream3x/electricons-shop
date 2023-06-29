@@ -9,7 +9,8 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 3,
-      tags: [{tag: 'graphic design'}, {tag: 'desktop computer'}]
+      tags: [{tag: 'graphic design'}, {tag: 'desktop computer'}],
+      comments: []
     },
     {
       title: "Building the Best PC for Grand Theft Auto V",
@@ -20,7 +21,8 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 10,
-      tags: [{tag: 'Grand Theft Auto V'}, {tag: 'desktop computer'}]
+      tags: [{tag: 'Grand Theft Auto V'}, {tag: 'desktop computer'}],
+      comments: []
     },
     {
       title: "Best gaming PC build under $800 in 2023",
@@ -31,7 +33,8 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 1,
-      tags: [{tag: 'Best gaming PC'}]
+      tags: [{tag: 'Best gaming PC'}],
+      comments: []
     },
     {
       title: "Is a AMD Ryzen 5 5500 a good idea or should I go for a better one?",
@@ -42,7 +45,8 @@ const blogData = {
       category: "Desktop computers",
       subCategory: "AMD Computers",
       reviews: 5,
-      tags: [{tag: 'AMD Ryzen 5 5500'}]
+      tags: [{tag: 'AMD Ryzen 5 5500'}],
+      comments: []
     },
     {
       title: "The best Huawei phones - our top 10 list",
@@ -53,7 +57,8 @@ const blogData = {
       category: "Smartphones",
       subCategory: "Huawei Smartphones",
       reviews: 5,
-      tags: [{tag: 'Huawei phones'}, {tag: 'top 10 list Huawei phones'}]
+      tags: [{tag: 'Huawei phones'}, {tag: 'top 10 list Huawei phones'}],
+      comments: []
     },
     {
       title: "Best Lenovo laptops in 2023",
@@ -64,7 +69,8 @@ const blogData = {
       category: "Laptop computers",
       subCategory: "Lenovo Laptops",
       reviews: 5,
-      tags: [{tag: 'Lenovo laptops'}]
+      tags: [{tag: 'Lenovo laptops'}],
+      comments: []
     }
   ]
 }

@@ -275,22 +275,22 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-80px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog && isNotCat ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-100px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog && isNotCat ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
-            <Toolbar sx={{ display: { xs: isNotPost && isNotBlog && isNotCat && 'none', sm: 'flex' }, pt: '1rem' }}>
+            <Toolbar sx={{ display: { xs: isNotPost && isNotBlog && isNotCat && 'none', sm: 'flex' }, py: '1rem' }}>
               {
                 isNotPost && isNotBlog && isNotCat ?
                 <Box sx={{ flexGrow: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', '& > :not(style) + :not(style)': { ml: 2 } }}>
                   {
                     pagesTop.map((page) => (
                       <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'} }}>
-                      {page.icon}
                           <Link
                             href={page.link}
-                            sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0 }}
+                            sx={{ my: 2, color: theme.palette.secondary.main, display: 'block', m: 0, display: 'flex' }}
                             passHref
                           >
+                          {page.icon}
                           {page.name}
                           </Link>
                         <Divider variant="middle" orientation="vertical" flexItem />
@@ -316,92 +316,28 @@ export default function Header(props) {
                     {
                       pagesTopInBlog.map((page) => (
                         <Box key={page.name} sx={{display: 'flex', 'hr': { marginLeft: 2}, '&:last-child hr': {display: 'none'}, '& a': {textDecoration: 'none'} }}>
-                          {page.icon}
                           <Link
                             href={page.link}
-                            sx={{ my: 2, color: isNotPost && isNotBlog && isNotCat ? theme.palette.secondary.main : '#fff', display: {xs: 'none', md: 'block'}, m: 0 }}
+                            sx={{ my: 2, color: isNotPost && isNotBlog && isNotCat ? theme.palette.secondary.main : '#fff', m: 0 }}
                             passHref
                           >
-                          {page.name}                          
+                          {page.icon}               
                           </Link>
-                          <Divider color="#fff" variant="middle" orientation="vertical" flexItem />
+                          <Divider color={theme.palette.primary.white} variant="middle" orientation="vertical" flexItem />
                         </Box>
                       ))
                     }
-                  </Box>
-                  {
-                      !matches &&
-                      <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
-                          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                            <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
-                          </IconButton>
-                        </Tooltip>
-                        <Menu
-                          sx={{ mt: '45px', display: { xs: 'flex', md: 'none' } }}
-                          id="menu-appbar"
-                          anchorEl={anchorElUser}
-                          anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                          transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                          }}
-                          open={isMenuUserOpen}
-                          onClose={handleCloseUserMenu}
-                        >
-                          {
-                            userInfo ?
-                            (
-                              <Box>
-                                <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                  <Link href="/profile/info">
-                                    {loged[0]}
-                                  </Link>
-                                </MenuItem>
-                                {
-                                  userInfo.isAdmin &&
-                                  <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                    <Link sx={{ textDecoration: 'none' }} href={`/admin/${userInfo._id}`} passHref>
-                                      {loged[1]}
-                                    </Link>
-                                  </MenuItem>
-                                }
-                                <MenuItem onClick={handleLogout}>
-                                    {loged[2]}
-                                </MenuItem>
-                              </Box>
-          
-                            ) : (
-                              <Box>
-                                <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                  <Link href="/login">
-                                    {logedout[0]}
-                                  </Link>
-                                </MenuItem>
-                                <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main} }} onClick={handleCloseUserMenu}>
-                                  <Link href="/signin">
-                                    {logedout[1]}
-                                  </Link>
-                                </MenuItem>
-                              </Box>
-                            )
-                          }
-                        </Menu>
-                      </Box>     
-                    }
+                  </Box>    
                 </React.Fragment>
               }
-              <Box sx={{ flexGrow: 0, display: { xs: 'none', sm: 'flex'} }}>
+              <Box sx={{ flexGrow: 0, display: { xs: 'flex', sm: 'flex'} }}>
                 <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: '45px', display: { xs: 'none', md: 'flex' } }}
+                  sx={{ mt: '45px', display: { xs: 'flex', md: 'flex' } }}
                   id="menu-user"
                   anchorEl={anchorElUser}
                   anchorOrigin={{
@@ -473,10 +409,10 @@ export default function Header(props) {
                       />
                     </Link>
                   </Grid>
-                  <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
+                  <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', md: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
                     <NavTabs pages={pages} />
                   </Grid>
-                  <Grid item xs={3} sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
+                  <Grid item xs={3} sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
                     <Box sx={{ flexGrow: 0 }}>
                       <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

@@ -264,7 +264,10 @@ export default function Footer({ storeInfo }) {
           <KeyboardArrowUpIcon />
         </Fab>
       </ScrollTop>
-      <MobileBottomNav isVisible={isVisible}/>
+      {
+        isNotPost && isNotBlog && isNotCat &&
+        <MobileBottomNav isVisible={isVisible}/>
+      }
     </Box>
   );
 }

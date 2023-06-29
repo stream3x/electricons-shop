@@ -12,7 +12,6 @@ import db from '../../src/utils/db';
 import IconButton from '@mui/material/IconButton';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Category from '../../models/Category';
 import Product from '../../models/Product';
 import Image from 'next/image';
 import AppBar from '@mui/material/AppBar';
@@ -139,7 +138,6 @@ export async function getServerSideProps(context) {
     : { _id: -1 };
 
   await db.connect();
-  const cat = await Category.find({}).lean();
 
     const subCategories = await Product.find().distinct('subCategory');
     const brands = await Product.find().distinct('brand');

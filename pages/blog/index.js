@@ -313,30 +313,30 @@ export default function BlogPages(props) {
                 blogs.map(blog => (
                   blog.category === 'Desktop computers' &&
                   <Grid key={blog._id} item xs={12}>
-                      <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important' }}>
-                          <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > a': { width: {xs: '100%',sm: '25%'}} }}>
-                            <Link sx={{position: 'relative', display: 'flex', flex: 0}} href={`/blog/post/${blog.slug}`}>
-                              <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
-                                <Image
-                                  fill
-                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                  priority
-                                  src={blog.images[0].image}
-                                  alt={blog.title}
-                                  quality={35}
-                                />
-                              </CardMedia>
-                            </Link>
-                            <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, flexWrap: 'wrap'}}>
-                              <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
-                              {blog.title}
-                              </Typography>
-                              <Typography align="left" variant="body2" color="text.secondary">
-                                {blog.shortDescription}
-                              </Typography>
-                            </CardContent>
-                          </CardActionArea>
-                      </Card>
+                    <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
+                      <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0}} href={`/blog/post/${blog.slug}`} noLinkStyle>
+                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
+                          <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                            <Image
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              priority
+                              src={blog.images[0].image}
+                              alt={blog.title}
+                              quality={35}
+                            />
+                          </CardMedia>
+                          <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, flexWrap: 'wrap'}}>
+                            <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                            {blog.title}
+                            </Typography>
+                            <Typography align="left" variant="body2" color="text.secondary">
+                              {blog.shortDescription}
+                            </Typography>
+                          </CardContent>
+                        </CardActionArea>
+                      </Link>
+                    </Card>
                   </Grid>
                 ))
               }
@@ -401,30 +401,30 @@ export default function BlogPages(props) {
               blogs.map(blog => (
                 blog.category === 'Laptop computers' &&
                 <Grid key={blog._id} item xs={12}>
-                    <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important' }}>
-                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > a': { width: {xs: '100%',sm: '25%'}} }}>
-                          <Link sx={{position: 'relative', display: 'flex', justifyContent: 'center' }} href={`/blog/post/${blog.slug}`}>
-                            <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
-                              <Image
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                priority
-                                src={blog.images[0].image}
-                                alt={blog.title}
-                                quality={35}
-                              />
-                            </CardMedia>
-                          </Link>
-                          <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, maxWidth: {xs: '100%', sm: '75%'}, flexWrap: 'wrap'}}>
-                            <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
-                            {blog.title}
-                            </Typography>
-                            <Typography align="left" variant="body2" color="text.secondary">
-                              {blog.shortDescription}
-                            </Typography>
-                          </CardContent>
-                        </CardActionArea>
-                    </Card>
+                  <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
+                    <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle>
+                      <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
+                        <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                          <Image
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority
+                            src={blog.images[0].image}
+                            alt={blog.title}
+                            quality={35}
+                          />
+                        </CardMedia>
+                        <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, flexWrap: 'wrap'}}>
+                          <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                          {blog.title}
+                          </Typography>
+                          <Typography align="left" variant="body2" color="text.secondary">
+                            {blog.shortDescription}
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                    </Link>
+                  </Card>
                 </Grid>
               ))
             }
@@ -489,30 +489,30 @@ export default function BlogPages(props) {
               blogs.map(blog => (
                 blog.category === 'Smartphones' &&
                 <Grid key={blog._id} item xs={12}>
-                    <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important' }}>
-                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > a': { width: {xs: '100%',sm: '25%'}} }}>
-                          <Link sx={{position: 'relative', display: 'flex', justifyContent: 'center' }} href={`/blog/post/${blog.slug}`}>
-                            <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
-                              <Image
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                priority
-                                src={blog.images[0].image}
-                                alt={blog.title}
-                                quality={35}
-                              />
-                            </CardMedia>
-                          </Link>
-                          <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, maxWidth: {xs: '100%', sm: '75%'}, flexWrap: 'wrap'}}>
-                            <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
-                            {blog.title}
-                            </Typography>
-                            <Typography align="left" variant="body2" color="text.secondary">
-                              {blog.shortDescription}
-                            </Typography>
-                          </CardContent>
-                        </CardActionArea>
-                    </Card>
+                  <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
+                    <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle>
+                      <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
+                        <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                          <Image
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            priority
+                            src={blog.images[0].image}
+                            alt={blog.title}
+                            quality={35}
+                          />
+                        </CardMedia>
+                        <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', sm: '0 0 75%'}, flexWrap: 'wrap'}}>
+                          <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                          {blog.title}
+                          </Typography>
+                          <Typography align="left" variant="body2" color="text.secondary">
+                            {blog.shortDescription}
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                    </Link>
+                  </Card>
                 </Grid>
               ))
             }

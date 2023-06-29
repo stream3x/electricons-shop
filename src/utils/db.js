@@ -32,12 +32,16 @@ async function disconnect() {
 }
 
 function convertDocToObject(doc) {
-  doc._id = doc._id.toString();
-  doc.images.forEach(img => {
-    img._id = img._id.toString();
-    img.createdAt = img.createdAt.toString();
-    img.updatedAt = img.updatedAt.toString();
-  });
+  if(doc.images) {
+    doc._id = doc._id.toString();
+    doc.images.forEach(img => {
+      img._id = img._id.toString();
+      img.createdAt = img.createdAt.toString();
+      img.updatedAt = img.updatedAt.toString();
+    });
+    doc.createdAt = doc.createdAt.toString();
+    doc.updatedAt = doc.updatedAt.toString();
+  }
   if(doc.stores) {
     doc.stores.forEach(store => {
       store._id = store._id.toString();
@@ -52,8 +56,18 @@ function convertDocToObject(doc) {
       tag.updatedAt = tag.updatedAt.toString();
     });
   }
-  doc.createdAt = doc.createdAt.toString();
-  doc.updatedAt = doc.updatedAt.toString();
+  if(doc.comments) {
+    doc.comments = doc.comments.map(comment => comment._id.toString());
+  }
+  if(doc.authorName) {
+    doc._id = doc._id.toString();
+    doc.authorName = doc.authorName.toString();
+    doc.content = doc.content.toString();
+    doc.isAdminReply = doc.isAdminReply.toString();
+    doc.parentCommentId = doc.parentCommentId.toString();
+    doc.createdAt = doc.createdAt.toString();
+    doc.updatedAt = doc.updatedAt.toString();
+  }
   return doc;
 }
 
