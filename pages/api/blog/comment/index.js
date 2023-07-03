@@ -18,16 +18,11 @@ handler.get(async (req, res) => {
   await db.connect();
   const comments = await Comment.find({});
   await db.disconnect();
+
   res.send(comments);
 
-  comments.forEach((comment) => {
-    res.write(`data: ${JSON.stringify(comment)}\n\n`);
-  });
-
-  // Kreiranje MongoDB change stream-a koji će pratiti promene u komentarima
   const changeStream = Comment.watch();
 
-  // Slušanje promena u komentarima i slanje ažuriranja putem WebSocket-a
   changeStream.on('change', (change) => {
     if (change.operationType === 'insert') {
       const newComment = change.fullDocument;
@@ -36,7 +31,6 @@ handler.get(async (req, res) => {
     }
   });
 
-  // Rukovanje prekidom veze sa klijentom
   req.on('close', () => {
     changeStream.close();
     res.end();
