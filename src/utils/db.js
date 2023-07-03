@@ -64,7 +64,8 @@ function convertDocToObject(doc) {
     doc.authorName = doc.authorName.toString();
     doc.content = doc.content.toString();
     doc.isAdminReply = doc.isAdminReply.toString();
-    doc.parentCommentId = doc.parentCommentId.toString();
+    doc.replyCommentId = doc.replyCommentId.toString();
+    doc.blogPostId = doc.blogPostId.toString();
     doc.createdAt = doc.createdAt.toString();
     doc.updatedAt = doc.updatedAt.toString();
   }

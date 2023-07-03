@@ -196,6 +196,11 @@ export default function BlogPages(props) {
     })
   }
 
+  React.useEffect(() => {
+    // Always do navigations after the first render
+    router.push('/blog?counter=10', undefined, { shallow: true })
+  }, [blogs, categories, subCategories]);
+
   const submitHandler = (e) => {
     e.preventDefault();
     const queryRemoveSpace = `${searchQueary.replace(/ /g, '+')}`;

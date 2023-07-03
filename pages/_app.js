@@ -12,7 +12,6 @@ import { StoreProvider } from '../src/utils/Store';
 import { Analytics } from '@vercel/analytics/react';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -52,7 +51,7 @@ export default function MyApp(props) {
   async function fetchStoreInfo() {
     if(!isSSR) return;
     const { data } = await axios.get('/api/store_info');
-      setStoreInfo(data);
+    setStoreInfo(data);
   }
 
   return (

@@ -275,7 +275,7 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-100px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog && isNotCat ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
+        <AppBar sx={{ transform: isVisible && matches ? 'translateY(-147px)' : (isVisible && !matches ? 'translateY(-140px)' : 'translateY(0px)'), transition: 'transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms', bgcolor: isNotPost && isNotBlog && isNotCat ? theme.palette.primary.white : theme.palette.primary.main}} elevation={isVisible ? 4 : 0} color="default">
           <Container maxWidth="xl">
           <CssBaseline />
             <Toolbar sx={{ display: { xs: isNotPost && isNotBlog && isNotCat && 'none', sm: 'flex' }, py: '1rem' }}>

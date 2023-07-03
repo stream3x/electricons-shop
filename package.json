@@ -32,6 +32,8 @@
     "react-dom": "latest",
     "react-slick": "^0.29.0",
     "react-swipeable-views": "^0.14.0",
+    "socket.io": "^4.7.1",
+    "socket.io-client": "^4.7.1",
     "yarn": "^1.22.19"
   },
   "devDependencies": {

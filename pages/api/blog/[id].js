@@ -16,7 +16,7 @@ handler.get(async (req, res) => {
 
 handler.post(async (req, res) => {
   const { id } = req.query;
-  const { authorName, email, content, isAdminReply, parentCommentId } = req.body;
+  const { authorName, email, content, isAdminReply, blogPostId, replyCommentId } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid blog post ID' });
@@ -33,7 +33,8 @@ handler.post(async (req, res) => {
       email,
       content,
       isAdminReply,
-      parentCommentId
+      blogPostId,
+      replyCommentId
     });
 
     await comment.save(); // Save the comment first to generate the ObjectId

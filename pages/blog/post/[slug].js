@@ -16,6 +16,7 @@ import Link from '../../../src/Link';
 import { Store } from '../../../src/utils/Store';
 import axios from 'axios';
 import Comment from '../../../models/Comment';
+import { io } from 'socket.io-client';
 
 const PAGE_SIZE = 6;
 
@@ -159,6 +160,7 @@ const LabelButton = styled(Button)(({ theme }) => ({
   marginLeft: '10px',
 }));
 
+const socket = io('/api/blog/comment', { path: '/api/blog/comment/socket.io' }); // Podešavanje putanje za socket.io
 
 export default function SinglePost(props) {
   const router = useRouter();
@@ -191,6 +193,9 @@ export default function SinglePost(props) {
   });
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [comments, setComments] = React.useState([]);
+  const [replyCommentId, setReplyCommentId] = React.useState('false');
+
+console.log(comments, replyCommentId, showForm, blogID);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -202,8 +207,10 @@ export default function SinglePost(props) {
         authorName: formOutput.get('authorName'),
         content: formOutput.get('content'),
         isAdminReply: formOutput.get('isAdminReply') === 'true',
-        parentCommentId: formOutput.get('parentCommentId')
+        blogPostId: formOutput.get('blogPostId'),
+        replyCommentId: formOutput.get('replyCommentId')
       };
+      console.log(formData);
       if(!pattern.test(formData.email)) {
         setErrors({
           email: true,
@@ -248,7 +255,29 @@ export default function SinglePost(props) {
     } catch (error) {
       console.log(error);
     }
+    fetchComments();
+    setShowForm(false);
   }
+
+  const fetchComments = async () => {
+    const { data } = await axios.get('/api/blog/comment');
+    setComments(data);
+  };
+
+  React.useEffect(() => {
+  
+    // Pozivanje funkcije za dohvat komentara prilikom prvog renderovanja
+    fetchComments();
+
+    socket.on('newComment', (newComment) => {
+      setComments((prevComments) => [...prevComments, newComment]);
+    });
+  
+    return () => {
+      socket.off('comment');
+    };
+
+  }, []);
 
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
@@ -260,26 +289,6 @@ export default function SinglePost(props) {
   function handleChangeReplay(e) {
     setUpdateReplay(e.target.value);
   }
-
-  React.useEffect(() => {
-    const eventSource = new EventSource('/api/blog/comment');
-
-    eventSource.onmessage = (event) => {
-      const newComment = JSON.parse(event.data);
-      setComments((prevComments) => {
-        // Filtriraj samo unikatne komentare na osnovu _id
-        const filteredComments = prevComments.filter(
-          (comment) => comment._id !== newComment._id
-        );
-        // Dodaj novi komentar na početak niza
-        return [newComment, ...filteredComments];
-      });
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, []);
 
   const filterSearch = ({
     page,
@@ -319,8 +328,9 @@ export default function SinglePost(props) {
     filterSearch({ query: item});
   };
 
-  function handleShowForm() {
+  function handleShowForm(id) {
     setShowForm(prev => !prev);
+    setReplyCommentId(id);
   }
 
   React.useEffect(() => {
@@ -367,123 +377,104 @@ export default function SinglePost(props) {
               </Typography>
             </Box>
             {
-              blog.comments && blog.comments.length !== 0 &&
+              comments && comments.filter(comment => comment.blogPostId === blogID).length !== 0 &&
               <Box className='comments-area' sx={{bgcolor: theme.palette.badge.bgdLight, p: 3}}>
                 {
-                  comments && comments.map(replay => (
-                    replay.isAdminReply === false &&
-                    <Box key={replay._id}>
-                      <Typography color={theme.palette.primary.main}>{replay._id ? 'live' : ''}</Typography>
-                      
-                      <Typography>{replay.authorName}</Typography>
-                      <Divider sx={{mt: 3, mb: 1}} />
-                      <Typography>{replay.content}</Typography>
-                      <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                        <Button
-                          onClick={handleShowForm}
-                          variant="contained"
-                          sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
-                        >
-                          Replay
-                        </Button>
-                      </Box>
-                    </Box>
-                  ))
-                }
-                
-                <Box>
-                {
-                  blog.comments && blog.comments.length !== 0 &&
-                  <Box>
+                  comments.map((comment) => (
+                  comment.blogPostId === blog._id && comment.replyCommentId == 'false' &&
+                  <Box key={comment._id}>
+                    <Typography sx={{py: 1}}>{comment.authorName}</Typography>
+                    <Divider />
+                    <Typography sx={{py: 1}}>{comment.content}</Typography>
+                    <Button sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
+                      Reply
+                    </Button>
                     {
-                      postComments && postComments.map(replay => (
-                        replay.isAdminReply === "true" &&
-                        <Box key={replay._id} sx={{bgcolor: theme.palette.primary.white, p: 3}}>
-                          <Typography>{replay.authorName}</Typography>
-                          <Divider sx={{mt: 3, mb: 1}} />
-                          <Typography>{replay.content}</Typography>
-                          <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                          <Button
-                            onClick={handleShowForm}
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
-                          >
-                            Replay
+                      showForm && replyCommentId === comment._id && (
+                      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+                      <Box sx={{flexWrap: 'wrap'}}>
+                        <TextField
+                          margin="normal"
+                          required
+                          id="email"
+                          label="Email Address"
+                          name="email"
+                          autoComplete="email"
+                          autoFocus
+                          error={errors.email}
+                          onChange={handleChangeEmail}
+                          value={updateEmail}
+                          sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
+                        />
+                        {
+                          errors.email && 
+                          <FormHelperText error>{snack.message}</FormHelperText>
+                        }
+                        <TextField
+                          margin="normal"
+                          required
+                          name="authorName"
+                          label="Name"
+                          type="text"
+                          id="authorName"
+                          autoComplete="first-name"
+                          error={errors.authorName}
+                          onChange={handleChangeName}
+                          value={updateName}
+                          sx={{width: {xs: '100%', lg: '50%'}}}
+                        />
+                        {
+                          errors.authorName && 
+                          <FormHelperText error>{snack.message}</FormHelperText>
+                        }
+                      </Box>
+                      <TextareaAutosize
+                        name="content"
+                        id='content'
+                        required
+                        placeholder="Content"
+                        maxRows={10}
+                        minRows={4}
+                        onChange={handleChangeReplay}
+                        value={updateReplay}
+                        aria-label="replay textarea"
+                        style={{ width: '100%', resize: 'vertical', padding: '8px' }}
+                      />
+                      {
+                        errors.content && 
+                        <FormHelperText error>{'Content is required'}</FormHelperText>
+                      }
+                      <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
+                      <input type="hidden" name="blogPostId" id="blogPostId" value={blog._id} />
+                      <input type="hidden" name="replyCommentId" id="replyCommentId" value={replyCommentId ? replyCommentId : 'false'} />
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
+                      >
+                        Submit
+                      </Button>
+                    </Box>
+                    )
+                    }
+                    {/* Show child comment */}
+                    {
+                      comments
+                      .filter((childComment) => childComment.replyCommentId === comment._id)
+                      .map((childComment) => (
+                        <Box className="reply" key={childComment._id} sx={{bgcolor: theme.palette.primary.white, p: 3}}>
+                          <Typography sx={{py: 1}}>{childComment.authorName}</Typography>
+                          <Divider />
+                          <Typography sx={{py: 1}}>{childComment.content}</Typography>
+                          <Button sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
+                            Reply
                           </Button>
-                          </Box>
                         </Box>
                       ))
                     }
                   </Box>
-                }
-                </Box>
-                {
-                  showForm &&
-                  <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                    <Box sx={{flexWrap: 'wrap'}}>
-                      <TextField
-                        margin="normal"
-                        required
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        error={errors.email}
-                        onChange={handleChangeEmail}
-                        value={updateEmail}
-                        sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
-                      />
-                      {
-                        errors.email && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
-                      <TextField
-                        margin="normal"
-                        required
-                        name="authorName"
-                        label="Name"
-                        type="text"
-                        id="authorName"
-                        autoComplete="first-name"
-                        error={errors.authorName}
-                        onChange={handleChangeName}
-                        value={updateName}
-                        sx={{width: {xs: '100%', lg: '50%'}}}
-                      />
-                      {
-                        errors.authorName && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
-                    </Box>
-                    <TextareaAutosize
-                      name="content"
-                      id='content'
-                      required
-                      placeholder="Content"
-                      maxRows={10}
-                      minRows={4}
-                      onChange={handleChangeReplay}
-                      value={updateReplay}
-                      aria-label="replay textarea"
-                      style={{ width: '100%', resize: 'vertical', padding: '8px' }}
-                    />
-                    {
-                      errors.content && 
-                      <FormHelperText error>{'Content is required'}</FormHelperText>
-                    }
-                    <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
-                    <input type="hidden" name="parentCommentId" id="parentCommentId" value={null} />
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
-                    >
-                      Submit
-                    </Button>
-                  </Box>
-                  
-                }
+                ))
+              }
               </Box>
             }
             {
@@ -552,7 +543,8 @@ export default function SinglePost(props) {
                     <FormHelperText error>{'Replay is required'}</FormHelperText>
                   }
                   <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
-                  <input type="hidden" name="parentCommentId" id="parentCommentId" value={ blog._id } />
+                  <input type="hidden" name="blogPostId" id="blogPostId" value={blog._id} />
+                  <input type="hidden" name="replyCommentId" id="replyCommentId" value={'false'} />
                   <Button
                     type="submit"
                     variant="contained"
