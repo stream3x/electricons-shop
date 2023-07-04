@@ -176,6 +176,7 @@ export default function SinglePost(props) {
 
   const { slug, blog, blogs, categories, subCategories, postComments } = props;
 
+  const [loading, setLoading] = React.useState(false);
   const blogID = blog._id;
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const date = new Date(blog.createdAt);
@@ -257,24 +258,13 @@ export default function SinglePost(props) {
   }
 
   const fetchComments = async () => {
-    const { data } = await axios.get('/api/blog/comment');
-    setComments(data);
+    try {
+      const { data } = await axios.get('/api/blog/comment');
+      setComments(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  React.useEffect(() => {
-  
-    // Pozivanje funkcije za dohvat komentara prilikom prvog renderovanja
-    fetchComments();
-
-    socket.on('newComment', (newComment) => {
-      setComments((prevComments) => [...prevComments, newComment]);
-    });
-  
-    return () => {
-      socket.off('comment');
-    };
-
-  }, []);
 
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
@@ -337,6 +327,47 @@ export default function SinglePost(props) {
   React.useEffect(() => {
     searchHandler(query);
   }, [query]);
+
+  React.useEffect(() => {
+    if(loading) return;
+    setLoading(true);
+    // Pozivanje funkcije za dohvat komentara prilikom prvog renderovanja
+    try {
+      fetchComments();
+    } catch (error) {
+      console.log(`Error loading comments ${error}`);
+    }
+
+    socket.on('newComment', (newComment) => {
+      setComments((prevComments) => [...prevComments, newComment]);
+    });
+    setLoading(false);
+    return () => {
+      socket.off('comment');
+    };
+
+  }, [loading]);
+
+  if(!blog) {
+    return (
+      <Box sx={{ flexGrow: 1, my: 4  }}>
+        <Typography gutterBottom variant="h6" component="h3" textAlign="center">
+          Blog not found
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid xs={12}>
+            <Item>
+              <Link href="/blog?counter=10">
+                <Button variant="contained" startIcon={<ReplyIcon />}>
+                  back to Blogs
+                </Button>
+              </Link>
+            </Item>
+          </Grid>
+        </Grid>
+      </Box>
+    )
+  }
  
   return (
     <Grid container spacing={3} sx={{my: 5}}>

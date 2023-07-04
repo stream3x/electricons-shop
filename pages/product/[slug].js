@@ -133,9 +133,9 @@ export default function SingleProduct(props) {
     router.push(`/product/${product.slug}?counter=10`, undefined, { shallow: true })
   }, [])
 
-  React.useEffect(() => {
-    // The counter changed!
-  }, [router.query.counter])
+  // React.useEffect(() => {
+  //   // The counter changed!
+  // }, [router.query.counter])
 
   React.useEffect(() => {
     fetchStoreInfo();

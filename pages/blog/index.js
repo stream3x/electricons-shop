@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, Container, Grid, Pagination, Stack, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Container, Grid, Pagination, Stack, Toolbar, Typography } from '@mui/material'
 import React, { useEffect } from 'react'
 import theme from '../../src/theme'
 import Image from 'next/image'
@@ -154,6 +154,7 @@ export async function getServerSideProps({ query }) {
 export default function BlogPages(props) {
   const [searchFilter, setSearchFilter] = React.useState([]);
   const [searchQueary, setSearchQuery] = React.useState('');
+  const [selected, setSelected] = React.useState('');
 
   const router = useRouter();
   const {
@@ -239,6 +240,10 @@ export default function BlogPages(props) {
     setSearchFilter([]);
     router.push('/blog');
   }
+
+  const handleLoading = (blog) => {
+    setSelected(blog._id);
+  };
   
   return (
     <Box sx={{ my: 4 }}>
@@ -319,7 +324,11 @@ export default function BlogPages(props) {
                   blog.category === 'Desktop computers' &&
                   <Grid key={blog._id} item xs={12}>
                     <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
-                      <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0}} href={`/blog/post/${blog.slug}`} noLinkStyle>
+                      <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0}} href={`/blog/post/${blog.slug}`} noLinkStyle onClick={() => handleLoading(blog)}>
+                        {
+                          blog._id === selected &&
+                          <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                        }
                         <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
                           <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                             <Image
@@ -352,7 +361,7 @@ export default function BlogPages(props) {
                     {
                       blogs.filter(blog => blog.category === 'Desktop computers').length === 0 ?
                       <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                      "No products"
+                      "No blogs"
                       </Typography>
                       :
                       <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
@@ -407,7 +416,11 @@ export default function BlogPages(props) {
                 blog.category === 'Laptop computers' &&
                 <Grid key={blog._id} item xs={12}>
                   <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
-                    <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle>
+                    <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle onClick={() => handleLoading(blog)}>
+                        {
+                          blog._id === selected &&
+                          <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                        }
                       <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
                         <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                           <Image
@@ -495,7 +508,11 @@ export default function BlogPages(props) {
                 blog.category === 'Smartphones' &&
                 <Grid key={blog._id} item xs={12}>
                   <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
-                    <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle>
+                    <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle onClick={() => handleLoading(blog)}>
+                        {
+                          blog._id === selected &&
+                          <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                        }
                       <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
                         <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                           <Image
