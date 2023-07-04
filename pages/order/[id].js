@@ -13,7 +13,6 @@ import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Store } from '../../src/utils/Store';
-import { onError } from '../../src/utils/error';
 import dynamic from 'next/dynamic';
 import { usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { Card, CardContent, Divider, Grid, Paper } from '@mui/material';
@@ -213,7 +212,7 @@ function Order(props) {
       error &&
       <LabelButton sx={{width: '100%', my: 5, p: 2, borderLeft: '5px solid red!important'}}>
           <Typography color="error" sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
-            {`${error}`} Pera Peric
+            {`${error}`}
           </Typography>
       </LabelButton>
     }

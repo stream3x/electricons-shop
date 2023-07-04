@@ -195,8 +195,6 @@ export default function SinglePost(props) {
   const [comments, setComments] = React.useState([]);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
 
-console.log(comments, replyCommentId, showForm, blogID);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({ ...errors, email: false, authorName: false, replay: false});
@@ -210,7 +208,6 @@ console.log(comments, replyCommentId, showForm, blogID);
         blogPostId: formOutput.get('blogPostId'),
         replyCommentId: formOutput.get('replyCommentId')
       };
-      console.log(formData);
       if(!pattern.test(formData.email)) {
         setErrors({
           email: true,
@@ -329,8 +326,12 @@ console.log(comments, replyCommentId, showForm, blogID);
   };
 
   function handleShowForm(id) {
-    setShowForm(prev => !prev);
+    setShowForm(true);
     setReplyCommentId(id);
+  }
+
+  function handleCloseForm() {
+    setShowForm(false);
   }
 
   React.useEffect(() => {
@@ -376,6 +377,7 @@ console.log(comments, replyCommentId, showForm, blogID);
                 {blog.description}
               </Typography>
             </Box>
+            {/* Show child comment */}
             {
               comments && comments.filter(comment => comment.blogPostId === blogID).length !== 0 &&
               <Box className='comments-area' sx={{bgcolor: theme.palette.badge.bgdLight, p: 3}}>
@@ -386,9 +388,23 @@ console.log(comments, replyCommentId, showForm, blogID);
                     <Typography sx={{py: 1}}>{comment.authorName}</Typography>
                     <Divider />
                     <Typography sx={{py: 1}}>{comment.content}</Typography>
-                    <Button sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
+                    <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
                       Reply
                     </Button>
+                    {
+                      comments
+                      .filter((childComment) => childComment.replyCommentId === comment._id)
+                      .map((childComment) => (
+                        <Box className="reply" key={childComment._id} sx={{bgcolor: theme.palette.primary.white, p: 3}}>
+                          <Typography sx={{py: 1}}>{childComment.authorName}</Typography>
+                          <Divider />
+                          <Typography sx={{py: 1}}>{childComment.content}</Typography>
+                          <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
+                            Reply
+                          </Button>
+                        </Box>
+                      ))
+                    }
                     {
                       showForm && replyCommentId === comment._id && (
                       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
@@ -457,25 +473,16 @@ console.log(comments, replyCommentId, showForm, blogID);
                     </Box>
                     )
                     }
-                    {/* Show child comment */}
-                    {
-                      comments
-                      .filter((childComment) => childComment.replyCommentId === comment._id)
-                      .map((childComment) => (
-                        <Box className="reply" key={childComment._id} sx={{bgcolor: theme.palette.primary.white, p: 3}}>
-                          <Typography sx={{py: 1}}>{childComment.authorName}</Typography>
-                          <Divider />
-                          <Typography sx={{py: 1}}>{childComment.content}</Typography>
-                          <Button sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
-                            Reply
-                          </Button>
-                        </Box>
-                      ))
-                    }
                   </Box>
                 ))
               }
               </Box>
+            }
+            {
+              showForm && 
+              <Button sx={{ my: 3 }} onClick={handleCloseForm}>
+                Add New Comment
+              </Button>
             }
             {
               !showForm &&
