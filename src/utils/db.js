@@ -18,9 +18,9 @@ async function connect() {
   const db = await mongoose.connect(process.env.MONGODB_URI);
   console.log('new connection');
   connection.isConnected = db.connections[0].readyState;
-  db.on('error', (error) => {
-    console.error('MongoDB connection error:', error);
-  });
+  // db.on('error', (error) => {
+  //   console.error('MongoDB connection error:', error);
+  // });
 }
 
 async function disconnect() {
