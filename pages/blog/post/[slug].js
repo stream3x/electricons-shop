@@ -335,7 +335,7 @@ export default function SinglePost(props) {
     try {
       fetchComments();
     } catch (error) {
-      console.log(`Error loading comments ${error}`);
+      console.log(`Error loading commentare ${error}`);
     }
 
     socket.on('newComment', (newComment) => {
