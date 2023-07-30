@@ -18,12 +18,23 @@ const storeSchema = new mongoose.Schema(
   }
 );
 
+const detailSchema = new mongoose.Schema(
+  {
+    attribute: {type: String, required: false},
+    detail: {type: String, required: false}
+  },
+  {
+    timestamps: true
+  }
+);
+
 const productSchema = new mongoose.Schema(
   {
     title: {type: String, required: true},
     images: [imageSchema],
     shortDescription: {type: String, required: true},
     description: {type: String, required: true},
+    details: [detailSchema],
     rating: {type: Number, required: true, default: 0},
     price: {type: Number, required: true},
     oldPrice: {type: Number, required: true},
@@ -38,7 +49,8 @@ const productSchema = new mongoose.Schema(
     inStock: {type: Number, required: true, default: 0},
     inWidget: {type: String, required: true},
     online: {type: Boolean, required: true},
-    stores: [storeSchema]
+    stores: [storeSchema],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductComment' }]
   },
   {
     timestamps: true

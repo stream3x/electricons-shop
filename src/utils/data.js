@@ -53,7 +53,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}]
+      stores: [{store: 'Electricons store'}],
+      comments: [],
+      details: [{attribute: 'Type', detail: 'AMD Ryzen 53500 CNE-HWC2'}, {attribute: 'Color', detail: 'Black'}],
     },
     {
       title: "AMD Acer Aspire",
@@ -74,11 +76,13 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'Electricons store'}]
+      stores: [{store: 'Electricons store'}],
+      comments: [],
+      details: []
     },
     {
       title: "AMD Dell Inspirion Desktop ",
-      images: [{image: "/images/dell_desktop/hero/dell-inspirion.jpg"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/dell_desktop/dell_desktop.png"},{image: "/images/dell_desktop/dell_desktop.png"}],
+      images: [{image: "/images/dell_desktop/hero/dell-inspirion.jpg"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/dell_desktop/dell_desktop.png"}],
       shortDescription: "AMD RYZEN 7, NVIDIA RTX 3060, 16GB of DDR4 RAM, 1TB Solid State Drive",
       description: "AMD Dell Inspiron G5 5000 An excellent value gaming PC from Dell, AMD RYZEN 7, NVIDIA RTX 3060, 16GB of DDR4 RAM, 1TB Solid State Drive",
       rating: 4,
@@ -95,7 +99,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: [{attribute: 'Type', detail: 'AMD Dell Inspiron G5 5000'}, {attribute: 'Color', detail: 'Black'}],
     },
     {
       title: "Dell PRO",
@@ -116,7 +122,9 @@ const data = {
       inStock: 10,
       inWidget: "best-seller",
       online: 'true',
-      stores: [{store: 'Electricons store'}]
+      stores: [{store: 'Electricons store'}],
+      comments: [],
+      details: []
     },
     {
       title: "Dell business",
@@ -137,7 +145,9 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "HP server",
@@ -158,7 +168,9 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'Electricons store'}]
+      stores: [{store: 'Electricons store'}],
+      comments: [],
+      details: []
     },
     {
       title: "HP Envy Desktop",
@@ -179,7 +191,9 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Acer laptop",
@@ -200,7 +214,9 @@ const data = {
       inStock: 10,
       inWidget: "best-seller",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Lenovo laptop",
@@ -221,7 +237,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Toshiba Satellite",
@@ -242,7 +260,9 @@ const data = {
       inStock: 0,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Xiaomi Redmi Note 9",
@@ -263,7 +283,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Xiaomi 10",
@@ -284,7 +306,9 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Nokia Seven",
@@ -305,7 +329,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Nokia Spring",
@@ -326,7 +352,9 @@ const data = {
       inStock: 10,
       inWidget: "top-product",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Huawei 14x Elite",
@@ -347,7 +375,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     },
     {
       title: "Huawei P30 Pro",
@@ -368,7 +398,9 @@ const data = {
       inStock: 10,
       inWidget: "hero",
       online: 'true',
-      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}]
+      stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
+      comments: [],
+      details: []
     }
   ]
 }

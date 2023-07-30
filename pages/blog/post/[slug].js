@@ -15,7 +15,6 @@ import theme from '../../../src/theme';
 import Link from '../../../src/Link';
 import { Store } from '../../../src/utils/Store';
 import axios from 'axios';
-import Comment from '../../../models/Comment';
 import { io } from 'socket.io-client';
 
 const PAGE_SIZE = 6;
@@ -51,7 +50,6 @@ export async function getServerSideProps(context) {
   
   const categories = await Blog.find().distinct('category');
   const subCategories = await Blog.find().distinct('subCategory');
-  const comments = await Comment.find().lean();
   const tagsFilter = tag.length !== 0 ? { 'tags.tag': tag } : {};
 
     const blogDocs = await Blog.find(
@@ -66,7 +64,6 @@ export async function getServerSideProps(context) {
 
   const blogs = blogDocsByCategory.map(db.convertDocToObject);
   const blog = await Blog.findOne({slug}).lean();
-  const postComments = comments.map(db.convertDocToObject);
 
   await db.disconnect();
   return {
@@ -75,8 +72,7 @@ export async function getServerSideProps(context) {
       blog: db.convertDocToObject(blog),
       subCategories,
       categories,
-      slug,
-      postComments
+      slug
     },
   };
 }
@@ -174,7 +170,7 @@ export default function SinglePost(props) {
     page = 1
   } = router.query;
 
-  const { slug, blog, blogs, categories, subCategories, postComments } = props;
+  const { slug, blog, blogs, categories, subCategories } = props;
 
   const [loading, setLoading] = React.useState(false);
   const blogID = blog._id;
@@ -368,7 +364,7 @@ export default function SinglePost(props) {
       </Box>
     )
   }
- 
+
   return (
     <Grid container spacing={3} sx={{my: 5}}>
       <Grid item xs={12} lg={9}>
@@ -426,8 +422,8 @@ export default function SinglePost(props) {
                       comments
                       .filter((childComment) => childComment.replyCommentId === comment._id)
                       .map((childComment) => (
-                        <Box className="reply" key={childComment._id} sx={{bgcolor: theme.palette.primary.white, p: 3}}>
-                          <Typography sx={{py: 1}}>{childComment.authorName}</Typography>
+                        <Box className="reply" key={childComment._id} sx={{bgcolor: childComment.isAdminReply ? theme.palette.primary.white : theme.palette.primary.bgdLight, p: 3, mb: 1}}>
+                          <Typography sx={{py: 1}}>{childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}</Typography>
                           <Divider />
                           <Typography sx={{py: 1}}>{childComment.content}</Typography>
                           <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
@@ -439,42 +435,83 @@ export default function SinglePost(props) {
                     {
                       showForm && replyCommentId === comment._id && (
                       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                      <Box sx={{flexWrap: 'wrap'}}>
-                        <TextField
-                          margin="normal"
-                          required
-                          id="email"
-                          label="Email Address"
-                          name="email"
-                          autoComplete="email"
-                          autoFocus
-                          error={errors.email}
-                          onChange={handleChangeEmail}
-                          value={updateEmail}
-                          sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
-                        />
                         {
-                          errors.email && 
-                          <FormHelperText error>{snack.message}</FormHelperText>
+                          userInfo ?
+                          <Box sx={{flexWrap: 'wrap'}}>
+                            <input
+                              type='hidden'
+                              margin="normal"
+                              required
+                              id="email"
+                              label="Email Address"
+                              name="email"
+                              autoComplete="email"
+                              autoFocus
+                              error={errors.email}
+                              onChange={handleChangeEmail}
+                              value={userInfo.email}
+                              sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
+                            />
+                            {
+                              errors.email && 
+                              <FormHelperText error>{snack.message}</FormHelperText>
+                            }
+                            <input
+                              type="hidden"
+                              margin="normal"
+                              required
+                              name="authorName"
+                              label="Name"
+                              id="authorName"
+                              autoComplete="first-name"
+                              error={errors.authorName}
+                              onChange={handleChangeName}
+                              value={userInfo.name}
+                              sx={{width: {xs: '100%', lg: '50%'}}}
+                            />
+                            {
+                              errors.authorName && 
+                              <FormHelperText error>{snack.message}</FormHelperText>
+                            }
+                          </Box>
+                          :
+                          <Box sx={{flexWrap: 'wrap'}}>
+                            <TextField
+                              margin="normal"
+                              required
+                              id="email"
+                              label="Email Address"
+                              name="email"
+                              autoComplete="email"
+                              autoFocus
+                              error={errors.email}
+                              onChange={handleChangeEmail}
+                              value={updateEmail}
+                              sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
+                            />
+                            {
+                              errors.email && 
+                              <FormHelperText error>{snack.message}</FormHelperText>
+                            }
+                            <TextField
+                              margin="normal"
+                              required
+                              name="authorName"
+                              label="Name"
+                              type="text"
+                              id="authorName"
+                              autoComplete="first-name"
+                              error={errors.authorName}
+                              onChange={handleChangeName}
+                              value={updateName}
+                              sx={{width: {xs: '100%', lg: '50%'}}}
+                            />
+                            {
+                              errors.authorName && 
+                              <FormHelperText error>{snack.message}</FormHelperText>
+                            }
+                          </Box>
                         }
-                        <TextField
-                          margin="normal"
-                          required
-                          name="authorName"
-                          label="Name"
-                          type="text"
-                          id="authorName"
-                          autoComplete="first-name"
-                          error={errors.authorName}
-                          onChange={handleChangeName}
-                          value={updateName}
-                          sx={{width: {xs: '100%', lg: '50%'}}}
-                        />
-                        {
-                          errors.authorName && 
-                          <FormHelperText error>{snack.message}</FormHelperText>
-                        }
-                      </Box>
                       <TextareaAutosize
                         name="content"
                         id='content'
@@ -518,52 +555,98 @@ export default function SinglePost(props) {
             {
               !showForm &&
               <Box sx={{py: 5}}>
-                <Typography component="h1" variant="h5" sx={{mt: 5, pt: 5, display: 'inline', borderBottom:  `3px solid ${theme.palette.primary.main}`}}>
+                <Typography component="h2" variant="h5" sx={{ pb: .25, display: 'inline', borderBottom:  `3px solid ${theme.palette.primary.main}`}}>
                   Leave a Reply
                 </Typography>
                 <Divider />
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 3 }}>
-                    <Box sx={{ display: 'flex',flexWrap: 'wrap', flex: {xs: '0 0 100%', lg: 1}, pr: {xs: 0, lg: 3} }}>
-                      <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        error={errors.email}
-                        onChange={handleChangeEmail}
-                        value={updateEmail}
-                        
-                      />
-                      {
-                        errors.email && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
+                  {
+                    userInfo ?
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 3 }}>
+                      <Box sx={{ display: 'flex',flexWrap: 'wrap', flex: {xs: '0 0 100%', lg: 1}, pr: {xs: 0, lg: 3} }}>
+                        <input
+                          type='hidden'
+                          margin="normal"
+                          fullWidth
+                          required
+                          id="email"
+                          label="Email Address"
+                          name="email"
+                          autoComplete="email"
+                          autoFocus
+                          error={errors.email}
+                          onChange={handleChangeEmail}
+                          value={userInfo.email}
+                          
+                        />
+                        {
+                          errors.email && 
+                          <FormHelperText error>{snack.message}</FormHelperText>
+                        }
+                      </Box>
+                      <Box sx={{display: 'flex',flexWrap: 'wrap', flex: 1}}>
+                        <input
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="authorName"
+                          label="Name"
+                          type="hidden"
+                          id="authorName"
+                          autoComplete="first-name"
+                          error={errors.authorName}
+                          onChange={handleChangeName}
+                          value={userInfo.name}
+                        />
+                        {
+                          errors.authorName && 
+                          <FormHelperText error>{snack.message}</FormHelperText>
+                        }
+                      </Box>
                     </Box>
-                    <Box sx={{display: 'flex',flexWrap: 'wrap', flex: 1}}>
-                      <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="authorName"
-                        label="Name"
-                        type="text"
-                        id="authorName"
-                        autoComplete="first-name"
-                        error={errors.authorName}
-                        onChange={handleChangeName}
-                        value={updateName}
-                      />
-                      {
-                        errors.authorName && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
+                    :
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 3 }}>
+                      <Box sx={{ display: 'flex',flexWrap: 'wrap', flex: {xs: '0 0 100%', lg: 1}, pr: {xs: 0, lg: 3} }}>
+                        <TextField
+                          margin="normal"
+                          fullWidth
+                          required
+                          id="email"
+                          label="Email Address"
+                          name="email"
+                          autoComplete="email"
+                          autoFocus
+                          error={errors.email}
+                          onChange={handleChangeEmail}
+                          value={updateEmail}
+                          
+                        />
+                        {
+                          errors.email && 
+                          <FormHelperText error>{snack.message}</FormHelperText>
+                        }
+                      </Box>
+                      <Box sx={{display: 'flex',flexWrap: 'wrap', flex: 1}}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="authorName"
+                          label="Name"
+                          type="text"
+                          id="authorName"
+                          autoComplete="first-name"
+                          error={errors.authorName}
+                          onChange={handleChangeName}
+                          value={updateName}
+                        />
+                        {
+                          errors.authorName && 
+                          <FormHelperText error>{snack.message}</FormHelperText>
+                        }
+                      </Box>
                     </Box>
-                  </Box>
+                  }
                   <TextareaAutosize
                     name="content"
                     id='content'

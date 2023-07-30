@@ -8,7 +8,8 @@ const theme = createTheme({
       main: cyan[500],
       contrastText: grey[50],
       borderColor: cyan[500],
-      white: '#fff'
+      white: '#fff',
+      bgdLight: '#f9f9f9'
     },
     secondary: {
       main: grey[900],

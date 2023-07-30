@@ -300,7 +300,7 @@ export default function Header(props) {
                 </Box>
                 :
                 <React.Fragment>
-                  <Link href="/">
+                  <Link href="/blog?counter=10">
                     <Image
                       width= {matches ? 280 : 130}
                       height= {50}

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -119,8 +119,9 @@ export default function SingleProduct(props) {
   const { cart: {cartItems}, comparation } = state;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [storeInfo, setStoreInfo] = React.useState([]);
-  const [isSSR, setIsSsr] = React.useState(true);
+  const [ratings, setRatings] = React.useState([]);
+  const [numReviews, setNumReviews] = useState([]);
+  const [sumReviews, setSumReviews] = useState(0);
   const [expanded, setExpanded] = React.useState(false);
   const [productWithStoreInfo, setProductWithStoreInfo] = React.useState([]);
 
@@ -131,20 +132,40 @@ export default function SingleProduct(props) {
   React.useEffect(() => {
     // Always do navigations after the first render
     router.push(`/product/${product.slug}?counter=10`, undefined, { shallow: true })
-  }, [])
-
-  // React.useEffect(() => {
-  //   // The counter changed!
-  // }, [router.query.counter])
+  }, []);
 
   React.useEffect(() => {
     fetchStoreInfo();
+    fetchReviews();
   }, []);
+
+  async function fetchReviews() {
+    try {
+      const { data } = await axios.get('/api/products/comment');
+      if (product) {
+        const currentProduct = product.comments.map(item => {
+          const foundReviews = data.find(review => review._id === item);
+          return foundReviews;
+        });
+
+        const updatedProductWithReviews = {
+          ...product,
+          comments: currentProduct
+        }
+        const onlyReviews = updatedProductWithReviews.comments.filter(rating => rating.replyCommentId === 'false');
+        const sum = onlyReviews.map(item => item.rating).reduce((partialSum, a) => partialSum + a, 0);
+        setRatings(updatedProductWithReviews.comments)
+        setNumReviews(onlyReviews.map(item => item.rating).length);
+        setSumReviews(sum);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function fetchStoreInfo() {
     try {
       const { data } = await axios.get('/api/store_info');
-      setStoreInfo(data);
 
       if (product) {
         const updatedStores = product.stores.map((store) => {
@@ -164,7 +185,6 @@ export default function SingleProduct(props) {
     } catch (error) {
       console.error(error);
     }
-    
   }
 
   if(!product) {
@@ -226,7 +246,7 @@ export default function SingleProduct(props) {
     }
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   }
-  
+
   return (    
     <Box sx={{ flexGrow: 1, my: 4  }}>
       <BreadcrumbNav productData={product} />
@@ -257,10 +277,10 @@ export default function SingleProduct(props) {
               />
             </Box>
             <Box sx={{ flexGrow: 1, my: 1, display: 'flex', alignItems: 'center', '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' }  }}>
-              <Rating align="center" size="small" name="read-only" value={product.rating} readOnly precision={0.5} />
+              <Rating align="center" size="small" name="read-only" value={sumReviews/numReviews} readOnly precision={0.5} />
               <Link noLinkStyle href="#reviews">
                 <Typography align="center" gutterBottom variant="p" component="span" color="secondary" sx={{marginLeft: 1}}>
-                  Reviews ({product.reviews})
+                  Reviews ({numReviews})
                 </Typography>
               </Link>
             </Box>
@@ -387,8 +407,8 @@ export default function SingleProduct(props) {
             </Box>  
           </Item>
         </Grid>
-        <Grid item xs={12}>
-          <ProductTabs product={product} />
+        <Grid id="reviews" item xs={12}>
+          <ProductTabs product={product} setRatings={setRatings} />
         </Grid>
         <Grid id="available-store" item xs={12}>
           <Grid container spacing={3}>

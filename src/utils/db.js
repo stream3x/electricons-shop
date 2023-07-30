@@ -45,6 +45,13 @@ function convertDocToObject(doc) {
     doc.createdAt = doc.createdAt.toString();
     doc.updatedAt = doc.updatedAt.toString();
   }
+  if(doc.details) {
+    doc.details.forEach(detail => {
+      detail._id = detail._id.toString();
+      detail.createdAt = detail.createdAt.toString();
+      detail.updatedAt = detail.updatedAt.toString();
+    });
+  }
   if(doc.stores) {
     doc.stores.forEach(store => {
       store._id = store._id.toString();
@@ -68,7 +75,12 @@ function convertDocToObject(doc) {
     doc.content = doc.content.toString();
     doc.isAdminReply = doc.isAdminReply.toString();
     doc.replyCommentId = doc.replyCommentId.toString();
-    doc.blogPostId = doc.blogPostId.toString();
+    if(doc.blogPostId) {
+      doc.blogPostId = doc.blogPostId.toString();
+    }
+    if (doc.ProductId) {
+      doc.ProductId = doc.ProductId.toString();
+    }
     doc.createdAt = doc.createdAt.toString();
     doc.updatedAt = doc.updatedAt.toString();
   }

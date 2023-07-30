@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose';
-import Comment from './Comment.js';
 
 const imageSchema = new mongoose.Schema(
   {
