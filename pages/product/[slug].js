@@ -35,6 +35,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/router';
 import theme from '../../src/theme';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import { io } from 'socket.io-client';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -113,6 +114,9 @@ textAlign: 'center',
 color: theme.palette.text.secondary,
 }));
 
+const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
+
+
 export default function SingleProduct(props) {
   const { product } = props;
   const { state, dispatch } = useContext(Store);
@@ -136,32 +140,7 @@ export default function SingleProduct(props) {
 
   React.useEffect(() => {
     fetchStoreInfo();
-    fetchReviews();
   }, []);
-
-  async function fetchReviews() {
-    try {
-      const { data } = await axios.get('/api/products/comment');
-      if (product) {
-        const currentProduct = product.comments.map(item => {
-          const foundReviews = data.find(review => review._id === item);
-          return foundReviews;
-        });
-
-        const updatedProductWithReviews = {
-          ...product,
-          comments: currentProduct
-        }
-        const onlyReviews = updatedProductWithReviews.comments.filter(rating => rating.replyCommentId === 'false');
-        const sum = onlyReviews.map(item => item.rating).reduce((partialSum, a) => partialSum + a, 0);
-        setRatings(updatedProductWithReviews.comments)
-        setNumReviews(onlyReviews.map(item => item.rating).length);
-        setSumReviews(sum);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   async function fetchStoreInfo() {
     try {
@@ -280,7 +259,7 @@ export default function SingleProduct(props) {
               <Rating align="center" size="small" name="read-only" value={sumReviews/numReviews} readOnly precision={0.5} />
               <Link noLinkStyle href="#reviews">
                 <Typography align="center" gutterBottom variant="p" component="span" color="secondary" sx={{marginLeft: 1}}>
-                  Reviews ({numReviews})
+                  Reviews ({ratings.length !== 0 ? numReviews : 0})
                 </Typography>
               </Link>
             </Box>
@@ -408,7 +387,7 @@ export default function SingleProduct(props) {
           </Item>
         </Grid>
         <Grid id="reviews" item xs={12}>
-          <ProductTabs product={product} setRatings={setRatings} />
+          <ProductTabs product={product} setRatings={setRatings} setNumReviews={setNumReviews} setSumReviews={setSumReviews} />
         </Grid>
         <Grid id="available-store" item xs={12}>
           <Grid container spacing={3}>

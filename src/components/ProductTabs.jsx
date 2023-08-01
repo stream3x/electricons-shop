@@ -48,7 +48,7 @@ function a11yProps(index) {
 
 const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
 
-export default function ProductTabs({ product, setRatings }) {
+export default function ProductTabs({ product, setRatings, setNumReviews, setSumReviews }) {
   const productID = product._id;
   const theme = useTheme();
   const { state, dispatch } = React.useContext(Store);
@@ -128,7 +128,6 @@ export default function ProductTabs({ product, setRatings }) {
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a rating", severity: "error" }});
           return;
         } else {
-          console.log(formData);
           const { data } = await axios.post(`/api/products/${productID}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
@@ -189,11 +188,22 @@ export default function ProductTabs({ product, setRatings }) {
   }, [loading]);
 
   React.useEffect(() => {
-    const currentProduct = comments && comments.filter(comment => comment.productId === productID);
-    const ratings = currentProduct.filter(item => item.rating > 0 && item.rating)
-    console.log(ratings.map(item => item.rating));
-    setRatings(ratings.map(item => item.rating));
+    showReview();
   }, [comments])
+  
+
+  function showReview() {
+    const productComments = comments.filter(comment => comment.productId === productID)
+    if (comments) {
+      const onlyReviews = productComments.filter(review => review.replyCommentId === 'false');
+  
+      const sum = onlyReviews.map(item => item.rating).reduce((partialSum, a) => partialSum + a, 0);
+  
+      setRatings(onlyReviews.map(item => item.rating))
+      setNumReviews(onlyReviews.map(item => item.rating).length);
+      setSumReviews(sum);
+    }
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -244,7 +254,6 @@ export default function ProductTabs({ product, setRatings }) {
           }
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          {/* Show child comment */}
           {
             comments && comments.filter(comment => comment.productId === productID).length !== 0 &&
             <Box className='comments-area' sx={{bgcolor: theme.palette.badge.bgdLight, p: 3}}>
