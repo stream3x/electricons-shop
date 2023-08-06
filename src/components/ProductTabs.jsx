@@ -8,10 +8,10 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Button, Divider, FormHelperText, Rating, TextField, TextareaAutosize } from '@mui/material';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 import axios from 'axios';
 import { Store } from '../utils/Store';
-
+import pusherClient from '../utils/client/pusher';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -26,7 +26,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -46,9 +46,9 @@ function a11yProps(index) {
   };
 }
 
-const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
+// const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
 
-export default function ProductTabs({ product, setRatings, setNumReviews, setSumReviews }) {
+export default function ProductTabs({ product, setRatings, setNumReviews, setSumReviews, slug }) {
   const productID = product._id;
   const theme = useTheme();
   const { state, dispatch } = React.useContext(Store);
@@ -76,6 +76,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
+        slug: formOutput.get('slug'),
         email: formOutput.get('email'),
         authorName: formOutput.get('authorName'),
         content: formOutput.get('content'),
@@ -113,9 +114,9 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
         return;
       }
-      if(formData.replyCommentId !== 'false') {
+      if(formData.replyCommentId !== 'false' || !userInfo) {
         console.log(formData);
-        const { data } = await axios.post(`/api/products/${productID}`, formData);
+        const { data } = await axios.post(`/api/comments/${slug}`, formData);
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
       }else {
         if(formData.rating === 0) {
@@ -128,7 +129,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a rating", severity: "error" }});
           return;
         } else {
-          const { data } = await axios.post(`/api/products/${productID}`, formData);
+          const { data } = await axios.post(`/api/comments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
       }
@@ -139,13 +140,13 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     } catch (error) {
       console.log(error);
     }
-    fetchComments();
     setShowForm(false);
   }
 
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
   }
+  
   function handleChangeName(e) {
     setUpdateName(e.target.value)
   }
@@ -158,44 +159,73 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     setUpdateRating(e.target.value);
   }
 
+  // const fetchComments = async () => {
+  //   try {
+  //     const { data } = await axios.get('/api/products/comment');
+  //     setComments(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // React.useEffect(() => {
+  //   if(loading) return;
+  //   setLoading(true);
+    
+  //   try {
+  //     fetchComments();
+  //   } catch (error) {
+  //     console.log(`Error loading comments ${error}`);
+  //   }
+
+  //   socket.on('newComment', (newComment) => {
+  //     setComments((prevComments) => [...prevComments, newComment]);
+  //   });
+  //   setLoading(false);
+  //   return () => {
+  //     socket.off('comment');
+  //   };
+
+  // }, [loading]);
+
   const fetchComments = async () => {
     try {
-      const { data } = await axios.get('/api/products/comment');
+      const response = await fetch(`/api/comments/${slug}`);
+      const data = await response.json();
       setComments(data);
     } catch (error) {
-      console.log(error);
+      console.error('Error fetching comments:', error);
     }
   };
 
   React.useEffect(() => {
-    if(loading) return;
-    setLoading(true);
-    
-    try {
-      fetchComments();
-    } catch (error) {
-      console.log(`Error loading comments ${error}`);
-    }
+    // Fetch existing comments from the server on page load
+    fetchComments();
+  }, [slug]);
 
-    socket.on('newComment', (newComment) => {
+  React.useEffect(() => {
+    // Function to handle new comments received from Pusher
+    const handleNewComment = (newComment) => {
       setComments((prevComments) => [...prevComments, newComment]);
-    });
-    setLoading(false);
-    return () => {
-      socket.off('comment');
     };
 
-  }, [loading]);
+    // Subscribe to the 'new-comment' event from Pusher
+    const channel = pusherClient.subscribe('comments');
+    channel.bind('new-comment', handleNewComment);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      channel.unbind('new-comment', handleNewComment);
+    };
+  }, []);
 
   React.useEffect(() => {
     showReview();
-  }, [comments])
-  
+  }, [comments]);
 
   function showReview() {
-    const productComments = comments.filter(comment => comment.productId === productID)
     if (comments) {
-      const onlyReviews = productComments.filter(review => review.replyCommentId === 'false');
+      const onlyReviews = comments.filter(review => review.replyCommentId === 'false' && review.rating !== 0);
   
       const sum = onlyReviews.map(item => item.rating).reduce((partialSum, a) => partialSum + a, 0);
   
@@ -208,7 +238,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   function handleShowForm(id) {
     setShowForm(true);
     setReplyCommentId(id);
@@ -217,6 +246,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   function handleCloseForm() {
     setShowForm(false);
   }
+  console.log(comments);
 
   return (
     <Box sx={{ bgcolor: 'background.paper', width: '100%' }}>
@@ -255,20 +285,23 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
           {
-            comments && comments.filter(comment => comment.productId === productID).length !== 0 &&
+            comments && comments.length !== 0 && 
             <Box className='comments-area' sx={{bgcolor: theme.palette.badge.bgdLight, p: 3}}>
               {
                 comments.map((comment) => (
-                comment.productId === productID && comment.replyCommentId == 'false' &&
+                  comment.replyCommentId === 'false' && comment.slug === slug &&
                 <Box key={comment._id}>
                   <Typography sx={{py: 1}}>{comment.authorName}</Typography>
                   <Divider />
-                  <Box sx={{ mt: 3 }}>
-                    <Rating
-                      name="rating"
-                      value={comment.rating}
-                    />
-                  </Box>
+                  {
+                    comment.rating !== 0 &&
+                    <Box sx={{ mt: 3 }}>
+                      <Rating
+                        name="rating"
+                        value={comment.rating}
+                      />
+                    </Box>
+                  }
                   <Typography sx={{py: 1}}>{comment.content}</Typography>
                   <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
                     Reply
@@ -384,6 +417,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                       <FormHelperText error>{'Content is required'}</FormHelperText>
                     }
                     <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
+                    <input type="hidden" name="slug" id="slug" value={ slug && slug } />
                     <input type="hidden" name="productId" id="productId" value={productID} />
                     <input type="hidden" name="replyCommentId" id="replyCommentId" value={replyCommentId ? replyCommentId : 'false'} />
                     <Button
@@ -415,14 +449,17 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
               </Typography>
               <Divider />
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                <Box sx={{ mt: 5 }}>
-                  <Typography component="legend">Rating</Typography>
-                  <Rating
-                    name="rating"
-                    value={updateRating}
-                    onChange={handleChangeRating}
-                  />
-                </Box>
+                {
+                  userInfo && userInfo.isAdmin !== true &&
+                  <Box sx={{ mt: 5 }}>
+                    <Typography component="legend">Rating</Typography>
+                    <Rating
+                      name="rating"
+                      value={userInfo ? updateRating : 0}
+                      onChange={handleChangeRating}
+                    />
+                  </Box>
+                }
                 {
                   errors.rating && 
                   <FormHelperText error>{snack.message}</FormHelperText>
@@ -530,6 +567,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                   errors.content && 
                   <FormHelperText error>{'Replay is required'}</FormHelperText>
                 }
+                <input type="hidden" name="slug" id="slug" value={ slug } />
                 <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
                 <input type="hidden" name="productId" id="productId" value={productID} />
                 <input type="hidden" name="replyCommentId" id="replyCommentId" value={'false'} />

@@ -3,6 +3,7 @@ import * as mongoose from 'mongoose';
 const commentSchema = new mongoose.Schema(
   {
     authorName: { type: String, required: true },
+    slug: { type: String, required: true },
     email: { type: String, required: true },
     content: { type: String, required: false },
     rating: {type: Number, required: true, default: 0}, 

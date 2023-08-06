@@ -35,7 +35,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/router';
 import theme from '../../src/theme';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -114,7 +114,7 @@ textAlign: 'center',
 color: theme.palette.text.secondary,
 }));
 
-const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
+// const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
 
 
 export default function SingleProduct(props) {
@@ -123,6 +123,7 @@ export default function SingleProduct(props) {
   const { cart: {cartItems}, comparation } = state;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { slug } = router.query;
   const [ratings, setRatings] = React.useState([]);
   const [numReviews, setNumReviews] = useState([]);
   const [sumReviews, setSumReviews] = useState(0);
@@ -387,7 +388,7 @@ export default function SingleProduct(props) {
           </Item>
         </Grid>
         <Grid id="reviews" item xs={12}>
-          <ProductTabs product={product} setRatings={setRatings} setNumReviews={setNumReviews} setSumReviews={setSumReviews} />
+          <ProductTabs product={product} setRatings={setRatings} setNumReviews={setNumReviews} setSumReviews={setSumReviews} slug={slug} />
         </Grid>
         <Grid id="available-store" item xs={12}>
           <Grid container spacing={3}>

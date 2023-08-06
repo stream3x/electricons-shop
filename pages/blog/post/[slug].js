@@ -15,7 +15,8 @@ import theme from '../../../src/theme';
 import Link from '../../../src/Link';
 import { Store } from '../../../src/utils/Store';
 import axios from 'axios';
-import { io } from 'socket.io-client';
+import pusherClient from '../../../src/utils/client/pusher';
+// import { io } from 'socket.io-client';
 
 const PAGE_SIZE = 6;
 
@@ -156,7 +157,7 @@ const LabelButton = styled(Button)(({ theme }) => ({
   marginLeft: '10px',
 }));
 
-const socket = io('/api/blog/comment', { path: '/api/blog/comment/socket.io' }); // Podešavanje putanje za socket.io
+// const socket = io('/api/blog/comment', { path: '/api/blog/comment/socket.io' }); // Podešavanje putanje za socket.io
 
 export default function SinglePost(props) {
   const router = useRouter();
@@ -199,6 +200,7 @@ export default function SinglePost(props) {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         email: formOutput.get('email'),
+        slug: formOutput.get('slug'),
         authorName: formOutput.get('authorName'),
         content: formOutput.get('content'),
         isAdminReply: formOutput.get('isAdminReply') === 'true',
@@ -241,7 +243,7 @@ export default function SinglePost(props) {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a replay", severity: "error" }});
         return;
       }
-      const { data } = await axios.post(`/api/blog/${blogID}`, formData);
+      const { data } = await axios.post(`/api/blog/comment/${slug}`, formData);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send replay', severity: 'success'}});
       setUpdateEmail('');
       setUpdateName('');
@@ -249,18 +251,22 @@ export default function SinglePost(props) {
     } catch (error) {
       console.log(error);
     }
-    fetchComments();
     setShowForm(false);
   }
 
   const fetchComments = async () => {
     try {
-      const { data } = await axios.get('/api/blog/comment');
+      const { data } = await axios.get(`/api/blog/comment/${slug}`);
       setComments(data);
     } catch (error) {
       console.log(error);
     }
   };
+
+  React.useEffect(() => {
+    // Fetch existing comments from the server on page load
+    fetchComments();
+  }, [slug]);
 
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
@@ -325,24 +331,40 @@ export default function SinglePost(props) {
   }, [query]);
 
   React.useEffect(() => {
-    if(loading) return;
-    setLoading(true);
-    // Pozivanje funkcije za dohvat komentara prilikom prvog renderovanja
-    try {
-      fetchComments();
-    } catch (error) {
-      console.log(`Error loading comments ${error}`);
-    }
-
-    socket.on('newComment', (newComment) => {
+    // Function to handle new comments received from Pusher
+    const handleNewComment = (newComment) => {
       setComments((prevComments) => [...prevComments, newComment]);
-    });
-    setLoading(false);
-    return () => {
-      socket.off('comment');
     };
 
-  }, [loading]);
+    // Subscribe to the 'new-comment' event from Pusher
+    const channel = pusherClient.subscribe('comments');
+    channel.bind('new-comment', handleNewComment);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      channel.unbind('new-comment', handleNewComment);
+    };
+  }, []);
+
+  // React.useEffect(() => {
+  //   if(loading) return;
+  //   setLoading(true);
+  //   // Pozivanje funkcije za dohvat komentara prilikom prvog renderovanja
+  //   try {
+  //     fetchComments();
+  //   } catch (error) {
+  //     console.log(`Error loading comments ${error}`);
+  //   }
+
+  //   socket.on('newComment', (newComment) => {
+  //     setComments((prevComments) => [...prevComments, newComment]);
+  //   });
+  //   setLoading(false);
+  //   return () => {
+  //     socket.off('comment');
+  //   };
+
+  // }, [loading]);
 
   if(!blog) {
     return (
@@ -406,11 +428,11 @@ export default function SinglePost(props) {
             </Box>
             {/* Show child comment */}
             {
-              comments && comments.filter(comment => comment.blogPostId === blogID).length !== 0 &&
+              comments && comments.filter(comment => comment.slug === slug) && comments.length !== 0 &&
               <Box className='comments-area' sx={{bgcolor: theme.palette.badge.bgdLight, p: 3}}>
                 {
                   comments.map((comment) => (
-                  comment.blogPostId === blog._id && comment.replyCommentId == 'false' &&
+                  comment.replyCommentId == 'false' &&
                   <Box key={comment._id}>
                     <Typography sx={{py: 1}}>{comment.authorName}</Typography>
                     <Divider />
@@ -528,6 +550,7 @@ export default function SinglePost(props) {
                         errors.content && 
                         <FormHelperText error>{'Content is required'}</FormHelperText>
                       }
+                      <input type="hidden" name="slug" id="slug" value={ slug } />
                       <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
                       <input type="hidden" name="blogPostId" id="blogPostId" value={blog._id} />
                       <input type="hidden" name="replyCommentId" id="replyCommentId" value={replyCommentId ? replyCommentId : 'false'} />
@@ -663,6 +686,7 @@ export default function SinglePost(props) {
                     errors.content && 
                     <FormHelperText error>{'Replay is required'}</FormHelperText>
                   }
+                  <input type="hidden" name="slug" id="slug" value={ slug } />
                   <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
                   <input type="hidden" name="blogPostId" id="blogPostId" value={blog._id} />
                   <input type="hidden" name="replyCommentId" id="replyCommentId" value={'false'} />

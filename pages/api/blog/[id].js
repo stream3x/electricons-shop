@@ -1,8 +1,6 @@
 import nc from 'next-connect';
 import db from '../../../src/utils/db';
 import Blog from '../../../models/Blog';
-import mongoose from 'mongoose';
-import Comment from '../../../models/Comment';
 
 const handler = nc();
 
@@ -14,39 +12,50 @@ handler.get(async (req, res) => {
   res.send(blog);
 });
 
-handler.post(async (req, res) => {
-  const { id } = req.query;
-  const { authorName, email, content, isAdminReply, blogPostId, replyCommentId } = req.body;
+// handler.post(async (req, res) => {
+  
+//   if (req.method === 'POST') {
+//     const { slug, authorName, email, content, isAdminReply, blogPostId, replyCommentId } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid blog post ID' });
-  }
+//     // Save the new comment to the database
+//     const newComment = new Comment({ slug, authorName, email, content, isAdminReply, blogPostId, replyCommentId });
+//     await newComment.save();
 
-  try {
-    const blog = await Blog.findById(id);
-    if (!blog) {
-      return res.status(404).json({ message: 'Blog not found' });
-    }
+//     // Send the new comment to connected clients via Pusher
+//     pusherServer.trigger('comments', 'new-comment', newComment);
 
-    const comment = new Comment({
-      authorName,
-      email,
-      content,
-      isAdminReply,
-      blogPostId,
-      replyCommentId
-    });
+//     return res.status(201).json(newComment);
+//   }
 
-    await comment.save(); // Save the comment first to generate the ObjectId
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     return res.status(400).json({ message: 'Invalid blog post ID' });
+//   }
 
-    blog.comments.push(comment._id.toHexString()); // Serialize the ObjectId as a string
-    await blog.save();
+//   try {
+//     const blog = await Blog.findById(id);
+//     if (!blog) {
+//       return res.status(404).json({ message: 'Blog not found' });
+//     }
 
-    res.status(201).json({ message: 'Comment added successfully', comment });
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ message: 'Error adding comment', error: error.message });
-  }
-});
+//     const comment = new Comment({
+//       authorName,
+//       email,
+//       content,
+//       isAdminReply,
+//       blogPostId,
+//       replyCommentId
+//     });
+
+//     await comment.save(); // Save the comment first to generate the ObjectId
+
+//     blog.comments.push(comment._id.toHexString()); // Serialize the ObjectId as a string
+//     await blog.save();
+
+//     res.status(201).json({ message: 'Comment added successfully', comment });
+//   } catch (error) {
+//     console.error('Error adding comment:', error);
+//     res.status(500).json({ message: 'Error adding comment', error: error.message });
+//   }
+// });
 
 export default handler;

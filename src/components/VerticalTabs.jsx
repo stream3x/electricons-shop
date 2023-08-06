@@ -41,7 +41,7 @@ function a11yProps(index) {
 }
 
 export default function VerticalTabs({productData}) {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState('0');
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event, newValue) => {
@@ -76,7 +76,7 @@ export default function VerticalTabs({productData}) {
       >
       {
         productData.images.slice(1, productData.images.lenght).map((img, index) => (
-          <TabPanel key={img.image} value={value} index={index}>
+          <TabPanel key={img.image} value={index} index={index}>
               <Box
                 component="img"
                 sx={{
