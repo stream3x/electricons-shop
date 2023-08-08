@@ -30,7 +30,6 @@ import Cookies from 'js-cookie';
 import Backdrop from '@mui/material/Backdrop';
 import Image from 'next/image';
 import Slide from '@mui/material/Slide';
-import InfoIcon from '@mui/icons-material/Info';
 
 const MyTableContainer = styled(TableContainer)({
   overflowY: "auto",

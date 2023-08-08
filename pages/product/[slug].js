@@ -35,11 +35,13 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/router';
 import theme from '../../src/theme';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import { getSession } from 'next-auth/react';
 // import { io } from 'socket.io-client';
 
 export async function getServerSideProps(context) {
   const { params } = context;
   const { slug } = params;
+  const session = await getSession(context);
   await db.connect();
   const product = await Product.findOne({slug}).lean();
   await db.disconnect();

@@ -32,7 +32,6 @@ export default function PersonalInfo() {
   const { userInfo, snack, cart: {cartItems, personalInfo} } = state;
   const [willLogin, setWillLogin] = useState(false);
   const [willRegister, setWillRegister] = useState(false);
-  const [forInvoice, setForInvoice] = useState(0);
   const [errors, setErrors] = useState({
     name: false,
     email: false,
@@ -79,6 +78,14 @@ export default function PersonalInfo() {
   };
 
   const handleNext = () => {
+    const formData = {
+      name: userInfo ? userInfo.name : formOutput.get('name'),
+      email: userInfo ? userInfo.email : formOutput.get('email'),
+      birthday: userInfo ? userInfo.birthday : formOutput.get('birthday'),
+      company: userInfo ? userInfo.company : formOutput.get('company'),
+      vatNumber: userInfo ? userInfo.vatNumber : formOutput.get('vatNumber'),
+    };
+    dispatch({ type: 'PERSONAL_INFO', payload: formData });
     router.push('/checkout/addresses');
   };
 
@@ -131,7 +138,6 @@ export default function PersonalInfo() {
       dispatch({ type: 'PERSONAL_INFO', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
       router.push('/checkout/addresses');
-
   };
 
   const handleRegister = async (event) => {
@@ -345,7 +351,7 @@ export default function PersonalInfo() {
                           label="Password"
                           type="password"
                           id="password"
-                          autoComplete="password"
+                          autoComplete="false"
                           onChange={handleWillRegister}
                         />
                         {

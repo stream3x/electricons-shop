@@ -7,8 +7,6 @@ import { Store } from '../src/utils/Store';
 import CircularProgress from '@mui/material/CircularProgress';
 import OrderTable from '../src/components/OrderTable';
 import styled from '@emotion/styled';
-// import theme from '../src/theme';
-import ProfileNavigation from '../src/components/ProfileNavigation';
 import dynamic from 'next/dynamic';
 
 const LabelButton = styled(Button)(({ theme }) => ({

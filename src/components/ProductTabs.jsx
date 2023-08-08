@@ -8,10 +8,9 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Button, Divider, FormHelperText, Rating, TextField, TextareaAutosize } from '@mui/material';
-// import { io } from 'socket.io-client';
-import axios from 'axios';
 import { Store } from '../utils/Store';
 import pusherClient from '../utils/client/pusher';
+import ProductReviewForm from './ProductReviewForm';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,8 +45,6 @@ function a11yProps(index) {
   };
 }
 
-// const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
-
 export default function ProductTabs({ product, setRatings, setNumReviews, setSumReviews, slug }) {
   const productID = product._id;
   const theme = useTheme();
@@ -69,124 +66,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [comments, setComments] = React.useState([]);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false });
-    try {
-      const formOutput = new FormData(event.currentTarget);
-      const formData = {
-        slug: formOutput.get('slug'),
-        email: formOutput.get('email'),
-        authorName: formOutput.get('authorName'),
-        content: formOutput.get('content'),
-        rating: Number(formOutput.get('rating')),
-        isAdminReply: formOutput.get('isAdminReply') === 'true',
-        replyCommentId: formOutput.get('replyCommentId')
-      };
-      if(!pattern.test(formData.email)) {
-        setErrors({
-          email: true,
-          authorName: false,
-          content: false,
-          rating: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
-        return;
-      }
-      if(formData.email === '') {
-        setErrors({
-          email: true,
-          authorName: false,
-          content: false,
-          rating: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is required", severity: "error" }});
-        return;
-      }
-      if(formData.authorName === '') {
-        setErrors({
-          email: false,
-          authorName: true,
-          content: false,
-          rating: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
-        return;
-      }
-      if(formData.replyCommentId !== 'false' || !userInfo) {
-        console.log(formData);
-        const { data } = await axios.post(`/api/comments/${slug}`, formData);
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
-      }else {
-        if(formData.rating === 0) {
-          setErrors({
-            email: false,
-            authorName: false,
-            content: false,
-            rating: true
-          });
-          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a rating", severity: "error" }});
-          return;
-        } else {
-          const { data } = await axios.post(`/api/comments/${slug}`, formData);
-          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
-        }
-      }
-      setUpdateEmail('');
-      setUpdateName('');
-      setUpdateReplay('');
-      setUpdateRating('');
-    } catch (error) {
-      console.log(error);
-    }
-    setShowForm(false);
-  }
-
-  function handleChangeEmail(e) {
-    setUpdateEmail(e.target.value)
-  }
-  
-  function handleChangeName(e) {
-    setUpdateName(e.target.value)
-  }
-
-  function handleChangeReplay(e) {
-    setUpdateReplay(e.target.value);
-  }
-
-  function handleChangeRating(e) {
-    setUpdateRating(e.target.value);
-  }
-
-  // const fetchComments = async () => {
-  //   try {
-  //     const { data } = await axios.get('/api/products/comment');
-  //     setComments(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // React.useEffect(() => {
-  //   if(loading) return;
-  //   setLoading(true);
-    
-  //   try {
-  //     fetchComments();
-  //   } catch (error) {
-  //     console.log(`Error loading comments ${error}`);
-  //   }
-
-  //   socket.on('newComment', (newComment) => {
-  //     setComments((prevComments) => [...prevComments, newComment]);
-  //   });
-  //   setLoading(false);
-  //   return () => {
-  //     socket.off('comment');
-  //   };
-
-  // }, [loading]);
 
   const fetchComments = async () => {
     try {
@@ -238,6 +117,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   function handleShowForm(id) {
     setShowForm(true);
     setReplyCommentId(id);
@@ -246,7 +126,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   function handleCloseForm() {
     setShowForm(false);
   }
-  console.log(comments);
 
   return (
     <Box sx={{ bgcolor: 'background.paper', width: '100%' }}>
@@ -322,112 +201,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                   }
                   {
                     showForm && replyCommentId === comment._id && (
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                      {
-                        userInfo ?
-                        <Box sx={{flexWrap: 'wrap'}}>
-                          <input
-                            type='hidden'
-                            margin="normal"
-                            required
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            error={errors.email}
-                            onChange={handleChangeEmail}
-                            value={userInfo.email}
-                            sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
-                          />
-                          {
-                            errors.email && 
-                            <FormHelperText error>{snack.message}</FormHelperText>
-                          }
-                          <input
-                            type="hidden"
-                            margin="normal"
-                            required
-                            name="authorName"
-                            label="Name"
-                            id="authorName"
-                            autoComplete="first-name"
-                            error={errors.authorName}
-                            onChange={handleChangeName}
-                            value={userInfo.name}
-                            sx={{width: {xs: '100%', lg: '50%'}}}
-                          />
-                          {
-                            errors.authorName && 
-                            <FormHelperText error>{snack.message}</FormHelperText>
-                          }
-                        </Box>
-                        :
-                        <Box sx={{flexWrap: 'wrap'}}>
-                          <TextField
-                            margin="normal"
-                            required
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            error={errors.email}
-                            onChange={handleChangeEmail}
-                            value={updateEmail}
-                            sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
-                          />
-                          {
-                            errors.email && 
-                            <FormHelperText error>{snack.message}</FormHelperText>
-                          }
-                          <TextField
-                            margin="normal"
-                            required
-                            name="authorName"
-                            label="Name"
-                            type="text"
-                            id="authorName"
-                            autoComplete="first-name"
-                            error={errors.authorName}
-                            onChange={handleChangeName}
-                            value={updateName}
-                            sx={{width: {xs: '100%', lg: '50%'}}}
-                          />
-                          {
-                            errors.authorName && 
-                            <FormHelperText error>{snack.message}</FormHelperText>
-                          }
-                        </Box>
-                      }
-                    <TextareaAutosize
-                      name="content"
-                      id='content'
-                      required
-                      placeholder="Content"
-                      maxRows={10}
-                      minRows={4}
-                      onChange={handleChangeReplay}
-                      value={updateReplay}
-                      aria-label="replay textarea"
-                      style={{ width: '100%', resize: 'vertical', padding: '8px' }}
-                    />
-                    {
-                      errors.content && 
-                      <FormHelperText error>{'Content is required'}</FormHelperText>
-                    }
-                    <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
-                    <input type="hidden" name="slug" id="slug" value={ slug && slug } />
-                    <input type="hidden" name="productId" id="productId" value={productID} />
-                    <input type="hidden" name="replyCommentId" id="replyCommentId" value={replyCommentId ? replyCommentId : 'false'} />
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
-                    >
-                      Submit
-                    </Button>
-                  </Box>
+                      <ProductReviewForm product={product} slug={slug} setShowForm={setShowForm} setComments={setComments} replyCommentId={replyCommentId} />
                   )
                   }
                 </Box>
@@ -448,137 +222,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                 Leave a Reply
               </Typography>
               <Divider />
-              <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                {
-                  userInfo && userInfo.isAdmin !== true &&
-                  <Box sx={{ mt: 5 }}>
-                    <Typography component="legend">Rating</Typography>
-                    <Rating
-                      name="rating"
-                      value={userInfo ? updateRating : 0}
-                      onChange={handleChangeRating}
-                    />
-                  </Box>
-                }
-                {
-                  errors.rating && 
-                  <FormHelperText error>{snack.message}</FormHelperText>
-                }
-                {
-                  userInfo ?
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 3 }}>
-                    <Box sx={{ display: 'flex',flexWrap: 'wrap', flex: {xs: '0 0 100%', lg: 1}, pr: {xs: 0, lg: 3} }}>
-                      <input
-                        type='hidden'
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        error={errors.email}
-                        onChange={handleChangeEmail}
-                        value={userInfo.email}
-                        
-                      />
-                      {
-                        errors.email && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
-                    </Box>
-                    <Box sx={{display: 'flex',flexWrap: 'wrap', flex: 1}}>
-                      <input
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="authorName"
-                        label="Name"
-                        type="hidden"
-                        id="authorName"
-                        autoComplete="first-name"
-                        error={errors.authorName}
-                        onChange={handleChangeName}
-                        value={userInfo.name}
-                      />
-                      {
-                        errors.authorName && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
-                    </Box>
-                  </Box>
-                  :
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 3 }}>
-                    <Box sx={{ display: 'flex',flexWrap: 'wrap', flex: {xs: '0 0 100%', lg: 1}, pr: {xs: 0, lg: 3} }}>
-                      <TextField
-                        margin="normal"
-                        fullWidth
-                        required
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                        error={errors.email}
-                        onChange={handleChangeEmail}
-                        value={updateEmail}
-                        
-                      />
-                      {
-                        errors.email && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
-                    </Box>
-                    <Box sx={{display: 'flex',flexWrap: 'wrap', flex: 1}}>
-                      <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="authorName"
-                        label="Name"
-                        type="text"
-                        id="authorName"
-                        autoComplete="first-name"
-                        error={errors.authorName}
-                        onChange={handleChangeName}
-                        value={updateName}
-                      />
-                      {
-                        errors.authorName && 
-                        <FormHelperText error>{snack.message}</FormHelperText>
-                      }
-                    </Box>
-                  </Box>
-                }
-                <TextareaAutosize
-                  name="content"
-                  id='content'
-                  required
-                  placeholder="Content"
-                  maxRows={10}
-                  minRows={4}
-                  onChange={handleChangeReplay}
-                  value={updateReplay}
-                  aria-label="replay textarea"
-                  style={{ width: '100%', resize: 'vertical', padding: '8px' }}
-                />
-                {
-                  errors.content && 
-                  <FormHelperText error>{'Replay is required'}</FormHelperText>
-                }
-                <input type="hidden" name="slug" id="slug" value={ slug } />
-                <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
-                <input type="hidden" name="productId" id="productId" value={productID} />
-                <input type="hidden" name="replyCommentId" id="replyCommentId" value={'false'} />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main}, width: '50%' }}
-                >
-                  Submit
-                </Button>
-              </Box>
+              <ProductReviewForm product={product} slug={slug} setShowForm={setShowForm} setComments={setComments} replyCommentId={replyCommentId} />
             </Box>
           }
         </TabPanel>

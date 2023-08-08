@@ -87,9 +87,6 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    
-    
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {

@@ -12,15 +12,13 @@ const imageSchema = new mongoose.Schema(
 const orderSchema = new mongoose.Schema(
   {
     orderItems: [{
+      slug: {type: String, required: true},
       title: {type: String, required: true},
       quantity: {type: Number, required: true},
       images: [imageSchema],
       price: {type: String, required: true},
     }],
-    userInfo: {
-      _id: {type: String, required: true},
-      token: {type: String, required: true},
-      isAdmin: {type: Boolean, required: true},
+    personalInfo: {
       name: {type: String, required: true},
       email: {type: String, required: true},
       birthday: {type: String, required: false},
@@ -41,14 +39,17 @@ const orderSchema = new mongoose.Schema(
       store: {type: String, required: false},
       comment: {type: String, required: false},
     },
-    payment: {type: String, required: true},
+    payment: {
+      paymentMethod: {type: String, required: true}
+    },
     total: {type: Number, required: true},
     shippingCost: {type: Number, required: true},
     taxCost: {type: String, required: true},
     orderNumber: {type: String, required: true},
     checkedNewsletter: {type: Boolean, required: true},
+    paymentResult: { id: String, status: String, email_address: String },
     isPaid: {type: Boolean, required: true, default: false},
-    isDelevered: {type: Boolean, required: true, default: false},
+    isDelivered: {type: Boolean, required: true, default: false},
     paidAt: {type: Date},
     deleveredAt: {type: Date},
   },

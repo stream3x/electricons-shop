@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -226,12 +226,14 @@ export default function OrderItems({order_items}) {
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
+              {
+                emptyRows > 0 && (
+                  <TableRow
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )
+              }
             </TableBody>
             }
             <TableBody>

@@ -22,6 +22,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Fab from '@mui/material/Fab';
 import { Alert } from '@mui/material';
+import { useSession } from '../src/utils/SessionProvider';
 
 export default function LogIn() {
   const router = useRouter();
@@ -34,9 +35,9 @@ export default function LogIn() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
-  const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [updateEmail, setUpdateEmail] = useState('');
   const [updatePassword, setUpdatePassword] = useState('');
+  const { session, setSession } = useSession();
 
   const buttonSx = {
     ...(success && {
@@ -68,7 +69,7 @@ export default function LogIn() {
       }, 2000);
     }
   };
-
+console.log(session);
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({ ...errors, email: false, password: false});
@@ -79,11 +80,12 @@ export default function LogIn() {
         password: formOutput.get('password'),
       };
       const { data } = await axios.post('/api/users/login', formData);
+      setSession(data);
       handleButtonClick();
       dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      Cookies.set('userInfo', JSON.stringify(data)); 
-    } catch (error) {
+      Cookies.set('userInfo', JSON.stringify(data));
+    }catch (error) {
       if(error.response.data.type === 'all') {
         setErrors({ ...errors, email: true, password: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});

@@ -2,11 +2,12 @@ import nc from 'next-connect';
 import User from '../../../models/User';
 import db from '../../../src/utils/db';
 import bcrypt from 'bcryptjs';
-import { signToken } from '../../../src/utils/auth';
+import { signToken, isAuth } from '../../../src/utils/auth';
 import { onError } from '../../../src/utils/error';
 
 const handler = nc({
-  onError
+  onError,
+  isAuth
 });
 
 handler.post(async (req, res) => {

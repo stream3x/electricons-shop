@@ -42,10 +42,9 @@ export default function CartTotal({
   taxToPaid,
   payment_method
 }) {
-  const route = useRouter();
+  const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment, cupon_discount} } = state;
-  const router = useRouter();
   const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * c.price, 0) : cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -91,7 +90,12 @@ export default function CartTotal({
     taxCount = 1.12;
   }
 
-  const total = (subTotal + (!emptyShipping ? shippingCost : 0)) * (!emptyCupon ? Number(1 - cupon_discount) : 1) * taxCount;
+  const total = ((subTotal + (!emptyShipping ? shippingCost : 0)) * (!emptyCupon ? Number(1 - cupon_discount) : 1) * taxCount).toFixed(2);
+
+  const cartItemsWithSlug = cartItems.map((item) => ({
+    ...item,
+    slug: item.slug // Make sure 'slug' property exists in each cart item
+  }));
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
@@ -99,7 +103,7 @@ export default function CartTotal({
       router.push('/');
       return;
     }
-    if(emptyUserInfo) {
+    if(emptyPersonalInfo) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the personal info step has not been completed', severity: 'warning'}});
       router.push('/checkout/personal-info');
       return;
@@ -110,7 +114,7 @@ export default function CartTotal({
       return;
     }
     if(emptyShipping) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method has not been completed', severity: 'warning'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method step has not been completed', severity: 'warning'}});
       router.push('/checkout/shipping');
       return;
     }
@@ -124,11 +128,13 @@ export default function CartTotal({
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'accept by checking the box', severity: 'error'}});
       return;
     }
+    console.log(personalInfo, userInfo, addresses, payment, shipping);
+
     try {
       handleLoading();
       const { data } = await axios.post('/api/orders', {
-        orderItems: cartItems,
-        userInfo,
+        orderItems: cartItemsWithSlug,
+        personalInfo,
         addresses: addresses[Cookies.get('forInvoice') ? JSON.parse(Cookies.get('forInvoice')) : 0],
         shipping,
         payment,
@@ -142,7 +148,6 @@ export default function CartTotal({
           "Content-Type": "application/json"
         }
       })
-      setErrors({ ...errors, policy: false});
       router.push(`/order/${data._id}`);
       setLoading(false);
       dispatch({ type: 'CART_CLEAR' });
@@ -150,7 +155,6 @@ export default function CartTotal({
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});
-      setErrors({ ...errors, policy: false});
     }
   }
 
@@ -188,7 +192,7 @@ export default function CartTotal({
     try {
       handleLoading();
       const { data } = await axios.post('/api/guests', {
-        orderItems: cartItems,
+        orderItems: cartItemsWithSlug,
         personalInfo,
         addresses: addresses[Cookies.get('forInvoice') ? JSON.parse(Cookies.get('forInvoice')) : 0],
         shipping,
@@ -209,7 +213,7 @@ export default function CartTotal({
       Cookies.remove('cartItems');
     } catch (error) {
       setLoading(false);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Greska sa serverom' : error.message, severity: 'error' }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});
     }
   }
 
@@ -290,12 +294,12 @@ export default function CartTotal({
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">Total: </Typography>
               <Typography color="primary" variant="h6" component="span">
-              ${total.toFixed(2)}
+              ${total}
               </Typography>
           </Typography>
         </CardContent>
         {
-          route.pathname.includes('checkout') &&
+          router.pathname.includes('checkout') &&
           <React.Fragment>
             <CardActions>
               <Button onClick={handleExpandClick} size="small">
@@ -335,7 +339,7 @@ export default function CartTotal({
         }
       </Card>
       :
-      <Card cartItems={cartItems} variant="outlined">
+      <Card variant="outlined">
         <CardContent>
           <Typography sx={{textAlign: 'left', pb: 1}} variant="h5" component="h3">
             Order{bull}Details
@@ -387,7 +391,7 @@ export default function CartTotal({
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">Total: </Typography>
-            <Typography color="primary" variant="h6" component="span">${total.toFixed(2)} </Typography>
+            <Typography color="primary" variant="h6" component="span">${total} </Typography>
           </Typography>
         </CardContent>
         <CardActions>
@@ -438,7 +442,7 @@ export default function CartTotal({
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2, '&:hover': {backgroundColor: theme.palette.secondary.main} }}
-                onClick={!emptyUserInfo && emptyPersonalInfo ? placeOrderHandler : placeGuestOrderHandler}
+                onClick={!emptyUserInfo && !emptyPersonalInfo ? placeOrderHandler : placeGuestOrderHandler}
               >
                 Place Order
               </Button>

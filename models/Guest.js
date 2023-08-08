@@ -12,6 +12,7 @@ const imageSchema = new mongoose.Schema(
 const guestSchema = new mongoose.Schema(
   {
     orderItems: [{
+      slug: {type: String, required: true},
       title: {type: String, required: true},
       quantity: {type: Number, required: true},
       images: [imageSchema],

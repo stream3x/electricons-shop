@@ -2,9 +2,13 @@ import nc from 'next-connect';
 import User from '../../../models/User';
 import db from '../../../src/utils/db';
 import bcrypt from 'bcryptjs';
-import { signToken } from '../../../src/utils/auth';
+import { signToken, isAuth } from '../../../src/utils/auth';
+import { onError } from '../../../src/utils/error';
 
-const handler = nc();
+const handler = nc({
+  onError,
+  isAuth
+});
 const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 
 handler.post(async (req, res) => {
@@ -43,6 +47,7 @@ handler.post(async (req, res) => {
       res.status(401).send({ message: "Invalid email or password", severity: 'error', type: 'all' });
     }
   }
+
   await db.disconnect();
 });
 

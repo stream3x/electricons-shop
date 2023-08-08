@@ -27,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "latest",
     "next": "latest",
+    "next-auth": "^4.22.4",
     "next-connect": "latest",
     "prop-types": "latest",
     "pusher": "^5.1.3",
