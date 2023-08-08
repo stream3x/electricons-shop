@@ -15,7 +15,7 @@ import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
 export default function DropdownMenu(props) {
-  const { openDropdown, anchorElDropdown , handleCloseDropdown, isVisible } = props;
+  const { openDropdown, anchorElDropdown, handleCloseDropdown, isVisible } = props;
   const { products } = data;
   const { categories } = category_data;
   const [expanded, setExpanded] = React.useState(false);

@@ -1,6 +1,5 @@
 // api/productReviews.edge.js
 import ProductComment from '../../../models/ProductComment';
-import Order from '../../../models/Order';
 import pusherServer from '../../../src/utils/server/pusher';
 
 export default async function handler(req) {

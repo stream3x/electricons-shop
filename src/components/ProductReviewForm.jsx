@@ -22,10 +22,16 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
   });
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [hasPurchased, setHasPurchased] = React.useState(false);
+  const [ isSubmitting, setIsSubmitting] = React.useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false });
+
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
@@ -38,46 +44,8 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
         replyCommentId: formOutput.get('replyCommentId')
       };
 
-      if (!hasPurchased && formData.rating !== 0) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "You cannot rate this product", severity: "error" }});
-        return;
-      }
-      if(!pattern.test(formData.email)) {
-        setErrors({
-          email: true,
-          authorName: false,
-          content: false,
-          rating: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
-        return;
-      }
-      if(formData.email === '') {
-        setErrors({
-          email: true,
-          authorName: false,
-          content: false,
-          rating: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is required", severity: "error" }});
-        return;
-      }
-      if(formData.authorName === '') {
-        setErrors({
-          email: false,
-          authorName: true,
-          content: false,
-          rating: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
-        return;
-      }
-      if(formData.replyCommentId !== 'false' || !session) {
-        console.log(formData);
-        const { data } = await axios.post(`/api/comments/${slug}`, formData);
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
-      }else {
-        if(formData.rating === 0 && session) {
+      if (session) {
+        if (hasPurchased && formData.rating === 0) {
           setErrors({
             email: false,
             authorName: false,
@@ -90,6 +58,46 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
           const { data } = await axios.post(`/api/comments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
+      } else {
+        if (!hasPurchased && formData.rating !== 0) {
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "You cannot rate this product", severity: "error" }});
+          return;
+        }
+        if(!pattern.test(formData.email)) {
+          setErrors({
+            email: true,
+            authorName: false,
+            content: false,
+            rating: false
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
+          return;
+        }
+        if(formData.email === '') {
+          setErrors({
+            email: true,
+            authorName: false,
+            content: false,
+            rating: false
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is required", severity: "error" }});
+          return;
+        }
+        if(formData.authorName === '') {
+          setErrors({
+            email: false,
+            authorName: true,
+            content: false,
+            rating: false
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
+          return;
+        }
+        if(formData.replyCommentId !== 'false' || !session) {
+          console.log(formData);
+          const { data } = await axios.post(`/api/comments/${slug}`, formData);
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
+        }
       }
       setUpdateEmail('');
       setUpdateName('');
@@ -97,6 +105,8 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
       setUpdateRating('');
     } catch (error) {
       console.log(error);
+    }finally {
+      setIsSubmitting(false); // Reset the submission flag
     }
     setShowForm(false);
   }
@@ -119,9 +129,11 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
 
   async function fetchUserOrders() {
     try {
-      const { data } = await axios.get(`/api/orders/history/`);
-      const purchasedProduct = data.some(order => order.orderItems.find(item => item.slug === product.slug));
-      setHasPurchased(purchasedProduct);
+      if (userInfo) {
+        const { data } = await axios.get(`/api/orders/history/`);
+        const purchasedProduct = data.some(order => order.orderItems.find(item => item.slug === product.slug));
+        setHasPurchased(purchasedProduct);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -129,9 +141,8 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
 
   React.useEffect(() => {
     fetchUserOrders();
+    console.log('userInfo', userInfo);
   }, []);
-
-  console.log(product, session);
 
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
@@ -186,41 +197,45 @@ const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
           }
         </Box>
         :
-        <Box sx={{flexWrap: 'wrap'}}>
-          <TextField
-            margin="normal"
-            required
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            error={errors.email}
-            onChange={handleChangeEmail}
-            value={updateEmail}
-            sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}}}
-          />
-          {
-            errors.email && 
-            <FormHelperText error>{snack.message}</FormHelperText>
-          }
-          <TextField
-            margin="normal"
-            required
-            name="authorName"
-            label="Name"
-            type="text"
-            id="authorName"
-            autoComplete="first-name"
-            error={errors.authorName}
-            onChange={handleChangeName}
-            value={updateName}
-            sx={{width: {xs: '100%', lg: '50%'}}}
-          />
-          {
-            errors.authorName && 
-            <FormHelperText error>{snack.message}</FormHelperText>
-          }
+        <Box sx={{ display: 'flex', flexWrap: 'wrap'}}>
+          <Box sx={{width: {xs: '100%', lg: '50%'}, pr: {xs: 0, lg: 3}, pb: {xs: 0, lg: 1}}}>
+            <TextField
+              margin="normal"
+              required
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              error={errors.email}
+              onChange={handleChangeEmail}
+              value={updateEmail}
+              fullWidth
+            />
+            {
+              errors.email && 
+              <FormHelperText error>{snack.message}</FormHelperText>
+            }
+          </Box>
+          <Box sx={{width: {xs: '100%', lg: '50%'}, pr: 0, pb: 1}}>
+            <TextField
+              margin="normal"
+              required
+              name="authorName"
+              label="Name"
+              type="text"
+              id="authorName"
+              autoComplete="first-name"
+              error={errors.authorName}
+              onChange={handleChangeName}
+              value={updateName}
+              fullWidth
+            />
+            {
+              errors.authorName && 
+              <FormHelperText error>{snack.message}</FormHelperText>
+            }
+          </Box>
         </Box>
       }
       <TextareaAutosize

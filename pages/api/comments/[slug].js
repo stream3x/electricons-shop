@@ -1,6 +1,6 @@
 import ProductComment from "../../../models/ProductComment";
 import pusherServer from "../../../src/utils/server/pusher";
-import productReviewsEdge from './productReviews.edge';
+import productReviewsEdge from "./productReviews.edge";
 
 
 export default async function handler(req, res) {
@@ -30,5 +30,6 @@ export default async function handler(req, res) {
 
     return res.status(201).json(newComment);
   }
+  
   return res.status(405).json({ message: 'Method not allowed' });
 }

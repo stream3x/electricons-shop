@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Divider, Typography } from '@mui/material';
 import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import VerticalTabs from '../../src/components/VerticalTabs';
@@ -35,13 +35,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/router';
 import theme from '../../src/theme';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import { getSession } from 'next-auth/react';
-// import { io } from 'socket.io-client';
+import Pusher from 'pusher-js';
+import ProductReviewForm from '../../src/components/ProductReviewForm';
 
 export async function getServerSideProps(context) {
   const { params } = context;
   const { slug } = params;
-  const session = await getSession(context);
   await db.connect();
   const product = await Product.findOne({slug}).lean();
   await db.disconnect();
@@ -115,9 +114,6 @@ padding: theme.spacing(1),
 textAlign: 'center',
 color: theme.palette.text.secondary,
 }));
-
-// const socket = io('/api/products/comment/', { path: '/api/products/comment/socket.io' }); // Podešavanje putanje za socket.io
-
 
 export default function SingleProduct(props) {
   const { product } = props;
