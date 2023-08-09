@@ -245,7 +245,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     }
     setIsSubmitting(true);
     try {
-      const { data } = await axios.get(`/api/comments/${slug}.d`);
+      const { data } = await axios.get(`/api/comments/${slug}`);
       setComments(data);
       console.log('fetch comment');
     } catch (error) {
