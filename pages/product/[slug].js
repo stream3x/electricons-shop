@@ -127,6 +127,7 @@ export default function SingleProduct(props) {
   const [sumReviews, setSumReviews] = useState(0);
   const [expanded, setExpanded] = React.useState(false);
   const [productWithStoreInfo, setProductWithStoreInfo] = React.useState([]);
+  const [comments, setComments] = React.useState([]);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -140,6 +141,21 @@ export default function SingleProduct(props) {
   React.useEffect(() => {
     fetchStoreInfo();
   }, []);
+
+  function showReview() {
+    const onlyReviews = comments.filter(review => review.replyCommentId === 'false' && review.rating !== 0);
+
+    const sum = onlyReviews.map(item => item.rating).reduce((partialSum, a) => partialSum + a, 0);
+
+    setRatings(onlyReviews.map(item => item.rating))
+    setNumReviews(onlyReviews.map(item => item.rating).length);
+    setSumReviews(sum);
+    console.log('show review');
+  }
+
+  React.useEffect(() => {
+    showReview();
+  }, [slug, comments]);
 
   async function fetchStoreInfo() {
     try {
@@ -386,7 +402,7 @@ export default function SingleProduct(props) {
           </Item>
         </Grid>
         <Grid id="reviews" item xs={12}>
-          <ProductTabs product={product} setRatings={setRatings} setNumReviews={setNumReviews} setSumReviews={setSumReviews} slug={slug} />
+          <ProductTabs comments={comments} setComments={setComments} product={product} setRatings={setRatings} setNumReviews={setNumReviews} setSumReviews={setSumReviews} slug={slug} />
         </Grid>
         <Grid id="available-store" item xs={12}>
           <Grid container spacing={3}>
