@@ -35,8 +35,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useRouter } from 'next/router';
 import theme from '../../src/theme';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import Pusher from 'pusher-js';
-import ProductReviewForm from '../../src/components/ProductReviewForm';
 
 export async function getServerSideProps(context) {
   const { params } = context;

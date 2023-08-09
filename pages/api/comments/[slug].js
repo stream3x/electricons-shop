@@ -2,6 +2,7 @@ import ProductComment from '../../../models/ProductComment';
 import pusherServer from '../../../src/utils/server/pusher';
 
 export default async function handler(req, res) {
+    
   if (req.method === 'GET') {
     // Retrieve comments from the database and send them to the client
     const { slug } = req.query;
