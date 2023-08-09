@@ -23,7 +23,7 @@ export default async function handler(req) {
 
     // Send the new comment to connected clients via Pusher
     pusherServer.trigger('comments', 'new-comment', newComment);
-
+console.log('Pusher', newComment);
     return new Response(JSON.stringify(newComment), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
