@@ -131,7 +131,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a rating", severity: "error" }});
           return;
         } else {
-          const { data } = await axios.post(`/api/comments/${slug}`, formData);
+          const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
       } else {
@@ -171,7 +171,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
         }
         if(formData.replyCommentId !== 'false' || !session) {
           console.log(formData);
-          const { data } = await axios.post(`/api/comments/${slug}`, formData);
+          const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
       }
@@ -227,7 +227,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
 
   const fetchComments = async () => {
     try {
-      const { data } = await axios.get(`/api/comments/${slug}`);
+      const { data } = await axios.get(`/api/products/getComments/${slug}`);
       setComments(data);
       console.log('fetch comment');
     } catch (error) {
@@ -244,7 +244,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     // Fetch existing comments from the server on page load
     if (isSubmitting) {
       setTimeout(() => {
-        // fetchComments();
+        fetchComments();
         setIsLoading(false);
       }, 1500);
     }

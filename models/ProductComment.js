@@ -8,8 +8,7 @@ const commentSchema = new mongoose.Schema(
     content: { type: String, required: false },
     rating: {type: Number, required: true, default: 0}, 
     isAdminReply: { type: Boolean, default: false },
-    replyCommentId: { type: String, default: false },
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductComment' }
+    replyCommentId: { type: String, default: false }
   },
   {
     timestamps: true,

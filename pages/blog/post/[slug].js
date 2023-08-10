@@ -213,7 +213,7 @@ export default function SinglePost(props) {
         replyCommentId: formOutput.get('replyCommentId')
       };
       if (session) {
-        const { data } = await axios.post(`/api/blog/comment/${slug}`, formData);
+        const { data } = await axios.post(`/api/blog/postComment/${slug}`, formData);
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send replay', severity: 'success'}});
         setUpdateEmail('');
         setUpdateName('');
@@ -255,7 +255,7 @@ export default function SinglePost(props) {
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a replay", severity: "error" }});
           return;
         }
-        const { data } = await axios.post(`/api/blog/comment/${slug}`, formData);
+        const { data } = await axios.post(`/api/blog/postComment/${slug}`, formData);
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send replay', severity: 'success'}});
         setUpdateEmail('');
         setUpdateName('');
@@ -336,7 +336,7 @@ export default function SinglePost(props) {
 
   const fetchComments = async () => {
     try {
-      const { data } = await axios.get(`/api/blog/comment/${slug}`);
+      const { data } = await axios.get(`/api/blog/getComment/${slug}`);
       setComments(data);
     } catch (error) {
       console.log(error);

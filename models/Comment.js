@@ -7,8 +7,7 @@ const commentSchema = new mongoose.Schema(
     email: { type: String, required: true },
     content: { type: String, required: true },
     isAdminReply: { type: Boolean, default: false },
-    replyCommentId: { type: String, default: false },
-    blogPostId: { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
+    replyCommentId: { type: String, default: false }
   },
   {
     timestamps: true,

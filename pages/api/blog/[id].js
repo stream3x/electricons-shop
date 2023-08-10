@@ -7,7 +7,7 @@ const handler = nc();
 handler.get(async (req, res) => {
   await db.connect();
   const { slug } = req.query;
-  const blog = await Blog.findOne({ slug }).populate('comments');
+  const blog = await Blog.findOne({ slug });
   await db.disconnect();
   res.send(blog);
 });
