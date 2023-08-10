@@ -1,13 +1,9 @@
 import Comment from '../../../../models/Comment';
+import nc from 'next-connect';
 
-export default async function handler(req, res) {
-  const { slug } = req.query;
+const handler = nc();
 
-  if (req.method === 'GET') {
-    // Retrieve comments from the database and send them to the client
-    const comments = await Comment.find({ slug }).sort({ createdAt: -1 });
-    return res.status(200).json(comments);
-  }
+handler.post(async(req, res) => {
 
   if (req.method === 'POST') {
     const { slug, authorName, email, content, isAdminReply, replyCommentId } = req.body;
@@ -18,4 +14,16 @@ export default async function handler(req, res) {
 
     return res.status(201).json(newComment);
   }
-}
+});
+
+handler.get(async(req, res) => {
+  const { slug } = req.query;
+
+  if (req.method === 'GET') {
+    // Retrieve comments from the database and send them to the client
+    const comments = await Comment.find({ slug }).sort({ createdAt: -1 });
+    return res.status(200).json(comments);
+  }
+});
+
+export default handler;

@@ -1,6 +1,9 @@
 import ProductComment from '../../../models/ProductComment';
+import nc from 'next-connect';
 
-export default async function handler(req, res) {
+const handler = nc();
+
+handler.get( async(req, res) => {
     
   if (req.method === 'GET') {
     // Retrieve comments from the database and send them to the client
@@ -9,6 +12,11 @@ export default async function handler(req, res) {
     return res.status(200).json(comments);
   }
 
+  // Handle other HTTP methods (e.g., PUT, DELETE) if needed
+  return res.status(405).json({ message: 'Method not allowed' });
+});
+
+handler.post( async (req, res) => {
   if (req.method === 'POST') {
     const { slug, authorName, email, content, rating, isAdminReply, replyCommentId } = req.body;
 
@@ -26,7 +34,7 @@ export default async function handler(req, res) {
 
     return res.status(201).json(newComment);
   }
-
-  // Handle other HTTP methods (e.g., PUT, DELETE) if needed
   return res.status(405).json({ message: 'Method not allowed' });
-}
+});
+
+export default handler;
