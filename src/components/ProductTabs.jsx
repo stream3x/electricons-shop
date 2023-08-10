@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import SwipeableViews from 'react-swipeable-views';
-import { useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -11,6 +10,7 @@ import { Backdrop, Button, CircularProgress, Divider, FormHelperText, Rating, Te
 import { Store } from '../utils/Store';
 import axios from 'axios';
 import { useSession } from '../utils/SessionProvider';
+import theme from '../theme';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -49,7 +49,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const { state, dispatch } = React.useContext(Store);
   const { userInfo, snack } = state;
   const { session } = useSession();
-  const theme = useTheme();
   const [value, setValue] = React.useState(0);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
   const [showForm, setShowForm] = React.useState(false);
@@ -187,6 +186,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
       setIsSubmitting(false); // Reset the submission flag
     }
     setShowForm(false);
+    setReplyCommentId('false');
   }
 
   function handleShowForm(id, index) {
@@ -244,7 +244,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     // Fetch existing comments from the server on page load
     if (isSubmitting) {
       setTimeout(() => {
-        fetchComments();
+        // fetchComments();
         setIsLoading(false);
       }, 1500);
     }
