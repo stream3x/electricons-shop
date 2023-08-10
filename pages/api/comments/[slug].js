@@ -1,5 +1,4 @@
 import ProductComment from '../../../models/ProductComment';
-import pusherServer from '../../../src/utils/server/pusher';
 
 export default async function handler(req, res) {
     
@@ -24,9 +23,6 @@ export default async function handler(req, res) {
       replyCommentId,
     });
     await newComment.save();
-
-    // Send the new comment to connected clients via Pusher
-    pusherServer.trigger('comments', 'new-comment', newComment);
 
     return res.status(201).json(newComment);
   }

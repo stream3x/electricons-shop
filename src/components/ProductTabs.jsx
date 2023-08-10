@@ -7,9 +7,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Button, Divider, FormHelperText, Rating, TextField, TextareaAutosize } from '@mui/material';
+import { Backdrop, Button, CircularProgress, Divider, FormHelperText, Rating, TextField, TextareaAutosize } from '@mui/material';
 import { Store } from '../utils/Store';
-import pusherClient from '../utils/client/pusher';
 import axios from 'axios';
 import { useSession } from '../utils/SessionProvider';
 
@@ -68,7 +67,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [hasPurchased, setHasPurchased] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSend, setIsSend] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -92,12 +91,13 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false });
+    setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false, content: false });
 
     if (isSubmitting) {
       return;
     }
     setIsSubmitting(true);
+    setIsLoading(true);
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
@@ -109,6 +109,17 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
         isAdminReply: formOutput.get('isAdminReply') === 'true',
         replyCommentId: formOutput.get('replyCommentId')
       };
+
+      if (!hasPurchased && formData.rating === 0 && formData.content === '') {
+        setErrors({
+          email: false,
+          authorName: false,
+          content: true,
+          rating: false
+        });
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "Content is required", severity: "error" }});
+        return;
+      }
 
       if (session) {
         if (hasPurchased && formData.rating === 0) {
@@ -178,31 +189,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     setShowForm(false);
   }
 
-  React.useEffect(() => {
-
-    if(isSend) return;
-
-    setIsSend(true);
-
-    const channel = pusherClient.subscribe('comments');
-    // Function to handle new comments received from Pusher
-    const handleNewComment = (newComment) => {
-      setComments((prevComments) => [...prevComments, newComment]);
-      console.log('New comment:', newComment);
-    };
-
-    // Subscribe to the 'new-comment' event from Pusher
-    
-    channel.bind('new-comment', handleNewComment);
-    setIsSend(false);
-    // Clean up the event listener when the component is unmounted
-    return () => {
-      channel.unbind('new-comment', handleNewComment);
-      pusherClient.unsubscribe('comments');
-      console.log('clear');
-    };
-  }, []);
-
   function handleShowForm(id, index) {
     setShowForm(true);
     setAnchor(index);
@@ -240,10 +226,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   }, [session, product.slug]);
 
   const fetchComments = async () => {
-    if (isSubmitting) {
-      return;
-    }
-    setIsSubmitting(true);
     try {
       const { data } = await axios.get(`/api/comments/${slug}`);
       setComments(data);
@@ -251,13 +233,28 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
-    setIsSubmitting(false);
   };
 
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
     fetchComments();
   }, []);
+
+  React.useEffect(() => {
+    // Fetch existing comments from the server on page load
+    if (isSubmitting) {
+      fetchComments();
+    }
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => {
+      setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false, content: false });
+    }
+
+  }, [isSubmitting]);
 
   
 
@@ -725,6 +722,13 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
           </Box>
         </TabPanel>
       </SwipeableViews>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <Button sx={{position: 'absolute', bottom: '50%', left: '50%', transform: 'translate(-50%, -100px)'}} variant='outline' onClick={() => setIsLoading(false)}>Close</Button>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }

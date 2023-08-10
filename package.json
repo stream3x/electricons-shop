@@ -30,14 +30,10 @@
     "next-auth": "^4.22.4",
     "next-connect": "latest",
     "prop-types": "latest",
-    "pusher": "^5.1.3",
-    "pusher-js": "^8.3.0",
     "react": "latest",
     "react-dom": "latest",
     "react-slick": "^0.29.0",
     "react-swipeable-views": "^0.14.0",
-    "socket.io": "^4.7.1",
-    "socket.io-client": "^4.7.1",
     "yarn": "^1.22.19"
   },
   "devDependencies": {
