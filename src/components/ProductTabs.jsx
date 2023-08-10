@@ -243,12 +243,12 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
     if (isSubmitting) {
-      fetchComments();
+      setTimeout(() => {
+        fetchComments();
+        setIsLoading(false);
+      }, 1500);
     }
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
 
     return () => {
       setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false, content: false });
