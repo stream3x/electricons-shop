@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Button, Container, Divider, FormControlLabel, FormHelperText, Grid, List, ListItem, ListItemButton, ListItemText, TextField, TextareaAutosize } from '@mui/material';
+import { Backdrop, Button, CircularProgress, Container, Divider, FormControlLabel, FormHelperText, Grid, List, ListItem, ListItemButton, ListItemText, TextField, TextareaAutosize } from '@mui/material';
 import Image from 'next/image';
 import db from '../../../src/utils/db';
 import Blog from '../../../models/Blog';
@@ -15,8 +15,7 @@ import theme from '../../../src/theme';
 import Link from '../../../src/Link';
 import { Store } from '../../../src/utils/Store';
 import axios from 'axios';
-import pusherClient from '../../../src/utils/client/pusher';
-// import { io } from 'socket.io-client';
+import { useSession } from '../../../src/utils/SessionProvider';
 
 const PAGE_SIZE = 6;
 
@@ -157,8 +156,6 @@ const LabelButton = styled(Button)(({ theme }) => ({
   marginLeft: '10px',
 }));
 
-// const socket = io('/api/blog/comment', { path: '/api/blog/comment/socket.io' }); // Podešavanje putanje za socket.io
-
 export default function SinglePost(props) {
   const router = useRouter();
   const { state, dispatch } = React.useContext(Store);
@@ -173,7 +170,7 @@ export default function SinglePost(props) {
 
   const { slug, blog, blogs, categories, subCategories } = props;
 
-  const [loading, setLoading] = React.useState(false);
+  const { session } = useSession();
   const blogID = blog._id;
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const date = new Date(blog.createdAt);
@@ -192,10 +189,18 @@ export default function SinglePost(props) {
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [comments, setComments] = React.useState([]);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [anchor, setAnchor] = React.useState(0);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({ ...errors, email: false, authorName: false, replay: false});
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+    setIsLoading(true);
     try {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
@@ -207,66 +212,63 @@ export default function SinglePost(props) {
         blogPostId: formOutput.get('blogPostId'),
         replyCommentId: formOutput.get('replyCommentId')
       };
-      if(!pattern.test(formData.email)) {
-        setErrors({
-          email: true,
-          authorName: false,
-          content: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
-        return;
+      if (session) {
+        const { data } = await axios.post(`/api/blog/comment/${slug}`, formData);
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send replay', severity: 'success'}});
+        setUpdateEmail('');
+        setUpdateName('');
+        setUpdateReplay('');
+      } else {
+        if(!pattern.test(formData.email)) {
+          setErrors({
+            email: true,
+            authorName: false,
+            content: false
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is not valid", severity: "error" }});
+          return;
+        }
+        if(formData.email === '') {
+          setErrors({
+            email: true,
+            authorName: false,
+            content: false
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is required", severity: "error" }});
+          return;
+        }
+        if(formData.authorName === '') {
+          setErrors({
+            email: false,
+            authorName: true,
+            content: false
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
+          return;
+        }
+        if(formData.content === '') {
+          setErrors({
+            email: false,
+            authorName: false,
+            content: true
+          });
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a replay", severity: "error" }});
+          return;
+        }
+        console.log(formData);
+        const { data } = await axios.post(`/api/blog/comment/${slug}`, formData);
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send replay', severity: 'success'}});
+        setUpdateEmail('');
+        setUpdateName('');
+        setUpdateReplay('');
       }
-      if(formData.email === '') {
-        setErrors({
-          email: true,
-          authorName: false,
-          content: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "email is required", severity: "error" }});
-        return;
-      }
-      if(formData.authorName === '') {
-        setErrors({
-          email: false,
-          authorName: true,
-          content: false
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
-        return;
-      }
-      if(formData.content === '') {
-        setErrors({
-          email: false,
-          authorName: false,
-          content: true
-        });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a replay", severity: "error" }});
-        return;
-      }
-      const { data } = await axios.post(`/api/blog/comment/${slug}`, formData);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send replay', severity: 'success'}});
-      setUpdateEmail('');
-      setUpdateName('');
-      setUpdateReplay('');
+      
     } catch (error) {
       console.log(error);
     }
     setShowForm(false);
+    setIsSubmitting(false);
   }
-
-  const fetchComments = async () => {
-    try {
-      const { data } = await axios.get(`/api/blog/comment/${slug}`);
-      setComments(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  React.useEffect(() => {
-    // Fetch existing comments from the server on page load
-    fetchComments();
-  }, [slug]);
 
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
@@ -317,8 +319,9 @@ export default function SinglePost(props) {
     filterSearch({ query: item});
   };
 
-  function handleShowForm(id) {
+  function handleShowForm(id, index) {
     setShowForm(true);
+    setAnchor(index);
     setReplyCommentId(id);
   }
 
@@ -330,41 +333,35 @@ export default function SinglePost(props) {
     searchHandler(query);
   }, [query]);
 
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`/api/blog/comment/${slug}`);
+      setComments(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
-    // Function to handle new comments received from Pusher
-    const handleNewComment = (newComment) => {
-      setComments((prevComments) => [...prevComments, newComment]);
-    };
-
-    // Subscribe to the 'new-comment' event from Pusher
-    const channel = pusherClient.subscribe('comments');
-    channel.bind('new-comment', handleNewComment);
-
-    // Clean up the event listener when the component is unmounted
-    return () => {
-      channel.unbind('new-comment', handleNewComment);
-    };
+    // Fetch existing comments from the server on page load
+    fetchComments();
   }, []);
 
-  // React.useEffect(() => {
-  //   if(loading) return;
-  //   setLoading(true);
-  //   // Pozivanje funkcije za dohvat komentara prilikom prvog renderovanja
-  //   try {
-  //     fetchComments();
-  //   } catch (error) {
-  //     console.log(`Error loading comments ${error}`);
-  //   }
+  React.useEffect(() => {
+    // Fetch existing comments from the server on page load
+    if (isSubmitting) {
+      fetchComments();
+    }
 
-  //   socket.on('newComment', (newComment) => {
-  //     setComments((prevComments) => [...prevComments, newComment]);
-  //   });
-  //   setLoading(false);
-  //   return () => {
-  //     socket.off('comment');
-  //   };
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
 
-  // }, [loading]);
+    return () => {
+      setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false, content: false });
+    }
+
+  }, [isSubmitting]);
 
   if(!blog) {
     return (
@@ -431,31 +428,31 @@ export default function SinglePost(props) {
               comments && comments.filter(comment => comment.slug === slug) && comments.length !== 0 &&
               <Box className='comments-area' sx={{bgcolor: theme.palette.badge.bgdLight, p: 3}}>
                 {
-                  comments.map((comment) => (
+                  comments.map((comment, index) => (
                   comment.replyCommentId == 'false' &&
                   <Box key={comment._id}>
                     <Typography sx={{py: 1}}>{comment.authorName}</Typography>
                     <Divider />
                     <Typography sx={{py: 1}}>{comment.content}</Typography>
-                    <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
+                    <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id, index)}>
                       Reply
                     </Button>
                     {
                       comments
                       .filter((childComment) => childComment.replyCommentId === comment._id)
-                      .map((childComment) => (
+                      .map((childComment, index) => (
                         <Box className="reply" key={childComment._id} sx={{bgcolor: childComment.isAdminReply ? theme.palette.primary.white : theme.palette.primary.bgdLight, p: 3, mb: 1}}>
                           <Typography sx={{py: 1}}>{childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}</Typography>
                           <Divider />
                           <Typography sx={{py: 1}}>{childComment.content}</Typography>
-                          <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id)}>
+                          <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id, index)}>
                             Reply
                           </Button>
                         </Box>
                       ))
                     }
                     {
-                      showForm && replyCommentId === comment._id && (
+                      showForm && replyCommentId === comment._id && anchor === index && (
                       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                         {
                           userInfo ?
@@ -570,7 +567,7 @@ export default function SinglePost(props) {
               </Box>
             }
             {
-              showForm && 
+              showForm &&
               <Button sx={{ my: 3 }} onClick={handleCloseForm}>
                 Add New Comment
               </Button>
@@ -771,6 +768,13 @@ export default function SinglePost(props) {
           </Box>
         </Box>
       </Grid>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <Button sx={{position: 'absolute', bottom: '50%', left: '50%', transform: 'translate(-50%, -100px)'}} variant='outline' onClick={() => setIsLoading(false)}>Close</Button>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Grid>
   );
 }

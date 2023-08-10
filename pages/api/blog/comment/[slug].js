@@ -1,5 +1,4 @@
 import Comment from '../../../../models/Comment';
-import pusherServer from '../../../../src/utils/server/pusher';
 
 export default async function handler(req, res) {
   const { slug } = req.query;
@@ -16,9 +15,6 @@ export default async function handler(req, res) {
     // Save the new comment to the database
     const newComment = new Comment({ slug, authorName, email, content, isAdminReply, replyCommentId });
     await newComment.save();
-
-    // Send the new comment to connected clients via Pusher
-    pusherServer.trigger('comments', 'new-comment', newComment);
 
     return res.status(201).json(newComment);
   }
