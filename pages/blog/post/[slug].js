@@ -344,9 +344,18 @@ export default function SinglePost(props) {
   };
 
   React.useEffect(() => {
-    // Fetch existing comments from the server on page load
-    fetchComments();
-  }, []);
+    if (isLoading) {
+      return
+    }
+    setIsLoading(true);
+    if (comments) {
+      setTimeout(() => {
+        fetchComments();
+        setIsLoading(false);
+      }, 1500);
+    }
+    setIsLoading(false);
+  }, [comments, isLoading]);
 
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
