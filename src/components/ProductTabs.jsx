@@ -11,6 +11,7 @@ import { Store } from '../utils/Store';
 import axios from 'axios';
 import { useSession } from '../utils/SessionProvider';
 import theme from '../theme';
+import CommentIcon from '@mui/icons-material/Comment';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -121,7 +122,10 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
       }
 
       if (session) {
-        if (hasPurchased && formData.rating === 0) {
+        if (hasPurchased && formData.rating === 0 && formData.replyCommentId !== 'false') {
+          const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
+        }else if (hasPurchased && formData.rating === 0 && formData.replyCommentId === 'false') {
           setErrors({
             email: false,
             authorName: false,
@@ -180,6 +184,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
       setUpdateName('');
       setUpdateReplay('');
       setUpdateRating('');
+      console.log(formData);
     } catch (error) {
       console.log(error);
     }finally {
@@ -228,6 +233,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const fetchComments = async () => {
     try {
       const { data } = await axios.get(`/api/products/getComments/${slug}`);
+
       setComments(data);
       console.log('fetch comment');
     } catch (error) {
@@ -238,7 +244,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
     fetchComments();
-  }, []);
+  }, [slug]);
 
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
@@ -255,8 +261,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
     }
 
   }, [isSubmitting]);
-
-  
 
   return (
     <Box sx={{ bgcolor: 'background.paper', width: '100%' }}>
@@ -286,9 +290,9 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
         <TabPanel value={value} index={1} dir={theme.direction}>
           {
             product.details.map(detail => (
-              <Box key={detail._id}>
-                <Typography>{detail.attribute}</Typography>
-                <Typography>{detail.detail}</Typography>
+              <Box key={detail._id} sx={{display: 'flex', alignItems: 'baseline'}}>
+                <Typography variant='h6' component="h6">{detail.attribute}{':'}</Typography>
+                <Typography sx={{pl: 3}}>{detail.detail}</Typography>
               </Box>
             ))
           }
@@ -314,19 +318,17 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                     </Box>
                   }
                   <Typography sx={{py: 1}}>{comment.content}</Typography>
-                  <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id, index)}>
-                    Reply
-                  </Button>
+                  <CommentIcon color='primary' sx={{ cursor: 'pointer' }} onClick={() => handleShowForm(comment._id, index)} />                  
                   {
                     showForm && anchor === index && (
                       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                     {
                       hasPurchased &&
-                      <Box sx={{ mt: 5 }}>
+                      <Box sx={{ mt: 5, display: 'none' }}>
                         <Typography component="legend">Rating</Typography>
                         <Rating
                           name="rating"
-                          value={userInfo ? updateRating : 0}
+                          value={0}
                           onChange={handleChangeRating}
                         />
                       </Box>
@@ -449,20 +451,17 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                         <Typography sx={{py: 1}}>{childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}</Typography>
                         <Divider />
                         <Typography sx={{py: 1}}>{childComment.content}</Typography>
-                        <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id, index)}>
-                          Reply
-                        </Button>
+                        <CommentIcon color='primary' sx={{ cursor: 'pointer' }} onClick={() => handleShowForm(comment._id, index)} />
                         {
                           showForm && replyCommentId === comment._id && anchor === index && (
                             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                               {
                                 hasPurchased &&
-                                <Box sx={{ mt: 5 }}>
+                                <Box sx={{ mt: 5, display: 'none' }}>
                                   <Typography component="legend">Rating</Typography>
                                   <Rating
                                     name="rating"
-                                    value={userInfo ? updateRating : 0}
-                                    onChange={handleChangeRating}
+                                    value={0}
                                   />
                                 </Box>
                               }

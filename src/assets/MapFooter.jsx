@@ -6,7 +6,7 @@ import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import { Box, Button } from '@mui/material';
 import theme from '../theme';
 
-export default function MapFooter() {
+export default function MapFooter({ src }) {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -15,6 +15,16 @@ export default function MapFooter() {
 
   return (
     <Box>
+      {
+        src ?
+        <Box
+          component="iframe"
+          width="100%"
+          height="250px"
+          src={src}
+          >
+        </Box>
+          :
       <Accordion elevation={0} sx={{marginBottom: 5}} expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
           aria-controls="panel1bh-content"
@@ -46,6 +56,7 @@ export default function MapFooter() {
           </Box>
         </AccordionDetails>
       </Accordion>
+      }
     </Box>
   );
 }

@@ -326,7 +326,7 @@ export default function CategoryProducts(props) {
   const handleLoading = (product) => {
     setSelected(product._id);
   };
-console.log(similarTags);
+
   if(!products) {
     return (
       <Box sx={{ flexGrow: 1, my: 4  }}>

@@ -34,6 +34,7 @@
     "react-dom": "latest",
     "react-slick": "^0.29.0",
     "react-swipeable-views": "^0.14.0",
+    "recharts": "^2.7.3",
     "yarn": "^1.22.19"
   },
   "devDependencies": {

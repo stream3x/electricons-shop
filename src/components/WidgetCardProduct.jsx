@@ -21,7 +21,7 @@ export default function WidgetCardProduct(props) {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{py: '.5rem'}}>
     {
       cardsToShow !== 2 ?
       products.slice(steps * (products.length - cardsToShow), steps === 0 ? cardsToShow : (products.length * steps)).map((product, index) => (

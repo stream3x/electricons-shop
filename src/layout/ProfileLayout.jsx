@@ -24,11 +24,10 @@ export default function ProfileLayout({ children }) {
             <ListItemButton
               selected={router.pathname === "/profile/info"}
             >
-      
-                <ListItemIcon>
-                  <InfoIcon />
-                </ListItemIcon>
-                <ListItemText primary="Info" />
+              <ListItemIcon>
+                <InfoIcon />
+              </ListItemIcon>
+              <ListItemText primary="Info" />
             </ListItemButton>
           </Link>
           <Divider />

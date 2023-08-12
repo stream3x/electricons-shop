@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { red, green, grey, cyan, yellow, indigo } from '@mui/material/colors';
+import { red, green, grey, cyan, yellow, indigo, purple } from '@mui/material/colors';
 
 // Create a theme instance.
 const theme = createTheme({
@@ -44,6 +44,9 @@ const theme = createTheme({
     },
     warning: {
       main: yellow.A400,
+    },
+    dashboard: {
+      main: purple[500]
     },
     transitions: {
       duration: {

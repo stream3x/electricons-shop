@@ -27,7 +27,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box id="tab-panel-box">
           {children}
         </Box>
       )}
@@ -128,31 +128,31 @@ function WidgetCarousel({ widgetProducts, title }) {
             ))
           }
         </SwipeableViews>
-          <MobileStepper
-            steps={maxSteps}
-            variant="dots"
-            position="static"
-            activeStep={activeStep}
-            sx={{ position: 'absolute', top: '45px', right: "15px", background: 'transparent', '& .MuiMobileStepper-dots': {display: 'none'} }}
-            nextButton={
-              <IconButton onClick={handleNext} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginLeft: 1}} aria-label="left" size="small" disabled={activeStep === maxSteps - 1}>
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowLeft />
-                ) : (
-                  <KeyboardArrowRight />
-                )}
-              </IconButton>
-            }
-            backButton={
-              <IconButton onClick={handleBack} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginRight: 1}} aria-label="right" size="small" disabled={activeStep === 0}>
-                {theme.direction === "rtl" ? (
-                  <KeyboardArrowRight />
-                ) : (
-                  <KeyboardArrowLeft />
-                )}
-              </IconButton>
-            }
-          />
+        <MobileStepper
+          steps={maxSteps}
+          variant="dots"
+          position="static"
+          activeStep={activeStep}
+          sx={{ position: 'absolute', top: '40px', right: "15px", background: 'transparent', '& .MuiMobileStepper-dots': {display: 'none'} }}
+          nextButton={
+            <IconButton onClick={handleNext} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginLeft: .5}} aria-label="left" size="small" disabled={activeStep === maxSteps - 1}>
+              {theme.direction === "rtl" ? (
+                <KeyboardArrowLeft />
+              ) : (
+                <KeyboardArrowRight />
+              )}
+            </IconButton>
+          }
+          backButton={
+            <IconButton onClick={handleBack} sx={{border: "thin solid", backgroundColor: theme.palette.primary.contrastText, '&:hover': {backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText}, marginRight: .5}} aria-label="right" size="small" disabled={activeStep === 0}>
+              {theme.direction === "rtl" ? (
+                <KeyboardArrowRight />
+              ) : (
+                <KeyboardArrowLeft />
+              )}
+            </IconButton>
+          }
+        />
       </Box>
   );
 }

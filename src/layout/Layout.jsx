@@ -15,6 +15,16 @@ export default function Layout({ children, storeInfo }) {
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
   const mainStore = storeInfo.filter(store => store.name === "Electricons store");
+  const isDashboard = router.pathname === '/dashboard/[id]';
+
+  if(isDashboard) {
+    return (
+      <Box component="main">
+        {children}
+        <Snackbars />
+      </Box>
+    )
+  }
 
   return (
     <React.Fragment>
