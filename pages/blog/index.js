@@ -324,7 +324,7 @@ export default function BlogPages(props) {
                   blog.category === 'Desktop computers' &&
                   <Grid key={blog._id} item xs={12}>
                     <Card sx={{ width: "100%", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
-                      <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0}} href={`/blog/post/${blog.slug}`} noLinkStyle onClick={() => handleLoading(blog)}>
+                      <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0}} href={`/blog/post/${blog.slug}?counter=10`} noLinkStyle onClick={() => handleLoading(blog)}>
                         {
                           blog._id === selected &&
                           <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />

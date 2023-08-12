@@ -192,6 +192,11 @@ export default function SinglePost(props) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [anchor, setAnchor] = React.useState(0);
 
+  React.useEffect(() => {
+    // Always do navigations after the first render
+    router.push(`/blog/post/${slug}?counter=10`, undefined, { shallow: true })
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({ ...errors, email: false, authorName: false, replay: false});
@@ -333,28 +338,28 @@ export default function SinglePost(props) {
     searchHandler(query);
   }, [query]);
 
-  // const fetchComments = async () => {
-  //   try {
-  //     const { data } = await axios.get(`/api/blog/getComment/${slug}`);
-  //     setComments(data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`/api/blog/getComment/${slug}`);
+      setComments(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // React.useEffect(() => {
-  //   if (isLoading) {
-  //     return
-  //   }
-  //   setIsLoading(true);
-  //   if (comments) {
-  //     setTimeout(() => {
-  //       fetchComments();
-  //       setIsLoading(false);
-  //     }, 1500);
-  //   }
-  //   setIsLoading(false);
-  // }, [comments, isLoading]);
+  React.useEffect(() => {
+    if (isLoading) {
+      return
+    }
+    setIsLoading(true);
+    if (comments) {
+      setTimeout(() => {
+        fetchComments();
+        setIsLoading(false);
+      }, 1500);
+    }
+    setIsLoading(false);
+  }, [comments, isLoading]);
 
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
