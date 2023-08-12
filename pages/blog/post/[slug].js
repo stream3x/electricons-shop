@@ -64,8 +64,8 @@ export async function getServerSideProps(context) {
 
   const blogs = blogDocsByCategory.map(db.convertDocToObject);
   const blog = await Blog.findOne({slug}).lean();
-
   await db.disconnect();
+
   return {
     props: {
       blogs,
@@ -171,7 +171,6 @@ export default function SinglePost(props) {
   const { slug, blog, blogs, categories, subCategories } = props;
 
   const { session } = useSession();
-  const blogID = blog._id;
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const date = new Date(blog.createdAt);
   const formatDate = date.toLocaleDateString("en-US", options);
@@ -334,34 +333,34 @@ export default function SinglePost(props) {
     searchHandler(query);
   }, [query]);
 
-  const fetchComments = async () => {
-    try {
-      const { data } = await axios.get(`/api/blog/getComment/${slug}`);
-      setComments(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const fetchComments = async () => {
+  //   try {
+  //     const { data } = await axios.get(`/api/blog/getComment/${slug}`);
+  //     setComments(data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    if (isLoading) {
-      return
-    }
-    setIsLoading(true);
-    if (comments) {
-      setTimeout(() => {
-        fetchComments();
-        setIsLoading(false);
-      }, 1500);
-    }
-    setIsLoading(false);
-  }, [comments, isLoading]);
+  // React.useEffect(() => {
+  //   if (isLoading) {
+  //     return
+  //   }
+  //   setIsLoading(true);
+  //   if (comments) {
+  //     setTimeout(() => {
+  //       fetchComments();
+  //       setIsLoading(false);
+  //     }, 1500);
+  //   }
+  //   setIsLoading(false);
+  // }, [comments, isLoading]);
 
   React.useEffect(() => {
     // Fetch existing comments from the server on page load
     if (isSubmitting) {
       setTimeout(() => {
-        fetchComments();
+        // fetchComments();
         setIsLoading(false);
       }, 1500);
     }
