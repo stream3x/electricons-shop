@@ -13,6 +13,15 @@ import { useSession } from '../utils/SessionProvider';
 import theme from '../theme';
 import CommentIcon from '@mui/icons-material/Comment';
 
+const bull = (
+  <Box
+    component="span"
+    sx={{ display: 'inline-block', mx: '4px', transform: 'scale(0.8)' }}
+  >
+    {"•"}
+  </Box>
+);
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -46,7 +55,7 @@ function a11yProps(index) {
   };
 }
 
-export default function ProductTabs({ product, setRatings, setNumReviews, setSumReviews, slug, comments, setComments }) {
+export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
   const { userInfo, snack } = state;
   const { session } = useSession();
@@ -68,6 +77,7 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
   const [hasPurchased, setHasPurchased] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -261,6 +271,12 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
 
   }, [isSubmitting]);
 
+  function convertDate(value) {
+    const date = new Date(value);
+    const formatDate = date.toLocaleDateString("en-US", options);
+    return formatDate;
+  }
+
   return (
     <Box sx={{ bgcolor: 'background.paper', width: '100%' }}>
       <AppBar position="static" color="default">
@@ -305,7 +321,12 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                 comments.map((comment, index) => (
                   comment.replyCommentId === 'false' &&
                 <Box key={comment._id}>
-                  <Typography sx={{py: 1}}>{comment.authorName}</Typography>
+                  <Typography sx={{py: 1}}>
+                    {comment.authorName}{bull}
+                    <Typography component='span' variant='caption'>
+                      {convertDate(comment.createdAt)}
+                    </Typography>
+                  </Typography>
                   <Divider />
                   {
                     comment.rating !== 0 &&
@@ -447,7 +468,12 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
                     .filter((childComment) => childComment.replyCommentId === comment._id)
                     .map((childComment, index) => (
                       <Box className="reply" key={childComment._id} sx={{bgcolor: childComment.isAdminReply ? theme.palette.primary.white : theme.palette.primary.bgdLight, p: 3, mb: 1}}>
-                        <Typography sx={{py: 1}}>{childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}</Typography>
+                        <Typography sx={{py: 1}}>
+                          {childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}{bull}
+                          <Typography component='span' variant='caption'>
+                            {convertDate(comment.createdAt)}
+                          </Typography>
+                        </Typography>
                         <Divider />
                         <Typography sx={{py: 1}}>{childComment.content}</Typography>
                         <CommentIcon color='primary' sx={{ cursor: 'pointer' }} onClick={() => handleShowForm(comment._id, index)} />

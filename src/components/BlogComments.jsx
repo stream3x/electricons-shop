@@ -1,9 +1,18 @@
-import { Box, Button, Divider, FormHelperText, TextField, TextareaAutosize, Typography } from '@mui/material'
+import { Backdrop, Box, Button, CircularProgress, Divider, FormHelperText, TextField, TextareaAutosize, Typography } from '@mui/material'
 import React from 'react'
 import { useSession } from '../utils/SessionProvider';
 import axios from 'axios';
 import theme from '../theme';
-import { useRouter } from 'next/router';
+import CommentIcon from '@mui/icons-material/Comment';
+
+const bull = (
+  <Box
+    component="span"
+    sx={{ display: 'inline-block', mx: '4px', transform: 'scale(0.8)' }}
+  >
+    {"•"}
+  </Box>
+);
 
 export default function BlogComments({ slug }) {
   const { session } = useSession();
@@ -23,6 +32,7 @@ export default function BlogComments({ slug }) {
   const [anchor, setAnchor] = React.useState(0);
   const isEmptyComments = comments.length === 0;
   const [isLoading, setIsLoading] = React.useState(false);
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -162,9 +172,19 @@ export default function BlogComments({ slug }) {
     }
     return () => {
       setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false, content: false });
+      setUpdateEmail('');
+      setUpdateName('');
+      setUpdateReplay('');
     }
   }, [isSubmitting]);
-  console.log('render', comments, slug);
+
+  function convertDate(value) {
+    const date = new Date(value);
+    const formatDate = date.toLocaleDateString("en-US", options);
+    return formatDate;
+  }
+
+  console.log('render', comments, slug, session);
 
   return (
     <Box>
@@ -175,12 +195,15 @@ export default function BlogComments({ slug }) {
           comments.map((comment, index) => (
             comment.replyCommentId === 'false' &&
           <Box key={comment._id}>
-            <Typography sx={{py: 1}}>{comment.authorName}</Typography>
+            <Typography sx={{py: 1}}>
+              {comment.authorName}{bull}
+              <Typography component='span' variant='caption'>
+                {convertDate(comment.createdAt)}
+              </Typography>
+            </Typography>
             <Divider />
             <Typography sx={{py: 1}}>{comment.content}</Typography>
-            <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id, index)}>
-              Reply
-            </Button>
+            <CommentIcon color='primary' sx={{ cursor: 'pointer' }} onClick={() => handleShowForm(comment._id, index)} />
             {
               showForm && anchor === index && (
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
@@ -281,7 +304,7 @@ export default function BlogComments({ slug }) {
                 errors.content && 
                 <FormHelperText error>{'Content is required'}</FormHelperText>
               }
-              <input type="hidden" name="isAdminReply" id="isAdminReply" value={ userInfo && userInfo.isAdmin ? 'true' : 'false' } />
+              <input type="hidden" name="isAdminReply" id="isAdminReply" value={ session && session.isAdmin ? 'true' : 'false' } />
               <input type="hidden" name="slug" id="slug" value={ slug && slug } />
               <input type="hidden" name="replyCommentId" id="replyCommentId" value={replyCommentId ? replyCommentId : 'false'} />
               <Button
@@ -299,12 +322,15 @@ export default function BlogComments({ slug }) {
               .filter((childComment) => childComment.replyCommentId === comment._id)
               .map((childComment, index) => (
                 <Box className="reply" key={childComment._id} sx={{bgcolor: childComment.isAdminReply ? theme.palette.primary.white : theme.palette.primary.bgdLight, p: 3, mb: 1}}>
-                  <Typography sx={{py: 1}}>{childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}</Typography>
+                  <Typography sx={{py: 1}}>
+                    {childComment.isAdminReply ? childComment.authorName + ' (admin)' : childComment.authorName}{bull}
+                    <Typography component='span' variant='caption'>
+                      {convertDate(comment.createdAt)}
+                    </Typography>
+                  </Typography>
                   <Divider />
                   <Typography sx={{py: 1}}>{childComment.content}</Typography>
-                  <Button size='small' sx={{ mb: 3 }} variant='outlined' onClick={() => handleShowForm(comment._id, index)}>
-                    Reply
-                  </Button>
+                  <CommentIcon color='primary' sx={{ cursor: 'pointer' }} onClick={() => handleShowForm(comment._id, index)} />
                   {
                     showForm && replyCommentId === comment._id && anchor === index && (
                       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
@@ -550,6 +576,13 @@ export default function BlogComments({ slug }) {
           </Box>
         </Box>
       }
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <Button sx={{position: 'absolute', bottom: '50%', left: '50%', transform: 'translate(-50%, -100px)'}} variant='outline' onClick={() => setIsLoading(false)}>Close</Button>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   )
 }
