@@ -10,6 +10,7 @@ import theme from '../src/theme';
 import ReplyIcon from '@mui/icons-material/Reply';
 import WishTable from '../src/components/WishTable';
 import { useRouter } from 'next/router';
+import BreadcrumbNav from '../src/assets/BreadcrumbNav';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -26,19 +27,21 @@ const Item = styled(Paper)(({ theme }) => ({
 
   if(wishItems.length === 0) {
     return (
-      <Box sx={{ flexGrow: 1, my: 4, '& a': {textDecoration: 'none'} }}>
-        <Typography gutterBottom variant="h6" component="h3" textAlign="center">
-          There are no items in your wishlist
-        </Typography>
-        <Button onClick={()=> router.push('/')} variant="contained" startIcon={<ReplyIcon />}>
-          back to shop
-        </Button>
-      </Box>
+      <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
+        <BreadcrumbNav />
+        <Typography component="p" variant="h6">There are no items in your wishlist</Typography>
+        <Link noLinkStyle href="/" passHref>
+          <Button sx={{ '&:hover': {color: theme.palette.secondary.main} }} size="large" startIcon={<ReplyIcon />}>
+            Continue shoping
+          </Button>
+        </Link>
+      </Item>
     )
   }
 
   return (
     <Box sx={{ my: 4 }}>
+      <BreadcrumbNav />
       <Grid container space={2}>
         <Grid xs={12}>
           <Item elevation={0}>

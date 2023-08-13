@@ -255,7 +255,6 @@ export default function ProductTabs({ product, setRatings, setNumReviews, setSum
       }, 1500);
     }
 
-
     return () => {
       setErrors({ ...errors, email: false, authorName: false, replay: false, rating: false, content: false });
     }

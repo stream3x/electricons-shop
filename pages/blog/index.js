@@ -49,10 +49,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('xl')]: {
       width: '12ch',
       '&:focus': {
-        width: '20ch',
+        width: '22ch',
       },
     },
   },
@@ -199,8 +199,12 @@ export default function BlogPages(props) {
 
   React.useEffect(() => {
     // Always do navigations after the first render
-    router.push('/blog?counter=10', undefined, { shallow: true })
-  }, [blogs, categories, subCategories]);
+    if (query) {
+      router.push(`/blog?query=${query}`, undefined, { shallow: true });
+    }else {
+      router.push('/blog?counter=10', undefined, { shallow: true });
+    }
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -216,10 +220,6 @@ export default function BlogPages(props) {
       setSearchFilter([])
     }
     filterSearch({ query: item});
-  };
-
-  const tagHandler = (item) => {
-    filterSearch({ tag: item});
   };
 
   useEffect(() => {
@@ -302,7 +302,7 @@ export default function BlogPages(props) {
         <LabelButton onClick={handleDelete} sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
           {'All'}
         </LabelButton>
-        <Search component="form" onSubmit={submitHandler}>
+        <Search sx={{mt: {xs: 3, xl: '.2rem'}}} component="form" onSubmit={submitHandler}>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>

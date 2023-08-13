@@ -57,6 +57,12 @@ export default function BreadcrumbNav({productData, categoryData, blogData, blog
           <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
           Blog
         </Link>
+        <Typography
+          sx={{ display: 'flex', alignItems: 'center', fontSize: {xs: 12, sm: 'inherit'} }}
+          color="text.primary"
+        >
+          {'/post/'}{blogPost.slug}
+        </Typography>
       </Breadcrumbs>
     );
   }

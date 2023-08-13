@@ -39,7 +39,7 @@ function HeroCarousel({ hero_products }) {
           {
               carouselPoroduct.map((product, index) => (
                 product.category === 'Desktop computers' &&
-                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'883px'} imgHeight={'110%!important'} marginTop={'-20px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
+                  <CardProduct key={index} loading product={product} cardHeight="calc(450px - 8px)" imgWidth={'100%'} imgHeight={'110%!important'} marginTop={'-20px'} variantSubtitle="p" variantTitle="h3" moveContent="translateX(0px)" />
               ))
             }
           </Slider>
@@ -53,7 +53,7 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Laptop computers' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} marginTop={'5px'} imgHeight={'100%!important'} variantSubtitle="caption" variantTitle="h4" index={index} />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'100%'} marginTop={'5px'} imgHeight={'100%!important'} variantSubtitle="caption" variantTitle="h4" index={index} />
                   ))
                 }
               </Slider>
@@ -65,7 +65,7 @@ function HeroCarousel({ hero_products }) {
               {
                   carouselPoroduct.map((product, index) => (
                     product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'429px'} imgHeight={'100%!important'} marginTop={'5px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                      <CardProduct key={index} loading product={product} cardHeight="calc(225px - 8px)" imgWidth={'100%'} imgHeight={'100%!important'} marginTop={'5px'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
                   ))
                 }
               </Slider>

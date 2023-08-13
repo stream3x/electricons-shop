@@ -153,7 +153,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up('xl')]: {
       width: '12ch',
       '&:focus': {
         width: '22ch',
@@ -184,19 +184,6 @@ const LabelButton = styled(Button)(({ theme }) => ({
   border: 'thin solid lightGrey',
   borderLeft: '3px solid black',
   marginLeft: '10px',
-}));
-
-const AddToCartButton = styled(LoadingButton)(({ theme }) => ({
-  color: theme.palette.primary.contrastText,
-  textTransform: 'capitalize',
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: theme.palette.addToCartButtonShape.borderRadius,
-  margin: '-1px',
-  padding: '.5em 2em',
-  '&:hover': {
-    color: theme.palette.primary.contrastText,
-    backgroundColor: theme.palette.secondary.main,
-  }
 }));
 
 const ActionButtons = styled(IconButton)(({ theme }) => ({
@@ -349,7 +336,7 @@ export default function CategoryProducts(props) {
   }
 
   return (    
-    <Box sx={{ flexGrow: 1, my: 4  }}>
+    <Box sx={{ flexGrow: 1, my: 5, pt: 2  }}>
       <BreadcrumbNav blogData={slug} />
       <Grid container spacing={2}>
         <Grid item xs={12} lg={9}>
