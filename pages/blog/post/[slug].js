@@ -16,7 +16,7 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import ReplyIcon from '@mui/icons-material/Reply';
 import dynamic from 'next/dynamic';
-// import BlogComments from '../../../src/components/BlogComments';
+import BlogComments from '../../../src/components/BlogComments';
 
 export async function getServerSideProps(context) {
   const { params } = context;
@@ -247,7 +247,7 @@ function SinglePost(props) {
                 {blog.description}
               </Typography>
             </Box>
-            {/* <BlogComments slug={slug} /> */}
+            <BlogComments slug={slug} />
           </Container>
         </Box>
       </Grid>
