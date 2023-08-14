@@ -69,7 +69,7 @@ export default function LogIn() {
       }, 2000);
     }
   };
-console.log(session);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({ ...errors, email: false, password: false});

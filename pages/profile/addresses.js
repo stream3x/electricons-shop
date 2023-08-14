@@ -134,7 +134,6 @@ export default function ProfileAddresses() {
 
   return (
     <ProfileLayout>
-
       <ThemeProvider theme={theme}>
         <Container component="div" maxWidth="xl">
           <CssBaseline />

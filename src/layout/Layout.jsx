@@ -15,9 +15,10 @@ export default function Layout({ children, storeInfo }) {
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
   const mainStore = storeInfo.filter(store => store.name === "Electricons store");
-  const isDashboard = router.pathname === '/dashboard/[id]';
+  const isBackoffice = router.pathname.replace(/\/\w+$/,'/') === '/backoffice/[id]/';
+  const isBackofficeIndex = router.pathname === '/backoffice';
 
-  if(isDashboard) {
+  if(isBackoffice || isBackofficeIndex) {
     return (
       <Box component="main">
         {children}

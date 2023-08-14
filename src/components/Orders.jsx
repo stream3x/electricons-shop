@@ -6,6 +6,7 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Title from './Title';
+import { useRouter } from 'next/router';
 
 // Generate Order Data
 function createData(id, date, name, shipTo, paymentMethod, amount) {
@@ -52,10 +53,21 @@ function preventDefault(event) {
   event.preventDefault();
 }
 
-export default function Orders() {
+export default function Orders(props) {
+  const { orders, isGuest } = props;
+  const router = useRouter();
+  const { id } = router.query;
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+  function convertDate(value) {
+    const date = new Date(value);
+    const formatDate = date.toLocaleDateString("en-US", options);
+    return formatDate;
+  }
+
   return (
     <React.Fragment>
-      <Title>Recent Orders</Title>
+      <Title>{isGuest ? 'Recent Guest Orders' : 'Recent Orders'}</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -67,18 +79,18 @@ export default function Orders() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
-              <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell align="right">{`$${row.amount}`}</TableCell>
+          {orders.map((row) => (
+            <TableRow key={row._id}>
+              <TableCell>{convertDate(row.createdAt)}</TableCell>
+              <TableCell>{row.personalInfo.name}</TableCell>
+              <TableCell>{row.addresses.address}, {row.addresses.city}, {row.addresses.country}</TableCell>
+              <TableCell>{row.payment.paymentMethod}</TableCell>
+              <TableCell align="right">{`$${row.total.toFixed(2)}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
+      <Link color="primary" href={`/backoffice/${id}/orders`} onClick={preventDefault} sx={{ mt: 3 }}>
         See more orders
       </Link>
     </React.Fragment>

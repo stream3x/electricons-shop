@@ -41,7 +41,7 @@ import Image from 'next/image';
 
 const pagesTop = [{name:'About', link: '/about', icon: <InfoIcon />}, {name:'Store', link: '/store', icon: <BusinessIcon />}, {name:'Blog', link: '/blog', icon: <RssFeedIcon />}];
 const pagesTopInBlog = [{name:'About', link: '/about', icon: <InfoIcon sx={{color: '#fff'}} />}, {name:'Shop', link: '/', icon: <CartIcon sx={{color: '#fff'}} />}];
-const loged = ['Profile', 'Dashboard', 'Logout'];
+const loged = ['Profile', 'Backoffice', 'Logout'];
 const logedout = ['Login', 'Sign in'];
 const pages = [
   {
@@ -366,7 +366,7 @@ export default function Header(props) {
                       {
                         userInfo.isAdmin &&
                         <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                          <Link sx={{ textDecoration: 'none' }} href={`/dashboard/${userInfo._id}`} passHref>
+                          <Link sx={{ textDecoration: 'none' }} href={`/backoffice/`} passHref>
                             {loged[1]}
                           </Link>
                         </MenuItem>
@@ -449,7 +449,7 @@ export default function Header(props) {
                               {
                                 userInfo.isAdmin &&
                                 <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                  <Link sx={{ textDecoration: 'none' }} href={`/dashboard/${userInfo._id}`} passHref>
+                                  <Link sx={{ textDecoration: 'none' }} href={`/backoffice/`} passHref>
                                     {loged[1]}
                                   </Link>
                                 </MenuItem>
@@ -524,7 +524,7 @@ export default function Header(props) {
                               {
                                 userInfo.isAdmin &&
                                 <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                  <Link sx={{ textDecoration: 'none' }} href={`/dashboard/${userInfo._id}`} passHref>
+                                  <Link sx={{ textDecoration: 'none' }} href={`/backoffice/`} passHref>
                                     {loged[1]}
                                   </Link>
                                 </MenuItem>
