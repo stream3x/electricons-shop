@@ -15,9 +15,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import HomeIcon from '@mui/icons-material/Home';
+import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
+import MailIcon from '@mui/icons-material/Mail';
 import MainListItems from '../components/MainListItems';
 import theme from '../theme';
 import Link from '../Link';
+import { useRouter } from 'next/router';
 
 const drawerWidth = 240;
 
@@ -65,11 +68,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
 
 export default function DashboardLayout({ children }) {
+  const router = useRouter();
+  const { pathname } = router;
+  const segments = pathname.split('/');
+  const tabName = segments[segments.length - 1];
   const [open, setOpen] = React.useState(false);
+
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -103,11 +113,16 @@ export default function DashboardLayout({ children }) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              {capitalizeFirstLetter(tabName)}
             </Typography>
             <Link color={theme.palette.primary.contrastText} href="/">
-              <IconButton color="inherit">
-                <HomeIcon sx={{ '&:hover': { color: theme.palette.primary.bgdLight}}}/>
+              <IconButton color="inherit">                
+                <CartIcon sx={{ '&:hover': { color: theme.palette.primary.bgdLight}}}/>
+              </IconButton>
+            </Link>
+            <Link color={theme.palette.primary.contrastText} href="/">
+              <IconButton color="inherit">                
+                <MailIcon sx={{ '&:hover': { color: theme.palette.primary.bgdLight}}}/>
               </IconButton>
             </Link>
             <IconButton color="inherit">
@@ -148,7 +163,7 @@ export default function DashboardLayout({ children }) {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             {children}
           </Container>
         </Box>

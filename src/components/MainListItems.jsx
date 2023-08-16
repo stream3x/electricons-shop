@@ -10,8 +10,9 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Link from '../Link';
-import { Divider } from '@mui/material';
+import { Divider, Tooltip } from '@mui/material';
 import { useRouter } from 'next/router';
+import ButtonAccordion from '../assets/ButtonAccordion';
 
 const MainListItems = () => {
   const router = useRouter();
@@ -20,28 +21,34 @@ const MainListItems = () => {
   return (
     <React.Fragment>
       <Link href={`/backoffice/${id}/dashboard`}>
-        <ListItemButton>
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
+        <Tooltip title="Dashboard">
+          <ListItemButton>
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </ListItemButton>
+        </Tooltip>
       </Link>
       <Link href={`/backoffice/${id}/orders`}>
-        <ListItemButton>
-            <ListItemIcon>
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            <ListItemText primary="Orders" />
-        </ListItemButton>
+        <Tooltip title="Orders">
+          <ListItemButton>
+              <ListItemIcon>
+                <ShoppingCartIcon />
+              </ListItemIcon>
+              <ListItemText primary="Orders" />
+          </ListItemButton>
+        </Tooltip>
       </Link>
       <Link href={`/backoffice/${id}/customers`}>
-        <ListItemButton>
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Customers" />
-        </ListItemButton>
+        <Tooltip title="Customers">
+          <ListItemButton>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Customers" />
+          </ListItemButton>
+        </Tooltip>
       </Link>
       <ListItemButton>
         <ListItemIcon>
@@ -57,14 +64,9 @@ const MainListItems = () => {
       </ListItemButton>
       <Divider sx={{ my: 1 }} />
       <ListSubheader component="div" inset>
-        Saved reports
+        Management
       </ListSubheader>
-      <ListItemButton>
-        <ListItemIcon>
-          <AssignmentIcon />
-        </ListItemIcon>
-        <ListItemText primary="Current month" />
-      </ListItemButton>
+      <ButtonAccordion id={id} />
       <ListItemButton>
         <ListItemIcon>
           <AssignmentIcon />

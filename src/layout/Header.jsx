@@ -366,7 +366,7 @@ export default function Header(props) {
                       {
                         userInfo.isAdmin &&
                         <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                          <Link sx={{ textDecoration: 'none' }} href={`/backoffice/`} passHref>
+                          <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                             {loged[1]}
                           </Link>
                         </MenuItem>
@@ -449,7 +449,7 @@ export default function Header(props) {
                               {
                                 userInfo.isAdmin &&
                                 <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                  <Link sx={{ textDecoration: 'none' }} href={`/backoffice/`} passHref>
+                                  <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                                     {loged[1]}
                                   </Link>
                                 </MenuItem>
@@ -524,7 +524,7 @@ export default function Header(props) {
                               {
                                 userInfo.isAdmin &&
                                 <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                                  <Link sx={{ textDecoration: 'none' }} href={`/backoffice/`} passHref>
+                                  <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                                     {loged[1]}
                                   </Link>
                                 </MenuItem>

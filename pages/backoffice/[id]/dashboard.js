@@ -10,7 +10,7 @@ import Guest from '../../../models/Guest'
 
 export async function getServerSideProps(context) {
   const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 60);
   try {
     db.connect();
     const orders = await Order.find().sort({ createdAt: -1 }).lean().exec();

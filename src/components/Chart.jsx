@@ -69,7 +69,7 @@ export default function Chart(props) {
 
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>Last Day</Title>
       <ResponsiveContainer>
         <LineChart
           data={data}
@@ -113,7 +113,7 @@ export default function Chart(props) {
           <Line
             isAnimationActive={false}
             type="monotone"
-            name="Guest"
+            name="Guests"
             dataKey="amount_guest"
             stroke={theme.palette.dashboard.main}
             dot={false}

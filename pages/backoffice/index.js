@@ -12,6 +12,7 @@ const BackofficeIndex = () => {
   const { state, dispatch } = useContext(Store);
   const { session } = useSession();
   const router = useRouter();
+  const { id } = router.query;
   const status = session && session.isAdmin === true;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -23,7 +24,7 @@ const BackofficeIndex = () => {
   };
 
   const timer = useRef();
-
+console.log(id, session);
   useEffect(() => {    
     if (!loading) {
       setSuccess(false);
