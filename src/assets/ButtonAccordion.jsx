@@ -48,7 +48,7 @@ export default function ButtonAccordion(props) {
         <List component="div" disablePadding>
           <Link href={`/backoffice/${id}/list`}>
             <Tooltip title="Product List">
-              <ListItemButton sx={{ pl: 4 }}>
+              <ListItemButton sx={{ pl: {xs: 3, md: 4} }}>
                 <ListItemIcon>
                   <ListIcon />
                 </ListItemIcon>
@@ -58,7 +58,7 @@ export default function ButtonAccordion(props) {
           </Link>
           <Link href={`/backoffice/${id}/create`}>
             <Tooltip title="Create new">
-              <ListItemButton sx={{ pl: 4 }}>
+              <ListItemButton sx={{ pl: {xs: 3, md: 4} }}>
                 <ListItemIcon>
                   <BorderColorIcon />
                 </ListItemIcon>

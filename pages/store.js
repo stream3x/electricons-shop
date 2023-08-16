@@ -30,7 +30,6 @@ export default function Store() {
     ...new Map(stores.map((item) => [item.city, item])).values(),
 ];
 
-console.log(distinctArrayByCountry);
   return (
       <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
         {

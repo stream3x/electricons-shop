@@ -54,14 +54,13 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    router.push("/login");
-    // if(userInfo) {
-    //   router.push("/");
-    //   return;
-    // }
-    // return () => {
-    //   clearTimeout(timer.current);
-    // };
+    if(userInfo) {
+      router.push("/");
+      return;
+    }
+    return () => {
+      clearTimeout(timer.current);
+    };
   }, []);
 
   const handleButtonClick = () => {

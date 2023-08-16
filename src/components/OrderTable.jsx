@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -16,11 +15,19 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { Store } from '../utils/Store';
-import { TableHead } from '@mui/material';
+import { TableHead, Typography, styled } from '@mui/material';
 import Image from 'next/image';
+import theme from '../theme';
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  }));
 
 function TablePaginationActions(props) {
-  const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
 
   const handleFirstPageButtonClick = (event) => {
@@ -138,8 +145,9 @@ export default function OrderTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let rows = [];
+
   if (userInfo) {
-    rows = orders.filter(order => order.userInfo.email === userInfo.email);
+    rows = orders.filter(order => order.personalInfo.email === userInfo.email);
   }else {
     rows = [];
   }
@@ -155,6 +163,14 @@ export default function OrderTable(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  if (rows) {
+    return (
+      <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
+        <Typography component="p" variant="h6">There are no items in your order history</Typography>
+      </Item>
+    )
+  }
 
   return (
     <TableContainer component={Paper}>

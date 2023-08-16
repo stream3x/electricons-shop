@@ -1,6 +1,6 @@
 import React from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
-import { AppBar, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
@@ -71,8 +71,7 @@ const Search = styled(Box)(({ theme }) => ({
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: 'auto',
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down('md')]: {
     marginLeft: theme.spacing(0),
     width: '100%',
   },
@@ -183,6 +182,7 @@ export default function Customers(props) {
   const [page, setPage] = React.useState(0);
   const [search, setSearch] = React.useState('');
   const [activeTab, setActiveTab] = React.useState(0);
+  const matches = useMediaQuery('(min-width: 560px)');
 
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -276,21 +276,21 @@ export default function Customers(props) {
 
   return (
     <DashboardLayout>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Box component='nav' sx={{display: 'flex', justifyContent: 'space-between'}}>
-            <Box sx={{listStyle: 'none', display: 'flex'}} component="ul">
+      <Grid container spacing={3} sx={{pr: {xs: '0px'}}}>
+        <Grid item xs={12} sx={{p: {xs: '24px 24px!important'}}}>
+          <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+            <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
               {
                 usersTabs.map((tab, index) => (
-                  <Box key={tab} sx={{pl: 3}} component='li'>
-                    <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main}} variant="contained" size="medium">
+                  <Box key={tab} sx={{pl: {xs: 1, md: 3} }} component='li'>
+                    <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main, fontSize: matches ? '.75rem' : '.5rem', p: {xs: '6px 8px'} }} variant="contained">
                       {tab}
                     </Button>
                   </Box>
                 ))
               }
             </Box>
-            <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap'}}>
+            <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
               <Search component="form">
                 <SearchIconWrapper>
                   <SearchIcon />
@@ -304,7 +304,7 @@ export default function Customers(props) {
             </Box>
           </Box>
         </Grid>
-        <Grid sx={{display: {xs: 'none', md: 'block'}}} item xs={12}>
+        <Grid item xs={12}>
           <MyTableContainer>
             <Table
               sx={{ minWidth: 750 }}

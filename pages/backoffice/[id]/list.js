@@ -298,7 +298,7 @@ export default function ProductList(props) {
     <DashboardLayout>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Box component='nav' sx={{display: 'flex', justifyContent: 'space-between'}}>
+          <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
             <Box sx={{listStyle: 'none', display: 'flex'}} component="ul">
               {
                 usersTabs.map((tab, index) => (
@@ -326,7 +326,7 @@ export default function ProductList(props) {
             </Box>
           </Box>
         </Grid>
-        <Grid sx={{display: {xs: 'none', md: 'block'}}} item xs={12}>
+        <Grid item xs={12}>
           <MyTableContainer>
             <Table
               sx={{ minWidth: 750 }}

@@ -35,6 +35,14 @@ import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import axios from 'axios';
 import CompareIcon from '@mui/icons-material/RepeatOutlined';
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  }));
+
 const AddToCartButton = styled(LoadingButton)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
   textTransform: 'capitalize',
@@ -422,6 +430,14 @@ export default function WishTable(props) {
     }
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
     setLoadingCompare(false)
+  }
+
+  if (cartItems) {
+    return (
+      <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
+        <Typography component="p" variant="h6">There are no items in your wishlist</Typography>
+      </Item>
+    )
   }
 
   return (
