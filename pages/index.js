@@ -5,6 +5,7 @@ import Product from '../models/Product';
 import db from '../src/utils/db';
 import WidgetCarousels from '../src/components/WidgetCarousels';
 import { useRouter } from 'next/router';
+import { useSession } from '../src/utils/SessionProvider';
 
 export async function getStaticProps() {
   await db.connect();
@@ -30,6 +31,7 @@ export async function getStaticProps() {
 
 export default function Index(props) {
   const { hero_products, topProducts, bestSeller } = props;
+  const { session } = useSession();
 
   const router = useRouter();
 
@@ -41,6 +43,7 @@ export default function Index(props) {
   React.useEffect(() => {
     // The counter changed!
   }, [router.query.counter])
+  console.log(session);
 
   return (
     <Box sx={{ my: 4 }}>

@@ -12,7 +12,7 @@ const BackofficeIndex = () => {
   const { state, dispatch } = useContext(Store);
   const { session } = useSession();
   const router = useRouter();
-  const status = session.isAdmin;
+  const status = session?.isAdmin || false;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 

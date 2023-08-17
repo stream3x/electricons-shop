@@ -45,16 +45,6 @@ export default function LogIn() {
     }),
   };
 
-  useEffect(() => {
-    if(userInfo) {
-      router.push("/");
-      return;
-    }
-    return () => {
-      clearTimeout(timer.current);
-    };
-  }, []);
-
   const handleButtonClick = () => {
     if (!loading) {
       setSuccess(false);
@@ -68,6 +58,15 @@ export default function LogIn() {
         router.push('/');
       }, 2000);
     }
+    const anchor = (event.target.ownerDocument || document).querySelector(
+      '#back-to-top-anchor',
+    );
+
+    if (anchor) {
+      anchor.scrollIntoView({
+        block: 'center',
+      });
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -80,7 +79,7 @@ export default function LogIn() {
         password: formOutput.get('password'),
       };
       const { data } = await axios.post('/api/users/login', formData);
-      setSession(data);
+      setSession(() => data);
       handleButtonClick();
       dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
@@ -102,6 +101,16 @@ export default function LogIn() {
     }
   };
 
+  useEffect(() => {
+    if(userInfo) {
+      router.push("/");
+      return;
+    }
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
+
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
   }
@@ -115,7 +124,7 @@ export default function LogIn() {
   function copyPassword(e) {
     setUpdatePassword(e.target.value)
   }
-
+console.log(session);
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
