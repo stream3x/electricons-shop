@@ -35,7 +35,7 @@ export default function ButtonAccordion(props) {
         </ListSubheader>
       }
     >
-      <Tooltip title="Shop">
+      <Tooltip title="Shop" placement="right-start">
         <ListItemButton onClick={handleClick}>
           <ListItemIcon>
             <StoreIcon />
@@ -47,7 +47,7 @@ export default function ButtonAccordion(props) {
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <Link href={`/backoffice/${id}/list`}>
-            <Tooltip title="Product List">
+            <Tooltip title="Product List" placement="right-start">
               <ListItemButton sx={{ pl: {xs: 3, md: 4} }}>
                 <ListItemIcon>
                   <ListIcon />
@@ -57,7 +57,7 @@ export default function ButtonAccordion(props) {
             </Tooltip>
           </Link>
           <Link href={`/backoffice/${id}/create`}>
-            <Tooltip title="Create new">
+            <Tooltip title="Create new" placement="right-start">
               <ListItemButton sx={{ pl: {xs: 3, md: 4} }}>
                 <ListItemIcon>
                   <BorderColorIcon />

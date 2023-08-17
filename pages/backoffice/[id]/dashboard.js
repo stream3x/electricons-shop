@@ -1,12 +1,13 @@
 import React from 'react'
 import DashboardLayout from '../../../src/layout/DashboardLayout'
-import { Grid, Paper } from '@mui/material'
+import { Backdrop, Grid, Paper } from '@mui/material'
 import Chart from '../../../src/components/Chart'
 import Orders from '../../../src/components/Orders'
 import Deposits from '../../../src/components/Deposits'
 import db from '../../../src/utils/db'
 import Order from '../../../models/Order'
 import Guest from '../../../models/Guest'
+import CircularProgress from '@mui/material/CircularProgress';
 
 export async function getServerSideProps(context) {
   const sevenDaysAgo = new Date();
@@ -45,48 +46,74 @@ export async function getServerSideProps(context) {
 
 export default function Dashboard(props) {
   const { orders, guestOrders, totalInflows, totalGuestInflows } = props;
+  const [loading, setLoading] = React.useState(false);
+  const [fetchOrders, setFetchOrders] = React.useState([]);
 
+  React.useEffect(() => {
+    async function getOrders() {
+      setLoading(true);
+      try {
+        const res = await orders;
+        setFetchOrders(res);
+        setLoading(false);
+      } catch (error) {
+       console.log(`error fetchin data for dashboard ${error}`); 
+      }
+    } 
+    getOrders();
+  }, []);
+console.log(orders, guestOrders, totalInflows, totalGuestInflows);
   return (
     <DashboardLayout>
-      <Grid container spacing={3}>
-        {/* Chart */}
-        <Grid item xs={12} md={8} lg={9}>
-          <Paper
-            sx={{
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              height: 240,
-            }}
-          >
-            <Chart orders={orders} guestOrders={guestOrders} />
-          </Paper>
+      {
+        loading ?
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        :
+        <Grid container spacing={3}>
+          {/* Chart */}
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper
+              sx={{
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                height: 240,
+              }}
+            >
+              <Chart orders={fetchOrders} guestOrders={guestOrders} />
+            </Paper>
+          </Grid>
+          {/* Recent Deposits */}
+          <Grid item xs={12} md={4} lg={3}>
+            <Paper
+              sx={{
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                height: 240,
+              }}
+            >
+              <Deposits totalInflows={totalInflows} totalGuestInflows={totalGuestInflows} />
+            </Paper>
+          </Grid>
+          {/* Recent Orders */}
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+              <Orders orders={fetchOrders} isGuest={false} />
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+              <Orders orders={guestOrders} isGuest={true} />
+            </Paper>
+          </Grid>
         </Grid>
-        {/* Recent Deposits */}
-        <Grid item xs={12} md={4} lg={3}>
-          <Paper
-            sx={{
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              height: 240,
-            }}
-          >
-            <Deposits totalInflows={totalInflows} totalGuestInflows={totalGuestInflows} />
-          </Paper>
-        </Grid>
-        {/* Recent Orders */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-            <Orders orders={orders} isGuest={false} />
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-            <Orders orders={guestOrders} isGuest={true} />
-          </Paper>
-        </Grid>
-      </Grid>
+      }
     </DashboardLayout>
   )
 }

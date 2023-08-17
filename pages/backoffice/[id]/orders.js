@@ -2,7 +2,7 @@ import React from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import Order from '../../../models/Order';
 import Guest from '../../../models/Guest';
-import { AppBar, Box, Checkbox, Collapse, Grid, IconButton, InputBase, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
+import { AppBar, Backdrop, Box, Checkbox, Collapse, Grid, IconButton, InputBase, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
@@ -15,8 +15,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import { alpha } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
-import axios from 'axios';
 import SearchIcon from '@mui/icons-material/Search';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
@@ -330,12 +330,15 @@ export default function Orders(props) {
   const [fetchGuestOrders, setFetchGuestOrders] = React.useState([]);
   const [search, setSearch] = React.useState('');
   const [searchGuest, setSearchGuest] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     async function getOrders() {
+      setLoading(true);
       try {
         const res = await orders;
         setFetchOrders(res);
+        setLoading(false);
       } catch (error) {
        console.log(`error fetchin orders ${error}`); 
       }
@@ -473,219 +476,231 @@ export default function Orders(props) {
 
   return (
     <DashboardLayout>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
-            <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>User Orders</Typography>
-              <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
-                <Search component="form">
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="#name, #email, #order…"
-                    inputProps={{ 'aria-label': 'search' }}
-                  />
-                </Search>
-              </Box>
-            </Box>
-            <MyTableContainer>
-              <Table
-                sx={{ minWidth: 750 }}
-                aria-labelledby="tableTitle"
-                size={'small'}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell align="right">Date</TableCell>
-                    <TableCell align="right">Name</TableCell>
-                    <TableCell align="right">Ship To</TableCell>
-                    <TableCell align="right">Payment Method</TableCell>
-                    <TableCell align="right">Email</TableCell>
-                    <TableCell align="right">Company</TableCell>
-                    <TableCell align="right">Phone</TableCell>
-                    <TableCell align="right">Order Number</TableCell>
-                    <TableCell align="right">VAT</TableCell>
-                    <TableCell align="right">Paid</TableCell>
-                    <TableCell align="right">Total</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {searchTable(fetchOrders)
-                    .map((row, index) => {
-                      const labelId = `enhanced-table-checkbox-${index}`;
-                      const isItemSelected = isSelected(row._id);
+      {
+        loading ?
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        :
+        <React.Fragment>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
+                <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>User Orders</Typography>
+                  <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+                    <Search component="form">
+                      <SearchIconWrapper>
+                        <SearchIcon />
+                      </SearchIconWrapper>
+                      <StyledInputBase
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="#name, #email, #order…"
+                        inputProps={{ 'aria-label': 'search' }}
+                      />
+                    </Search>
+                  </Box>
+                </Box>
+                <MyTableContainer>
+                  <Table
+                    sx={{ minWidth: 750 }}
+                    aria-labelledby="tableTitle"
+                    size={'small'}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
+                        <TableCell align="right">Date</TableCell>
+                        <TableCell align="right">Name</TableCell>
+                        <TableCell align="right">Ship To</TableCell>
+                        <TableCell align="right">Payment Method</TableCell>
+                        <TableCell align="right">Email</TableCell>
+                        <TableCell align="right">Company</TableCell>
+                        <TableCell align="right">Phone</TableCell>
+                        <TableCell align="right">Order Number</TableCell>
+                        <TableCell align="right">VAT</TableCell>
+                        <TableCell align="right">Paid</TableCell>
+                        <TableCell align="right">Total</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {searchTable(fetchOrders)
+                        .map((row, index) => {
+                          const labelId = `enhanced-table-checkbox-${index}`;
+                          const isItemSelected = isSelected(row._id);
 
-                      return (
-                        <Row
-                         key={row._id}
-                         row={row}
-                         index={index}
-                         labelId={labelId}
-                         isItemSelected={isItemSelected}
-                         childeSelected={childeSelected}
-                         selectedChildeItems={selectedChildeItems}
-                         isChildSelected={isChildSelected}
-                         handleChildeCheckbox={handleChildeCheckbox}
-                         handleClick={handleClick}
-                        />
-                      );
-                    })}
-                  {fetchOrders.length > 0 && (
-                    <TableRow
-                      style={{
-                        height: (33) * fetchOrders.length,
-                      }}
-                    >
-                      <TableCell colSpan={12} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </MyTableContainer>
-            <EnhancedTableToolbar
-            numSelected={selected.length}
-            selectedItems={selectedItems}
-            numChildSelected={childeSelected.length}
-            selectedChildItems={selectedChildeItems}
-            />
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-            <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-              <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
-              {
-                searchTable(fetchOrders).length === 0 ?
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                "No Orders"
-                </Typography>
-                :
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {searchTable(fetchOrders).length} {searchTable(fetchOrders).length === 1 ? "order" : "orders"}.
-              </Typography>
-              }
-              {
-                searchTable(fetchOrders).length > 0 &&
-                <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                  <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
-                </Stack>
-              }
-            </Toolbar>
-          </AppBar>
-        </Grid>
-      </Grid>
-      <Box sx={{py: 5}}></Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
-          <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>Guest Orders</Typography>
-              <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
-                <Search component="form">
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    onChange={(e) => setSearchGuest(e.target.value)}
-                    placeholder="#name, #email, #order…"
-                    inputProps={{ 'aria-label': 'search' }}
-                  />
-                </Search>
-              </Box>
-            </Box>
-            <MyTableContainer>
-              <Table
-                sx={{ minWidth: 750 }}
-                aria-labelledby="tableTitle"
-                size={'small'}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell align="right">Date</TableCell>
-                    <TableCell align="right">Name</TableCell>
-                    <TableCell align="right">Ship To</TableCell>
-                    <TableCell align="right">Payment Method</TableCell>
-                    <TableCell align="right">Email</TableCell>
-                    <TableCell align="right">Company</TableCell>
-                    <TableCell align="right">Phone</TableCell>
-                    <TableCell align="right">Order Number</TableCell>
-                    <TableCell align="right">VAT</TableCell>
-                    <TableCell align="right">Paid</TableCell>
-                    <TableCell align="right">Total</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {searchGuestTable(fetchGuestOrders)
-                    .map((row, index) => {
-                      const labelId = `enhanced-table-checkbox-${index}`;
-                      const isItemSelected = isSelected(row._id);
+                          return (
+                            <Row
+                            key={row._id}
+                            row={row}
+                            index={index}
+                            labelId={labelId}
+                            isItemSelected={isItemSelected}
+                            childeSelected={childeSelected}
+                            selectedChildeItems={selectedChildeItems}
+                            isChildSelected={isChildSelected}
+                            handleChildeCheckbox={handleChildeCheckbox}
+                            handleClick={handleClick}
+                            />
+                          );
+                        })}
+                      {fetchOrders.length > 0 && (
+                        <TableRow
+                          style={{
+                            height: (33) * fetchOrders.length,
+                          }}
+                        >
+                          <TableCell colSpan={12} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </MyTableContainer>
+                <EnhancedTableToolbar
+                numSelected={selected.length}
+                selectedItems={selectedItems}
+                numChildSelected={childeSelected.length}
+                selectedChildItems={selectedChildeItems}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                  <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                  {
+                    searchTable(fetchOrders).length === 0 ?
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    "No Orders"
+                    </Typography>
+                    :
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    There are {searchTable(fetchOrders).length} {searchTable(fetchOrders).length === 1 ? "order" : "orders"}.
+                  </Typography>
+                  }
+                  {
+                    searchTable(fetchOrders).length > 0 &&
+                    <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
+                      <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                    </Stack>
+                  }
+                </Toolbar>
+              </AppBar>
+            </Grid>
+          </Grid>
+          <Box sx={{py: 5}}></Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
+              <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>Guest Orders</Typography>
+                  <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+                    <Search component="form">
+                      <SearchIconWrapper>
+                        <SearchIcon />
+                      </SearchIconWrapper>
+                      <StyledInputBase
+                        onChange={(e) => setSearchGuest(e.target.value)}
+                        placeholder="#name, #email, #order…"
+                        inputProps={{ 'aria-label': 'search' }}
+                      />
+                    </Search>
+                  </Box>
+                </Box>
+                <MyTableContainer>
+                  <Table
+                    sx={{ minWidth: 750 }}
+                    aria-labelledby="tableTitle"
+                    size={'small'}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
+                        <TableCell align="right">Date</TableCell>
+                        <TableCell align="right">Name</TableCell>
+                        <TableCell align="right">Ship To</TableCell>
+                        <TableCell align="right">Payment Method</TableCell>
+                        <TableCell align="right">Email</TableCell>
+                        <TableCell align="right">Company</TableCell>
+                        <TableCell align="right">Phone</TableCell>
+                        <TableCell align="right">Order Number</TableCell>
+                        <TableCell align="right">VAT</TableCell>
+                        <TableCell align="right">Paid</TableCell>
+                        <TableCell align="right">Total</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {searchGuestTable(fetchGuestOrders)
+                        .map((row, index) => {
+                          const labelId = `enhanced-table-checkbox-${index}`;
+                          const isItemSelected = isSelected(row._id);
 
-                      return (
-                        <Row
-                         key={row._id}
-                         row={row}
-                         index={index}
-                         labelId={labelId}
-                         isItemSelected={isItemSelected}
-                         childeSelected={childeSelected}
-                         selectedChildeItems={selectedChildeItems}
-                         isChildSelected={isChildSelected}
-                         handleChildeCheckbox={handleChildeCheckbox}
-                         handleClick={handleClick}
-                        />
-                      );
-                    })}
-                  {fetchGuestOrders.length > 0 && (
-                    <TableRow
-                      style={{
-                        height: (33) * fetchGuestOrders.length,
-                      }}
-                    >
-                      <TableCell colSpan={12} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </MyTableContainer>
-            <EnhancedTableToolbar
-            numSelected={selected.length}
-            selectedItems={selectedItems}
-            numChildSelected={childeSelected.length}
-            selectedChildItems={selectedChildeItems}
-            />
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
-            <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-              <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
-              {
-                searchGuestTable(fetchGuestOrders).length === 0 ?
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                "No Orders"
-                </Typography>
-                :
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {searchGuestTable(fetchGuestOrders).length} {searchGuestTable(fetchGuestOrders).length === 1 ? "order" : "orders"}.
-              </Typography>
-              }
-              {
-                searchGuestTable(fetchGuestOrders).length > 0 &&
-                <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                  <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
-                </Stack>
-              }
-            </Toolbar>
-          </AppBar>
-        </Grid>
-      </Grid>
+                          return (
+                            <Row
+                            key={row._id}
+                            row={row}
+                            index={index}
+                            labelId={labelId}
+                            isItemSelected={isItemSelected}
+                            childeSelected={childeSelected}
+                            selectedChildeItems={selectedChildeItems}
+                            isChildSelected={isChildSelected}
+                            handleChildeCheckbox={handleChildeCheckbox}
+                            handleClick={handleClick}
+                            />
+                          );
+                        })}
+                      {fetchGuestOrders.length > 0 && (
+                        <TableRow
+                          style={{
+                            height: (33) * fetchGuestOrders.length,
+                          }}
+                        >
+                          <TableCell colSpan={12} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </MyTableContainer>
+                <EnhancedTableToolbar
+                numSelected={selected.length}
+                selectedItems={selectedItems}
+                numChildSelected={childeSelected.length}
+                selectedChildItems={selectedChildeItems}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+                <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                  <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                  {
+                    searchGuestTable(fetchGuestOrders).length === 0 ?
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    "No Orders"
+                    </Typography>
+                    :
+                    <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                    There are {searchGuestTable(fetchGuestOrders).length} {searchGuestTable(fetchGuestOrders).length === 1 ? "order" : "orders"}.
+                  </Typography>
+                  }
+                  {
+                    searchGuestTable(fetchGuestOrders).length > 0 &&
+                    <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
+                      <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                    </Stack>
+                  }
+                </Toolbar>
+              </AppBar>
+            </Grid>
+          </Grid>
+        </React.Fragment>
+      }
     </DashboardLayout>
   )
 }

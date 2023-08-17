@@ -17,11 +17,37 @@ const data = [
 
 export default function Chart(props) {
   const { orders, guestOrders } = props;
+  const [getOrders, setGetOrders] = React.useState([]);
+  const [getGuestOrders, setGuestGetOrders] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await orders;
+        setGetOrders(res);
+      } catch (error) {
+        console.log(`can't get orders from dashboard ${error}`);
+      }
+    }
+    fetchOrders();
+  }, [orders]);
+
+  React.useEffect(() => {
+    async function fetchGuestOrders() {
+      try {
+        const res = await guestOrders;
+        setGuestGetOrders(res);
+      } catch (error) {
+        console.log(`can't get guest orders from dashboard ${error}`);
+      }
+    }
+    fetchGuestOrders();
+  }, [guestOrders]);
 
   React.useEffect(() => {
     // Wait for orders to resolve (assuming orders is a Promise)
-    if (Array.isArray(orders)) {
-      orders.forEach(order => {
+    if (Array.isArray(getOrders) && getOrders.length !== 0) {
+      getOrders.forEach(order => {
         const hour = parseInt(order.createdAt.substring(11, 13));
         const amount = order.total;
         if (hour >= 0 && hour < 3) {
@@ -45,11 +71,11 @@ export default function Chart(props) {
         }
       });
     }
-  }, [orders]);
+  }, [getOrders]);
 
   React.useEffect(() => {
-    if (Array.isArray(orders)) {
-      guestOrders.forEach(order => {
+    if (Array.isArray(getGuestOrders) && getGuestOrders.length !== 0) {
+      getGuestOrders.forEach(order => {
         const hour = parseInt(order.createdAt.substring(11, 13));
         const amount_guest = order.total;
         if (hour >= 0 && hour < 3) {
@@ -73,7 +99,7 @@ export default function Chart(props) {
         }
       });
     }
-  }, [guestOrders]);
+  }, [getGuestOrders]);
 
   return (
     <React.Fragment>

@@ -1,6 +1,6 @@
 {
-  "name": "nextjs",
-  "version": "5.0.1",
+  "name": "electricons",
+  "version": "5.4.1",
   "private": true,
   "NODE_ENV": "development",
   "scripts": {

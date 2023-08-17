@@ -54,7 +54,7 @@ export async function getServerSideProps(context) {
         products: JSON.parse(JSON.stringify(products)),
         pageSize,
         totalPages,
-        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts[0]))
+        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts &&productOrderCounts[0]))
       },
     };
   } catch (error) {

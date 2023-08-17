@@ -1,6 +1,6 @@
 import React from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
-import { AppBar, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { AppBar, Backdrop, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import Guest from '../../../models/Guest';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
@@ -217,21 +218,23 @@ export default function Customers(props) {
   const [search, setSearch] = React.useState('');
   const [activeTab, setActiveTab] = React.useState(0);
   const [fetchCustomers, setFetchCustomers] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const matches = useMediaQuery('(min-width: 560px)');
 
   React.useEffect(() => {
     async function getCustomers() {
+      setLoading(true);
       try {
         const res = await users;
         setFetchCustomers(res);
+        setLoading(false);
       } catch (error) {
        console.log(`error fetchin orders ${error}`); 
       }
     } 
     getCustomers();
-  
-  }, [users])
-console.log(fetchCustomers);
+  }, []);
+
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
   function convertDate(value) {
@@ -321,158 +324,169 @@ console.log(fetchCustomers);
   }
 
   const usersTabs = ['All Customers', 'Administrators', 'Subscribers']
+console.log(fetchCustomers);
 
   return (
     <DashboardLayout>
-      <Grid container spacing={3} sx={{pr: {xs: '0px'}}}>
-        <Grid item xs={12} sx={{p: {xs: '24px 24px!important'}}}>
-          <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
-            <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
-              {
-                usersTabs.map((tab, index) => (
-                  <Box key={tab} sx={{pl: {xs: 1, md: 3} }} component='li'>
-                    <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main, fontSize: matches ? '.75rem' : '.5rem', p: {xs: '6px 8px'} }} variant="contained">
-                      {tab}
-                    </Button>
-                  </Box>
-                ))
-              }
+      {
+        loading ?
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        :
+        <Grid container spacing={3} sx={{pr: {xs: '0px'}}}>
+          <Grid item xs={12} sx={{p: {xs: '24px 24px!important'}}}>
+            <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+              <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
+                {
+                  usersTabs.map((tab, index) => (
+                    <Box key={tab} sx={{pl: {xs: 1, md: 3} }} component='li'>
+                      <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main, fontSize: matches ? '.75rem' : '.5rem', p: {xs: '6px 8px'} }} variant="contained">
+                        {tab}
+                      </Button>
+                    </Box>
+                  ))
+                }
+              </Box>
+              <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+                <Search component="form">
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                </Search>
+              </Box>
             </Box>
-            <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
-              <Search component="form">
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search…"
-                  inputProps={{ 'aria-label': 'search' }}
-                />
-              </Search>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <MyTableContainer>
-            <Table
-              sx={{ minWidth: 750 }}
-              aria-labelledby="tableTitle"
-              size={'small'}
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell align="right">Date</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Address</TableCell>
-                  <TableCell align="right">Email</TableCell>
-                  <TableCell align="right">Company</TableCell>
-                  <TableCell align="right">Phone</TableCell>
-                  <TableCell align="right">VAT number</TableCell>
-                  <TableCell align="right">Newsletter</TableCell>
-                  <TableCell align="right">Birthday</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(usersTabs[activeTab] === 'All Customers' ? searchTable(fetchCustomers) : usersTabs[activeTab] === 'Administrators' ? fetchCustomers.filter(user => user.isAdmin === true) : fetchCustomers.filter(user => user.newsletter === "newsletter"))
-                  .map((row, index) => {
-                    const labelId = `enhanced-table-checkbox-${index}`;
-                    const isItemSelected = isSelected(row.name);
-
-                    return (
-                      <TableRow
-                        hover
-                        key={row._id}
-                      >
-                        <TableCell
-                          onClick={(event) => handleClick(event, row.name, row)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          selected={isItemSelected}
-                          padding="checkbox"
-                        >
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {convertDate(row.createdAt)}
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {row.name}
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {row?.address}{row.city ? ', ' : ''}{row?.city}{row.postalcode ? ', ' : ''}{row?.postalcode}{row.country ? ', ' : ''}{row?.country}
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {row?.email}
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {row?.company}
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.phone && `+${row.phone}`}
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.vatNumber}
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.newsletter ? <Chip sx={{bgcolor: theme.palette.success.main}} label="subscribed" /> : <Chip sx={{bgcolor: theme.palette.error.main}} color='primary' label="not subscribed" />}
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.birthday}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                {fetchCustomers.length > 0 && (
-                  <TableRow
-                    style={{
-                      height: (33) * fetchCustomers.length,
-                    }}
-                  >
-                    <TableCell colSpan={10} />
+          </Grid>
+          <Grid item xs={12}>
+            <MyTableContainer>
+              <Table
+                sx={{ minWidth: 750 }}
+                aria-labelledby="tableTitle"
+                size={'small'}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right">Date</TableCell>
+                    <TableCell align="right">Name</TableCell>
+                    <TableCell align="right">Address</TableCell>
+                    <TableCell align="right">Email</TableCell>
+                    <TableCell align="right">Company</TableCell>
+                    <TableCell align="right">Phone</TableCell>
+                    <TableCell align="right">VAT number</TableCell>
+                    <TableCell align="right">Newsletter</TableCell>
+                    <TableCell align="right">Birthday</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </MyTableContainer>
-        </Grid>
-        <Grid item xs={12}>
-          <EnhancedTableToolbar
-          numSelected={selected.length}
-          selectedItems={selectedItems}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <AppBar elevation={0} sx={{bgcolor: 'transparent'}} position="static">
-            <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-              <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
-              {
-                users.length === 0 ?
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                "No Orders"
+                </TableHead>
+                <TableBody>
+                  {(usersTabs[activeTab] === 'All Customers' ? searchTable(fetchCustomers) : usersTabs[activeTab] === 'Administrators' ? fetchCustomers.filter(user => user.isAdmin === true) : fetchCustomers.filter(user => user.newsletter === "newsletter"))
+                    .map((row, index) => {
+                      const labelId = `enhanced-table-checkbox-${index}`;
+                      const isItemSelected = isSelected(row.name);
+
+                      return (
+                        <TableRow
+                          hover
+                          key={row._id}
+                        >
+                          <TableCell
+                            onClick={(event) => handleClick(event, row.name, row)}
+                            role="checkbox"
+                            aria-checked={isItemSelected}
+                            tabIndex={-1}
+                            selected={isItemSelected}
+                            padding="checkbox"
+                          >
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                'aria-labelledby': labelId,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {convertDate(row.createdAt)}
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {row.name}
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {row?.address}{row.city ? ', ' : ''}{row?.city}{row.postalcode ? ', ' : ''}{row?.postalcode}{row.country ? ', ' : ''}{row?.country}
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {row?.email}
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {row?.company}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row?.phone && `+${row.phone}`}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row?.vatNumber}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row?.newsletter ? <Chip sx={{bgcolor: theme.palette.success.main}} label="subscribed" /> : <Chip sx={{bgcolor: theme.palette.error.main}} color='primary' label="not subscribed" />}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row?.birthday}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  {fetchCustomers.length > 0 && (
+                    <TableRow
+                      style={{
+                        height: (33) * fetchCustomers.length,
+                      }}
+                    >
+                      <TableCell colSpan={10} />
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </MyTableContainer>
+          </Grid>
+          <Grid item xs={12}>
+            <EnhancedTableToolbar
+            numSelected={selected.length}
+            selectedItems={selectedItems}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <AppBar elevation={0} sx={{bgcolor: 'transparent'}} position="static">
+              <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                {
+                  users.length === 0 ?
+                  <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                  "No Orders"
+                  </Typography>
+                  :
+                  <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                  There are {users.length} {users.length === 1 ? "user" : "users"}.
                 </Typography>
-                :
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {users.length} {users.length === 1 ? "user" : "users"}.
-              </Typography>
-              }
-              {
-                users.length > 0 &&
-                <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                  <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
-                </Stack>
-              }
-            </Toolbar>
-          </AppBar>
+                }
+                {
+                  users.length > 0 &&
+                  <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
+                    <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                  </Stack>
+                }
+              </Toolbar>
+            </AppBar>
+          </Grid>
         </Grid>
-      </Grid>
+      }
     </DashboardLayout>
   )
 }
