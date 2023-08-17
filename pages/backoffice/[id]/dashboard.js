@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useReducer } from 'react'
 import DashboardLayout from '../../../src/layout/DashboardLayout'
-import { Backdrop, Grid, Paper } from '@mui/material'
+import { Backdrop, Button, Grid, Paper } from '@mui/material'
 import Chart from '../../../src/components/Chart'
 import Orders from '../../../src/components/Orders'
 import Deposits from '../../../src/components/Deposits'
@@ -8,6 +8,31 @@ import db from '../../../src/utils/db'
 import Order from '../../../models/Order'
 import Guest from '../../../models/Guest'
 import CircularProgress from '@mui/material/CircularProgress';
+import styled from '@emotion/styled'
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.white,
+  border: 'thin solid lightGrey',
+  borderLeft: '5px solid black',
+}));
+
+function reducer(state, action) {
+  switch(action.type) {
+    case 'FETCH_REQUEST': {
+      return { ...state, loading: true, error: '' };
+    }
+    case 'FETCH_SUCCESS': {
+        return { ...state, loading: false, recentOrders: action.payload, recentGuestOrders: action.payload, error: '' };
+    }
+    case 'FETCH_FAIL': {
+      return { ...state, loading: false, error: action.payload };
+    }
+    default:
+      return state;
+  }
+}
 
 export async function getServerSideProps(context) {
   const sevenDaysAgo = new Date();
@@ -46,29 +71,41 @@ export async function getServerSideProps(context) {
 
 export default function Dashboard(props) {
   const { orders, guestOrders, totalInflows, totalGuestInflows } = props;
-  const [loading, setLoading] = React.useState(false);
-  const [fetchOrders, setFetchOrders] = React.useState([]);
+
+  const [{ loading, error, recentOrders, recentGuestOrders }, dispatch] = useReducer(reducer, {
+    loading: true,
+    orders: [],
+    error: ''
+  });
 
   React.useEffect(() => {
     async function getOrders() {
-      setLoading(true);
       try {
+        dispatch({ type: 'FETCH_REQUEST' });
         const res = await orders;
-        setFetchOrders(res);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        dispatch({ type: 'FETCH_SUCCESS', payload: res });
       } catch (error) {
-       console.log(`error fetchin data for dashboard ${error}`); 
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     } 
     getOrders();
-    return() => {
-      clearTimeout();
-    }
-    
+
   }, []);
-console.log(orders, guestOrders, totalInflows, totalGuestInflows);
+
+  React.useEffect(() => {
+    async function getOrders() {
+      try {
+        dispatch({ type: 'FETCH_REQUEST' });
+        const resGuest = await guestOrders;
+        dispatch({ type: 'FETCH_SUCCESS', payload: resGuest });
+      } catch (error) {
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
+      }
+    } 
+    getOrders();
+
+  }, []);
+
   return (
     <DashboardLayout>
       {
@@ -79,7 +116,13 @@ console.log(orders, guestOrders, totalInflows, totalGuestInflows);
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-        :
+        : error ?
+          <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+            <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+            {error}
+            </Typography>
+          </LabelButton>
+         : 
         <Grid container spacing={3}>
           {/* Chart */}
           <Grid item xs={12} md={8} lg={9}>
@@ -91,7 +134,7 @@ console.log(orders, guestOrders, totalInflows, totalGuestInflows);
                 height: 240,
               }}
             >
-              <Chart orders={fetchOrders} guestOrders={guestOrders} />
+              <Chart orders={recentOrders} guestOrders={recentGuestOrders} />
             </Paper>
           </Grid>
           {/* Recent Deposits */}
@@ -110,12 +153,12 @@ console.log(orders, guestOrders, totalInflows, totalGuestInflows);
           {/* Recent Orders */}
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-              <Orders orders={fetchOrders} isGuest={false} />
+              <Orders orders={recentOrders} isGuest={false} />
             </Paper>
           </Grid>
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-              <Orders orders={guestOrders} isGuest={true} />
+              <Orders orders={recentGuestOrders} isGuest={true} />
             </Paper>
           </Grid>
         </Grid>

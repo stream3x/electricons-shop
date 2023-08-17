@@ -237,6 +237,7 @@ export default function Header(props) {
   const handleLogout = () => {
     setAnchorElUser(null);
     dispatch({ type: 'USER_LOGOUT'});
+    dispatch({ type: 'REMOVE_SESSION', payload: null });
     dispatch({ type: 'PERSONAL_REMOVE'});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
     Cookies.remove('userInfo');

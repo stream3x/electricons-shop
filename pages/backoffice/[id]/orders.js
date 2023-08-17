@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import Order from '../../../models/Order';
 import Guest from '../../../models/Guest';
-import { AppBar, Backdrop, Box, Checkbox, Collapse, Grid, IconButton, InputBase, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
+import { AppBar, Backdrop, Box, Button, Checkbox, Collapse, Grid, IconButton, InputBase, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
@@ -18,6 +18,30 @@ import Chip from '@mui/material/Chip';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
 
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.white,
+  border: 'thin solid lightGrey',
+  borderLeft: '5px solid black',
+}));
+
+function reducer(state, action) {
+  switch(action.type) {
+    case 'FETCH_REQUEST': {
+      return { ...state, loading: true, error: '' };
+    }
+    case 'FETCH_SUCCESS': {
+        return { ...state, loading: false, userOrders: action.payload, guestUserOrders: action.payload, error: '' };
+    }
+    case 'FETCH_FAIL': {
+      return { ...state, loading: false, error: action.payload };
+    }
+    default:
+      return state;
+  }
+}
+
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
   const PAGE_SIZE = 10; // Number of items per page
@@ -25,12 +49,10 @@ export async function getServerSideProps(context) {
 
   try {
     db.connect();
-    
     const totalOrders = await Order.countDocuments();
     const totalPages = Math.ceil(totalOrders / pageSize);
     const orders = await Order.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
     const guestOrders = await Guest.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
-
     db.disconnect();
 
     return {
@@ -326,44 +348,42 @@ export default function Orders(props) {
   const [selectedItems, setSelectedItems] = React.useState([]);
   const [childeSelected, setChildeSelected] = React.useState([]);
   const [selectedChildeItems, setSelectedChildeItems] = React.useState([]);
-  const [fetchOrders, setFetchOrders] = React.useState([]);
-  const [fetchGuestOrders, setFetchGuestOrders] = React.useState([]);
   const [search, setSearch] = React.useState('');
   const [searchGuest, setSearchGuest] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
+
+  const [{ loading, error, userOrders, guestUserOrders }, dispatch] = useReducer(reducer, {
+    loading: true,
+    orders: [],
+    error: ''
+  });
 
   React.useEffect(() => {
     async function getOrders() {
-      setLoading(true);
       try {
+        dispatch({ type: 'FETCH_REQUEST' });
         const res = await orders;
-        setFetchOrders(res);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        dispatch({ type: 'FETCH_SUCCESS', payload: res });
       } catch (error) {
-       console.log(`error fetchin orders ${error}`); 
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     } 
     getOrders();
-    return() => {
-      clearTimeout();
-    }
-  
-  }, [orders])
+
+  }, []);
 
   React.useEffect(() => {
     async function getOrders() {
       try {
+        dispatch({ type: 'FETCH_REQUEST' });
         const res = await guestOrders;
-        setFetchGuestOrders(res);
+        dispatch({ type: 'FETCH_SUCCESS', payload: res });
       } catch (error) {
-       console.log(`error fetchin orders ${error}`); 
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     } 
     getOrders();
-  
-  }, [guestOrders])
+
+  }, []);
   
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -489,12 +509,18 @@ export default function Orders(props) {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-        :
+        : error ?
+        <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+          <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+          {error}
+          </Typography>
+        </LabelButton>
+       :
         <React.Fragment>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
-                <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
+              <Paper elevation={1} sx={{pt: 5, px: {xs: 1, md: 3}, mt: 5}}>
+                <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: {xs: 1, md: 5}, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
                   <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>User Orders</Typography>
                   <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
                     <Search component="form">
@@ -533,7 +559,7 @@ export default function Orders(props) {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {searchTable(fetchOrders)
+                      {searchTable(userOrders)
                         .map((row, index) => {
                           const labelId = `enhanced-table-checkbox-${index}`;
                           const isItemSelected = isSelected(row._id);
@@ -553,10 +579,10 @@ export default function Orders(props) {
                             />
                           );
                         })}
-                      {fetchOrders.length > 0 && (
+                      {userOrders.length > 0 && (
                         <TableRow
                           style={{
-                            height: (33) * fetchOrders.length,
+                            height: (33) * userOrders.length,
                           }}
                         >
                           <TableCell colSpan={12} />
@@ -578,17 +604,17 @@ export default function Orders(props) {
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
-                    searchTable(fetchOrders).length === 0 ?
+                    searchTable(userOrders).length === 0 ?
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No Orders"
                     </Typography>
                     :
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {searchTable(fetchOrders).length} {searchTable(fetchOrders).length === 1 ? "order" : "orders"}.
+                    There are {searchTable(userOrders).length} {searchTable(userOrders).length === 1 ? "order" : "orders"}.
                   </Typography>
                   }
                   {
-                    searchTable(fetchOrders).length > 0 &&
+                    searchTable(userOrders).length > 0 &&
                     <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                       <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>
@@ -600,8 +626,8 @@ export default function Orders(props) {
           <Box sx={{py: 5}}></Box>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
-              <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
+              <Paper elevation={1} sx={{pt: 5, px: {xs: 1, md: 3}, mt: 5}}>
+              <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: {xs: 1, md: 5}, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
                   <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>Guest Orders</Typography>
                   <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
                     <Search component="form">
@@ -640,7 +666,7 @@ export default function Orders(props) {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {searchGuestTable(fetchGuestOrders)
+                      {searchGuestTable(guestUserOrders)
                         .map((row, index) => {
                           const labelId = `enhanced-table-checkbox-${index}`;
                           const isItemSelected = isSelected(row._id);
@@ -660,10 +686,10 @@ export default function Orders(props) {
                             />
                           );
                         })}
-                      {fetchGuestOrders.length > 0 && (
+                      {guestUserOrders.length > 0 && (
                         <TableRow
                           style={{
-                            height: (33) * fetchGuestOrders.length,
+                            height: (33) * guestUserOrders.length,
                           }}
                         >
                           <TableCell colSpan={12} />
@@ -685,17 +711,17 @@ export default function Orders(props) {
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
-                    searchGuestTable(fetchGuestOrders).length === 0 ?
+                    searchGuestTable(guestUserOrders).length === 0 ?
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                     "No Orders"
                     </Typography>
                     :
                     <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                    There are {searchGuestTable(fetchGuestOrders).length} {searchGuestTable(fetchGuestOrders).length === 1 ? "order" : "orders"}.
+                    There are {searchGuestTable(guestUserOrders).length} {searchGuestTable(guestUserOrders).length === 1 ? "order" : "orders"}.
                   </Typography>
                   }
                   {
-                    searchGuestTable(fetchGuestOrders).length > 0 &&
+                    searchGuestTable(guestUserOrders).length > 0 &&
                     <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                       <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                     </Stack>

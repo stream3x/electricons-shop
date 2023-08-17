@@ -22,12 +22,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Fab from '@mui/material/Fab';
 import { Alert } from '@mui/material';
-import { useSession } from '../src/utils/SessionProvider';
 
 export default function LogIn() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack, userInfo } = state;
+  const { snack, session } = state;
   const [errors, setErrors] = useState({
     email: false,
     password: false
@@ -37,7 +36,6 @@ export default function LogIn() {
   const timer = useRef();
   const [updateEmail, setUpdateEmail] = useState('');
   const [updatePassword, setUpdatePassword] = useState('');
-  const { session, setSession } = useSession();
 
   const buttonSx = {
     ...(success && {
@@ -82,9 +80,9 @@ export default function LogIn() {
         password: formOutput.get('password'),
       };
       const { data } = await axios.post('/api/users/login', formData);
-      setSession(() => data);
       handleButtonClick();
-      dispatch({ type: 'USER_LOGIN', payload: data});
+      dispatch({ type: 'USER_LOGIN', payload: data });
+      dispatch({ type: 'SET_SESSION', payload: data });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
     }catch (error) {

@@ -4,12 +4,10 @@ import { Box, Button, FormHelperText, Rating, TextField, TextareaAutosize, Typog
 import { Store } from '../utils/Store';
 import axios from 'axios';
 import theme from '../theme';
-import { useSession } from '../utils/SessionProvider';
 
 const ProductReviewForm = ({ slug, product, setShowForm, replyCommentId }) => {
   const { state, dispatch } = React.useContext(Store);
-  const { userInfo, snack, cart: {cartItems} } = state;
-  const { session } = useSession();
+  const { userInfo, snack, session } = state;
   const [updateEmail, setUpdateEmail] = React.useState('');
   const [updateName, setUpdateName] = React.useState('');
   const [updateReplay, setUpdateReplay] = React.useState('');

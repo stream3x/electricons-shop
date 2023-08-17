@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
-import { AppBar, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Backdrop, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
@@ -16,6 +16,31 @@ import Product from '../../../models/Product';
 import Order from '../../../models/Order';
 import Guest from '../../../models/Guest';
 import Link from '../../../src/Link';
+import CircularProgress from '@mui/material/CircularProgress';
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.white,
+  border: 'thin solid lightGrey',
+  borderLeft: '5px solid black',
+}));
+
+function reducer(state, action) {
+  switch(action.type) {
+    case 'FETCH_REQUEST': {
+      return { ...state, loading: true, error: '' };
+    }
+    case 'FETCH_SUCCESS': {
+        return { ...state, loading: false, storeProducts: action.payload, error: '' };
+    }
+    case 'FETCH_FAIL': {
+      return { ...state, loading: false, error: action.payload };
+    }
+    default:
+      return state;
+  }
+}
 
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
@@ -51,7 +76,6 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        products: JSON.parse(JSON.stringify(products)),
         pageSize,
         totalPages,
         productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts &&productOrderCounts[0]))
@@ -61,7 +85,6 @@ export async function getServerSideProps(context) {
     console.error('Error fetching data:', error);
     return {
       props: {
-        products: [],
         pageSize: 0,
         totalPages: 0,
         productOrderCounts: []
@@ -228,6 +251,26 @@ export default function ProductList(props) {
     });
   };
 
+  const [{ loading, error, storeProducts }, dispatch] = useReducer(reducer, {
+    loading: true,
+    orders: [],
+    error: ''
+  });
+
+  React.useEffect(() => {
+    async function getOrders() {
+      try {
+        dispatch({ type: 'FETCH_REQUEST' });
+        const res = await productOrderCounts;
+        dispatch({ type: 'FETCH_SUCCESS', payload: res });
+      } catch (error) {
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
+      }
+    } 
+    getOrders();
+
+  }, []);
+
   const searchHandler = (item) => {
     if(item) {
       setSearchFilter([item])
@@ -295,161 +338,177 @@ export default function ProductList(props) {
 
   return (
     <DashboardLayout>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
-            <Box sx={{listStyle: 'none', display: 'flex'}} component="ul">
-              {
-                usersTabs.map((tab, index) => (
-                  <Box key={tab} sx={{pl: 3}} component='li'>
-                    <Link href={`/backoffice/${id}/create`}>
-                      <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main}} variant="contained" size="medium">
-                        {'+ '}{tab}
-                      </Button>
-                    </Link>
-                  </Box>
-                ))
-              }
+      {
+        loading ?
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        : error ?
+        <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+          <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+          {error}
+          </Typography>
+        </LabelButton>
+        :
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+              <Box sx={{listStyle: 'none', display: 'flex'}} component="ul">
+                {
+                  usersTabs.map((tab, index) => (
+                    <Box key={tab} sx={{pl: 3}} component='li'>
+                      <Link href={`/backoffice/${id}/create`}>
+                        <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main}} variant="contained" size="medium">
+                          {'+ '}{tab}
+                        </Button>
+                      </Link>
+                    </Box>
+                  ))
+                }
+              </Box>
+              <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap'}}>
+                <Search component="form">
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                </Search>
+              </Box>
             </Box>
-            <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap'}}>
-              <Search component="form">
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search…"
-                  inputProps={{ 'aria-label': 'search' }}
-                />
-              </Search>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <MyTableContainer>
-            <Table
-              sx={{ minWidth: 750 }}
-              aria-labelledby="tableTitle"
-              size={'small'}
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell align="right">Product Name</TableCell>
-                  <TableCell align="right">Price</TableCell>
-                  <TableCell align="right">Stock</TableCell>
-                  <TableCell align="right">Rating</TableCell>
-                  <TableCell align="right">Categories</TableCell>
-                  <TableCell align="right">Sub Categories</TableCell>
-                  <TableCell align="right">Orders</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {searchTable(productOrderCounts)
-                  .map((row, index) => {
-                    const labelId = `enhanced-table-checkbox-${index}`;
-                    const isItemSelected = isSelected(row.title);
-
-                    return (
-                      <TableRow
-                        hover
-                        key={row._id}
-                      >
-                        <TableCell
-                          onClick={(event) => handleClick(event, row.title, row)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          selected={isItemSelected}
-                          padding="checkbox"
-                        >
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {row.title}
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {'$'}{row?.price}
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          {
-                            row?.inStock === 0 ? <Chip sx={{bgcolor: theme.palette.error.main, color: theme.palette.primary.contrastText}} label={row?.inStock} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.inStock} />
-                          }
-                        </TableCell>
-                        <TableCell color='primary' align="right">
-                          <Box component='span' sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
-                            <Box component='span'>{row?.rating}</Box>
-                            <Box component='span'><StarIcon sx={{color: 'gold'}} /></Box>
-                          </Box>
-                          
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.category}
-                        </TableCell>
-                        <TableCell align="right">
-                          {row?.subCategory}
-                        </TableCell>
-                        <TableCell align="right">
-                          {
-                          row?.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row?.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.orderCount} />
-                          }
-                        </TableCell>
-                        <TableCell align="right">
-                          
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                {productOrderCounts.length > 0 && (
-                  <TableRow
-                    style={{
-                      height: (6) * productOrderCounts.length,
-                    }}
-                  >
-                    <TableCell colSpan={12} />
+          </Grid>
+          <Grid item xs={12}>
+            <MyTableContainer>
+              <Table
+                sx={{ minWidth: 750 }}
+                aria-labelledby="tableTitle"
+                size={'small'}
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right">Product Name</TableCell>
+                    <TableCell align="right">Price</TableCell>
+                    <TableCell align="right">Stock</TableCell>
+                    <TableCell align="right">Rating</TableCell>
+                    <TableCell align="right">Categories</TableCell>
+                    <TableCell align="right">Sub Categories</TableCell>
+                    <TableCell align="right">Orders</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </MyTableContainer>
-        </Grid>
-        <Grid item xs={12}>
-          <EnhancedTableToolbar
-          numSelected={selected.length}
-          selectedItems={selectedItems}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <AppBar elevation={0} sx={{bgcolor: 'transparent'}} position="static">
-            <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-              <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
-              {
-                productOrderCounts.length === 0 ?
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                "No Orders"
+                </TableHead>
+                <TableBody>
+                  {searchTable(storeProducts)
+                    .map((row, index) => {
+                      const labelId = `enhanced-table-checkbox-${index}`;
+                      const isItemSelected = isSelected(row.title);
+
+                      return (
+                        <TableRow
+                          hover
+                          key={row._id}
+                        >
+                          <TableCell
+                            onClick={(event) => handleClick(event, row.title, row)}
+                            role="checkbox"
+                            aria-checked={isItemSelected}
+                            tabIndex={-1}
+                            selected={isItemSelected}
+                            padding="checkbox"
+                          >
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                'aria-labelledby': labelId,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {row.title}
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {'$'}{row?.price}
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            {
+                              row?.inStock === 0 ? <Chip sx={{bgcolor: theme.palette.error.main, color: theme.palette.primary.contrastText}} label={row?.inStock} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.inStock} />
+                            }
+                          </TableCell>
+                          <TableCell color='primary' align="right">
+                            <Box component='span' sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+                              <Box component='span'>{row?.rating}</Box>
+                              <Box component='span'><StarIcon sx={{color: 'gold'}} /></Box>
+                            </Box>
+                            
+                          </TableCell>
+                          <TableCell align="right">
+                            {row?.category}
+                          </TableCell>
+                          <TableCell align="right">
+                            {row?.subCategory}
+                          </TableCell>
+                          <TableCell align="right">
+                            {
+                            row?.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row?.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.orderCount} />
+                            }
+                          </TableCell>
+                          <TableCell align="right">
+                            
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  {storeProducts.length > 0 && (
+                    <TableRow
+                      style={{
+                        height: (6) * storeProducts.length,
+                      }}
+                    >
+                      <TableCell colSpan={12} />
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </MyTableContainer>
+          </Grid>
+          <Grid item xs={12}>
+            <EnhancedTableToolbar
+            numSelected={selected.length}
+            selectedItems={selectedItems}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <AppBar elevation={0} sx={{bgcolor: 'transparent'}} position="static">
+              <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
+                <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                {
+                  storeProducts.length === 0 ?
+                  <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                  "No Orders"
+                  </Typography>
+                  :
+                  <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
+                  There are {storeProducts.length} {storeProducts.length === 1 ? "product" : "products"}.
                 </Typography>
-                :
-                <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {productOrderCounts.length} {productOrderCounts.length === 1 ? "product" : "products"}.
-              </Typography>
-              }
-              {
-                productOrderCounts.length > 0 &&
-                <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                  <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
-                </Stack>
-              }
-            </Toolbar>
-          </AppBar>
+                }
+                {
+                  storeProducts.length > 0 &&
+                  <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
+                    <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                  </Stack>
+                }
+              </Toolbar>
+            </AppBar>
+          </Grid>
         </Grid>
-      </Grid>
+      }
     </DashboardLayout>
   )
 }

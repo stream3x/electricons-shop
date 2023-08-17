@@ -31,7 +31,7 @@ import Fab from '@mui/material/Fab';
 export default function SignIn() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack, userInfo } = state;
+  const { snack, userInfo, session } = state;
   const [confirmPassword, setConfirmPassword] = useState({
     showPassword: false,
   });
@@ -195,6 +195,7 @@ export default function SignIn() {
       });
       const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'USER_LOGIN', payload: data});
+      dispatch({ type: 'SET_SESSION', payload: data });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
     } catch (error) {

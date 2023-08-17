@@ -2,7 +2,6 @@ import { useContext } from "react";
 import ProfileLayout from "../../src/components/ProfileLayout"
 import WishTable from "../../src/components/WishTable"
 import { Store } from "../../src/utils/Store";
-import { Box, Typography } from "@mui/material";
 import BreadcrumbNav from "../../src/assets/BreadcrumbNav";
 
 export default function ProfileWishlist() {

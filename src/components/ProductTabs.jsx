@@ -9,7 +9,6 @@ import Box from '@mui/material/Box';
 import { Backdrop, Button, CircularProgress, Divider, FormHelperText, Rating, TextField, TextareaAutosize } from '@mui/material';
 import { Store } from '../utils/Store';
 import axios from 'axios';
-import { useSession } from '../utils/SessionProvider';
 import theme from '../theme';
 import CommentIcon from '@mui/icons-material/Comment';
 
@@ -57,8 +56,7 @@ function a11yProps(index) {
 
 export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
-  const { userInfo, snack } = state;
-  const { session } = useSession();
+  const { userInfo, snack, session } = state;
   const [value, setValue] = React.useState(0);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
   const [showForm, setShowForm] = React.useState(false);
@@ -243,7 +241,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   const fetchComments = async () => {
     try {
       const { data } = await axios.get(`/api/products/getComments/${slug}`);
-
       setComments(data);
       console.log('fetch comment');
     } catch (error) {

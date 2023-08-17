@@ -11,16 +11,16 @@ import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Link from '../Link';
 import { Divider, Tooltip } from '@mui/material';
-import { useRouter } from 'next/router';
 import ButtonAccordion from '../assets/ButtonAccordion';
+import { Store } from '../utils/Store';
 
 const MainListItems = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { state } = React.useContext(Store);
+  const { session } = state;
 
   return (
     <React.Fragment>
-      <Link href={`/backoffice/${id}/dashboard`}>
+      <Link href={`/backoffice/${session?._id}/dashboard`}>
         <Tooltip title="Dashboard" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
@@ -30,7 +30,7 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link href={`/backoffice/${id}/orders`}>
+      <Link href={`/backoffice/${session?._id}/orders`}>
         <Tooltip title="Orders" placement="right-start">
           <ListItemButton>
               <ListItemIcon>
@@ -40,7 +40,7 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link href={`/backoffice/${id}/customers`}>
+      <Link href={`/backoffice/${session?._id}/customers`}>
         <Tooltip title="Customers" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
@@ -66,7 +66,7 @@ const MainListItems = () => {
       <ListSubheader component="div" inset>
         Management
       </ListSubheader>
-      <ButtonAccordion id={id} />
+      <ButtonAccordion slug={session?._id} />
       <ListItemButton>
         <ListItemIcon>
           <AssignmentIcon />

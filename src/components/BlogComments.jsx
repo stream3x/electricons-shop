@@ -1,9 +1,9 @@
 import { Backdrop, Box, Button, CircularProgress, Divider, FormHelperText, TextField, TextareaAutosize, Typography } from '@mui/material'
-import React from 'react'
-import { useSession } from '../utils/SessionProvider';
+import React, { useContext } from 'react'
 import axios from 'axios';
 import theme from '../theme';
 import CommentIcon from '@mui/icons-material/Comment';
+import { Store } from '../utils/Store';
 
 const bull = (
   <Box
@@ -15,7 +15,8 @@ const bull = (
 );
 
 export default function BlogComments({ slug }) {
-  const { session } = useSession();
+  const { state, dispatch } = useContext(Store);
+  const { session } = state;
   const [updateEmail, setUpdateEmail] = React.useState('');
   const [updateName, setUpdateName] = React.useState('');
   const [updateReplay, setUpdateReplay] = React.useState('');

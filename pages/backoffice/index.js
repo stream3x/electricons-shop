@@ -1,18 +1,17 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useSession } from '../../src/utils/SessionProvider';
 import DashboardLayout from '../../src/layout/DashboardLayout';
 import { Box, CircularProgress, Fab } from '@mui/material';
 import theme from '../../src/theme';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Store } from '../../src/utils/Store';
+import { useRouter } from 'next/router';
 
 const BackofficeIndex = () => {
-  const { state, dispatch } = useContext(Store);
-  const { session } = useSession();
+  const { state, dispatch} = useContext(Store);
+  const { session } = state;
   const router = useRouter();
-  const status = session?.isAdmin || false;
+  const status = session?.isAdmin;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -36,12 +35,13 @@ const BackofficeIndex = () => {
     }
     if (status) {
         // User is authenticated and is an admin, continue to backoffice
-        router.push('/backoffice/[id]/dashboard', `/backoffice/${session._id}/dashboard`);
+        router.push('/backoffice/[id]/dashboard', `/backoffice/${session?._id}/dashboard`);
       }else {
         // User is authenticated but not an admin, redirect to access denied or other page
         router.push('/login'); // Create this page or use an appropriate route
         dispatch({ type: 'USER_LOGOUT'});
         dispatch({ type: 'PERSONAL_REMOVE'});
+        dispatch({ type: 'REMOVE_SESSION'});
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are denied and logged out', severity: 'warning'}});
       }
       return () => {

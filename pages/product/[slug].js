@@ -172,7 +172,7 @@ export default function SingleProduct(props) {
 
         setProductWithStoreInfo(updatedProductWithStoreInfo.stores);
       } else {
-        console.log('Proizvod nije pronađen.');
+        console.log('Product not found.');
       }
     } catch (error) {
       console.error(error);

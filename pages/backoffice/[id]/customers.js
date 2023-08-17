@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import { AppBar, Backdrop, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography, useMediaQuery } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
@@ -15,6 +15,30 @@ import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import Guest from '../../../models/Guest';
 import CircularProgress from '@mui/material/CircularProgress';
 
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.primary.white,
+  border: 'thin solid lightGrey',
+  borderLeft: '5px solid black',
+}));
+
+function reducer(state, action) {
+  switch(action.type) {
+    case 'FETCH_REQUEST': {
+      return { ...state, loading: true, error: '' };
+    }
+    case 'FETCH_SUCCESS': {
+        return { ...state, loading: false, customers: action.payload, error: '' };
+    }
+    case 'FETCH_FAIL': {
+      return { ...state, loading: false, error: action.payload };
+    }
+    default:
+      return state;
+  }
+}
+
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
   const PAGE_SIZE = 10; // Number of items per page
@@ -29,6 +53,11 @@ export async function getServerSideProps(context) {
       .limit(pageSize)
       .lean()
       .exec();
+    // Fetch User data (if needed) and add to customers
+    const users = await User.find()
+    .sort({ createdAt: -1 })
+    .exec();
+    db.disconnect();
 
     // Combine personalInfo from GuestOrder with User data
     const customers = guestOrders.map(guestOrder => {
@@ -48,11 +77,6 @@ export async function getServerSideProps(context) {
       };
     });
 
-    // Fetch User data (if needed) and add to customers
-    const users = await User.find()
-      .sort({ createdAt: -1 })
-      .exec();
-
     const uniqueCustomers = [];
     customers.filter(customer => {
       const duplicate = uniqueCustomers.findIndex(unique => unique.email === customer.email);
@@ -63,7 +87,6 @@ export async function getServerSideProps(context) {
 
     const allUsers = [...users, ...uniqueCustomers];
 
-    db.disconnect();
     return {
       props: {
         users: JSON.parse(JSON.stringify(allUsers && allUsers))
@@ -217,27 +240,26 @@ export default function Customers(props) {
   const [page, setPage] = React.useState(0);
   const [search, setSearch] = React.useState('');
   const [activeTab, setActiveTab] = React.useState(0);
-  const [fetchCustomers, setFetchCustomers] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
   const matches = useMediaQuery('(min-width: 560px)');
 
+  const [{ loading, error, customers }, dispatch] = useReducer(reducer, {
+    loading: true,
+    orders: [],
+    error: ''
+  });
+
   React.useEffect(() => {
-    async function getCustomers() {
-      setLoading(true);
+    async function getOrders() {
       try {
+        dispatch({ type: 'FETCH_REQUEST' });
         const res = await users;
-        setFetchCustomers(res);
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000);
+        dispatch({ type: 'FETCH_SUCCESS', payload: res });
       } catch (error) {
-       console.log(`error fetchin orders ${error}`); 
+        dispatch({ type: 'FETCH_FAIL', payload: error.message });
       }
     } 
-    getCustomers();
-    return() => {
-      clearTimeout();
-    }
+    getOrders();
+
   }, []);
 
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -329,7 +351,6 @@ export default function Customers(props) {
   }
 
   const usersTabs = ['All Customers', 'Administrators', 'Subscribers']
-console.log(fetchCustomers);
 
   return (
     <DashboardLayout>
@@ -341,9 +362,15 @@ console.log(fetchCustomers);
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+        : error ?
+        <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+          <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+          {error}
+          </Typography>
+        </LabelButton>
         :
         <Grid container spacing={3} sx={{pr: {xs: '0px'}}}>
-          <Grid item xs={12} sx={{p: {xs: '24px 24px!important'}}}>
+          <Grid item xs={12} sx={{p: {xs: '24px 12px 0px 20px!important'}}}>
             <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
               <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
                 {
@@ -392,7 +419,7 @@ console.log(fetchCustomers);
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {(usersTabs[activeTab] === 'All Customers' ? searchTable(fetchCustomers) : usersTabs[activeTab] === 'Administrators' ? fetchCustomers.filter(user => user.isAdmin === true) : fetchCustomers.filter(user => user.newsletter === "newsletter"))
+                  {(usersTabs[activeTab] === 'All Customers' ? searchTable(customers) : usersTabs[activeTab] === 'Administrators' ? customers.filter(user => user.isAdmin === true) : customers.filter(user => user.newsletter === "newsletter"))
                     .map((row, index) => {
                       const labelId = `enhanced-table-checkbox-${index}`;
                       const isItemSelected = isSelected(row.name);
@@ -448,10 +475,10 @@ console.log(fetchCustomers);
                         </TableRow>
                       );
                     })}
-                  {fetchCustomers.length > 0 && (
+                  {customers.length > 0 && (
                     <TableRow
                       style={{
-                        height: (33) * fetchCustomers.length,
+                        height: (20) * customers.length,
                       }}
                     >
                       <TableCell colSpan={10} />
@@ -472,17 +499,17 @@ console.log(fetchCustomers);
               <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                 <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                 {
-                  users.length === 0 ?
+                  customers.length === 0 ?
                   <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                   "No Orders"
                   </Typography>
                   :
                   <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                  There are {users.length} {users.length === 1 ? "user" : "users"}.
+                  There are {customers.length} {customers.length === 1 ? "user" : "users"}.
                 </Typography>
                 }
                 {
-                  users.length > 0 &&
+                  customers.length > 0 &&
                   <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                     <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                   </Stack>
