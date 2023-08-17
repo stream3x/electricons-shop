@@ -78,14 +78,7 @@ function Order(props) {
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
-  // const randomNumber = getRandomInt(1, 999999);
   const modelNumber = `${new Date().getFullYear()}-${userInfo._id.substr(userInfo._id.length - 6)}`;
-
-  // function getRandomInt(min, max) {
-  //   min = Math.ceil(min);
-  //   max = Math.floor(max);
-  //   return Math.floor(Math.random() * (max - min) + min);
-  // }
 
   const buttonSx = {
     ...(success && {

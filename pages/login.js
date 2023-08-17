@@ -1,5 +1,4 @@
-import { useContext, useRef, useState, useEffect } from 'react';
-import Avatar from '@mui/material/Avatar';
+import { useContext, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -80,11 +79,12 @@ export default function LogIn() {
         password: formOutput.get('password'),
       };
       const { data } = await axios.post('/api/users/login', formData);
-      handleButtonClick();
       dispatch({ type: 'USER_LOGIN', payload: data });
       dispatch({ type: 'SET_SESSION', payload: data });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       Cookies.set('userInfo', JSON.stringify(data));
+      Cookies.set('session', JSON.stringify(data));
+      handleButtonClick();
     }catch (error) {
       if(error.response.data.type === 'all') {
         setErrors({ ...errors, email: true, password: true });
@@ -115,7 +115,7 @@ export default function LogIn() {
   function copyPassword(e) {
     setUpdatePassword(e.target.value)
   }
-console.log(session);
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

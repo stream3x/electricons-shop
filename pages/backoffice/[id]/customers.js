@@ -14,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import Guest from '../../../models/Guest';
 import CircularProgress from '@mui/material/CircularProgress';
+import dynamic from 'next/dynamic';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -46,16 +47,18 @@ export async function getServerSideProps(context) {
 
   try {
     db.connect();
+    const totalUser = await User.countDocuments();
     const guestOrders = await Guest.find()
-      .populate('orderItems') // Assuming you have a product reference in orderItems
+      // Assuming you have a product reference in orderItems
       .sort({ createdAt: -1 })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
       .lean()
       .exec();
     // Fetch User data (if needed) and add to customers
     const users = await User.find()
     .sort({ createdAt: -1 })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .lean()
     .exec();
     db.disconnect();
 
@@ -86,17 +89,22 @@ export async function getServerSideProps(context) {
     })
 
     const allUsers = [...users, ...uniqueCustomers];
+    const totalPages = Math.ceil((uniqueCustomers.length - 1 + totalUser) / pageSize);
 
     return {
       props: {
-        users: JSON.parse(JSON.stringify(allUsers && allUsers))
+        users: JSON.parse(JSON.stringify(allUsers)),
+        totalPages,
+        pageSize
       },
     };
   } catch (error) {
     console.error('Error fetching data:', error);
     return {
       props: {
-        users: []
+        users: [],
+        totalPages: 0,
+        pageSize: 0
       },
     };
   }
@@ -231,7 +239,7 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-export default function Customers(props) {
+function Customers(props) {
   const { users, pageSize, totalPages } = props;
   const router = useRouter();
   const [searchFilter, setSearchFilter] = React.useState([]);
@@ -260,7 +268,7 @@ export default function Customers(props) {
     } 
     getOrders();
 
-  }, []);
+  }, [users]);
 
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -375,7 +383,7 @@ export default function Customers(props) {
               <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
                 {
                   usersTabs.map((tab, index) => (
-                    <Box key={tab} sx={{pl: {xs: 1, md: 3} }} component='li'>
+                    <Box key={tab + index} sx={{pl: {xs: 1, md: 3} }} component='li'>
                       <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main, fontSize: matches ? '.75rem' : '.5rem', p: {xs: '6px 8px'} }} variant="contained">
                         {tab}
                       </Button>
@@ -522,3 +530,5 @@ export default function Customers(props) {
     </DashboardLayout>
   )
 }
+
+export default dynamic(() => Promise.resolve(Customers), { ssr: false });

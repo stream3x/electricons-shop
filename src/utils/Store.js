@@ -19,7 +19,7 @@ const initialState = {
     wishItems: Cookies.get('wishItems') ? JSON.parse(Cookies.get('wishItems')) : []
   },
   userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
-  session: null,
+  session: Cookies.get('session') ? JSON.parse(Cookies.get('session')) : null,
   snack: {
     message: '',
     severity: ''

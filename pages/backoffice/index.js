@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import DashboardLayout from '../../src/layout/DashboardLayout';
-import { Box, CircularProgress, Fab } from '@mui/material';
+import { Box, CircularProgress, Fab, Typography } from '@mui/material';
 import theme from '../../src/theme';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -12,7 +12,7 @@ const BackofficeIndex = () => {
   const { session } = state;
   const router = useRouter();
   const status = session?.isAdmin;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
 
   const buttonSx = {
@@ -22,15 +22,13 @@ const BackofficeIndex = () => {
   };
 
   const timer = useRef();
-
+  
   useEffect(() => {    
-    if (!loading) {
+    if (loading) {
       setSuccess(false);
-      setLoading(true);
       timer.current = window.setTimeout(() => {
         setSuccess(true);
-        setLoading(false);
-        
+        setLoading(false);     
       }, 2000);
     }
     if (status) {
@@ -40,17 +38,27 @@ const BackofficeIndex = () => {
         // User is authenticated but not an admin, redirect to access denied or other page
         router.push('/login'); // Create this page or use an appropriate route
         dispatch({ type: 'USER_LOGOUT'});
+        dispatch({ type: 'REMOVE_SESSION', payload: null });
         dispatch({ type: 'PERSONAL_REMOVE'});
-        dispatch({ type: 'REMOVE_SESSION'});
+        Cookies.remove('userInfo');
+        Cookies.remove('personalInfo');
+        Cookies.remove('cartItems');
+        Cookies.remove('addresses');
+        Cookies.remove('payment');
+        Cookies.remove('shipping');
+        Cookies.remove('forInvoice');        
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are denied and logged out', severity: 'warning'}});
       }
+      setLoading(true);
       return () => {
         clearTimeout(timer.current);
       };
+
   }, [status, session]);
 
   return (
     <DashboardLayout>
+      <Typography component='h1' variant='h6'>{`Welcome dear ${session?.name}`}</Typography>
       <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'end', height: '50vh'}}>
         <Box sx={{ m: 1, position: 'relative' }}>
           <Fab

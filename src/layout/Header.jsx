@@ -156,8 +156,7 @@ const StyledInputButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export default function Header(props) {
-  const { storeInfo } = props;
+export default function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorElDropdown, setAnchorElDropdown] = useState(null);
@@ -166,10 +165,11 @@ export default function Header(props) {
   const { state, dispatch } = useContext(Store);
   const { userInfo, comparasion: { compareItems }, wishlist: { wishItems } } = state;
   const [query, setQuery] = useState('');
-  const [open, setOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([]);
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
   const loading = open && options.length === 0;
   const [isVisible, setIsVisible] = useState(false);
+  const [storeInfo, setStoreInfo] = useState([]);
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
@@ -205,6 +205,22 @@ export default function Header(props) {
       active = false;
     };
   }, [loading]);
+
+  React.useEffect(() => {
+    let active = true;
+
+    (async () => {
+      const { data } = await axios.get('/api/store_info');
+      const mainStore = data.filter(store => store.name === "Electricons store");
+      if(active) {
+        setStoreInfo(mainStore);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!open) {
@@ -486,7 +502,7 @@ export default function Header(props) {
               <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'end', py: 1 }}>
                 <Grid container spacing={2} sx={{alignItems: 'center', ml: 0, pt: 2 }}>
                   <Grid sx={{ p: '0!important' }} item xs={9} sm={6} md={4} lg={3}>
-                      <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 290 60"/>
+                      <Logo logoSrc={storeInfo[0]} sx={{width: 290, height: 60}} viewBox="0 0 290 60"/>
                   </Grid>
                   <Grid item sm={6} md={8} lg={9} sx={{ display: { xs: 'none', sm: 'flex', justifyContent: 'flex-start', alignItems: 'end' } }}>
                     <NavTabs pages={pages} />

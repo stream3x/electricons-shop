@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import React, { useContext, useReducer } from 'react'
 import DashboardLayout from '../../../src/layout/DashboardLayout'
 import { Backdrop, Button, Grid, Paper } from '@mui/material'
 import Chart from '../../../src/components/Chart'
@@ -9,6 +9,8 @@ import Order from '../../../models/Order'
 import Guest from '../../../models/Guest'
 import CircularProgress from '@mui/material/CircularProgress';
 import styled from '@emotion/styled'
+import { Store } from '../../../src/utils/Store'
+import dynamic from 'next/dynamic'
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -69,8 +71,9 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default function Dashboard(props) {
+function Dashboard(props) {
   const { orders, guestOrders, totalInflows, totalGuestInflows } = props;
+  const { state: {session} } = useContext(Store);
 
   const [{ loading, error, recentOrders, recentGuestOrders }, dispatch] = useReducer(reducer, {
     loading: true,
@@ -166,3 +169,5 @@ export default function Dashboard(props) {
     </DashboardLayout>
   )
 }
+
+export default dynamic(() => Promise.resolve(Dashboard), { ssr: false });

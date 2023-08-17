@@ -50,12 +50,16 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <ListItemButton>
-        <ListItemIcon>
-          <BarChartIcon />
-        </ListItemIcon>
-        <ListItemText primary="Reports" />
-      </ListItemButton>
+      <Link href={`/backoffice/${session?._id}/statistics`}>
+        <Tooltip title="Statistic" placement="right-start">
+          <ListItemButton>
+            <ListItemIcon>
+              <BarChartIcon />
+            </ListItemIcon>
+            <ListItemText primary="Statistics" />
+          </ListItemButton>
+        </Tooltip>
+      </Link>
       <ListItemButton>
         <ListItemIcon>
           <LayersIcon />

@@ -8,13 +8,12 @@ import Footer from './Footer';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mui/material';
 
-export default function Layout({ children, storeInfo }) {
+export default function Layout({ children }) {
   const router = useRouter();
   const matches = useMediaQuery('(min-width: 1200px)');
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
-  const mainStore = storeInfo.filter(store => store.name === "Electricons store");
   const isBackoffice = router.pathname.replace(/\/\w+$/,'/') === '/backoffice/[id]/';
   const isBackofficeIndex = router.pathname === '/backoffice';
 
@@ -30,14 +29,14 @@ export default function Layout({ children, storeInfo }) {
   return (
     <React.Fragment>
       <CssBaseline />
-      <Header storeInfo={mainStore[0]} />
+      <Header />
       <Container maxWidth="xl">
         <Box component="main" sx={{ height: '100%', mt: {xs: isNotPost && isNotBlog && isNotCat ? '8rem' : matches ? '5rem' : '2rem', sm: isNotPost && isNotBlog && isNotCat ? '10rem' : '2rem'} }}>
           {children}
         </Box>
         <Snackbars />
       </Container>
-      <Footer storeInfo={mainStore[0]} />
+      <Footer />
     </React.Fragment>
   )
 }

@@ -146,7 +146,7 @@ function SinglePost(props) {
     // Always do navigations after the first render
     router.push(`/blog/post/${slug}?counter=10`, undefined, { shallow: true })
   }, []);
-console.log(router.pathname);
+
   const filterSearch = ({
     category,
     subCategory,

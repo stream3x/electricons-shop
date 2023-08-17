@@ -153,14 +153,6 @@ export async function getServerSideProps(context) {
     ).sort(order).skip(pageSize * (page - 1)).limit(pageSize).lean();
     const productDocsByCategory = productDocs.filter(prod => slug[1] !== undefined ? prod.subCategoryUrl === slug[1] : prod.categoryUrl === slug[0]);
 
-    // const countProducts = await Product.countDocuments({
-    //   ...queryFilter,
-    //   ...categoryFilter,
-    //   ...subCategoryFilter,
-    //   ...priceFilter,
-    //   ...brandFilter
-    // });
-
     await db.disconnect();
     const products = productDocsByCategory.map(db.convertDocToObject);
 

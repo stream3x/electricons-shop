@@ -18,6 +18,7 @@ import MapFooter from '../assets/MapFooter';
 import Link from '../Link';
 import theme from '../theme';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -95,8 +96,9 @@ const products = [
   {id: '4.5', title: 'Xiaomi Smartphones', link: '/category/smartphones/Xiaomi-Smartphones'}
 ];
 
-export default function Footer({ storeInfo }) {
+export default function Footer() {
   const [isVisible, setIsVisible] = React.useState(false);
+  const [storeInfo, setStoreInfo] = React.useState([]);
   const router = useRouter();
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
@@ -112,6 +114,22 @@ export default function Footer({ storeInfo }) {
     window.addEventListener('scroll', toggleVisibility);
     return () => {
       window.removeEventListener("scroll", toggleVisibility);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    let active = true;
+
+    (async () => {
+      const { data } = await axios.get('/api/store_info');
+      const mainStore = data.filter(store => store.name === "Electricons store");
+      if(active) {
+        setStoreInfo(mainStore);
+      }
+    })();
+
+    return () => {
+      active = false;
     };
   }, []);
 
@@ -148,30 +166,30 @@ export default function Footer({ storeInfo }) {
                   <ListItemIcon>
                     <Public />
                   </ListItemIcon>
-                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.name}, ${storeInfo && storeInfo.country}`} />
+                  <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo[0]?.name}, ${storeInfo && storeInfo[0]?.country}`} />
                 </ListItem>
                 <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }}>
-                  <Link sx={{display: 'flex'}} href={`mailto:${storeInfo && storeInfo.email}`} passHref>
+                  <Link sx={{display: 'flex'}} href={`mailto:${storeInfo && storeInfo[0]?.email}`} passHref>
                     <ListItemIcon>
                       <DraftsIcon />
                     </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.email}`} />
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo[0]?.email}`} />
                   </Link>
                 </ListItem>
                 <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }}>
-                  <Link sx={{display: 'flex'}} href={`tel:${storeInfo && storeInfo.phone}`} passHref>
+                  <Link sx={{display: 'flex'}} href={`tel:${storeInfo && storeInfo[0]?.phone}`} passHref>
                     <ListItemIcon>
                       <StayCurrentPortraitIcon />
                     </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.phone}`} />
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo[0]?.phone}`} />
                   </Link>
                 </ListItem>
                 <ListItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main }, '&:hover a': {textDecoration: 'none', color: theme.palette.secondary.light } }}>
-                  <Link sx={{display: 'flex'}} href={`tel:${storeInfo && storeInfo.phone_two}`} passHref>
+                  <Link sx={{display: 'flex'}} href={`tel:${storeInfo && storeInfo[0]?.phone_two}`} passHref>
                     <ListItemIcon>
                       <LocalPhoneIcon />
                     </ListItemIcon>
-                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo.phone_two}`} />
+                    <ListItemText sx={{overflowWrap: 'break-word'}} primary={`${storeInfo && storeInfo[0]?.phone_two}`} />
                   </Link>
                 </ListItem>
               </Box>
@@ -236,7 +254,7 @@ export default function Footer({ storeInfo }) {
           <Divider />
         </Box>
         <Box sx={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap'}}>
-          <Logo logoSrc={storeInfo} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
+          <Logo logoSrc={storeInfo[0]} sx={{width: 290, height: 60}} viewBox="0 0 306 76"/>
           <Typography color="secondary.lightGrey" sx={{width: '100%', textAlign: "center", pt: 2}} variant="body1" component="p">
           We are a global housewares product design company. We bring thought and creativity to everyday items through original design.
           </Typography>

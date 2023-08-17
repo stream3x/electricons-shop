@@ -17,6 +17,7 @@ import Order from '../../../models/Order';
 import Guest from '../../../models/Guest';
 import Link from '../../../src/Link';
 import CircularProgress from '@mui/material/CircularProgress';
+import dynamic from 'next/dynamic';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -54,31 +55,23 @@ export async function getServerSideProps(context) {
     const products = await Product.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
     const orders = await Order.find().lean().exec();
     const guestOrders = await Guest.find().lean().exec();
-
     db.disconnect();
 
-    const productOrderCounts = [];
-
-    if (products.length !== 0 && orders.length !== 0 && guestOrders.length !== 0) {
-      const productCounts = products.map(product => {
-        const orderCount = orders.concat(guestOrders).reduce((count, order) => {
-          if (order.orderItems.some(orderProduct => orderProduct._id.toString() === product._id.toString())) {
-            return count + 1;
-          }
-          return count;
-        }, 0);
-        return { ...product.toObject(), orderCount };
-      });
-      productOrderCounts.push(productCounts);
-    }
-
-    db.disconnect();
+    const productOrderCounts = products.map(product => {
+      const orderCount = [...orders, ...guestOrders].reduce((count, order) => {
+        if (order.orderItems.some(orderProduct => orderProduct._id.toString() === product._id.toString())) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+      return { ...product.toObject(), orderCount };
+    });
 
     return {
       props: {
         pageSize,
         totalPages,
-        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts &&productOrderCounts[0]))
+        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts))
       },
     };
   } catch (error) {
@@ -223,7 +216,7 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-export default function ProductList(props) {
+function ProductList(props) {
   const { pageSize, totalPages, productOrderCounts } = props;
   const router = useRouter();
   const { id } = router.query;
@@ -269,7 +262,7 @@ export default function ProductList(props) {
     } 
     getOrders();
 
-  }, []);
+  }, [productOrderCounts]);
 
   const searchHandler = (item) => {
     if(item) {
@@ -512,3 +505,5 @@ export default function ProductList(props) {
     </DashboardLayout>
   )
 }
+
+export default dynamic(() => Promise.resolve(ProductList), { ssr: false });

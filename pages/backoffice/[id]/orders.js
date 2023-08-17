@@ -17,6 +17,7 @@ import { alpha } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import SearchIcon from '@mui/icons-material/Search';
 import CircularProgress from '@mui/material/CircularProgress';
+import dynamic from 'next/dynamic';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -340,7 +341,7 @@ function Row(props) {
   );
 }
 
-export default function Orders(props) {
+function Orders(props) {
   const { orders, guestOrders, pageSize, totalPages } = props;
   const router = useRouter();
   const [searchFilter, setSearchFilter] = React.useState([]);
@@ -735,3 +736,5 @@ export default function Orders(props) {
     </DashboardLayout>
   )
 }
+
+export default dynamic(() => Promise.resolve(Orders), { ssr: false });
