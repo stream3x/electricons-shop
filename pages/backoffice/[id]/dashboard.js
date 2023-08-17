@@ -19,15 +19,15 @@ export async function getServerSideProps(context) {
       createdAt: { $gte: sevenDaysAgo }, // Find orders from the last seven days
     }).lean().exec();
     const totalGuestInflows = await Guest.find({
-      createdAt: { $gte: sevenDaysAgo }, // Find guest orders from the last seven days
+      createdAt: { $gte: sevenDaysAgo }
     }).lean().exec();
     db.disconnect();
     return {
       props: {
-        orders: JSON.parse(JSON.stringify(orders)),
-        guestOrders: JSON.parse(JSON.stringify(guestOrders)),
-        totalInflows: JSON.parse(JSON.stringify(totalInflows)),
-        totalGuestInflows: JSON.parse(JSON.stringify(totalGuestInflows)),
+        orders: JSON.parse(JSON.stringify(orders && orders)),
+        guestOrders: JSON.parse(JSON.stringify(guestOrders && guestOrders)),
+        totalInflows: JSON.parse(JSON.stringify(totalInflows && totalInflows)),
+        totalGuestInflows: JSON.parse(JSON.stringify(totalGuestInflows && totalGuestInflows)),
       },
     };
   } catch (error) {

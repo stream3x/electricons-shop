@@ -11,8 +11,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { alpha } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import Slide from '@mui/material/Slide';
 import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
+import Guest from '../../../models/Guest';
 
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
@@ -21,24 +21,58 @@ export async function getServerSideProps(context) {
 
   try {
     db.connect();
-    const totalUsers = await User.countDocuments();
-    const totalPages = Math.ceil(totalUsers / pageSize);
-    const users = await User.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
+    const guestOrders = await Guest.find()
+      .populate('orderItems') // Assuming you have a product reference in orderItems
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .lean()
+      .exec();
+
+    // Combine personalInfo from GuestOrder with User data
+    const customers = guestOrders.map(guestOrder => {
+      return {
+        name: guestOrder.personalInfo.name,
+        email: guestOrder.personalInfo.email,
+        address: guestOrder.personalInfo.address ? guestOrder.personalInfo.address : '',
+        city: guestOrder.personalInfo.city ? guestOrder.personalInfo.address : '',
+        country: guestOrder.personalInfo.country ? guestOrder.personalInfo.country : '',
+        postalcode: guestOrder.personalInfo.postalcode ? guestOrder.personalInfo.postalcode : '',
+        company: guestOrder.personalInfo.company ? guestOrder.personalInfo.company : '',
+        phone: guestOrder.personalInfo.phone ? guestOrder.personalInfo.phone : '',
+        vatNumber: guestOrder.personalInfo.vatNumber ? guestOrder.personalInfo.vatNumber : '',
+        newsletter: guestOrder.personalInfo.newsletter ? guestOrder.personalInfo.newsletter : '',
+        createdAt: guestOrder.createdAt ? guestOrder.createdAt.toString() : '',
+        birthday: guestOrder.personalInfo.birthday ? guestOrder.personalInfo.birthday : ''
+      };
+    });
+
+    // Fetch User data (if needed) and add to customers
+    const users = await User.find()
+      .sort({ createdAt: -1 })
+      .exec();
+
+    const uniqueCustomers = [];
+    customers.filter(customer => {
+      const duplicate = uniqueCustomers.findIndex(unique => unique.email === customer.email);
+      if (duplicate <= -1) {
+        uniqueCustomers.push(customer);
+      }
+    })
+
+    const allUsers = [...users, ...uniqueCustomers];
+
     db.disconnect();
     return {
       props: {
-        users: JSON.parse(JSON.stringify(users)),
-        pageSize,
-        totalPages
+        users: JSON.parse(JSON.stringify(allUsers && allUsers))
       },
     };
   } catch (error) {
     console.error('Error fetching data:', error);
     return {
       props: {
-        users: [],
-        pageSize: 0,
-        totalPages: 0
+        users: []
       },
     };
   }
@@ -182,8 +216,22 @@ export default function Customers(props) {
   const [page, setPage] = React.useState(0);
   const [search, setSearch] = React.useState('');
   const [activeTab, setActiveTab] = React.useState(0);
+  const [fetchCustomers, setFetchCustomers] = React.useState([]);
   const matches = useMediaQuery('(min-width: 560px)');
 
+  React.useEffect(() => {
+    async function getCustomers() {
+      try {
+        const res = await users;
+        setFetchCustomers(res);
+      } catch (error) {
+       console.log(`error fetchin orders ${error}`); 
+      }
+    } 
+    getCustomers();
+  
+  }, [users])
+console.log(fetchCustomers);
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
   function convertDate(value) {
@@ -326,7 +374,7 @@ export default function Customers(props) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(usersTabs[activeTab] === 'All Customers' ? searchTable(users) : usersTabs[activeTab] === 'Administrators' ? users.filter(user => user.isAdmin === true) : users.filter(user => user.newsletter === "newsletter"))
+                {(usersTabs[activeTab] === 'All Customers' ? searchTable(fetchCustomers) : usersTabs[activeTab] === 'Administrators' ? fetchCustomers.filter(user => user.isAdmin === true) : fetchCustomers.filter(user => user.newsletter === "newsletter"))
                   .map((row, index) => {
                     const labelId = `enhanced-table-checkbox-${index}`;
                     const isItemSelected = isSelected(row.name);
@@ -382,10 +430,10 @@ export default function Customers(props) {
                       </TableRow>
                     );
                   })}
-                {users.length > 0 && (
+                {fetchCustomers.length > 0 && (
                   <TableRow
                     style={{
-                      height: (33) * users.length,
+                      height: (33) * fetchCustomers.length,
                     }}
                   >
                     <TableCell colSpan={10} />

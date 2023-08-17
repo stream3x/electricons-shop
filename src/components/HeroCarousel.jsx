@@ -20,7 +20,7 @@ function HeroCarousel({ hero_products }) {
       }
     }
     fetchData();
-  }, []);
+  }, [hero_products]);
 
   const settings = {
     dots: false,

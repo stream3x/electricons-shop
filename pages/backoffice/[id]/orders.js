@@ -2,7 +2,7 @@ import React from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import Order from '../../../models/Order';
 import Guest from '../../../models/Guest';
-import { AppBar, Box, Checkbox, Collapse, Grid, IconButton, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, Checkbox, Collapse, Grid, IconButton, InputBase, Pagination, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Typography } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
@@ -15,6 +15,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import { alpha } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
+import axios from 'axios';
+import SearchIcon from '@mui/icons-material/Search';
 
 export async function getServerSideProps(context) {
   const page = parseInt(context.query.page) || 1;
@@ -23,15 +25,18 @@ export async function getServerSideProps(context) {
 
   try {
     db.connect();
+    
     const totalOrders = await Order.countDocuments();
     const totalPages = Math.ceil(totalOrders / pageSize);
     const orders = await Order.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
     const guestOrders = await Guest.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
+
     db.disconnect();
+
     return {
       props: {
-        orders: JSON.parse(JSON.stringify(orders)),
-        guestOrders: JSON.parse(JSON.stringify(guestOrders)),
+        orders: JSON.parse(JSON.stringify(orders && orders)),
+        guestOrders: JSON.parse(JSON.stringify(guestOrders && guestOrders)),
         pageSize,
         totalPages
       },
@@ -67,6 +72,54 @@ const MyTableContainer = styled(TableContainer)({
     borderRadius: '3px'
   }
 });
+
+const Search = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  [theme.breakpoints.down('md')]: {
+    marginLeft: theme.spacing(0),
+    width: '100%',
+  },
+  border: 'thin solid transparent',
+  boxSizing: 'border-box',
+  display: 'flex',
+  margin: '.2rem 0' 
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  '& svg': {
+    fill: 'white'
+  }
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'white',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('xl')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '22ch',
+      },
+    },
+  },
+}));
 
 function EnhancedTableToolbar(props) {
   const { numSelected, selectedItems, numChildSelected, selectedChildItems } = props;
@@ -273,7 +326,37 @@ export default function Orders(props) {
   const [selectedItems, setSelectedItems] = React.useState([]);
   const [childeSelected, setChildeSelected] = React.useState([]);
   const [selectedChildeItems, setSelectedChildeItems] = React.useState([]);
+  const [fetchOrders, setFetchOrders] = React.useState([]);
+  const [fetchGuestOrders, setFetchGuestOrders] = React.useState([]);
+  const [search, setSearch] = React.useState('');
+  const [searchGuest, setSearchGuest] = React.useState('');
 
+  React.useEffect(() => {
+    async function getOrders() {
+      try {
+        const res = await orders;
+        setFetchOrders(res);
+      } catch (error) {
+       console.log(`error fetchin orders ${error}`); 
+      }
+    } 
+    getOrders();
+  
+  }, [orders])
+
+  React.useEffect(() => {
+    async function getOrders() {
+      try {
+        const res = await guestOrders;
+        setFetchGuestOrders(res);
+      } catch (error) {
+       console.log(`error fetchin orders ${error}`); 
+      }
+    } 
+    getOrders();
+  
+  }, [guestOrders])
+  
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const handleClick = (event, name, item) => {
@@ -372,13 +455,41 @@ export default function Orders(props) {
     filterSearch({ page });
   };
 
+  const hasWord = (word, toMatch) => {
+    let wordSplitted = word.split(' ');
+      if(wordSplitted.join(' ').includes(toMatch)) {
+        return true;
+      }
+      return false;
+  };
+
+  function searchTable(rows) {
+    return rows && rows.lenght !== 0 ? rows.filter((row) => ((row.personalInfo.name && hasWord(row.personalInfo.name.toLowerCase(), search.toLowerCase())) || (row.personalInfo.email && hasWord(row.personalInfo.email.toLowerCase(), search.toLowerCase()))) || (row.payment.paymentMethod && hasWord(row.payment.paymentMethod.toLowerCase(), search.toLowerCase()))  || (row.personalInfo.company && hasWord(row.personalInfo.company.toLowerCase(), search.toLowerCase())) || (row.orderNumber && hasWord(row.orderNumber, search.toLowerCase()))) : orders;
+  }
+
+  function searchGuestTable(rows) {
+    return rows && rows.lenght !== 0 ? rows.filter((row) => ((row.personalInfo.name && hasWord(row.personalInfo.name.toLowerCase(), searchGuest.toLowerCase())) || (row.personalInfo.email && hasWord(row.personalInfo.email.toLowerCase(), searchGuest.toLowerCase()))) || (row.payment.paymentMethod && hasWord(row.payment.paymentMethod.toLowerCase(), searchGuest.toLowerCase()))  || (row.personalInfo.company && hasWord(row.personalInfo.company.toLowerCase(), searchGuest.toLowerCase())) || (row.orderNumber && hasWord(row.orderNumber, searchGuest.toLowerCase()))) : guestOrders;
+  }
+
   return (
     <DashboardLayout>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
-            <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5 }}>
-              <Typography component='h2' variant='h6' color={theme.palette.primary.contrastText}>User Orders</Typography>
+            <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
+              <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>User Orders</Typography>
+              <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+                <Search component="form">
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="#name, #email, #order…"
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                </Search>
+              </Box>
             </Box>
             <MyTableContainer>
               <Table
@@ -404,7 +515,7 @@ export default function Orders(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {orders
+                  {searchTable(fetchOrders)
                     .map((row, index) => {
                       const labelId = `enhanced-table-checkbox-${index}`;
                       const isItemSelected = isSelected(row._id);
@@ -424,10 +535,10 @@ export default function Orders(props) {
                         />
                       );
                     })}
-                  {orders.length > 0 && (
+                  {fetchOrders.length > 0 && (
                     <TableRow
                       style={{
-                        height: (33) * orders.length,
+                        height: (33) * fetchOrders.length,
                       }}
                     >
                       <TableCell colSpan={12} />
@@ -449,17 +560,17 @@ export default function Orders(props) {
             <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
               <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
               {
-                orders.length === 0 ?
+                searchTable(fetchOrders).length === 0 ?
                 <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                 "No Orders"
                 </Typography>
                 :
                 <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {orders.length} {orders.length === 1 ? "order" : "orders"}.
+                There are {searchTable(fetchOrders).length} {searchTable(fetchOrders).length === 1 ? "order" : "orders"}.
               </Typography>
               }
               {
-                orders.length > 0 &&
+                searchTable(fetchOrders).length > 0 &&
                 <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                   <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                 </Stack>
@@ -472,8 +583,20 @@ export default function Orders(props) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Paper elevation={1} sx={{pt: 5, px: 3, mt: 5}}>
-            <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5 }}>
-              <Typography component='h2' variant='h6' color={theme.palette.primary.contrastText}>Guest Orders</Typography>
+          <Box sx={{ width: '100%', minHeight: '1px', py: 3, background: `linear-gradient(60deg, #ab47bc, #8e24aa)`, boxShadow: '0 4px 20px 0 rgba(0, 0, 0,.14), 0 7px 10px -5px rgba(156, 39, 176,.4)', px: 5, mt: '-80px', borderRadius: 1, mb: 5, display: 'flex', justifyContent: 'space-between' }}>
+              <Typography sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}} component='h2' variant='h6' color={theme.palette.primary.contrastText}>Guest Orders</Typography>
+              <Box sx={{py: 0, display: 'flex', justifyContent: 'right', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+                <Search component="form">
+                  <SearchIconWrapper>
+                    <SearchIcon />
+                  </SearchIconWrapper>
+                  <StyledInputBase
+                    onChange={(e) => setSearchGuest(e.target.value)}
+                    placeholder="#name, #email, #order…"
+                    inputProps={{ 'aria-label': 'search' }}
+                  />
+                </Search>
+              </Box>
             </Box>
             <MyTableContainer>
               <Table
@@ -499,7 +622,7 @@ export default function Orders(props) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {guestOrders
+                  {searchGuestTable(fetchGuestOrders)
                     .map((row, index) => {
                       const labelId = `enhanced-table-checkbox-${index}`;
                       const isItemSelected = isSelected(row._id);
@@ -519,10 +642,10 @@ export default function Orders(props) {
                         />
                       );
                     })}
-                  {guestOrders.length > 0 && (
+                  {fetchGuestOrders.length > 0 && (
                     <TableRow
                       style={{
-                        height: (33) * guestOrders.length,
+                        height: (33) * fetchGuestOrders.length,
                       }}
                     >
                       <TableCell colSpan={12} />
@@ -544,17 +667,17 @@ export default function Orders(props) {
             <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
               <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
               {
-                orders.length === 0 ?
+                searchGuestTable(fetchGuestOrders).length === 0 ?
                 <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                 "No Orders"
                 </Typography>
                 :
                 <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {guestOrders.length} {guestOrders.length === 1 ? "order" : "orders"}.
+                There are {searchGuestTable(fetchGuestOrders).length} {searchGuestTable(fetchGuestOrders).length === 1 ? "order" : "orders"}.
               </Typography>
               }
               {
-                orders.length > 0 &&
+                searchGuestTable(fetchGuestOrders).length > 0 &&
                 <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                   <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                 </Stack>

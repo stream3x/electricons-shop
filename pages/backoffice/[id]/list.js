@@ -29,25 +29,32 @@ export async function getServerSideProps(context) {
     const products = await Product.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
     const orders = await Order.find().lean().exec();
     const guestOrders = await Guest.find().lean().exec();
+
     db.disconnect();
 
-    const productOrderCounts = products.map(product => {
-      const orderCount = orders.concat(guestOrders).reduce((count, order) => {
-        if (order.orderItems.some(orderProduct => orderProduct._id.toString() === product._id.toString())) {
-          return count + 1;
-        }
-        return count;
-      }, 0);
-      return { ...product.toObject(), orderCount };
-    });
-    console.log(productOrderCounts);
+    const productOrderCounts = [];
+
+    if (products.length !== 0 && orders.length !== 0 && guestOrders.length !== 0) {
+      const productCounts = products.map(product => {
+        const orderCount = orders.concat(guestOrders).reduce((count, order) => {
+          if (order.orderItems.some(orderProduct => orderProduct._id.toString() === product._id.toString())) {
+            return count + 1;
+          }
+          return count;
+        }, 0);
+        return { ...product.toObject(), orderCount };
+      });
+      productOrderCounts.push(productCounts);
+    }
+
+    db.disconnect();
 
     return {
       props: {
         products: JSON.parse(JSON.stringify(products)),
         pageSize,
         totalPages,
-        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts))
+        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts[0]))
       },
     };
   } catch (error) {
@@ -194,7 +201,7 @@ function EnhancedTableToolbar(props) {
 }
 
 export default function ProductList(props) {
-  const { products, pageSize, totalPages, productOrderCounts } = props;
+  const { pageSize, totalPages, productOrderCounts } = props;
   const router = useRouter();
   const { id } = router.query;
   const [searchFilter, setSearchFilter] = React.useState([]);
@@ -203,14 +210,6 @@ export default function ProductList(props) {
   const [page, setPage] = React.useState(0);
   const [search, setSearch] = React.useState('');
   const [activeTab, setActiveTab] = React.useState(0);
-
-  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-
-  function convertDate(value) {
-    const date = new Date(value);
-    const formatDate = date.toLocaleDateString("en-US", options);
-    return formatDate;
-  }
 
   const {
     query = '',
@@ -408,10 +407,10 @@ export default function ProductList(props) {
                       </TableRow>
                     );
                   })}
-                {products.length > 0 && (
+                {productOrderCounts.length > 0 && (
                   <TableRow
                     style={{
-                      height: (6) * products.length,
+                      height: (6) * productOrderCounts.length,
                     }}
                   >
                     <TableCell colSpan={12} />
@@ -432,17 +431,17 @@ export default function ProductList(props) {
             <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
               <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
               {
-                products.length === 0 ?
+                productOrderCounts.length === 0 ?
                 <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                 "No Orders"
                 </Typography>
                 :
                 <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                There are {products.length} {products.length === 1 ? "product" : "products"}.
+                There are {productOrderCounts.length} {productOrderCounts.length === 1 ? "product" : "products"}.
               </Typography>
               }
               {
-                products.length > 0 &&
+                productOrderCounts.length > 0 &&
                 <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
                   <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
                 </Stack>

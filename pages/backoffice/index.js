@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from '../../src/utils/SessionProvider';
 import DashboardLayout from '../../src/layout/DashboardLayout';
-import { Box, CircularProgress, Fab, Typography } from '@mui/material';
+import { Box, CircularProgress, Fab } from '@mui/material';
 import theme from '../../src/theme';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -12,8 +12,7 @@ const BackofficeIndex = () => {
   const { state, dispatch } = useContext(Store);
   const { session } = useSession();
   const router = useRouter();
-  const { id } = router.query;
-  const status = session && session.isAdmin === true;
+  const status = session.isAdmin;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -24,7 +23,7 @@ const BackofficeIndex = () => {
   };
 
   const timer = useRef();
-console.log(id, session);
+
   useEffect(() => {    
     if (!loading) {
       setSuccess(false);

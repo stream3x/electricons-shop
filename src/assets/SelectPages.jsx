@@ -28,7 +28,7 @@ export default function SelectPages(props) {
         >
           {
             values.map(val => (
-              <MenuItem value={val}>{`${val} per page`}</MenuItem>
+              <MenuItem key={val} value={val}>{`${val} per page`}</MenuItem>
             ))
           }
         </Select>
