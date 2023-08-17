@@ -196,7 +196,7 @@ export default function BlogPages(props) {
       query: query
     })
   }
-
+console.log(router.pathname);
   React.useEffect(() => {
     // Always do navigations after the first render
     if (query) {

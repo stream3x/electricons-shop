@@ -338,12 +338,17 @@ export default function Orders(props) {
       try {
         const res = await orders;
         setFetchOrders(res);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
        console.log(`error fetchin orders ${error}`); 
       }
     } 
     getOrders();
+    return() => {
+      clearTimeout();
+    }
   
   }, [orders])
 

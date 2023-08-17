@@ -227,12 +227,17 @@ export default function Customers(props) {
       try {
         const res = await users;
         setFetchCustomers(res);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
        console.log(`error fetchin orders ${error}`); 
       }
     } 
     getCustomers();
+    return() => {
+      clearTimeout();
+    }
   }, []);
 
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };

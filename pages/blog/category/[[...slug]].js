@@ -30,13 +30,11 @@ import BreadcrumbNav from '../../../src/assets/BreadcrumbNav';
 import theme from '../../../src/theme';
 import SelectPages from '../../../src/assets/SelectPages';
 
-const PAGE_SIZE = 6;
-let subCatArray = [];
 
 export async function getServerSideProps(context) {
   const { params, query } = context;
   const { slug } = params;
-
+  const PAGE_SIZE = 6;
   const pageSize = query.pageSize || PAGE_SIZE;
   const page = query.page || 1;
   const category = query.category || '';
@@ -234,11 +232,12 @@ export default function CategoryProducts(props) {
   const [searchFilter, setSearchFilter] = React.useState([]);
   const [similarTags, setSimilarTags] = React.useState([]);
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
+  console.log(router.pathname);
 
   const {
     query = '',
     sort = '',
-    pageSize = 40,
+    pageSize = '',
     page = 1
   } = router.query;
 
@@ -446,8 +445,8 @@ export default function CategoryProducts(props) {
               </Box>
               <List sx={{ '& a': {textDecoration: 'none'} }}>
                 {
-                  categories.map(cat => (
-                  <Link color='secondary.lightGrey' key={cat} href={`/blog/category/${cat}`}>
+                  categories.map((cat, i) => (
+                  <Link color='secondary.lightGrey' key={cat + i} href={`/blog/category/${cat}`}>
                     <ListItem disablePadding>
                       <ListItemButton>
                         <ListItemText primary={cat} />
@@ -459,7 +458,7 @@ export default function CategoryProducts(props) {
                 }
                 {
                   subCategories.map((sub, i) => (
-                  <Link color='secondary.lightGrey' key={sub} href={`/blog/category/${categories[i]}/${sub}`}>
+                  <Link color='secondary.lightGrey' key={sub + i} href={`/blog/category/${categories[i]}/${sub}`}>
                     <ListItem disablePadding>
                       <ListItemButton>
                         <ListItemText primary={sub} />
@@ -478,8 +477,8 @@ export default function CategoryProducts(props) {
               </Box>
               <List sx={{ '& a': {textDecoration: 'none'} }}>
                 {
-                  similarTags.map(tag => (
-                    <Link key={tag._id} href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                  similarTags.map((tag, i) => (
+                    <Link key={tag + i} href={`/blog?tag=${encodeURIComponent(tag)}`}>
                       <LabelButton sx={{width: { xs: '100%', sm: 'auto'}, my: .5}}>
                         {tag}
                       </LabelButton>

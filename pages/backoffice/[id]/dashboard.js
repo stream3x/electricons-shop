@@ -55,12 +55,18 @@ export default function Dashboard(props) {
       try {
         const res = await orders;
         setFetchOrders(res);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
        console.log(`error fetchin data for dashboard ${error}`); 
       }
     } 
     getOrders();
+    return() => {
+      clearTimeout();
+    }
+    
   }, []);
 console.log(orders, guestOrders, totalInflows, totalGuestInflows);
   return (

@@ -17,7 +17,7 @@ import Link from '../Link';
 import { Tooltip } from '@mui/material';
 
 export default function ButtonAccordion(props) {
-  const { id } = props;
+  const { slug } = props;
   const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
@@ -46,7 +46,7 @@ export default function ButtonAccordion(props) {
       </Tooltip>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <Link href={`/backoffice/${id}/list`}>
+          <Link href={`/backoffice/${slug}/list`}>
             <Tooltip title="Product List" placement="right-start">
               <ListItemButton sx={{ pl: {xs: 3, md: 4} }}>
                 <ListItemIcon>
@@ -56,7 +56,7 @@ export default function ButtonAccordion(props) {
               </ListItemButton>
             </Tooltip>
           </Link>
-          <Link href={`/backoffice/${id}/create`}>
+          <Link href={`/backoffice/${slug}/create`}>
             <Tooltip title="Create new" placement="right-start">
               <ListItemButton sx={{ pl: {xs: 3, md: 4} }}>
                 <ListItemIcon>

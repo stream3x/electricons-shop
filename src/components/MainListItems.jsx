@@ -21,7 +21,7 @@ const MainListItems = () => {
   return (
     <React.Fragment>
       <Link href={`/backoffice/${id}/dashboard`}>
-        <Tooltip title="Dashboard">
+        <Tooltip title="Dashboard" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
               <DashboardIcon />
@@ -31,7 +31,7 @@ const MainListItems = () => {
         </Tooltip>
       </Link>
       <Link href={`/backoffice/${id}/orders`}>
-        <Tooltip title="Orders">
+        <Tooltip title="Orders" placement="right-start">
           <ListItemButton>
               <ListItemIcon>
                 <ShoppingCartIcon />
@@ -41,7 +41,7 @@ const MainListItems = () => {
         </Tooltip>
       </Link>
       <Link href={`/backoffice/${id}/customers`}>
-        <Tooltip title="Customers">
+        <Tooltip title="Customers" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
               <PeopleIcon />

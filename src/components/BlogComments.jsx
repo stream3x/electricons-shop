@@ -144,21 +144,16 @@ export default function BlogComments({ slug }) {
   };
 
   React.useEffect(() => {
-    console.log('1');
     if (isLoading) {
-    console.log('2');
       return
     }
     setIsLoading(true);
     if (isEmptyComments) {
-    console.log('3');
       setTimeout(() => {
-    console.log('5');
         fetchComments();
         setIsLoading(false);
       }, 1500);
     }
-    console.log('4');
     setIsLoading(false);
   }, [isEmptyComments]);
 
@@ -183,8 +178,6 @@ export default function BlogComments({ slug }) {
     const formatDate = date.toLocaleDateString("en-US", options);
     return formatDate;
   }
-
-  console.log('render', comments, slug, session);
 
   return (
     <Box>

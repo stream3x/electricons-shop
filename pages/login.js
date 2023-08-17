@@ -54,8 +54,11 @@ export default function LogIn() {
         setLoading(false);
         if(router.pathname === '/cart') {
           router.back();
+        }else if(router.pathname === '/blog' || router.pathname === '/blog/category/[[...slug]]' || router.pathname === '/blog/post/[slug]') {
+          router.back();
+        }else {
+          router.back();
         }
-        router.push('/');
       }, 2000);
     }
     const anchor = (event.target.ownerDocument || document).querySelector(
@@ -100,16 +103,6 @@ export default function LogIn() {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
     }
   };
-
-  useEffect(() => {
-    if(userInfo) {
-      router.push("/");
-      return;
-    }
-    return () => {
-      clearTimeout(timer.current);
-    };
-  }, []);
 
   function handleChangeEmail(e) {
     setUpdateEmail(e.target.value)
