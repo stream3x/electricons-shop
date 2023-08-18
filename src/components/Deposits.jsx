@@ -4,24 +4,11 @@ import Typography from '@mui/material/Typography';
 import Title from './Title';
 import theme from '../theme';
 
-function preventDefault(event) {
-  event.preventDefault();
-}
-
 export default function Deposits(props) {
-  const { totalInflows, totalGuestInflows } = props;
-  const orders = [];
-  const orderGuest = [];
-  totalInflows.forEach(order => {
-    orders.push(order.total);
-  })
-  totalGuestInflows.forEach(order => {
-    orderGuest.push(order.total);
-  })
-  const sumOrder = orders.reduce((total, number) => total + number, 0);
-  const sumOrderGuest = orderGuest.reduce((total, number) => total + number, 0);
+  const { total } = props;
 
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
   function convertDate() {
     const date = new Date();
     const formatDate = date.toLocaleDateString("en-US", options);
@@ -31,15 +18,15 @@ export default function Deposits(props) {
   return (
     <React.Fragment>
       <Title>Recent Deposits</Title>
-      <Typography component='span' variant='caption' color={theme.palette.secondary.lightGrey}>in last 7 days</Typography>
+      <Typography component='span' variant='caption' color={theme.palette.secondary.lightGrey}>in last 5 orders</Typography>
       <Typography component="p" variant="h4">
-        {'$'}{(sumOrder + sumOrderGuest).toFixed(2)}
+        {'$'}{total && total}
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1 }}>
         {convertDate()}
       </Typography>
       <div>
-        <Link color="primary" href="#" onClick={preventDefault}>
+        <Link color="primary" href="#">
           View balance
         </Link>
       </div>

@@ -1,16 +1,13 @@
-import React, { useContext, useReducer } from 'react'
+import React, { useContext } from 'react'
 import DashboardLayout from '../../../src/layout/DashboardLayout'
-import { Backdrop, Button, Grid, Paper } from '@mui/material'
+import { Button, Grid, Paper, Typography } from '@mui/material'
 import Chart from '../../../src/components/Chart'
 import Orders from '../../../src/components/Orders'
 import Deposits from '../../../src/components/Deposits'
-import db from '../../../src/utils/db'
-import Order from '../../../models/Order'
-import Guest from '../../../models/Guest'
-import CircularProgress from '@mui/material/CircularProgress';
 import styled from '@emotion/styled'
 import { Store } from '../../../src/utils/Store'
 import dynamic from 'next/dynamic'
+import axios from 'axios'
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -20,75 +17,31 @@ const LabelButton = styled(Button)(({ theme }) => ({
   borderLeft: '5px solid black',
 }));
 
-function reducer(state, action) {
-  switch(action.type) {
-    case 'FETCH_REQUEST': {
-      return { ...state, loading: true, error: '' };
-    }
-    case 'FETCH_SUCCESS': {
-        return { ...state, loading: false, recentOrders: action.payload, recentGuestOrders: action.payload, error: '' };
-    }
-    case 'FETCH_FAIL': {
-      return { ...state, loading: false, error: action.payload };
-    }
-    default:
-      return state;
-  }
-}
+const data = [
+  { time: '00:00', amount: 0, amount_guest: 0 },
+  { time: '03:00', amount: 0, amount_guest: 0 },
+  { time: '06:00', amount: 0, amount_guest: 0 },
+  { time: '09:00', amount: 0, amount_guest: 0 },
+  { time: '12:00', amount: 0, amount_guest: 0 },
+  { time: '15:00', amount: 0, amount_guest: 0 },
+  { time: '18:00', amount: 0, amount_guest: 0 },
+  { time: '21:00', amount: 0, amount_guest: 0 },
+  { time: '24:00', amount: 0, amount_guest: 0 },
+];
 
-export async function getServerSideProps(context) {
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 60);
-  try {
-    db.connect();
-    const orders = await Order.find().sort({ createdAt: -1 }).lean().exec();
-    const guestOrders = await Guest.find().sort({ createdAt: -1 }).lean().exec();
-    const totalInflows = await Order.find({
-      createdAt: { $gte: sevenDaysAgo }, // Find orders from the last seven days
-    }).lean().exec();
-    const totalGuestInflows = await Guest.find({
-      createdAt: { $gte: sevenDaysAgo }
-    }).lean().exec();
-    db.disconnect();
-    return {
-      props: {
-        orders: JSON.parse(JSON.stringify(orders && orders)),
-        guestOrders: JSON.parse(JSON.stringify(guestOrders && guestOrders)),
-        totalInflows: JSON.parse(JSON.stringify(totalInflows && totalInflows)),
-        totalGuestInflows: JSON.parse(JSON.stringify(totalGuestInflows && totalGuestInflows)),
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      props: {
-        orders: [],
-        guestOrders: [],
-        totalInflows: 0,
-        totalGuestInflows: 0
-      },
-    };
-  }
-}
-
-function Dashboard(props) {
-  const { orders, guestOrders, totalInflows, totalGuestInflows } = props;
+function Dashboard() {
   const { state: {session} } = useContext(Store);
-
-  const [{ loading, error, recentOrders, recentGuestOrders }, dispatch] = useReducer(reducer, {
-    loading: true,
-    orders: [],
-    error: ''
-  });
+  const [dataUsers, setDataUsers] = React.useState([]);
+  const [dataGuests, setDataGuests] = React.useState([]);
+  const [error, setError] = React.useState();
 
   React.useEffect(() => {
     async function getOrders() {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const res = await orders;
-        dispatch({ type: 'FETCH_SUCCESS', payload: res });
+        const { data } = await axios.get('/api/orders/fetch_orders');
+        setDataUsers(data);
       } catch (error) {
-        dispatch({ type: 'FETCH_FAIL', payload: error.message });
+        setError(error);
       }
     } 
     getOrders();
@@ -98,28 +51,105 @@ function Dashboard(props) {
   React.useEffect(() => {
     async function getOrders() {
       try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const resGuest = await guestOrders;
-        dispatch({ type: 'FETCH_SUCCESS', payload: resGuest });
+        const { data } = await axios.get('/api/guests/fetch_guest');
+        setDataGuests(data);
       } catch (error) {
-        dispatch({ type: 'FETCH_FAIL', payload: error.message });
+        setError(error);
       }
     } 
     getOrders();
 
   }, []);
+
+  const orders = [];
+  const orderGuest = [];
+  dataUsers[1]?.recentFiveOrders.forEach(order => {
+    orders.push(order.total);
+  })
+  dataGuests[1]?.recentFiveGuestOrders.forEach(order => {
+    orderGuest.push(order.total);
+  })
+  const sumOrder = orders.reduce((total, number) => total + number, 0);
+  const sumOrderGuest = orderGuest.reduce((total, number) => total + number, 0);
+  const total = (sumOrder + sumOrderGuest).toFixed(2);
+
+  React.useEffect(() => {
+    // Wait for orders to resolve (assuming orders is a Promise)
+  }, []);
+
+  React.useEffect(() => {
+    fillData();
+    fillGuestData();
+  }, []);
+
+  async function fillData() {
+    try {
+      const res = await axios.get('/api/orders/fetch_orders');
+      const orders = await res.data[0]?.orders;
+      orders && orders.forEach(order => {
+        const hour = parseInt(order.createdAt.substring(11, 13));
+        const amount = order.total;
+        if (hour >= 0 && hour < 3) {
+          data[0].amount += amount
+        } else if (hour >= 3 && hour < 6) {
+          data[1].amount += amount
+        } else if (hour >= 6 && hour < 9) {
+          data[2].amount += amount
+        }else if (hour >= 9 && hour < 12) {
+          data[3].amount += amount
+        }else if (hour >= 12 && hour < 15) {
+          data[4].amount += amount
+        }else if (hour >= 15 && hour < 18) {
+          data[5].amount += amount
+        }else if (hour >= 18 && hour < 21) {
+          data[6].amount += amount
+        }else if (hour >= 21 && hour < 24) {
+          data[7].amount += amount
+        }else if (hour === 24) {
+          data[8].amount += amount
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function fillGuestData() {
+    try {
+      const res = await axios.get('/api/guests/fetch_guest');
+      const guest = await res.data[0]?.guest_orders;
+      guest && guest.forEach(order => {
+        const hour = parseInt(order.createdAt.substring(11, 13));
+        const amount_guest = order.total;
+        if (hour >= 0 && hour < 3) {
+          data[0].amount_guest += amount_guest
+        } else if (hour >= 3 && hour < 6) {
+          data[1].amount_guest += amount_guest
+        } else if (hour >= 6 && hour < 9) {
+          data[2].amount_guest += amount_guest
+        }else if (hour >= 9 && hour < 12) {
+          data[3].amount_guest += amount_guest
+        }else if (hour >= 12 && hour < 15) {
+          data[4].amount_guest += amount_guest
+        }else if (hour >= 15 && hour < 18) {
+          data[5].amount_guest += amount_guest
+        }else if (hour >= 18 && hour < 21) {
+          data[6].amount_guest += amount_guest
+        }else if (hour >= 21 && hour < 24) {
+          data[7].amount_guest += amount_guest
+        }else if (hour === 24) {
+          data[8].amount_guest += amount_guest
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <DashboardLayout>
       {
-        loading ?
-        <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        : error ?
+        error ?
           <LabelButton sx={{width: '100%', my: 5, p: 2}}>
             <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
             {error}
@@ -137,7 +167,7 @@ function Dashboard(props) {
                 height: 240,
               }}
             >
-              <Chart orders={recentOrders} guestOrders={recentGuestOrders} />
+              <Chart data={data} />
             </Paper>
           </Grid>
           {/* Recent Deposits */}
@@ -150,18 +180,18 @@ function Dashboard(props) {
                 height: 240,
               }}
             >
-              <Deposits totalInflows={totalInflows} totalGuestInflows={totalGuestInflows} />
+              <Deposits total={total} />
             </Paper>
           </Grid>
           {/* Recent Orders */}
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-              <Orders orders={recentOrders} isGuest={false} />
+              <Orders orders={dataUsers[0]?.orders} isGuest={false} />
             </Paper>
           </Grid>
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
-              <Orders orders={recentGuestOrders} isGuest={true} />
+              <Orders orders={dataGuests[0]?.guest_orders} isGuest={true} />
             </Paper>
           </Grid>
         </Grid>

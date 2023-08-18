@@ -71,12 +71,16 @@ const MainListItems = () => {
         Management
       </ListSubheader>
       <ButtonAccordion slug={session?._id} />
-      <ListItemButton>
-        <ListItemIcon>
-          <AssignmentIcon />
-        </ListItemIcon>
-        <ListItemText primary="Last quarter" />
-      </ListItemButton>
+      <Link href={`/backoffice/${session?._id}/test`}>
+        <Tooltip title="Test" placement="right-start">
+          <ListItemButton>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            <ListItemText primary="Test" />
+          </ListItemButton>
+        </Tooltip>
+      </Link>
       <ListItemButton>
         <ListItemIcon>
           <AssignmentIcon />

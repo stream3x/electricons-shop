@@ -79,7 +79,7 @@ export default function Orders(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {orders.map((row) => (
+          {orders?.map((row) => (
             <TableRow key={row._id}>
               <TableCell>{convertDate(row.createdAt)}</TableCell>
               <TableCell>{row.personalInfo.name}</TableCell>
