@@ -22,7 +22,7 @@ export default function NavTabs(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [isFetched, setIsFetched] = React.useState(true);
-  const [storePromo, setStorePromo] = React.useState(null);
+  const [storePromo, setStorePromo] = React.useState([]);
 
   React.useEffect(() => {
     setIsFetched(false);
@@ -32,14 +32,14 @@ export default function NavTabs(props) {
   async function fetchStorePromo() {
     if(!isFetched) return;
     try {
-      const res = await axios.get('/api/products');
-      setStorePromo(res);
+      const { data } = await axios.get('/api/products');
+      setStorePromo(data.products);
     } catch (error) {
       console.log(error);
     }
   }
 
-  const laptopPromo = storePromo && storePromo.data.filter(promo => promo.category === 'Laptop computers');
+  const laptopPromo = storePromo && storePromo.filter(promo => promo.category === 'Laptop computers');
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

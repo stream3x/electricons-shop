@@ -13,12 +13,6 @@ import SelectPages from '../src/assets/SelectPages';
 import SwipeableFilterDrawer from '../src/components/SwipeableFilterDrawer';
 import ActionCardButtons from '../src/assets/ActionCardButtons';
 
-let PAGE_SIZE = 40;
-const ratings = [1, 2, 3, 4, 5];
-let brandArry = [];
-let catArray = [];
-let subCatArray = [];
-
 const minDistance = 10;
 
 function FilterRow(props) {
@@ -100,7 +94,7 @@ export default function Search(props) {
 
   const filterSearch = ({
     page,
-    pageSize,
+    pageSize = 12,
     category,
     subCategory,
     brand,
@@ -112,7 +106,7 @@ export default function Search(props) {
   }) => {
     const { query } = router;
     if(page) query.page = page;
-    if(pageSize) query.pageSize = pageSize;
+    if(pageSize) query.pageSize = pageSize || PAGE_SIZE;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
     if(subCategory) query.subCategory = subCategory;
@@ -715,6 +709,7 @@ export default function Search(props) {
 }
 
 export async function getServerSideProps({ query }) {
+  const PAGE_SIZE = 12;
   const pageSize = query.pageSize || PAGE_SIZE;
   const page = query.page || 1;
   const category = query.category || '';

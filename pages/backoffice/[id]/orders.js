@@ -20,29 +20,6 @@ import { Chip, Stack } from '@mui/material';
 import theme from '../../../src/theme';
 import Image from 'next/image';
 
-function createData(name, calories, fat, carbs, protein, price) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3,
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1,
-      },
-    ],
-  };
-}
-
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
@@ -100,7 +77,7 @@ function Row(props) {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
@@ -212,7 +189,7 @@ export default function CollapsibleTable() {
 
   return (
     <DashboardLayout>
-      <TableContainer component={Paper}>
+      <TableContainer sx={{bgcolor: 'transparent'}} elevation={0} component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -245,7 +222,7 @@ export default function CollapsibleTable() {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
       <Box sx={{py: 5}}></Box>
-       <TableContainer component={Paper}>
+       <TableContainer sx={{bgcolor: 'transparent'}} elevation={0} component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>

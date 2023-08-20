@@ -6,6 +6,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Store } from '../../src/utils/Store';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 const BackofficeIndex = () => {
   const { state, dispatch} = useContext(Store);

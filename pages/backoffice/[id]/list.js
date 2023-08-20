@@ -1,10 +1,9 @@
-import React, { useReducer } from 'react';
+import React from 'react';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
-import { AppBar, Backdrop, Box, Button, Checkbox, Chip, Grid, IconButton, InputBase, Pagination, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Box, Button, Checkbox, Chip, FormControl, Grid, IconButton, InputBase, InputLabel, MenuItem, Pagination, Rating, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography } from '@mui/material';
 import SelectPages from '../../../src/assets/SelectPages';
 import theme from '../../../src/theme';
 import { useRouter } from 'next/router';
-import db from '../../../src/utils/db';
 import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
@@ -12,12 +11,9 @@ import { alpha } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
-import Product from '../../../models/Product';
-import Order from '../../../models/Order';
-import Guest from '../../../models/Guest';
 import Link from '../../../src/Link';
-import CircularProgress from '@mui/material/CircularProgress';
 import dynamic from 'next/dynamic';
+import axios from 'axios';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -26,65 +22,6 @@ const LabelButton = styled(Button)(({ theme }) => ({
   border: 'thin solid lightGrey',
   borderLeft: '5px solid black',
 }));
-
-function reducer(state, action) {
-  switch(action.type) {
-    case 'FETCH_REQUEST': {
-      return { ...state, loading: true, error: '' };
-    }
-    case 'FETCH_SUCCESS': {
-        return { ...state, loading: false, storeProducts: action.payload, error: '' };
-    }
-    case 'FETCH_FAIL': {
-      return { ...state, loading: false, error: action.payload };
-    }
-    default:
-      return state;
-  }
-}
-
-export async function getServerSideProps(context) {
-  const page = parseInt(context.query.page) || 1;
-  const PAGE_SIZE = 10; // Number of items per page
-  const pageSize = context.query.pageSize || PAGE_SIZE;
-
-  try {
-    db.connect();
-    const totalProducts = await Product.countDocuments();
-    const totalPages = Math.ceil(totalProducts / pageSize);
-    const products = await Product.find().sort({ createdAt: -1 }).skip((page - 1) * pageSize).limit(pageSize).exec();
-    const orders = await Order.find().lean().exec();
-    const guestOrders = await Guest.find().lean().exec();
-    db.disconnect();
-
-    const productOrderCounts = products.map(product => {
-      const orderCount = [...orders, ...guestOrders].reduce((count, order) => {
-        if (order.orderItems.some(orderProduct => orderProduct._id.toString() === product._id.toString())) {
-          return count + 1;
-        }
-        return count;
-      }, 0);
-      return { ...product.toObject(), orderCount };
-    });
-
-    return {
-      props: {
-        pageSize,
-        totalPages,
-        productOrderCounts: JSON.parse(JSON.stringify(productOrderCounts))
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      props: {
-        pageSize: 0,
-        totalPages: 0,
-        productOrderCounts: []
-      },
-    };
-  }
-}
 
 const MyTableContainer = styled(TableContainer)({
   overflowY: "auto",
@@ -216,73 +153,53 @@ function EnhancedTableToolbar(props) {
   );
 }
 
-function ProductList(props) {
-  const { pageSize, totalPages, productOrderCounts } = props;
+function ProductList() {
   const router = useRouter();
-  const { id } = router.query;
-  const [searchFilter, setSearchFilter] = React.useState([]);
+  const { query } = router;
+  const { id } = query;
+  const [search, setSearch] = React.useState('');
   const [selected, setSelected] = React.useState([]);
   const [selectedItems, setSelectedItems] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [search, setSearch] = React.useState('');
   const [activeTab, setActiveTab] = React.useState(0);
+  const [rows, setRows] = React.useState([]);
+  const [rating, setRating] = React.useState(5);
+  const [pageSize, setPageSize] = React.useState('10');
+  const [page, setPage] = React.useState('');
 
-  const {
-    query = '',
-  } = router.query;
-
-  const filterSearch = ({
-    page,
-    pageSize,
-  }) => {
-    const { query } = router;
-    if(page) query.page = page;
-    if(pageSize) query.pageSize = pageSize;
-    router.push({
-      pathname: router.pathname,
-      query: query
-    });
-  };
-
-  const [{ loading, error, storeProducts }, dispatch] = useReducer(reducer, {
-    loading: true,
-    orders: [],
-    error: ''
-  });
-
-  React.useEffect(() => {
-    async function getOrders() {
-      try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const res = await productOrderCounts;
-        dispatch({ type: 'FETCH_SUCCESS', payload: res });
-      } catch (error) {
-        dispatch({ type: 'FETCH_FAIL', payload: error.message });
-      }
-    } 
-    getOrders();
-
-  }, [productOrderCounts]);
-
-  const searchHandler = (item) => {
-    if(item) {
-      setSearchFilter([item])
-    }else {
-      setSearchFilter([])
+  async function fetchingData(page, pageSize, search) {
+    try {
+      const { data } = await axios.get('/api/products', {
+        params: {
+          page: page,
+          pageSize: pageSize,
+          searchQuery: search
+        }
+      });
+      setRows(data.products);
+      setPage(data.totalPages)
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw error;
     }
-    filterSearch({ query: item});
-  };
+  }
 
   React.useEffect(() => {
-    searchHandler(query);
-  }, [query]);
+    fetchingData();
+  }, []);
 
-  const pageSizeHandler = (num) => {
-    filterSearch({ pageSize: num });
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log('set url');
+    fetchingData(page, pageSize, search);
   };
 
-  const pageHandler = (page) => {
-    filterSearch({ page });
+  const handlePageChange = (newPage) => {
+    fetchingData(newPage, pageSize, search);
+  };
+
+  const pageSizeHandler = (newPageSize) => {
+    setPageSize(newPageSize);
+    fetchingData(1, newPageSize, search); // Fetch data with updated page size
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -309,43 +226,16 @@ function ProductList(props) {
       newSelectedItems = newSelectedItems.concat(
         selectedItems.slice(0, selectedIndex),
         selectedItems.slice(selectedIndex + 1)
-        );
+      );
     }
     setSelected(newSelected);
     setSelectedItems(newSelectedItems);
   };
 
-  const hasWord = (word, toMatch) => {
-    let wordSplitted = word.split(' ');
-      if(wordSplitted.join(' ').includes(toMatch)) {
-        return true;
-      }
-      return false;
-  };
-
-  function searchTable(rows) {
-    return rows && rows.lenght !== 0 ? rows.filter((row) => ((row.title && hasWord(row.title.toLowerCase(), search.toLowerCase())) || (row.category && hasWord(row.category.toLowerCase(), search.toLowerCase()))) || (row.subCategory && hasWord(row.subCategory.toLowerCase(), search.toLowerCase()))  || (row.rating && hasWord(row.rating.toString(), search.toLowerCase()))) : users;
-  }
-
   const usersTabs = ['Create product']
 
   return (
     <DashboardLayout>
-      {
-        loading ?
-        <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        : error ?
-        <LabelButton sx={{width: '100%', my: 5, p: 2}}>
-          <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
-          {error}
-          </Typography>
-        </LabelButton>
-        :
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
@@ -363,15 +253,17 @@ function ProductList(props) {
                 }
               </Box>
               <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap'}}>
-                <Search component="form">
+                <Search onSubmit={handleSearch} component="form">
                   <SearchIconWrapper>
                     <SearchIcon />
                   </SearchIconWrapper>
                   <StyledInputBase
+                    value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search…"
                     inputProps={{ 'aria-label': 'search' }}
                   />
+                  <Button type="submit">Search</Button>
                 </Search>
               </Box>
             </Box>
@@ -393,11 +285,10 @@ function ProductList(props) {
                     <TableCell align="right">Categories</TableCell>
                     <TableCell align="right">Sub Categories</TableCell>
                     <TableCell align="right">Orders</TableCell>
-                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {searchTable(storeProducts)
+                  {rows
                     .map((row, index) => {
                       const labelId = `enhanced-table-checkbox-${index}`;
                       const isItemSelected = isSelected(row.title);
@@ -452,16 +343,13 @@ function ProductList(props) {
                             row?.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row?.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.orderCount} />
                             }
                           </TableCell>
-                          <TableCell align="right">
-                            
-                          </TableCell>
                         </TableRow>
                       );
                     })}
-                  {storeProducts.length > 0 && (
+                  {rows.length > 0 && (
                     <TableRow
                       style={{
-                        height: (6) * storeProducts.length,
+                        height: (6) * rows.length,
                       }}
                     >
                       <TableCell colSpan={12} />
@@ -480,28 +368,27 @@ function ProductList(props) {
           <Grid item xs={12}>
             <AppBar elevation={0} sx={{bgcolor: 'transparent'}} position="static">
               <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-                <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
+                <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler} />
                 {
-                  storeProducts.length === 0 ?
+                  rows.length === 0 ?
                   <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
                   "No Orders"
                   </Typography>
                   :
                   <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                  There are {storeProducts.length} {storeProducts.length === 1 ? "product" : "products"}.
+                  There are {rows.length} {rows.length === 1 ? "product" : "products"}.
                 </Typography>
                 }
                 {
-                  storeProducts.length > 0 &&
+                  rows.length > 0 &&
                   <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                    <Pagination sx={{mx: 'auto'}} count={totalPages} color="primary" showFirstButton showLastButton onChange={(e, value) => pageHandler(value)}  />
+                    <Pagination sx={{mx: 'auto'}} color="primary" showFirstButton showLastButton count={page} onChange={(e, val) => handlePageChange(val)}/>
                   </Stack>
                 }
               </Toolbar>
             </AppBar>
           </Grid>
         </Grid>
-      }
     </DashboardLayout>
   )
 }

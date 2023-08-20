@@ -144,13 +144,17 @@ export default function OrderTable(props) {
   const { userInfo } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  let rows = [];
+  const [rows, setRows] = React.useState([]);
 
-  if (userInfo) {
-    rows = orders.filter(order => order.personalInfo.email === userInfo.email);
-  }else {
-    rows = [];
-  }
+  React.useEffect(() => {
+    if (userInfo) {
+      const getOrders = orders && orders.filter(order => order.personalInfo.email === userInfo.email);
+      setRows(getOrders);
+    }else {
+      setRows([]);
+    }
+  }, []);
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -164,7 +168,7 @@ export default function OrderTable(props) {
     setPage(0);
   };
 
-  if (rows) {
+  if (!rows) {
     return (
       <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
         <Typography component="p" variant="h6">There are no items in your order history</Typography>
@@ -208,7 +212,7 @@ export default function OrderTable(props) {
               {'$'}{row.orderItems[0].price}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {row.payment}
+                {row.payment.paymantMethod}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.shipping.shippingMethod}

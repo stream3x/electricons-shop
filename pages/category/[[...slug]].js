@@ -31,7 +31,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
 
-const PAGE_SIZE = 40;
+const PAGE_SIZE = 12;
 let brandArry = [];
 let subCatArray = [];
 const minDistance = 10;
@@ -242,7 +242,7 @@ export default function CategoryProducts(props) {
     brand = '',
     price = '',
     sort = '',
-    pageSize = 40,
+    pageSize = 12,
     page = 1
   } = router.query;
 

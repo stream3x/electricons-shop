@@ -197,7 +197,7 @@ export default function Header() {
       const { data } = await axios.get('/api/products');
 
       if(active) {
-        setOptions([...data]);
+        setOptions([...data.products]);
       }
     })();
 
@@ -263,6 +263,7 @@ export default function Header() {
     Cookies.remove('payment');
     Cookies.remove('shipping');
     Cookies.remove('forInvoice');
+    Cookies.remove('session');
     router.push('/');
   };  
 

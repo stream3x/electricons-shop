@@ -20,14 +20,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import DashboardLayout from '../../../src/layout/DashboardLayout';
 import axios from 'axios';
 import { Button, Chip, InputBase, Stack, useMediaQuery } from '@mui/material';
-import theme from '../../../src/theme';
-import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
-import GuestCustomerTable from '../../../src/components/GuestCustomerTable';
+import theme from '../theme';
+import AlertDialogSlide from '../assets/AlertDialogSlide';
 
 const Search = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -239,29 +237,26 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Users
+          Guest Users
         </Typography>
       )}
-
-      {numSelected > 0 ? (
+      {numSelected === 1 && (
         <Box sx={{display: 'flex'}}>
           <Tooltip title="Edit">
             <IconButton onClick={() => editItemHandler(selectedItems)}>
               <EditIcon />
             </IconButton>
           </Tooltip>
+        </Box>
+      )}
+      {numSelected > 0 && (
+        <Box sx={{display: 'flex'}}>
           <Tooltip title="Delete" onClick={() => setOpen(true)}>
             <IconButton>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         </Box>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       )}
       <AlertDialogSlide removeUserHandler={removeUserHandler} open={open} setOpen={setOpen} handleClose={handleClose} selectedItems={selectedItems} />
 
@@ -273,7 +268,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function GuestCustomerTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
@@ -285,14 +280,6 @@ export default function EnhancedTable() {
   const matches = useMediaQuery('(min-width: 560px)');
   const [search, setSearch] = React.useState('');
   const [rows, setRows] = React.useState([]);
-
-  React.useEffect(() => {
-    async function fetchingData() {
-      const { data } = await axios.get('/api/users');
-      setRows(data);
-    }
-    fetchingData();
-  }, [])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -308,6 +295,7 @@ export default function EnhancedTable() {
       return;
     }
     setSelected([]);
+    setSelectedItems([]);
   };
 
   const handleClick = (event, name, item) => {
@@ -317,7 +305,7 @@ export default function EnhancedTable() {
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
-       newSelectedItems = newSelectedItems.concat(selectedItems, item);
+      newSelectedItems = newSelectedItems.concat(selectedItems, item);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
       newSelectedItems = newSelectedItems.concat(selectedItems.slice(1));
@@ -362,6 +350,14 @@ export default function EnhancedTable() {
     [order, orderBy, page, rowsPerPage, rows],
   );
 
+  React.useEffect(() => {
+    async function fetchingData() {
+      const { data } = await axios.get('/api/guests/fetch_guest');
+      setRows(data[2].guest_users);
+    }
+    fetchingData();
+  }, [])
+
   const hasWord = (word, toMatch) => {
     let wordSplitted = word.split(' ');
       if(wordSplitted.join(' ').includes(toMatch)) {
@@ -374,10 +370,10 @@ export default function EnhancedTable() {
     return rows && rows.lenght !== 0 ? rows.filter((row) => ((row.name && hasWord(row.name.toLowerCase(), search.toLowerCase())) || (row.email && hasWord(row.email.toLowerCase(), search.toLowerCase()))) || (row.address && hasWord(row.address.toLowerCase(), search.toLowerCase()))  || (row.city && hasWord(row.city.toLowerCase(), search.toLowerCase()))) : users;
   }
 
-  const usersTabs = ['All Customers', 'Administrators', 'Subscribers']
+  const usersTabs = ['All Customers', 'Subscribers']
 
   return (
-    <DashboardLayout>
+    <Box>
       <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
           {
@@ -495,7 +491,6 @@ export default function EnhancedTable() {
           />
         </Paper>
       </Box>
-      <GuestCustomerTable />
-    </DashboardLayout>
+    </Box>
   );
 }

@@ -100,7 +100,7 @@ export default function StatisticTable() {
   React.useEffect(() => {
     async function fetchingData() {
       const { data } = await axios.get('/api/products');
-      setRows(data);
+      setRows(data.products);
     }
     fetchingData();
   }, [])
