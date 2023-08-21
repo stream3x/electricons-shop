@@ -16,10 +16,10 @@ export default function SelectPages(props) {
   return (
     <Box sx={{ flex: {xs: 1, sm: 0} }}>
       <FormControl sx={{ m: 1, minWidth: {xs: '100%', sm: 100} }}>
-        <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-label">Show</InputLabel>
+        <InputLabel sx={{top: {xs: '-7px', sm: 0} }} id="select-page-size">Show</InputLabel>
         <Select
           size={!matches ? 'small' : 'medium'}
-          labelId="select-label"
+          labelId="select-page-size"
           id="select-label"
           value={pageSize}
           onChange={handleChange}

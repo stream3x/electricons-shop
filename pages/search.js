@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Product from '../models/Product';
 import BreadcrumbNav from '../src/assets/BreadcrumbNav';
-import SelectCategory from '../src/assets/SelectSort';
+import SelectSort from '../src/assets/SelectSort';
 import ToggleButtons from '../src/assets/ToggleButtons';
 import Link from '../src/Link';
 import theme from '../src/theme';
@@ -14,6 +14,9 @@ import SwipeableFilterDrawer from '../src/components/SwipeableFilterDrawer';
 import ActionCardButtons from '../src/assets/ActionCardButtons';
 
 const minDistance = 10;
+let brandArry = [];
+let catArray = [];
+let subCatArray = [];
 
 function FilterRow(props) {
   const { items, title, handleChange } = props;
@@ -411,8 +414,8 @@ export default function Search(props) {
   const brandHandler = (item) => {
     filterSearch({ brand: item });
   };
-  const sortHandler = (e) => {
-    filterSearch({ sort: e.target.value });
+  const sortHandler = (value) => {
+    filterSearch({ sort: value });
   };
   const priceHandler = (val) => {
     filterSearch({ price: val });
@@ -525,7 +528,7 @@ export default function Search(props) {
                     handleChangeSubCat={handleChangeSubCat}
                   />
                   <ToggleButtons handleChangeView={handleChangeView} view={view} />
-                  <SelectCategory value={sort} sortHandler={sortHandler} />
+                  <SelectSort value={sort} sortHandler={sortHandler} />
                 </Toolbar>
               </AppBar>
             </Grid>
@@ -745,10 +748,10 @@ export async function getServerSideProps({ query }) {
     const order = 
     sort === 'availability'
     ? { isAvalable: -1 }
-    : sort === 'lowest'
-    ? { price: 1 }
     : sort === 'highest'
     ? { price: -1 }
+    : sort === 'lowest'
+    ? { price: 1 }
     : sort === 'namelowest'
     ? { name: 1 }
     : sort === 'namehighest'

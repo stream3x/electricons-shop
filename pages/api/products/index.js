@@ -17,6 +17,7 @@ const handler = async (req, res) => {
     const subCategory = query.subCategory || '';
 
     const filter = {};
+    
     if (searchQuery) {
       filter.$or = [
         { title: { $regex: searchQuery, $options: 'i' } },
