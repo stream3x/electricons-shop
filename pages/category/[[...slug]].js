@@ -8,11 +8,9 @@ import Link from '../../src/Link';
 import ReplyIcon from '@mui/icons-material/Reply';
 import Rating from '@mui/material/Rating';
 import BreadcrumbNav from '../../src/assets/BreadcrumbNav';
-// import db from '../../src/utils/db';
 import IconButton from '@mui/material/IconButton';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import LoadingButton from '@mui/lab/LoadingButton';
-// import Product from '../../models/Product';
 import Image from 'next/image';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -31,145 +29,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { Collapse } from '@mui/material';
 import axios from 'axios';
-
-let brandArry = [];
-let subCatArray = [];
-const minDistance = 10;
-const newSubCat = [];
-const newBrands = [];
-
-function FilterRow(props) {
-  const { items, title, handleChange } = props;
-  const [expanded, setExpanded] = React.useState(false);
-  
-  return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-      <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
-      <FormLabel component="legend">{title}</FormLabel>
-        {
-          items && items.slice(0, 3).map(item => (
-            <FormGroup key={Object.keys(item)}>
-              <FormControlLabel
-                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                control={
-                  Object.values(item)[0] ?
-                  <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
-                  :
-                  <Checkbox checked={false} onChange={handleChange(item)} />
-                }
-                label={Object.keys(item)}
-              />
-            </FormGroup>
-          ))
-        }
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-        {
-          items && items.slice(3, items.length).map(item => (
-            <FormGroup key={Object.keys(item)}>
-              <FormControlLabel
-                sx={{'& span': {color: 'secondary.lightGrey'} }}
-                control={
-                  Object.values(item)[0] ?
-                  <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
-                  :
-                  <Checkbox checked={false} onChange={handleChange(item)} />
-                }
-                label={Object.keys(item)}
-              />
-            </FormGroup>
-          ))
-        }
-        </Collapse>
-        {
-          items && items.length > 3 &&
-          <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={() => setExpanded(!expanded)}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
-        }
-      </FormControl>
-    </Box>
-  )
-}
-
-// export async function getServerSideProps(context) {
-//   const { params, query } = context;
-//   const { slug } = params;
-
-//   const pageSize = query.pageSize || PAGE_SIZE;
-//   const page = query.page || 1;
-//   const category = query.category || '';
-//   const subCategory = query.subCategory || '';
-//   const brand = query.brand || '';
-//   const price = query.price || '';
-//   const sort = query.sort || '';
-//   const searchQueary = query.query || '';
-//   const queryFilter = 
-//     searchQueary && searchQueary !== ''
-//     ? {
-//       title: {
-//         $regex: searchQueary,
-//         $options: 'i'
-//       }
-//     }
-//     : {};
-  
-//   const categoryFilter = category ? { category } : {};
-//   const subCategoryFilter = subCategory && subCategory !== '' ? { subCategory } : {};
-//   const brandFilter = brand && brand !== '' ? { brand } : {};
-//   const priceFilter =
-//     price && price !== ''
-//     ? {
-//       price: {
-//         $gte: Number(price.split('-')[0]),
-//         $lte:  Number(price.split('-')[1])
-//       }
-//     }
-//     : {};
-
-//   const order = 
-//     sort === 'availability'
-//     ? { inStock: -1 }
-//     : sort === 'lowest'
-//     ? { price: 1 }
-//     : sort === 'highest'
-//     ? { price: -1 }
-//     : sort === 'namelowest'
-//     ? { title: 1 }
-//     : sort === 'namehighest'
-//     ? { title: -1 } 
-//     : sort === 'latest'
-//     ? { createdAt: -1 }
-//     : { _id: -1 };
-
-//   await db.connect();
-
-//     const subCategories = await Product.find().distinct('subCategory');
-//     const brands = await Product.find().distinct('brand');
-    
-//     const productDocs = await Product.find(
-//       {
-//         ...queryFilter,
-//         ...categoryFilter,
-//         ...subCategoryFilter,
-//         ...priceFilter,
-//         ...brandFilter,
-//       },
-//     ).sort(order).skip(pageSize * (page - 1)).limit(pageSize).lean();
-//     const productDocsByCategory = productDocs.filter(prod => slug[1] !== undefined ? prod.subCategoryUrl === slug[1] : prod.categoryUrl === slug[0]);
-
-//     await db.disconnect();
-//     const products = productDocsByCategory.map(db.convertDocToObject);
-
-//     return {
-//       props: {
-//         products,
-//         countProducts: productDocsByCategory.length,
-//         page,
-//         pages: Math.ceil(productDocsByCategory.length / pageSize),
-//         subCategories,
-//         brands,
-//         slug
-//       }
-//     };
-// }
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -246,11 +105,18 @@ export default function CategoryProducts() {
   const [lte, setLte] = useState('');
   const [gte, setGte] = useState('');
   const [sort, setSort] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [checkBrand, setCheckBrand] = useState([]);
   const [pageSize, setPageSize] = useState('12');
   const [isFilterApplied, setIsFilterApplied] = useState(false)
-  const memoPrice = React.useMemo(() => getAllPrice(products), [products])
+  const memoPrice = React.useMemo(() => getAllPrice(products), [products]);
+  let brandArry = [];
+  let subCatArray = [];
+  const minDistance = 10;
+  const newSubCat = [];
+  const newBrands = [];
 
   function getAllPrice(stores) {
     const allPrices = [];
@@ -263,7 +129,7 @@ export default function CategoryProducts() {
 
   const minPrice = Math.min(...memoPrice);
   const maxPrice = Math.max(...memoPrice);
-  const [value, setValue] = React.useState([]);
+  const [value, setValue] = React.useState([minPrice, maxPrice]);
   const [priceChip, setPriceChip] = React.useState([]);
 
   useEffect(() => {
@@ -273,8 +139,8 @@ export default function CategoryProducts() {
           params: {
             pageSize: pageSize,
             page: page,
-            priceFilter: value,
-            sort: sort
+            brand: checkBrand.toString(),
+
           }
         });
         setProducts(data.products);
@@ -289,7 +155,75 @@ export default function CategoryProducts() {
       }
     }
     fetchingData();
-  }, [category, subcategory, priceChip]);
+  }, [category, subcategory, priceChip, checkBrand]);
+console.log(selectedSubcategory, subcategory ? subcategory : selectedSubcategory);
+  async function fetchingData(pageSize, page, sort) {
+    try {
+      const { data } = await axios.get(`/api/products/fetchByCategories?${subcategory === undefined ? `categoryUrl=${category}` : `subCategoryUrl=${subcategory}`}`, {
+        params: {
+          pageSize: pageSize,
+          page: page,
+          sort: sort
+        }
+      });
+      setProducts(data.products);
+      setPages(data.totalPages);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      throw error;
+    }
+  }
+
+  function FilterRow(props) {
+    const { items, title, handleChange } = props;
+    const [expanded, setExpanded] = React.useState(false);
+
+    return (
+      <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+        <FormControl sx={{ m: 3 }} component="fieldset" variant="standard">
+        <FormLabel component="legend">{title}</FormLabel>
+          {
+            items && items.slice(0, 3).map(item => (
+              <FormGroup key={Object.keys(item)}>
+                <FormControlLabel
+                  sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  control={
+                    Object.values(item)[0] ?
+                    <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
+                    :
+                    <Checkbox checked={false} onChange={handleChange(item)} />
+                  }
+                  label={`${Object.keys(item)}`}
+                />
+              </FormGroup>
+            ))
+          }
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {
+            items && items.slice(3, items.length).map(item => (
+              <FormGroup key={Object.keys(item)}>
+                <FormControlLabel
+                  sx={{'& span': {color: 'secondary.lightGrey'} }}
+                  control={
+                    Object.values(item)[0] ?
+                    <Checkbox checked={Object.values(item)[0]} onChange={handleChange(item)} />
+                    :
+                    <Checkbox checked={false} onChange={handleChange(item)} />
+                  }
+                  label={Object.keys(item)}
+                />
+              </FormGroup>
+            ))
+          }
+          </Collapse>
+          {
+            items && items.length > 3 &&
+            <FormHelperText sx={{cursor: 'pointer', '&:hover': {color: 'secondary.main'}}} onClick={() => setExpanded(!expanded)}>{!expanded ? "+ show more" : "- show less"}</FormHelperText>
+          }
+        </FormControl>
+      </Box>
+    )
+  }
 
   const handlePriceDelete = () => {
     setPriceChip([]);
@@ -335,6 +269,7 @@ export default function CategoryProducts() {
       setIsFilterApplied(true);
     }else {
       setPriceChip([])
+      setIsFilterApplied(false);
     }
   }
 
@@ -348,10 +283,13 @@ export default function CategoryProducts() {
   };
 
   const subCategoryState = subCategories?.map(item => item);
+  const brandsState = brands?.map(item => item);
   const uniqueSubCat = [...new Set(subCategoryState)];
-  const uniqueBrand = [...new Set(brands)];
+  const uniqueBrand = [...new Set(brandsState)];
   const createBrandBooleans = Array(uniqueBrand?.length).fill(false);
   const createSubCatBooleans = Array(uniqueSubCat.length).fill(false);
+  const [brandFilter, setBrandFilter] = React.useState([]);
+  const [subCat, setSubCat] = React.useState([]);
 
   const resultBrands = [createBrandBooleans].map(row =>
     row.reduce((acc, cur, i) => (
@@ -377,9 +315,12 @@ export default function CategoryProducts() {
       newSubCat.push(temp);
   }
 
-  const [brandFilter, setBrandFilter] = React.useState(newBrands);
-  const [subCat, setSubCat] = React.useState(newSubCat);
-console.log(brandFilter, subCat);
+  useEffect(() => {
+    setBrandFilter(newBrands);
+    setSubCat(newSubCat);
+  }, [])
+  
+
   const handleChangeBrand = (item) => (event) => {
     const removeDuplicates = [];
     setBrandFilter(prev => {
@@ -454,22 +395,20 @@ console.log(brandFilter, subCat);
 
   const pageSizeHandler = (newPageSize) => {
     setPageSize(newPageSize);
-    fetchingData(newPageSize, 1, price, sort);
+    fetchingData(newPageSize, 1);
   };
   const subCategoryHandler = (item) => {
-    console.log(item);
+    setSelectedSubcategory(item.toString());
   };
   const pageHandler = (page) => {
     fetchingData(pageSize, page);
   };
   const brandHandler = (item) => {
-    console.log(item);
+    setCheckBrand(item)
   };
   const sortHandler = (e) => {
     console.log(e);
   };
-
-  // const titlePage = slug.query.slug.toString().replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()});
 
   const [selected, setSelected] = React.useState('');
   const [view, setView] = React.useState('module');
@@ -477,8 +416,6 @@ console.log(brandFilter, subCat);
   const handleChangeView = (event, nextView) => {
     setView(nextView);
   };
-
-  // const currentPage = [...Array(pages).keys()].map(pageNumber => pageNumber + 1);
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -530,8 +467,8 @@ console.log(brandFilter, subCat);
                           size="small"
                           onChange={handleInputMinChange}
                           inputProps={{
-                            min: value[0],
-                            max: value[1],
+                            min: minPrice,
+                            max: maxPrice,
                             type: 'number',
                             'aria-labelledby': 'input-slider',
                           }}
@@ -545,8 +482,8 @@ console.log(brandFilter, subCat);
                           size="small"
                           onChange={handleInputMaxChange}
                           inputProps={{
-                            min: value[0],
-                            max: value[1],
+                            min: minPrice,
+                            max: maxPrice,
                             type: 'number',
                             'aria-labelledby': 'input-slider',
                           }}
@@ -554,7 +491,7 @@ console.log(brandFilter, subCat);
                       </Box>
                       <Slider
                         getAriaLabel={() => 'Filter by price'}
-                        value={[value[0], value[1]]}
+                        value={value}
                         onChange={handleChangePrice}
                         min={minPrice}
                         max={maxPrice}
@@ -566,10 +503,10 @@ console.log(brandFilter, subCat);
                   </Box>
                 </Toolbar>
                 <Toolbar>
-                  <FilterRow items={brandFilter} title={"Brand"} handleChange={handleChangeBrand} />
+                  <FilterRow items={brandFilter.length > 0 ? brandFilter : newBrands} title={"Brands"} handleChange={handleChangeBrand} />
                 </Toolbar>
                 <Toolbar>
-                  <FilterRow items={subCat} title={"Subcategories"} handleChange={handleChangeSubCat} />
+                  <FilterRow items={subCat.length > 0 ? subCat : newSubCat} title={"Categories"} handleChange={handleChangeSubCat} />
                 </Toolbar>
               </AppBar>
             </Grid>

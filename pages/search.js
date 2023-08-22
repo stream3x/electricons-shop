@@ -267,7 +267,8 @@ export default function Search(props) {
     }else {
       removeDuplicates.push(Object.keys(item)[0])
     }
-    brandHandler(brandArry = brandArry.filter(val => !removeDuplicates.includes(val)))
+    // brandHandler(brandArry = brandArry.filter(val => !removeDuplicates.includes(val)));
+    console.log(item, removeDuplicates, brandFilter);
   };
 
   const handleDelete = () => {

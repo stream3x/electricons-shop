@@ -7,7 +7,7 @@ const handler = nc();
 
 handler.get( async(req, res) => {
   const { query } = req;
-  const { category, minPrice, maxPrice } = req.query;
+  const { minPrice, maxPrice, brand } = req.query;
   
   try {
     await db.connect();
@@ -17,7 +17,6 @@ handler.get( async(req, res) => {
     const categoryUrl = query.categoryUrl || '';
     const subCategoryUrl = query.subCategoryUrl || '';
     const sort = query.sort || '';
-    const price = query.price || '';
   
     const categories = await Product.find().distinct('category');
     const subcategories = await Product.find().distinct('subCategory');
@@ -52,6 +51,10 @@ handler.get( async(req, res) => {
       filter.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
     }
 
+    if (brand) {
+      filter.brand = brand;
+    }
+
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / pageSize);
 
@@ -61,7 +64,7 @@ handler.get( async(req, res) => {
     .limit(pageSize);
 
     
-    console.log(subcategories);
+    console.log(subCategoryUrl);
 
     await db.disconnect();
     res.status(200).json({
