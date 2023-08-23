@@ -45,6 +45,16 @@ function convertDocToObject(doc) {
     doc.createdAt = doc.createdAt.toString();
     doc.updatedAt = doc.updatedAt.toString();
   }
+  if(doc.widgetImages) {
+    doc._id = doc._id.toString();
+    doc.widgetImages.forEach(img => {
+      img._id = img._id.toString();
+      img.createdAt = img.createdAt.toString();
+      img.updatedAt = img.updatedAt.toString();
+    });
+    doc.createdAt = doc.createdAt.toString();
+    doc.updatedAt = doc.updatedAt.toString();
+  }
   if(doc.details) {
     doc.details.forEach(detail => {
       detail._id = detail._id.toString();

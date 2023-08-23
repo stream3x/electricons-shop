@@ -9,6 +9,15 @@ const imageSchema = new mongoose.Schema(
   }
 );
 
+const widgetImageSchema = new mongoose.Schema(
+  {
+    image: {type: String, required: false}
+  },
+  {
+    timestamps: true
+  }
+);
+
 const storeSchema = new mongoose.Schema(
   {
     store: {type: String, required: true}
@@ -32,6 +41,7 @@ const productSchema = new mongoose.Schema(
   {
     title: {type: String, required: true},
     images: [imageSchema],
+    widgetImages: [widgetImageSchema],
     shortDescription: {type: String, required: true},
     description: {type: String, required: true},
     details: [detailSchema],

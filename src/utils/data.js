@@ -36,7 +36,8 @@ const data = {
   products: [
     {
       title: "AMD Ryzen 53500",
-      images: [{image: "/images/amd_desktop/hero/amd-ryzen5.png"}, {image: "/images/amd_desktop/amd-desktop-ryzen.png"}, {image: "/images/amd_desktop/amd_ryzen.png"}, {image: "/images/amd_desktop/desktopAvatar.png"}, {image: "/images/amd_desktop/desktop_ryzen.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/amd_desktop/amd-desktop-ryzen.png"}, {image: "/images/amd_desktop/amd_ryzen.png"}, {image: "/images/amd_desktop/desktopAvatar.png"}, {image: "/images/amd_desktop/desktop_ryzen.png"}],
+      widgetImages: [{image: "/images/amd_desktop/hero/amd-ryzen5.png"}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -59,7 +60,8 @@ const data = {
     },
     {
       title: "AMD Acer Aspire",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/acer_desktop/acer_desk.png"}, {image: "/images/acer_desktop/amd-acer-desktop.png"}, {image: "/images/acer_desktop/acer_desk_full-set.png"}, {image: "/images/acer_desktop/acer_desktop.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/acer_desktop/acer_desk.png"}, {image: "/images/acer_desktop/amd-acer-desktop.png"}, {image: "/images/acer_desktop/acer_desk_full-set.png"}, {image: "/images/acer_desktop/acer_desktop.png"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -82,7 +84,8 @@ const data = {
     },
     {
       title: "AMD Dell Inspirion Desktop ",
-      images: [{image: "/images/dell_desktop/hero/dell-inspirion.jpg"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/dell_desktop/dell_desktop.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/dell_desktop/dell_desktop.png"}],
+      widgetImages: [{image: "/images/dell_desktop/hero/dell-inspirion.jpg"}, {image: ""}],
       shortDescription: "AMD RYZEN 7, NVIDIA RTX 3060, 16GB of DDR4 RAM, 1TB Solid State Drive",
       description: "AMD Dell Inspiron G5 5000 An excellent value gaming PC from Dell, AMD RYZEN 7, NVIDIA RTX 3060, 16GB of DDR4 RAM, 1TB Solid State Drive",
       rating: 4,
@@ -105,7 +108,8 @@ const data = {
     },
     {
       title: "Dell PRO",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/dell_desktop/dell_desktop.png"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/dell_desktop/dell_desktop.png"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -128,8 +132,9 @@ const data = {
     },
     {
       title: "Dell business",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/hp_desktop/servers-hewlett-packard.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/dell_desktop/amd-dell-desktop.png"}, {image: "/images/hp_desktop/servers-hewlett-packard.png"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
+      widgetImages: [{image: ""}, {image: ""}],
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
       price: 2100,
@@ -151,7 +156,8 @@ const data = {
     },
     {
       title: "HP server",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/hp_desktop/servers-hewlett-packard.png"}, {image: "/images/hp_desktop/servers-hp.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/hp_desktop/servers-hewlett-packard.png"}, {image: "/images/hp_desktop/servers-hp.png"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 3,
@@ -174,7 +180,8 @@ const data = {
     },
     {
       title: "HP Envy Desktop",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/hp_desktop/hp-desktop.png"}, {image: "/images/hp_desktop/hp-pavilion.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/hp_desktop/hp-desktop.png"}, {image: "/images/hp_desktop/hp-pavilion.png"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 3,
@@ -197,7 +204,8 @@ const data = {
     },
     {
       title: "Acer laptop",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/acer_laptop/acer-laptop.png"}, {image: "/images/acer_laptop/acer-lap.png"}, {image: "/images/acer_laptop/acer-laptop_green.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/acer_laptop/acer-laptop.png"}, {image: "/images/acer_laptop/acer-lap.png"}, {image: "/images/acer_laptop/acer-laptop_green.png"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -220,7 +228,8 @@ const data = {
     },
     {
       title: "Lenovo laptop",
-      images: [{image: "/images/lenovo_laptop/hero/lenovo.jpg"}, {image: "/images/lenovo_laptop/lenovo_laptop_two.png"}, {image: "/images/lenovo_laptop/lenovo_laptop_one.png"}, {image: "/images/lenovo_laptop/lenovo-laptop.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/lenovo_laptop/lenovo_laptop_two.png"}, {image: "/images/lenovo_laptop/lenovo_laptop_one.png"}, {image: "/images/lenovo_laptop/lenovo-laptop.png"}],
+      widgetImages: [{image: "/images/lenovo_laptop/hero/lenovo.jpg"}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 2,
@@ -243,7 +252,8 @@ const data = {
     },
     {
       title: "Toshiba Satellite",
-      images: [{image: "/images/toshiba_laptop/hero/toshiba.jpg"}, {image: "/images/toshiba_laptop/toshiba.png"}, {image: "/images/toshiba_laptop/toshiba-expands.png"}, {image: "/images/toshiba_laptop/toshiba_satellite.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/toshiba_laptop/toshiba.png"}, {image: "/images/toshiba_laptop/toshiba-expands.png"}, {image: "/images/toshiba_laptop/toshiba_satellite.png"}],
+      widgetImages: [{image: "/images/toshiba_laptop/hero/toshiba.jpg"}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -266,7 +276,9 @@ const data = {
     },
     {
       title: "Xiaomi Redmi Note 9",
-      images: [{image: "/images/xiaomi_mobile/hero/redmi-note-9.jpg"}, {image: "/images/xiaomi_mobile/hero/redmi-note-mobile.jpg"}, {image: "/images/xiaomi_mobile/Redmi-Note-9-1pro.png"}, {image: "/images/xiaomi_mobile/xiaomi_5G.webp"}, {image: "/images/xiaomi_mobile/xiaomi_5G_front.webp"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/xiaomi_mobile/Redmi-Note-9-1pro.png"}, {image: "/images/xiaomi_mobile/xiaomi_5G.webp"}, {image: "/images/xiaomi_mobile/xiaomi_5G_front.webp"}],
+      widgetImages: [{image: ""}, {image: ""}],
+      widgetImages: [{image: "/images/xiaomi_mobile/hero/redmi-note-9.jpg"}, {image: "/images/xiaomi_mobile/hero/redmi-note-mobile.jpg"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -289,7 +301,8 @@ const data = {
     },
     {
       title: "Xiaomi 10",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/xiaomi_mobile/xiaomi_5G.webp"}, {image: "/images/xiaomi_mobile/xiaomi_5G_front.webp"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/xiaomi_mobile/xiaomi_5G.webp"}, {image: "/images/xiaomi_mobile/xiaomi_5G_front.webp"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -312,7 +325,8 @@ const data = {
     },
     {
       title: "Nokia Seven",
-      images: [{image: "/images/nokia_mobile/hero/nokia-7.jpg"},{image: "/images/nokia_mobile/hero/nokia-7-mobile.jpg"}, {image: "/images/nokia_mobile/nokia_quad.webp"}, {image: "/images/nokia_mobile/nokia-smartphone.png"}, {image: "/images/nokia_mobile/nokia_quad_front.webp"}, {image: "/images/nokia_mobile/nokia_quad_back.webp"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/nokia_mobile/nokia_quad.webp"}, {image: "/images/nokia_mobile/nokia-smartphone.png"}, {image: "/images/nokia_mobile/nokia_quad_front.webp"}, {image: "/images/nokia_mobile/nokia_quad_back.webp"}],
+      widgetImages: [{image: "/images/nokia_mobile/hero/nokia-7.jpg"}, {image: "/images/nokia_mobile/hero/nokia-7-mobile.jpg"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -335,7 +349,8 @@ const data = {
     },
     {
       title: "Nokia Spring",
-      images: [{image: "/images/hero/no-image.jpg"}, {image: "/images/nokia_mobile/nokia_quad_back.webp"}, {image: "/images/nokia_mobile/nokia_quad_front.webp"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/nokia_mobile/nokia_quad_back.webp"}, {image: "/images/nokia_mobile/nokia_quad_front.webp"}],
+      widgetImages: [{image: ""}, {image: ""}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 4,
@@ -358,7 +373,8 @@ const data = {
     },
     {
       title: "Huawei 14x Elite",
-      images: [{image: "/images/huawei_mobile/hero/huawei-20mp.jpg"},{image: "/images/huawei_mobile/hero/huawei-14pro-mobile.jpg"}, {image: "/images/huawei_mobile/huawei.png"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/huawei_mobile/huawei.png"}],
+      widgetImages: [{image: "/images/huawei_mobile/hero/huawei-20mp.jpg"}, {image: "/images/huawei_mobile/hero/huawei-14pro-mobile.jpg"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 3,
@@ -381,7 +397,8 @@ const data = {
     },
     {
       title: "Huawei P30 Pro",
-      images: [{image: "/images/huawei_mobile/hero/huawei-p30-pro.jpg"}, {image: "/images/huawei_mobile/hero/huawei-p30-mobile.jpg"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}, {image: "/images/huawei_mobile/huawei_smart.png"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}],
+      images: [{image: "/images/no-image.jpg"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}, {image: "/images/huawei_mobile/huawei_smart.png"}, {image: "/images/huawei_mobile/huawei_smart_back-front.webp"}],
+      widgetImages: [{image: "/images/huawei_mobile/hero/huawei-p30-pro.jpg"}, {image: "/images/huawei_mobile/hero/huawei-p30-mobile.jpg"}],
       shortDescription: "Ryzen 5 | 3.6 GHz | Chipset B450 | RAM 16 GB | SSD 500 GB | Nvidia RTX 3050 8GB GDDR6",
       description: "Processor type: Ryzen 5 Processor model: Ryzen 3500, Processor clock speed: 3.6 GHz, Motherboard chipset: B450, Memory: 16 GB, Hard disk type: SSD Hard disk capacity: 500 GB, Graphics card: Nvidia, Graphics card model: NVD RTX 3050, Graphics card memory: 8GB GDDR6",
       rating: 3,

@@ -45,10 +45,10 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell align="right">{row?.orderNumber}</TableCell>
-        <TableCell align="right">{row.personalInfo.name}</TableCell>
-        <TableCell align="right">{row?.shipping.shippingAddress} {row?.shipping.shippingCity}{row?.shipping.store !== 'null' && row?.shipping.store}</TableCell>
-        <TableCell align="right">{row?.shipping.shippingMethod}</TableCell>
-        <TableCell align="right">{row?.payment.paymentMethod}</TableCell>
+        <TableCell align="right">{row.personalInfo?.name}</TableCell>
+        <TableCell align="right">{row?.shipping?.shippingAddress} {row?.shipping.shippingCity}{row?.shipping.store !== 'null' && row?.shipping.store}</TableCell>
+        <TableCell align="right">{row?.shipping?.shippingMethod}</TableCell>
+        <TableCell align="right">{row?.payment?.paymentMethod}</TableCell>
         <TableCell component="th" scope="row">
           {convertDate(row.createdAt)}
         </TableCell>

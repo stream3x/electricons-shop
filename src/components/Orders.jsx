@@ -81,9 +81,9 @@ export default function Orders(props) {
         <TableBody>
           {orders?.map((row) => (
             <TableRow key={row._id}>
-              <TableCell>{convertDate(row.createdAt)}</TableCell>
-              <TableCell>{row.personalInfo.name}</TableCell>
-              <TableCell>{row.addresses.address}, {row.addresses.city}, {row.addresses.country}</TableCell>
+              <TableCell>{convertDate(row?.createdAt)}</TableCell>
+              <TableCell>{row.personalInfo?.name}</TableCell>
+              <TableCell>{row.addresses?.address}, {row.addresses.city}, {row.addresses.country}</TableCell>
               <TableCell>{row.payment.paymentMethod}</TableCell>
               <TableCell align="right">{`$${row.total.toFixed(2)}`}</TableCell>
             </TableRow>

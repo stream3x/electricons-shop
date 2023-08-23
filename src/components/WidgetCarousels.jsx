@@ -7,13 +7,10 @@ import Typography from "@mui/material/Typography";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import { Divider, IconButton, useMediaQuery } from "@mui/material";
-import Link from '../Link';
 import dynamic from 'next/dynamic';
 import { useState } from "react";
 import WidgetCardProduct from "./WidgetCardProduct";
 import SwipeableViews from "react-swipeable-views";
-
-// carouselProduct[0].inWidget.replace(/-/g, ' ').replace(/^./, function(x){return x.toUpperCase()})
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

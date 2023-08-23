@@ -29,7 +29,7 @@ export default function CardProduct(props) {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
-                src={matches ? product.images[0].image : product.images[1].image}
+                src={matches ? product.widgetImages[0].image : product.widgetImages[1].image}
                 alt={product.title}
                 quality={100}
               />
