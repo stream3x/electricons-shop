@@ -18,7 +18,7 @@ function PriceSlider(props) {
       <Box sx={{ my: 2, display: 'flex' }}>
         <Input
           sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
-          value={value[0]}
+          value={value[0] ? value[0] : minPrice}
           size="small"
           onChange={handleInputMinChange}
           inputProps={{
@@ -33,7 +33,7 @@ function PriceSlider(props) {
         </Typography>
         <Input
           sx={{ '& input': {textAlign: 'center'}, flex: 1 }}
-          value={value[1]}
+          value={value[1] ? value[1] : maxPrice}
           size="small"
           onChange={handleInputMaxChange}
           inputProps={{
@@ -46,7 +46,7 @@ function PriceSlider(props) {
       </Box>
       <Slider
         getAriaLabel={() => 'Filter by price'}
-        value={[value[0], value[1]]}
+        value={[value[0] ? value[0] : minPrice, value[1] ? value[1] : maxPrice]}
         onChange={handleChangePrice}
         valueLabelDisplay="auto"
         min={minPrice}
@@ -149,12 +149,6 @@ export default function SwipeableFilterDrawer(props) {
           </Toolbar>
           <Toolbar>
             <FilterRow title="Brand" items={brandFilter} handleChange={handleChange} />
-          </Toolbar>
-          <Toolbar>
-            <FilterRow title="Top Category" items={topCat} handleChange={handleChangeTopCat} />
-          </Toolbar>
-          <Toolbar>
-            <FilterRow title="Category" items={subCat} handleChange={handleChangeSubCat} />
           </Toolbar>
         </AppBar>
       </Box>

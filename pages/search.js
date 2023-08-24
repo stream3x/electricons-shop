@@ -471,7 +471,7 @@ export default function Search(props) {
                     </Box>
                     <Slider
                       getAriaLabel={() => 'Filter by price'}
-                      value={[value[0], value[1]]}
+                      value={[value[0] ? value[0] : minPrice, value[1] ? value[1] : maxPrice]}
                       onChange={handleChangePrice}
                       min={minPrice}
                       max={maxPrice}

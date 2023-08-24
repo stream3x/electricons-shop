@@ -318,29 +318,29 @@ function ProductList() {
                             {row.title}
                           </TableCell>
                           <TableCell color='primary' align="right">
-                            {'$'}{row?.price}
+                            {'$'}{row.price}
                           </TableCell>
                           <TableCell color='primary' align="right">
                             {
-                              row?.inStock === 0 ? <Chip sx={{bgcolor: theme.palette.error.main, color: theme.palette.primary.contrastText}} label={row?.inStock} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.inStock} />
+                              row.inStock === 0 ? <Chip sx={{bgcolor: theme.palette.error.main, color: theme.palette.primary.contrastText}} label={row.inStock} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row.inStock} />
                             }
                           </TableCell>
                           <TableCell color='primary' align="right">
                             <Box component='span' sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
-                              <Box component='span'>{row?.rating}</Box>
+                              <Box component='span'>{row.rating}</Box>
                               <Box component='span'><StarIcon sx={{color: 'gold'}} /></Box>
                             </Box>
                             
                           </TableCell>
                           <TableCell align="right">
-                            {row?.category}
+                            {row.category}
                           </TableCell>
                           <TableCell align="right">
-                            {row?.subCategory}
+                            {row.subCategory}
                           </TableCell>
                           <TableCell align="right">
                             {
-                            row?.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row?.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row?.orderCount} />
+                            row.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row.orderCount} />
                             }
                           </TableCell>
                         </TableRow>

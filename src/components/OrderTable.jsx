@@ -19,6 +19,25 @@ import { TableHead, Typography, styled } from '@mui/material';
 import Image from 'next/image';
 import theme from '../theme';
 
+const MyTableContainer = styled(TableContainer)({
+  overflowY: "auto",
+  margin: 0,
+  padding: 0,
+  listStyle: "none",
+  height: "100%",
+  '&::-webkit-scrollbar': {
+    width: '3px',
+    height: '3px'
+  },
+  '&::-webkit-scrollbar-track': {
+    background: theme.palette.secondary.borderColor
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: theme.palette.primary.main,
+    borderRadius: '3px'
+  }
+});
+
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
@@ -145,15 +164,29 @@ export default function OrderTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
+  const [userOrders, setUserOrders] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await orders;
+        setUserOrders(res);
+      } catch (error) {
+        console.log(error, 'error fetching orders');
+      }
+    }
+    fetchOrders();
+  }, [])
+
 
   React.useEffect(() => {
     if (userInfo) {
-      const getOrders = orders && orders.filter(order => order.personalInfo.email === userInfo.email);
+      const getOrders = userOrders && userOrders.filter(order => order.personalInfo?.email === userInfo?.email);
       setRows(getOrders);
     }else {
       setRows([]);
     }
-  }, []);
+  }, [userOrders]);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -177,7 +210,7 @@ export default function OrderTable(props) {
   }
 
   return (
-    <TableContainer component={Paper}>
+    <MyTableContainer>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
@@ -247,11 +280,11 @@ export default function OrderTable(props) {
             </TableRow>
           )}
         </TableBody>
-        <TableFooter>
-          <TableRow>
+        <TableFooter sx={{width: '100%'}}>
+          <TableRow sx={{width: '100%'}}>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
+              colSpan={12}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
@@ -268,6 +301,6 @@ export default function OrderTable(props) {
           </TableRow>
         </TableFooter>
       </Table>
-    </TableContainer>
+    </MyTableContainer>
   );
 }

@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function CardProduct(props) {
   const { product, cardHeight, marginTop, imgHeight, imgWidth } = props;
   const [selected, setSelected] = React.useState('');
-  const matches = useMediaQuery('(min-width: 1024px)');
+  const matches = useMediaQuery('(min-width: 480px)');
 
   const handleLoading = (product) => {
     setSelected(product._id);
@@ -29,7 +29,7 @@ export default function CardProduct(props) {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
-                src={matches ? product.widgetImages[0].image : product.widgetImages[1].image}
+                src={matches ? product?.widgetImages[0].image !== '' ? product?.widgetImages[0].image : '/images/no-image.jpg' : product?.widgetImages[0].image !== '' ? product?.widgetImages[1].image : '/images/no-image.jpg'}
                 alt={product.title}
                 quality={100}
               />

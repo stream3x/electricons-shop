@@ -35,7 +35,7 @@ const handler = async (req, res) => {
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / pageSize);
 
-    const products = await Product.find(filter)
+    const products = await Product.find({...filter})
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize)
@@ -57,7 +57,7 @@ const handler = async (req, res) => {
     });
 
     res.send({products: productOrderCounts, totalProducts, totalPages, searchProducts: products});
-
+console.log(filter);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).send('Internal Server Error');

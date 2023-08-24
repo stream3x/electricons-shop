@@ -335,7 +335,7 @@ export default function Categories(props) {
                     </Box>
                     <Slider
                       getAriaLabel={() => 'Filter by price'}
-                      value={[value[0], value[1]]}
+                      value={[value[0] ? value[0] : minPrice, value[1] ? value[1] : maxPrice]}
                       onChange={handleChangePrice}
                       min={minPrice}
                       max={maxPrice}
@@ -429,7 +429,7 @@ export default function Categories(props) {
                                 priority
                                 src={prod.images[1].image}
                                 alt={prod.title}
-                                quality={35}
+                                quality={33}
                               />
                             </CardMedia>
                           </Link>
@@ -474,8 +474,8 @@ export default function Categories(props) {
                 </Grid>
               ))
             }
-            {
-              view === 'list' &&
+            { 
+              view === 'list' &&             
               products.map(prod => (
                 <Grid sx={{display: {xs: 'none', md: 'block'}}} key={prod._id} item xs={12}>
                     <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
@@ -492,7 +492,7 @@ export default function Categories(props) {
                                 priority
                                 src={prod.images[1].image}
                                 alt={prod.title}
-                                quality={35}
+                                quality={33}
                               />
                             </CardMedia>
                           </Link>

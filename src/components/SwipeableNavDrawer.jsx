@@ -55,7 +55,7 @@ function ListsItem(props) {
           {
             cat.subCategory.map((sub, i) => (
               <React.Fragment key={sub.url}>
-                  <ListItem key={sub.url} disablePadding>
+                  <ListItem disablePadding>
                     <ListItemButton tabIndex={i} onClick={(e) => collapseHeandler(e, i)} sx={{ pl: 4, justifyContent: 'space-between' }}>
                       <Link href={`/category/${cat.slug}/${sub.url}`} sx={{display: 'flex', '&:hover': {color: theme.palette.primary.main} }} color="secondary">
                         <ListItemText sx={{'& span': {fontSize: '14px', ml: 2} }} onClick={onClose} primary={sub.subCategoryName} />
@@ -73,7 +73,7 @@ function ListsItem(props) {
                       data.products.map(prod => (
                         sub.url === prod.subCategoryUrl &&
                         <Link onClick={onClose} underline="none" key={prod.slug} href={`/product/${prod.slug}`} sx={{display: 'flex', pb: 1, '&:hover': {color: theme.palette.primary.main} }} color="secondary.lightGrey">
-                          <ListItemButton key={prod.slug} sx={{ pl: 4 }}>                   
+                          <ListItemButton sx={{ pl: 4 }}>                   
                             <ListItemText sx={{'& span': {fontSize: '13px', ml: 2, fontWeight: 'bold'} }} primary={prod.title} />
                           </ListItemButton>
                         </Link>
@@ -152,8 +152,8 @@ export default function SwipeableNavDrawer({ pagesTop }) {
                 <Grid container>
                   {
                     pagesTop.map((page) => (
-                      <Grid item xs={4}>
-                        <ListItem key={page.name} sx={{ '& a': {textDecoration: 'none'} }}>
+                      <Grid key={page.link} item xs={4}>
+                        <ListItem sx={{ '& a': {textDecoration: 'none'} }}>
                         {page.icon}
                           <Link
                             href={page.link}

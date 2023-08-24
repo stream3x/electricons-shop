@@ -9,9 +9,9 @@ export default function ToggleButtons(props) {
 
   return (
     <ToggleButtonGroup
-      sx={{ flexGrow: 0, mx: 3, display: {xs: 'none', sm: 'block'} }}
+      sx={{ flexGrow: 0, mx: 3, display: {xs: 'none', md: 'block'} }}
       orientation="horizontal"
-      value={view}
+      value={view ? view : 'module'}
       exclusive
       onChange={handleChangeView}
     >
