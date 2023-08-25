@@ -14,15 +14,18 @@ import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import HomeIcon from '@mui/icons-material/Home';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
-import MailIcon from '@mui/icons-material/Mail';
 import MainListItems from '../components/MainListItems';
 import theme from '../theme';
 import Link from '../Link';
 import { useRouter } from 'next/router';
+import { Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Store } from '../utils/Store';
+import Cookies from 'js-cookie';
 
 const drawerWidth = 240;
+const loged = ['Profile', 'Backoffice', 'Logout'];
+const logedout = ['Login', 'Sign in'];
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -72,6 +75,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
   const { pathname } = router;
+  const { state, dispatch } = React.useContext(Store);
+  const { userInfo, snack } = state;
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const segments = pathname.split('/');
   const tabName = segments[segments.length - 1];
   const [open, setOpen] = React.useState(false);
@@ -83,6 +89,33 @@ export default function DashboardLayout({ children }) {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const isMenuUserOpen = Boolean(anchorElUser);
+
+  const handleLogout = () => {
+    setAnchorElUser(null);
+    dispatch({ type: 'USER_LOGOUT'});
+    dispatch({ type: 'REMOVE_SESSION', payload: null });
+    dispatch({ type: 'PERSONAL_REMOVE'});
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
+    Cookies.remove('userInfo');
+    Cookies.remove('personalInfo');
+    Cookies.remove('cartItems');
+    Cookies.remove('addresses');
+    Cookies.remove('payment');
+    Cookies.remove('shipping');
+    Cookies.remove('forInvoice');
+    Cookies.remove('session');
+    router.push('/');
+  };  
 
   return (
     <ThemeProvider theme={theme}>
@@ -120,16 +153,71 @@ export default function DashboardLayout({ children }) {
                 <CartIcon sx={{ '&:hover': { color: theme.palette.primary.bgdLight}}}/>
               </IconButton>
             </Link>
-            <Link color={theme.palette.primary.contrastText} href="/">
-              <IconButton color="inherit">                
-                <MailIcon sx={{ '&:hover': { color: theme.palette.primary.bgdLight}}}/>
-              </IconButton>
-            </Link>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+            <Box sx={{ flexGrow: 0, display: { xs: 'flex', sm: 'flex'} }}>
+              <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px', display: { xs: 'flex', md: 'flex' } }}
+                id="menu-user"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={isMenuUserOpen}
+                onClose={handleCloseUserMenu}
+              >
+              {
+                userInfo ?
+                (
+                  <Box>
+                    <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                      <Link href={`/profile/info`} passHref>
+                        {loged[0]}
+                      </Link>
+                    </MenuItem>
+                    {
+                      userInfo.isAdmin &&
+                      <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
+                        <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
+                          {loged[1]}
+                        </Link>
+                      </MenuItem>
+                    }
+                    <MenuItem onClick={handleLogout}>
+                        {loged[2]}
+                    </MenuItem>
+                  </Box>
+
+                ) : (
+                  <Box>
+                    <MenuItem sx={{ '& a': {textDecoration: 'none'}}} onClick={handleCloseUserMenu}>
+                      <Link href="/login" passHref>
+                        {logedout[0]}
+                      </Link>
+                    </MenuItem>
+                    <MenuItem sx={{ '& a': {textDecoration: 'none', color: theme.palette.secondary.main}}} onClick={handleCloseUserMenu}>
+                      <Link href="/signin" passHref>
+                        {logedout[1]}
+                      </Link>
+                    </MenuItem>
+                  </Box>
+                )
+              }
+              </Menu>
+            </Box>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

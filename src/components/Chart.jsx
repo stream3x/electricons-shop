@@ -5,13 +5,26 @@ import theme from '../theme';
 
 export default function Chart(props) {
   const { data } = props;
+  const [chartData, setChartData] = React.useState([]);
+
+  React.useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = data;
+        setChartData(res);
+      } catch (error) {
+        console.log('error fetch chart data', error);
+      }
+    }
+    fetchData();
+  }, []);  
 
   return (
     <React.Fragment>
       <Title>Last Day</Title>
       <ResponsiveContainer>
         <LineChart
-          data={data && data}
+          data={chartData}
           margin={{
             top: 16,
             right: 16,

@@ -43,8 +43,6 @@ const handler = async (req, res) => {
 
     const orders = await Order.find().lean().exec();
     const guestOrders = await Guest.find().lean().exec();
-
-    db.disconnect();
     
     const productOrderCounts = products.map(product => {
       const orderCount = [...orders, ...guestOrders].reduce((count, order) => {
@@ -56,8 +54,10 @@ const handler = async (req, res) => {
       return { ...product.toObject(), orderCount };
     });
 
+    db.disconnect();
+
     res.send({products: productOrderCounts, totalProducts, totalPages, searchProducts: products});
-console.log(filter);
+
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).send('Internal Server Error');

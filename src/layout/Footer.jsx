@@ -154,13 +154,13 @@ export default function Footer() {
               <MapFooter />
             </Grid>
           }
-          <Grid item xs={12} sm={3}>
-          <Typography variant="p" component="h3" gutterBottom>
-            STORE INFORMATION
-          </Typography>
-          <List
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Typography variant="p" component="h3" gutterBottom>
+              STORE INFORMATION
+            </Typography>
+            <List
             component="ul"
-          >
+            >
               <Box>
                 <ListItem>
                   <ListItemIcon>
@@ -195,7 +195,7 @@ export default function Footer() {
               </Box>
             </List>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
           <Typography variant="p" component="h3" gutterBottom>
             OUR COMPANY
           </Typography>
@@ -213,7 +213,7 @@ export default function Footer() {
             }
             </List>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
           <Typography variant="p" component="h3" gutterBottom>
             YOUR ACCOUNT
           </Typography>
@@ -231,7 +231,7 @@ export default function Footer() {
             }
             </List>
           </Grid>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
           <Typography variant="p" component="h3" gutterBottom>
             PRODUCTS
           </Typography>

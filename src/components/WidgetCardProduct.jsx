@@ -26,7 +26,7 @@ export default function WidgetCardProduct(props) {
       cardsToShow !== 2 ?
       products.slice(steps * (products.length - cardsToShow), steps === 0 ? cardsToShow : (products.length * steps)).map((product, index) => (
           <Grid key={product.title} item xs={cardsInView}>
-              <Card sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
+              <Card elevation={0} sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
                   <CardActionArea sx={{position: 'relative'}}>
                     <Link href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
                     {

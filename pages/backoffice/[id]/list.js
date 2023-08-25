@@ -93,13 +93,13 @@ function EnhancedTableToolbar(props) {
   const [open, setOpen] = React.useState(false);
   
 
-  function removeUserHandler(selectedItems) {
-    console.log(selectedItems, 'now you deleted user');
+  function removeUserHandler(selectedItems, index) {
+    console.log(selectedItems, `now you delete product ${selectedItems.map(item => item.title)}`);
     setOpen(() => false);
   }
 
   function editItemHandler(item) {
-    console.log(item, `edit user ${item.map(item => item.name)}`);
+    console.log(item, `edit product ${item.map(item => item.title)}`);
   }
 
   const handleClose = () => {
@@ -136,11 +136,14 @@ function EnhancedTableToolbar(props) {
 
       {numSelected > 0 ? (
         <Box sx={{display: 'flex'}}>
-          <Tooltip title="Edit">
-            <IconButton onClick={() => editItemHandler(selectedItems)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
+          {
+            numSelected === 1 &&
+            <Tooltip title="Edit">
+              <IconButton onClick={() => editItemHandler(selectedItems)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
           <Tooltip title="Delete">
             <IconButton onClick={() => setOpen(true)}>
               <DeleteIcon />
@@ -162,7 +165,6 @@ function ProductList() {
   const [selectedItems, setSelectedItems] = React.useState([]);
   const [activeTab, setActiveTab] = React.useState(0);
   const [rows, setRows] = React.useState([]);
-  const [rating, setRating] = React.useState(5);
   const [pageSize, setPageSize] = React.useState('10');
   const [page, setPage] = React.useState('');
 
@@ -189,11 +191,12 @@ function ProductList() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('set url');
+    console.log(page, pageSize, search);
     fetchingData(page, pageSize, search);
   };
 
   const handlePageChange = (newPage) => {
+    console.log(newPage, pageSize, search);
     fetchingData(newPage, pageSize, search);
   };
 
