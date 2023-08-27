@@ -18,7 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import axios from 'axios';
@@ -239,29 +238,26 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Users
+          Customers
         </Typography>
       )}
 
-      {numSelected > 0 ? (
+      {numSelected > 0 && (
         <Box sx={{display: 'flex'}}>
-          <Tooltip title="Edit">
-            <IconButton onClick={() => editItemHandler(selectedItems)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
+          {
+            numSelected === 1 &&
+            <Tooltip title="Edit">
+              <IconButton onClick={() => editItemHandler(selectedItems)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
           <Tooltip title="Delete" onClick={() => setOpen(true)}>
             <IconButton>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         </Box>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       )}
       <AlertDialogSlide removeUserHandler={removeUserHandler} open={open} setOpen={setOpen} handleClose={handleClose} selectedItems={selectedItems} />
 

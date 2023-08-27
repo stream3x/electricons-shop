@@ -18,7 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import axios from 'axios';
 import { Button, Chip, InputBase, Stack, useMediaQuery } from '@mui/material';
@@ -237,7 +236,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Guest Users
+          Guest Customers
         </Typography>
       )}
       {numSelected === 1 && (

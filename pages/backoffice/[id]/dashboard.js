@@ -1,13 +1,17 @@
 import React, { useContext } from 'react'
 import DashboardLayout from '../../../src/layout/DashboardLayout'
-import { Button, Grid, Paper, Typography } from '@mui/material'
-import Chart from '../../../src/components/Chart'
+import { Button, Grid, IconButton, Paper, Typography } from '@mui/material'
 import Orders from '../../../src/components/Orders'
 import Deposits from '../../../src/components/Deposits'
 import styled from '@emotion/styled'
 import { Store } from '../../../src/utils/Store'
 import dynamic from 'next/dynamic'
 import axios from 'axios'
+import Title from '../../../src/components/Title'
+import { Label, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import theme from '../../../src/theme'
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Tooltips from '@mui/material/Tooltip';
 
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -16,6 +20,9 @@ const LabelButton = styled(Button)(({ theme }) => ({
   border: 'thin solid lightGrey',
   borderLeft: '5px solid black',
 }));
+
+const orders = [];
+const orderGuest = [];
 
 const data = [
   { time: '00:00', amount: 0, amount_guest: 0 },
@@ -33,7 +40,9 @@ function Dashboard() {
   const { state: {session} } = useContext(Store);
   const [dataUsers, setDataUsers] = React.useState([]);
   const [dataGuests, setDataGuests] = React.useState([]);
-  const [error, setError] = React.useState();
+  const [error, setError] = React.useState('');
+  const [refresh, setRefresh] = React.useState(false);
+
 
   React.useEffect(() => {
     async function getOrders() {
@@ -61,8 +70,6 @@ function Dashboard() {
 
   }, []);
 
-  const orders = [];
-  const orderGuest = [];
   dataUsers[1]?.recentFiveOrders.forEach(order => {
     orders.push(order.total);
   })
@@ -75,11 +82,6 @@ function Dashboard() {
 
   React.useEffect(() => {
     // Wait for orders to resolve (assuming orders is a Promise)
-  }, []);
-
-  React.useEffect(() => {
-    fillData();
-    fillGuestData();
   }, []);
 
   async function fillData() {
@@ -146,6 +148,23 @@ function Dashboard() {
     }
   }
 
+  function handleRefreshChart() {
+    setRefresh(true);
+  }
+
+  React.useEffect(() => {
+    fillData();
+    fillGuestData();
+  }, [dataUsers, dataGuests]);
+
+  React.useEffect(() => {
+    fillData();
+    fillGuestData();
+    return () => {
+      setRefresh(false);
+    }
+  }, [refresh]);  
+
   return (
     <DashboardLayout>
       {
@@ -167,7 +186,64 @@ function Dashboard() {
                 height: 240,
               }}
             >
-              <Chart data={data} />
+              <Title>
+                Last Day
+                <Tooltips title='Refresh Chart'>
+                  <IconButton onClick={handleRefreshChart} aria-label="delete">
+                    <RefreshIcon />
+                  </IconButton>
+                </Tooltips>
+              </Title>
+              <ResponsiveContainer>
+                <LineChart
+                  data={data}
+                  margin={{
+                    top: 16,
+                    right: 16,
+                    bottom: 0,
+                    left: 24,
+                  }}
+                >
+                  <XAxis
+                    dataKey="time"
+                    stroke={theme.palette.text.secondary}
+                    style={theme.typography.body2}
+                  />
+                  <YAxis
+                    stroke={theme.palette.text.secondary}
+                    style={theme.typography.body2}
+                  >
+                    <Label
+                      angle={270}
+                      position="left"
+                      style={{
+                        textAnchor: 'middle',
+                        fill: theme.palette.text.primary,
+                        ...theme.typography.body1,
+                      }}
+                    >
+                      Sales ($)
+                    </Label>
+                  </YAxis>
+                  <Line
+                    isAnimationActive={false}
+                    type="monotone"
+                    name="Users"
+                    dataKey="amount"
+                    stroke={theme.palette.primary.main}
+                    dot={false}
+                  />
+                  <Tooltip />
+                  <Line
+                    isAnimationActive={false}
+                    type="monotone"
+                    name="Guests"
+                    dataKey="amount_guest"
+                    stroke={theme.palette.dashboard.main}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </Paper>
           </Grid>
           {/* Recent Deposits */}

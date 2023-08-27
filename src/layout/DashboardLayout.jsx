@@ -158,7 +158,7 @@ export default function DashboardLayout({ children }) {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <Box sx={{ flexGrow: 0, display: { xs: 'flex', sm: 'flex'} }}>
+            <Box sx={{ flexGrow: 0, pl: 2 }}>
               <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />

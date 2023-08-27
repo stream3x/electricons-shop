@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -16,9 +15,56 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import TablePagination from '@mui/material/TablePagination';
 import axios from 'axios';
-import { Chip, Stack } from '@mui/material';
+import { Button, Chip, InputBase, Stack, alpha, useMediaQuery } from '@mui/material';
 import theme from '../../../src/theme';
 import Image from 'next/image';
+import SearchIcon from '@mui/icons-material/Search';
+import styled from '@emotion/styled';
+
+const Search = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  [theme.breakpoints.down('md')]: {
+    marginLeft: theme.spacing(0),
+    width: '100%',
+  },
+  border: 'thin solid lightGrey',
+  boxSizing: 'border-box',
+  display: 'flex',
+  margin: '.2rem 0' 
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('xl')]: {
+      width: '12ch',
+      '&:focus': {
+        width: '22ch',
+      },
+    },
+  },
+}));
 
 function Row(props) {
   const { row } = props;
@@ -46,7 +92,7 @@ function Row(props) {
         </TableCell>
         <TableCell align="right">{row?.orderNumber}</TableCell>
         <TableCell align="right">{row.personalInfo?.name}</TableCell>
-        <TableCell align="right">{row?.shipping?.shippingAddress} {row?.shipping.shippingCity}{row?.shipping.store !== 'null' && row?.shipping.store}</TableCell>
+        <TableCell align="right">{row?.shipping?.shippingAddress !== "null" && row?.shipping?.shippingAddress} {row?.shipping.shippingCity}{', '}{row?.shipping.store !== 'null' && row?.shipping.store}</TableCell>
         <TableCell align="right">{row?.shipping?.shippingMethod}</TableCell>
         <TableCell align="right">{row?.payment?.paymentMethod}</TableCell>
         <TableCell component="th" scope="row">
@@ -58,7 +104,7 @@ function Row(props) {
               row.isPaid ? 
               <Chip sx={{bgcolor: theme.palette.success.main, fontWeight: 700}} label="complete" /> 
               : 
-              <Chip sx={{bgcolor: theme.palette.error.main, fontWeight: 700}} color='primary' label="pending" />
+              <Chip sx={{bgcolor: theme.palette.dashboard.main, fontWeight: 700}} color='primary' label="pending" />
             }
           </Stack>
         </TableCell>
@@ -127,24 +173,6 @@ function Row(props) {
   );
 }
 
-Row.propTypes = {
-  row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired,
-      }),
-    ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    protein: PropTypes.number.isRequired,
-  }).isRequired,
-};
-
 export default function CollapsibleTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -152,6 +180,17 @@ export default function CollapsibleTable() {
   const [rowsPerPageGuest, setRowsPerPageGuest] = React.useState(10);
   const [rows, setRows] = React.useState([]);
   const [rowsGuest, setRowsGuest] = React.useState([]);
+  const [activeTab, setActiveTab] = React.useState(0);
+  const matches = useMediaQuery('(min-width: 560px)');
+  const [search, setSearch] = React.useState('');
+
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+  function convertDate(value) {
+    const date = new Date(value);
+    const formatDate = date.toLocaleDateString("en-US", options);
+    return formatDate;
+  }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -187,8 +226,47 @@ export default function CollapsibleTable() {
     fetchingData();
   }, [])
 
+  const hasWord = (word, toMatch) => {
+    let wordSplitted = word.split(' ');
+      if(wordSplitted.join(' ').includes(toMatch)) {
+        return true;
+      }
+      return false;
+  };
+
+  function searchTable(rows) {
+    return rows && rows.lenght !== 0 ? rows.filter((row) => ((row.personalInfo.name && hasWord(row.personalInfo.name.toLowerCase(), search.toLowerCase())) || (row.orderNumber && row.orderNumber.indexOf(search) > -1)) || (row.shipping.shippingMethod && hasWord(row.shipping.shippingMethod.toLowerCase(), search.toLowerCase()) || (row.payment.paymentMethod.toString() && hasWord(row.payment.paymentMethod.toString().toLowerCase(), search.toLowerCase())) || (row.createdAt.toString() && hasWord(convertDate(row.createdAt).toLowerCase(), search.toLowerCase())) )) : rows;
+  }
+
+  const usersTabs = ['All Orders', 'Paid Orders', 'Delivered']
+  
   return (
     <DashboardLayout>
+      <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+        <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
+          {
+            usersTabs.map((tab, index) => (
+              <Box key={tab + index} sx={{pl: {xs: 1, md: 3} }} component='li'>
+                <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main, fontSize: matches ? '.75rem' : '.5rem', p: {xs: '6px 8px'} }} variant="contained">
+                  {tab}
+                </Button>
+              </Box>
+            ))
+          }
+        </Box>
+        <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+          <Search component="div">
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
+        </Box>
+      </Box>
       <TableContainer sx={{bgcolor: 'transparent'}} elevation={0} component={Paper}>
         <Table aria-label="collapsible table">
           <TableHead>
@@ -206,7 +284,8 @@ export default function CollapsibleTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+            {(search !== '' ? searchTable(rows) : usersTabs[activeTab] === 'All Orders' ? rows : usersTabs[activeTab] === 'Paid Orders' ? rows.filter(row => row.isPaid === true) : rows.filter(row => row.isDelevered === true))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
               <Row key={row._id} row={row} />
             ))}
           </TableBody>

@@ -1,46 +1,32 @@
-import React from 'react';
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import { alpha } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { visuallyHidden } from '@mui/utils';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
-import { AppBar, Box, Button, Checkbox, Chip, FormControl, Grid, IconButton, InputBase, InputLabel, MenuItem, Pagination, Rating, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Toolbar, Tooltip, Typography } from '@mui/material';
-import SelectPages from '../../../src/assets/SelectPages';
+import axios from 'axios';
+import { Button, Chip, InputBase, useMediaQuery } from '@mui/material';
 import theme from '../../../src/theme';
-import { useRouter } from 'next/router';
+import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
-import { alpha } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
-import Link from '../../../src/Link';
-import dynamic from 'next/dynamic';
-import axios from 'axios';
-
-const LabelButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.secondary.main,
-  textTransform: 'capitalize',
-  backgroundColor: theme.palette.primary.white,
-  border: 'thin solid lightGrey',
-  borderLeft: '5px solid black',
-}));
-
-const MyTableContainer = styled(TableContainer)({
-  overflowY: "auto",
-  margin: 0,
-  padding: 0,
-  listStyle: "none",
-  height: "100%",
-  '&::-webkit-scrollbar': {
-    width: '3px',
-    height: '3px'
-  },
-  '&::-webkit-scrollbar-track': {
-    background: theme.palette.secondary.borderColor
-  },
-  '&::-webkit-scrollbar-thumb': {
-    background: theme.palette.primary.main,
-    borderRadius: '3px'
-  }
-});
 
 const Search = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -50,8 +36,7 @@ const Search = styled(Box)(({ theme }) => ({
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: 'auto',
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down('md')]: {
     marginLeft: theme.spacing(0),
     width: '100%',
   },
@@ -88,29 +73,160 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+  
+}
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
+// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
+// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
+// with exampleArray.slice().sort(exampleComparator)
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) {
+      return order;
+    }
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
+const headCells = [
+  {
+    id: 'id',
+    numeric: false,
+    disablePadding: true,
+    label: 'ID',
+  },
+  {
+    id: 'title',
+    numeric: true,
+    disablePadding: false,
+    label: 'Product Name',
+  },
+  {
+    id: 'price',
+    numeric: true,
+    disablePadding: false,
+    label: 'Price',
+  },
+  {
+    id: 'inStock',
+    numeric: true,
+    disablePadding: false,
+    label: 'Stock',
+  },
+  {
+    id: 'rating',
+    numeric: true,
+    disablePadding: false,
+    label: 'Rating',
+  },
+  {
+    id: 'category',
+    numeric: true,
+    disablePadding: false,
+    label: 'Categories',
+  },
+  {
+    id: 'orderCount',
+    numeric: true,
+    disablePadding: false,
+    label: 'Orders',
+  },
+];
+
+function EnhancedTableHead(props) {
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+    props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell padding="checkbox">
+          <Checkbox
+            color="primary"
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{
+              'aria-label': 'select all desserts',
+            }}
+          />
+        </TableCell>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+EnhancedTableHead.propTypes = {
+  numSelected: PropTypes.number.isRequired,
+  onRequestSort: PropTypes.func.isRequired,
+  onSelectAllClick: PropTypes.func.isRequired,
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  orderBy: PropTypes.string.isRequired,
+  rowCount: PropTypes.number.isRequired,
+};
+
 function EnhancedTableToolbar(props) {
   const { numSelected, selectedItems } = props;
   const [open, setOpen] = React.useState(false);
-  
 
-  function removeUserHandler(selectedItems, index) {
-    console.log(selectedItems, `now you delete product ${selectedItems.map(item => item.title)}`);
+  function removeUserHandler(selectedItems) {
+    console.log(selectedItems, `now you deleted ${selectedItems.map(item => item.title)}`);
     setOpen(() => false);
   }
 
   function editItemHandler(item) {
-    console.log(item, `edit product ${item.map(item => item.title)}`);
+    console.log(item, `edit user ${item.map(item => item.title)}`);
   }
 
   const handleClose = () => {
     setOpen(false);
   };
 
-// console.log(numSelected, selectedItems, numChildSelected, selectedChildItems);
   return (
     <Toolbar
       sx={{
-        width: '100%',
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
@@ -121,20 +237,25 @@ function EnhancedTableToolbar(props) {
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%', textAlign: 'left' }}
+          sx={{ flex: '1 1 100%' }}
           color="inherit"
           variant="subtitle1"
           component="div"
         >
-          {numSelected} {'selected'}
+          {numSelected} selected
         </Typography>
-      ) : 
-        <Typography component="h1" variant="h6">
-          
+      ) : (
+        <Typography
+          sx={{ flex: '1 1 100%' }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Users
         </Typography>
-      }
+      )}
 
-      {numSelected > 0 ? (
+      {numSelected > 0 && (
         <Box sx={{display: 'flex'}}>
           {
             numSelected === 1 &&
@@ -144,68 +265,65 @@ function EnhancedTableToolbar(props) {
               </IconButton>
             </Tooltip>
           }
-          <Tooltip title="Delete">
-            <IconButton onClick={() => setOpen(true)}>
+          <Tooltip title="Delete" onClick={() => setOpen(true)}>
+            <IconButton>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
         </Box>
-      ): null}
+      )}
       <AlertDialogSlide removeUserHandler={removeUserHandler} open={open} setOpen={setOpen} handleClose={handleClose} selectedItems={selectedItems} />
+
     </Toolbar>
   );
 }
 
-function ProductList() {
-  const router = useRouter();
-  const { query } = router;
-  const { id } = query;
-  const [search, setSearch] = React.useState('');
+EnhancedTableToolbar.propTypes = {
+  numSelected: PropTypes.number.isRequired,
+};
+
+export default function ProductsListTable() {
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
   const [selectedItems, setSelectedItems] = React.useState([]);
+  const [page, setPage] = React.useState(0);
+  const [dense, setDense] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const matches = useMediaQuery('(min-width: 560px)');
+  const [search, setSearch] = React.useState('');
   const [rows, setRows] = React.useState([]);
-  const [pageSize, setPageSize] = React.useState('10');
-  const [page, setPage] = React.useState('');
+  const [totalProducts, setTotalProducts] = React.useState([]);
 
-  async function fetchingData(page, pageSize, search) {
-    try {
+  React.useEffect(() => {
+    async function fetchingData(totalProducts) {
       const { data } = await axios.get('/api/products', {
         params: {
-          page: page,
-          pageSize: pageSize,
-          searchQuery: search
+          pageSize: totalProducts,
         }
       });
       setRows(data.products);
-      setPage(data.totalPages)
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      throw error;
+      setTotalProducts(data.totalProducts)
     }
-  }
+    fetchingData(totalProducts);
+  }, [totalProducts])
 
-  React.useEffect(() => {
-    fetchingData();
-  }, []);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log(page, pageSize, search);
-    fetchingData(page, pageSize, search);
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
   };
 
-  const handlePageChange = (newPage) => {
-    console.log(newPage, pageSize, search);
-    fetchingData(newPage, pageSize, search);
+  const handleSelectAllClick = (event) => {
+    if (event.target.checked) {
+      const newSelected = rows.map((n) => n.title);
+      setSelected(newSelected);
+      setSelectedItems(rows);
+      return;
+    }
+    setSelected([]);
   };
-
-  const pageSizeHandler = (newPageSize) => {
-    setPageSize(newPageSize);
-    fetchingData(1, newPageSize, search); // Fetch data with updated page size
-  };
-
-  const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const handleClick = (event, name, item) => {
     const selectedIndex = selected.indexOf(name);
@@ -235,165 +353,175 @@ function ProductList() {
     setSelectedItems(newSelectedItems);
   };
 
-  const usersTabs = ['Create product']
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const isSelected = (name) => selected.indexOf(name) !== -1;
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+  const visibleRows = React.useMemo(
+    (e) =>
+      stableSort(rows, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage,
+      ),
+    [order, orderBy, page, rowsPerPage, rows],
+  );
+
+  const hasWord = (word, toMatch) => {
+    let wordSplitted = word.split(' ');
+      if(wordSplitted.join(' ').includes(toMatch)) {
+        return true;
+      }
+      return false;
+  };
+
+  function searchTable(rows) {
+    return rows && rows.lenght !== 0 ? rows.filter((row) => ((row.title && hasWord(row.title.toLowerCase(), search.toLowerCase())) || (row.subCategory && hasWord(row.subCategory.toLowerCase(), search.toLowerCase())))  || (row.category && hasWord(row.category.toLowerCase(), search.toLowerCase()) || (row._id.toString() && hasWord(row._id.toString().toLowerCase(), search.toLowerCase())))) : rows;
+  }
+
+  const usersTabs = ['All Products', 'Out of Stock', 'Zero Orders']
 
   return (
     <DashboardLayout>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
-              <Box sx={{listStyle: 'none', display: 'flex'}} component="ul">
-                {
-                  usersTabs.map((tab, index) => (
-                    <Box key={tab} sx={{pl: 3}} component='li'>
-                      <Link href={`/backoffice/${id}/create`}>
-                        <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main}} variant="contained" size="medium">
-                          {'+ '}{tab}
-                        </Button>
-                      </Link>
-                    </Box>
-                  ))
-                }
+      <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+        <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
+          {
+            usersTabs.map((tab, index) => (
+              <Box key={tab + index} sx={{pl: {xs: 1, md: 3} }} component='li'>
+                <Button value={index} onClick={(e) => setActiveTab(e.target.value)} sx={{bgcolor: usersTabs[activeTab] === tab ? theme.palette.dashboard.main : theme.palette.primary.main, fontSize: matches ? '.75rem' : '.5rem', p: {xs: '6px 8px'} }} variant="contained">
+                  {tab}
+                </Button>
               </Box>
-              <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap'}}>
-                <Search onSubmit={handleSearch} component="form">
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search…"
-                    inputProps={{ 'aria-label': 'search' }}
-                  />
-                  <Button type="submit">Search</Button>
-                </Search>
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <MyTableContainer>
-              <Table
-                sx={{ minWidth: 750 }}
-                aria-labelledby="tableTitle"
-                size={'small'}
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell></TableCell>
-                    <TableCell align="right">Product Name</TableCell>
-                    <TableCell align="right">Price</TableCell>
-                    <TableCell align="right">Stock</TableCell>
-                    <TableCell align="right">Rating</TableCell>
-                    <TableCell align="right">Categories</TableCell>
-                    <TableCell align="right">Sub Categories</TableCell>
-                    <TableCell align="right">Orders</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows
-                    .map((row, index) => {
-                      const labelId = `enhanced-table-checkbox-${index}`;
-                      const isItemSelected = isSelected(row.title);
-
-                      return (
-                        <TableRow
-                          hover
-                          key={row._id}
-                        >
-                          <TableCell
-                            onClick={(event) => handleClick(event, row.title, row)}
-                            role="checkbox"
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            selected={isItemSelected}
-                            padding="checkbox"
-                          >
-                            <Checkbox
-                              color="primary"
-                              checked={isItemSelected}
-                              inputProps={{
-                                'aria-labelledby': labelId,
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell color='primary' align="right">
-                            {row.title}
-                          </TableCell>
-                          <TableCell color='primary' align="right">
-                            {'$'}{row.price}
-                          </TableCell>
-                          <TableCell color='primary' align="right">
-                            {
-                              row.inStock === 0 ? <Chip sx={{bgcolor: theme.palette.error.main, color: theme.palette.primary.contrastText}} label={row.inStock} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row.inStock} />
-                            }
-                          </TableCell>
-                          <TableCell color='primary' align="right">
-                            <Box component='span' sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
-                              <Box component='span'>{row.rating}</Box>
-                              <Box component='span'><StarIcon sx={{color: 'gold'}} /></Box>
-                            </Box>
-                            
-                          </TableCell>
-                          <TableCell align="right">
-                            {row.category}
-                          </TableCell>
-                          <TableCell align="right">
-                            {row.subCategory}
-                          </TableCell>
-                          <TableCell align="right">
-                            {
-                            row.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row.orderCount} />
-                            }
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {rows.length > 0 && (
-                    <TableRow
-                      style={{
-                        height: (6) * rows.length,
-                      }}
-                    >
-                      <TableCell colSpan={12} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </MyTableContainer>
-          </Grid>
-          <Grid item xs={12}>
-            <EnhancedTableToolbar
-            numSelected={selected.length}
-            selectedItems={selectedItems}
+            ))
+          }
+        </Box>
+        <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
+          <Search component="div">
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <AppBar elevation={0} sx={{bgcolor: 'transparent'}} position="static">
-              <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
-                <SelectPages values={['1', '5', '10', '20']} pageSize={pageSize} pageSizeHandler={pageSizeHandler} />
-                {
-                  rows.length === 0 ?
-                  <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, flexGrow: 1, fontSize: {xs: '12px', sm: '16px'}, textAlign: {xs: 'center', sm: 'left'}, py: 3, width: {xs: '100%', sm: 'auto'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                  "No Orders"
-                  </Typography>
-                  :
-                  <Typography sx={{ m: {xs: 'auto', sm: 0}, ml: 2, fontSize: {xs: '12px', sm: '16px'}, flexGrow: 1, py: 3, width: {xs: '100%', sm: 'auto'}, textAlign: {xs: 'center', sm: 'left'} }} color="secondary" gutterBottom variant="p" component="p" align="left">
-                  There are {rows.length} {rows.length === 1 ? "product" : "products"}.
-                </Typography>
-                }
-                {
-                  rows.length > 0 &&
-                  <Stack sx={{width: {xs: '100%', sm: 'auto'}, py: 2 }} spacing={2}>
-                    <Pagination sx={{mx: 'auto'}} color="primary" showFirstButton showLastButton count={page} onChange={(e, val) => handlePageChange(val)}/>
-                  </Stack>
-                }
-              </Toolbar>
-            </AppBar>
-          </Grid>
-        </Grid>
-    </DashboardLayout>
-  )
-}
+          </Search>
+        </Box>
+      </Box>
+      <Box sx={{ width: '100%' }}>
+        <Paper elevation={0} sx={{ width: '100%', mb: 2, bgcolor: 'transparent' }}>
+          <EnhancedTableToolbar numSelected={selected.length} selectedItems={selectedItems} />
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby="tableTitle"
+              size={dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={rows.length}
+              />
+              <TableBody>
+              {
+                (search !== '' ? searchTable(rows) : usersTabs[activeTab] === 'All Products' ? visibleRows : usersTabs[activeTab] === 'Out of Stock' ? rows.filter(row => row.inStock === 0) : rows.filter(row => row.orderCount === 0))
+                .map((row, index) => {
+                  const isItemSelected = isSelected(row.title);
+                  const labelId = `enhanced-table-checkbox-${index}`;
 
-export default dynamic(() => Promise.resolve(ProductList), { ssr: false });
+                  return (
+                    <TableRow
+                    hover
+                    key={row._id}
+                  >
+                    <TableCell
+                      onClick={(event) => handleClick(event, row.title, row)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      selected={isItemSelected}
+                      padding="checkbox"
+                    >
+                      <Checkbox
+                        color="primary"
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell color='primary' align="right">
+                      {row._id}
+                    </TableCell>
+                    <TableCell color='primary' align="right">
+                      {row.title}
+                    </TableCell>
+                    <TableCell color='primary' align="right">
+                      {'$'}{row.price}
+                    </TableCell>
+                    <TableCell color='primary' align="right">
+                      {
+                        row.inStock === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row.inStock} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row.inStock} />
+                      }
+                    </TableCell>
+                    <TableCell color='primary' align="right">
+                      <Box component='span' sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+                        <Box component='span'>{row.rating}</Box>
+                        <Box component='span'><StarIcon sx={{color: 'gold'}} /></Box>
+                      </Box>
+                      
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.category}{', '}{row.subCategory}
+                    </TableCell>
+                    <TableCell align="right">
+                      {
+                      row.orderCount === 0 ? <Chip sx={{bgcolor: theme.palette.dashboard.main, color: theme.palette.primary.contrastText}} label={row.orderCount} /> : <Chip sx={{bgcolor: theme.palette.success.main}} label={row.orderCount} />
+                      }
+                    </TableCell>
+                  </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
+                  </TableRow>
+                )
+              }
+              </TableBody>
+            </Table>
+          </TableContainer>
+          {
+            search === '' && usersTabs[activeTab] !== 'Out of Stock' && usersTabs[activeTab] !== 'Zero Orders' &&
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          }
+        </Paper>
+      </Box>
+    </DashboardLayout>
+  );
+}
