@@ -21,12 +21,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
 import DashboardLayout from '../../../src/layout/DashboardLayout';
 import axios from 'axios';
-import { Button, Chip, InputBase, Stack, useMediaQuery } from '@mui/material';
+import { Avatar, Button, Chip, InputBase, Stack, useMediaQuery } from '@mui/material';
 import theme from '../../../src/theme';
 import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
 import GuestCustomerTable from '../../../src/components/GuestCustomerTable';
+import Link from '../../../src/Link';
+import { useRouter } from 'next/router';
+import { Store } from '../../../src/utils/Store';
 
 const Search = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -114,7 +117,7 @@ const headCells = [
   },
   {
     id: 'name',
-    numeric: true,
+    numeric: false,
     disablePadding: false,
     label: 'Name',
   },
@@ -270,6 +273,9 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable() {
+  const { state, dispatch } = React.useContext(Store);
+  const router = useRouter();
+  const { id } = router.query;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
@@ -426,15 +432,17 @@ export default function EnhancedTable() {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.name, row)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
                       key={row.name}
-                      selected={isItemSelected}
                       sx={{ cursor: 'pointer' }}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell
+                        padding="checkbox"
+                        onClick={(event) => handleClick(event, row.name, row)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        selected={isItemSelected}
+                       >
                         <Checkbox
                           color="primary"
                           checked={isItemSelected}
@@ -451,7 +459,16 @@ export default function EnhancedTable() {
                       >
                         {row._id}
                       </TableCell>
-                      <TableCell align="right">{row.name}</TableCell>
+                      <TableCell>
+                        <Link href={`/backoffice/profile/${row.email}`}>
+                          <Stack sx={{alignItems: 'center'}} component="span" direction="row" spacing={2}>
+                            <Avatar alt={row.name} src={row.image} />
+                            <Box component="span">
+                              {row.name}
+                            </Box>
+                          </Stack>
+                        </Link>
+                      </TableCell>
                       <TableCell align="right">{row.email}</TableCell>
                       <TableCell align="right">{row.company}</TableCell>
                       <TableCell align="right">

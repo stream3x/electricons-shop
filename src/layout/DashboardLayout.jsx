@@ -74,6 +74,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
+  const { id } = router.query;
   const { pathname } = router;
   const { state, dispatch } = React.useContext(Store);
   const { userInfo, snack } = state;
@@ -114,7 +115,7 @@ export default function DashboardLayout({ children }) {
     Cookies.remove('shipping');
     Cookies.remove('forInvoice');
     Cookies.remove('session');
-    router.push('/');
+    router.push('/login');
   };  
 
   return (
@@ -146,7 +147,7 @@ export default function DashboardLayout({ children }) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              {capitalizeFirstLetter(tabName)}
+              {pathname === '/backoffice/profile/[id]' ? `${id}` : capitalizeFirstLetter(tabName)}
             </Typography>
             <Link color={theme.palette.primary.contrastText} href="/">
               <IconButton color="inherit">                
@@ -184,7 +185,7 @@ export default function DashboardLayout({ children }) {
                 (
                   <Box>
                     <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                      <Link href={`/profile/info`} passHref>
+                      <Link href={`/backoffice/${id}/profile`} passHref>
                         {loged[0]}
                       </Link>
                     </MenuItem>
