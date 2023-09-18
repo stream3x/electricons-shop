@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import DashboardLayout from '../../../src/layout/DashboardLayout'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormHelperText, Grid, IconButton, Input, Paper, Slide, TextField, Typography } from '@mui/material'
+import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormHelperText, Grid, IconButton, Paper, Slide, TextField, Typography } from '@mui/material'
 import styled from '@emotion/styled'
 import { Store } from '../../../src/utils/Store'
 import dynamic from 'next/dynamic'
@@ -21,6 +21,7 @@ import Cookies from 'js-cookie'
 import EditIcon from '@mui/icons-material/Edit';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import Tooltips from '@mui/material/Tooltip';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
 export async function getServerSideProps(context) {
   const { params, query } = context;
@@ -60,7 +61,8 @@ function AlertDialogSlide(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleUploadImage}>Save image as profile picture</Button>
-          <Button onClick={handleRemoveImage}>No</Button>
+          <Button onClick={handleRemoveImage}>Remove image</Button>
+          <Button onClick={handleClose}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>
@@ -78,7 +80,6 @@ const LabelButton = styled(Button)(({ theme }) => ({
 function Profile(props) {
   const { user } = props;
   const profileUser = user && user[0];
-  const imageInputRef = React.useRef(null);
   const { state, state: {session}, dispatch } = useContext(Store);
   const [error, setError] = React.useState(false);
   const [errors, setErrors] = React.useState({
@@ -103,6 +104,24 @@ const [selectedFile, setSelectedFile] = React.useState(null);
 const [open, setOpen] = React.useState(false);
 const [refresh, setRefresh] = React.useState(false);
 const [errorMessage, setErrorMessage] = React.useState('');
+const [imgFile, setImgFile] = React.useState({
+  image: null,
+  imageUrl: null
+})
+
+function handleImageChoose(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+      setImgFile({
+          ...imgFile,
+          image: file,
+          imageUrl: reader.result
+      })
+      e.target.value = ''
+  }
+  reader.readAsDataURL(file);
+}
 
   function handleRefresh() {
     setRefresh(true);
@@ -118,35 +137,19 @@ const [errorMessage, setErrorMessage] = React.useState('');
     setActiveTab(newValue);
   };
 
-  function handleInputImage() {
-    imageInputRef.current.click();
-    console.log('image is selected');
-  }
-
-  const handleImageChange = event => {
-    setSelectedFile(event.target.files[0]);
-    setOpen(true);
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can upload image', severity: 'success'}});
-    // setOpen(true);
-  };
-
   const handleUploadImage = async (event) => {
     event.preventDefault();
-    setOpen(false);
-    console.log(selectedFile);
-    if (!selectedFile) {
-      console.log('Please select an image');
-      return;
-    }
     try {
-      const formOutput = new FormData(event.currentTarget);
+      const outputData = new FormData(event.currentTarget);
       const formData = {
-        image: formOutput.set('image-upload', selectedFile)
+        image_name: imgFile.image?.name,
+        image: imgFile?.imageUrl,
+        email: profileUser?.email
       }
       console.log(formData);
-      await axios.put(`/api/users/upload_profile_images?email=${profileUser.email}`, formData, {
+      const { data } = await axios.put(`/api/users/upload_profile_images`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Set the correct Content-Type header
+          'Content-Type': "application/json", // Set the correct Content-Type header
         },
       });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was uploaded', severity: 'success'}});
@@ -185,6 +188,7 @@ const [errorMessage, setErrorMessage] = React.useState('');
   function handleClose() {
     setOpen(false);
     setSelectedFile(null);
+    setImgFile({image: null, imageUrl: null})
   }
 
   const handleSubmit = async (event) => {
@@ -285,14 +289,14 @@ const [errorMessage, setErrorMessage] = React.useState('');
     dispatch({ type: 'PERSONAL_REMOVE' });
     // dispatch({ type: 'ADDRESSES_REMOVE' });
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit Profile', severity: 'warning'}});
-    Cookies.remove('personalInfo');
-    Cookies.remove('userInfo');
+    localStorage.removeItem('personalInfo');
+    localStorage.removeItem('userInfo');
     setEditProfile(true);
   };
 
   const handleEditAddress = () => {
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit Address', severity: 'warning'}});
-    Cookies.remove('Addresses');
+    localStorage.removeItem('Addresses');
     setEditAddress(true);
   };
 
@@ -323,20 +327,38 @@ const [errorMessage, setErrorMessage] = React.useState('');
                 gap: 3
               }}
             >
-              <Box sx={{position: 'relative'}}>
-                <Box sx={{borderRadius: '100%', overflow: 'hidden', boxShadow: '0 5px 20px lightGray', mt: -5, '& img': {objectFit: 'cover'}, position: 'relative', width: 100, height: 100}}>
-                  <Image
-                    fill
-                    src={profileUser.image}
-                    alt={profileUser.name}
-                  />
-                </Box>
-                <Box sx={{position: 'absolute', bottom: 0, right: 0, zIndex: 1}} component="label" htmlFor='file'>
-                  <Input ref={imageInputRef} sx={{display: 'none'}} accept="image/*" id="file" type="file" name="image-upload" onChange={handleImageChange} />
-                  <IconButton onClick={handleInputImage} sx={{ bgcolor: theme.palette.primary.white, '&:hover': {bgcolor: theme.palette.primary.bgdLight} }} color='dashboard' id='file' variant="outlined">
-                    <FileUploadIcon />
-                  </IconButton>
-                </Box>
+              <Box component="form" onSubmit={handleUploadImage} sx={{position: 'relative'}}>
+                  <Box component="label" onChange={handleImageChoose} htmlFor="photo">
+                    {
+                      imgFile.imageUrl ?
+                        <Box sx={{ borderRadius: '100%', overflow: 'hidden', boxShadow: '0 5px 20px lightGray', mt: -5, '& img': {objectFit: 'contain'}, position: 'relative', width: 100, height: 100 }}>
+                          <Image
+                            fill
+                            src={imgFile.imageUrl ? imgFile.imageUrl : profileUser.image}
+                            alt={profileUser.name}
+                          />
+                        </Box>
+                          :
+                        <IconButton sx={{ p: 0, mt: -5 }}>
+                          <Avatar sx={{ width: 100, height: 100 }} alt={profileUser ? profileUser.name : 'Avatar'} src={ profileUser && (profileUser.image === '' ? '/images/fake.jpg' : profileUser.image)} />
+                        </IconButton>
+                    }
+                    {
+                      imgFile.imageUrl === null ?
+                      <Box sx={{position: 'absolute', bottom: -10, right: -10, zIndex: 1, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }} component="span">
+                        <IconButton sx={{ bgcolor: theme.palette.primary.white, zIndex: -1 }} color='dashboard' variant="outlined">
+                          <AddAPhotoIcon />
+                        </IconButton>
+                      </Box>
+                      :
+                      <Box sx={{position: 'absolute', bottom: -10, right: -10, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }}>
+                        <IconButton type='submit' sx={{ bgcolor: theme.palette.primary.white }} color='dashboard' variant="outlined">
+                          <FileUploadIcon />
+                        </IconButton>
+                      </Box>
+                    }
+                    <Box sx={{display: 'none'}} component="input" type="file" name="photo" id="photo"/>
+                  </Box>
               </Box>
               <Box>
                 <Typography sx={{textAlign: 'center'}} component="h3" variant='body'>

@@ -163,7 +163,7 @@ export default function Header() {
   const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, comparasion: { compareItems }, wishlist: { wishItems } } = state;
+  const { comparasion: { compareItems }, wishlist: { wishItems } } = state;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -173,6 +173,7 @@ export default function Header() {
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
@@ -252,18 +253,15 @@ export default function Header() {
 
   const handleLogout = () => {
     setAnchorElUser(null);
-    dispatch({ type: 'USER_LOGOUT'});
-    dispatch({ type: 'REMOVE_SESSION', payload: null });
     dispatch({ type: 'PERSONAL_REMOVE'});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
-    Cookies.remove('userInfo');
     Cookies.remove('personalInfo');
     Cookies.remove('cartItems');
     Cookies.remove('addresses');
     Cookies.remove('payment');
     Cookies.remove('shipping');
     Cookies.remove('forInvoice');
-    Cookies.remove('session');
+    localStorage.removeItem('userInfo');
     router.push('/');
   };  
 
@@ -352,9 +350,9 @@ export default function Header() {
                 </React.Fragment>
               }
               <Box sx={{ flexGrow: 0, display: { xs: 'flex', sm: 'flex'} }}>
-                <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
+                <Tooltip title={userInf0 ? `Open ${userInf0.name} menu` : 'Open menu'}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                    <Avatar sx={{ width: 30, height: 30 }} alt={userInf0 ? userInf0.name : 'Avatar'} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -373,7 +371,7 @@ export default function Header() {
                   onClose={handleCloseUserMenu}
                 >
                 {
-                  userInfo ?
+                  userInf0 ?
                   (
                     <Box>
                       <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
@@ -382,7 +380,7 @@ export default function Header() {
                         </Link>
                       </MenuItem>
                       {
-                        userInfo.isAdmin &&
+                        userInf0.isAdmin &&
                         <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                           <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                             {loged[1]}
@@ -435,9 +433,9 @@ export default function Header() {
                   </Grid>
                   <Grid item xs={3} sx={{ display: { xs: 'flex', md: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
                     <Box sx={{ flexGrow: 0 }}>
-                      <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
+                      <Tooltip title={userInf0 ? userInf0.name : "Open user menu"}>
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                          <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                          <Avatar alt={userInf0 ? userInf0.name : ''} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
                         </IconButton>
                       </Tooltip>
                       <Menu
@@ -456,7 +454,7 @@ export default function Header() {
                         onClose={handleCloseUserMenu}
                       >
                         {
-                          userInfo ?
+                          userInf0 ?
                           (
                             <Box>
                               <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
@@ -465,7 +463,7 @@ export default function Header() {
                                 </Link>
                               </MenuItem>
                               {
-                                userInfo.isAdmin &&
+                                userInf0.isAdmin &&
                                 <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                                   <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                                     {loged[1]}
@@ -510,9 +508,9 @@ export default function Header() {
                   </Grid>
                   <Grid item xs={3} sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'flex-end', alignItems: 'end' }}>
                     <Box sx={{ flexGrow: 0 }}>
-                      <Tooltip title={userInfo ? userInfo.name : "Open user menu"}>
+                      <Tooltip title={userInf0 ? userInf0.name : "Open user menu"}>
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                          <Avatar alt={userInfo ? userInfo.name : ''} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                          <Avatar alt={userInf0 ? userInf0.name : ''} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
                         </IconButton>
                       </Tooltip>
                       <Menu
@@ -531,7 +529,7 @@ export default function Header() {
                         onClose={handleCloseUserMenu}
                       >
                         {
-                          userInfo ?
+                          userInf0 ?
                           (
                             <Box>
                               <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
@@ -540,7 +538,7 @@ export default function Header() {
                                 </Link>
                               </MenuItem>
                               {
-                                userInfo.isAdmin &&
+                                userInf0.isAdmin &&
                                 <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                                   <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                                     {loged[1]}

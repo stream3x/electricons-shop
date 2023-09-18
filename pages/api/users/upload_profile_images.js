@@ -1,40 +1,47 @@
 import nc from 'next-connect';
-import { S3Client } from "@aws-sdk/client-s3";
-import multer from 'multer';
-import multerS3 from 'multer-s3';
+import db from '../../../src/utils/db';
+import fs from "fs";
+import path from "path";
+import User from '../../../models/User';
 
 const handler = nc();
 
-const s3 = new S3Client({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_KEY,
-  region: 'eu-central-1'
-});
+handler.put(async (req, res) => {
+  try {
 
-const upload = (bucketName) => multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: bucketName,
-    metadata: function (req, file, cb) {
-      cb(null, { fieldName: file.fieldname });
-    },
-    key: function (req, res, cb) {
-      cb(null, 'image/*');
+    db.connect();
+    const { image_name, image, email } = req.body;
+
+    if (!image) {
+      return res.status(400).json({ error: 'Image data is missing' });
     }
-  })
-});
 
-handler.put((req, res) => {
-  const uploadSingle = upload('electricons-upload-image').single('image-upload');
-  
-  uploadSingle(req, res, (error) => {
-    if (error) return res.status(400).json({ success: false, message: error.message });
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    const filePath = path.join(process.cwd(), 'public/images/users', `${image_name}`);
+    fs.writeFileSync(filePath, buffer);
+    
+    const updatedUser = await User.findOneAndUpdate({
+      email
+    },
+    {
+      $set: { image }
+    },
+    {
+      new: true
+    });
+    const responseData = {
+      image: updatedUser.image,
+    };
 
+    db.disconnect();
+    
+    res.status(200).json(responseData);
 
-    console.log(req);
-
-    res.status(200).json({ success: true, message: 'File uploaded successfully' });
-  });
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 export default handler;

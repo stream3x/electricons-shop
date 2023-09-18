@@ -18,8 +18,6 @@ const initialState = {
   wishlist: {
     wishItems: Cookies.get('wishItems') ? JSON.parse(Cookies.get('wishItems')) : []
   },
-  userInfo: Cookies.get('userInfo') ? JSON.parse(Cookies.get('userInfo')) : null,
-  session: Cookies.get('session') ? JSON.parse(Cookies.get('session')) : null,
   snack: {
     message: '',
     severity: ''
@@ -128,21 +126,6 @@ function reducer(state, action) {
     }
     case 'SNACK_MESSAGE': {
       return { ...state, snack: action.payload };
-    }
-    case 'USER_LOGIN': {
-      return { ...state, userInfo: action.payload };
-    }
-    case 'USER_LOGOUT': {
-      return { ...state, userInfo: null, snack: action.payload };
-    }
-    case 'PERSONAL_REMOVE': {
-      return { ...state, cart: { ...state.cart, personalInfo: {} } };
-    }
-    case 'SET_SESSION': {
-      return { ...state, session: action.payload, snack: { ...state.snack, message: 'session successfully added', severity: 'success'} };
-    }
-    case 'REMOVE_SESSION': {
-      return { ...state, session: null, snack: { ...state.snack, message: 'session successfully removed', severity: 'warning'} };
     }
     default:
       return { ...state, snack: {message: '', severity: ''} };

@@ -22,7 +22,7 @@ export default function Addresses() {
   const router = useRouter();
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
-  const { userInfo, cart: { personalInfo, addresses, cartItems} } = state;
+  const { cart: { personalInfo, addresses, cartItems} } = state;
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -54,9 +54,10 @@ export default function Addresses() {
     Cookies.set('forInvoice', Number(event.target.value) - 1);
   };
 
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
-  const emptyAddresses = addresses && Object.keys(addresses).length === 0;
-  const emptyUserInfo = userInfo && userInfo === null && Object.keys(userInfo).length === 0;
+  const emptyAddresses = !userInf0?.city && !userInf0?.country && !userInf0?.phone && !userInf0?.postalcode;
+  const emptyUserInfo = userInf0 && userInf0 === null && Object.keys(userInf0).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
 
   const handleSubmit = async (event) => {
@@ -152,9 +153,9 @@ export default function Addresses() {
                 <RadioGroup name="radio-address-picker" value={!emptyAddresses ? Number(forInvoice) : 0} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                   <Grid container space={2}>
                   {
-                    !emptyAddresses ? addresses.map((address, index) => (
+                    !emptyAddresses ? (addresses.length !== 0 ? addresses : [userInf0]).map((address, index) => (
                       <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
-                        <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInfo && userInfo.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
+                        <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
                       </Grid>
                     ))
                     : null
@@ -174,14 +175,14 @@ export default function Addresses() {
               }
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               {
-                !addNewAddress && addresses.length === 0 &&
+                !addNewAddress && emptyAddresses &&
                 <Box>
                 {
                   !emptyPersonalInfo && !emptyUserInfo &&
                   <React.Fragment>
                     <TextField
                       margin="normal"
-                      defaultValue={userInfo && userInfo.name ? userInfo.name : personalInfo.name}
+                      defaultValue={userInf0 && userInf0.name ? userInf0.name : personalInfo.name}
                       disabled
                       fullWidth
                       required
@@ -191,7 +192,7 @@ export default function Addresses() {
                     />
                     <TextField
                       margin="normal"
-                      defaultValue={userInfo && userInfo.email ? userInfo.email : personalInfo.email}
+                      defaultValue={userInf0 && userInf0.email ? userInf0.email : personalInfo.email}
                       disabled
                       fullWidth
                       required
@@ -241,7 +242,7 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     defaultValue={personalInfo ? personalInfo.address ? personalInfo.address : personalInfo.address : ''}
-                    disabled={!emptyAddresses && userInfo.address && true}
+                    disabled={!emptyAddresses && userInf0.address && true}
                     fullWidth
                     required
                     id="address"
@@ -343,7 +344,7 @@ export default function Addresses() {
                     error={errors.phone}
                   />
                   {
-                    !emptyAddresses && addresses.length > 0 &&
+                    !emptyAddresses && emptyAddresses &&
                     <FormControlLabel
                       sx={{width: '100%'}}
                       control={

@@ -117,7 +117,7 @@ export default function DashboardLayout({ children }) {
     Cookies.remove('session');
     router.push('/login');
   };  
-
+console.log(userInfo, id);
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
@@ -147,7 +147,7 @@ export default function DashboardLayout({ children }) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              {pathname === '/backoffice/profile/[id]' ? `${id}` : capitalizeFirstLetter(tabName)}
+              {pathname === '/backoffice/profile/[id]' ? `${userInfo?.email}` : capitalizeFirstLetter(tabName)}
             </Typography>
             <Link color={theme.palette.primary.contrastText} href="/">
               <IconButton color="inherit">                
@@ -185,7 +185,7 @@ export default function DashboardLayout({ children }) {
                 (
                   <Box>
                     <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                      <Link href={`/backoffice/${id}/profile`} passHref>
+                      <Link href={`/backoffice/profile/${userInfo.email}`} passHref>
                         {loged[0]}
                       </Link>
                     </MenuItem>

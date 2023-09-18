@@ -42,7 +42,7 @@ export default function LogIn() {
     }),
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (event) => {
     if (!loading) {
       setSuccess(false);
       setLoading(true);
@@ -79,26 +79,23 @@ export default function LogIn() {
         password: formOutput.get('password'),
       };
       const { data } = await axios.post('/api/users/login', formData);
-      dispatch({ type: 'USER_LOGIN', payload: data });
-      dispatch({ type: 'SET_SESSION', payload: data });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      Cookies.set('userInfo', JSON.stringify(data));
-      Cookies.set('session', JSON.stringify(data));
+      localStorage.setItem('userInfo', JSON.stringify(data))
       handleButtonClick();
     }catch (error) {
-      if(error.response.data.type === 'all') {
+      if(error?.response?.data.type === 'all') {
         setErrors({ ...errors, email: true, password: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
       }
-      if(error.response.data.type === 'email') {
+      if(error?.response?.data.type === 'email') {
         setErrors({ ...errors, email: true, password: false });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error?.response?.data.message : error, severity: error?.response?.data.severity }});
       }
-      if(error.response.data.type === 'password') {
+      if(error?.response?.data.type === 'password') {
         setErrors({ ...errors, email: false, password: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error?.response?.data.message : error, severity: error?.response?.data.severity }});
       }
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error?.response?.data.message : error, severity: error?.response?.data.severity }});
     }
   };
 

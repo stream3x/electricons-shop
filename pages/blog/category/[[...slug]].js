@@ -54,7 +54,7 @@ export async function getServerSideProps(context) {
     : {};
 
   const tagsFilter =
-    tagQueary && tagQueary !== []
+    tagQueary && tagQueary.length !== 0
     ? {
       tag: {
         $regex: tagQueary,
@@ -224,7 +224,6 @@ export default function CategoryProducts(props) {
   const [searchFilter, setSearchFilter] = React.useState([]);
   const [similarTags, setSimilarTags] = React.useState([]);
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
-  console.log(router.pathname);
 
   const {
     query = '',
@@ -354,40 +353,40 @@ export default function CategoryProducts(props) {
                 </Toolbar>
               </AppBar>
             </Grid>
-        {
-          products.map(prod => (
-            <Grid key={prod._id} item xs={12}>
-                <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
-                    <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%', textDecoration: 'none'} }}>
-                      <Link sx={{position: 'relative', display: 'flex', flex: 0, flexWrap: {xs: 'wrap', md: 'nowrap'} }} href={`/blog/post/${prod.slug}`} onClick={() => handleLoading(prod)}>
-                      {
-                        prod._id === selected &&
-                        <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
-                      }
-                        <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
-                          <Image
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            priority
-                            src={prod.images[0].image}
-                            alt={prod.title}
-                            quality={35}
-                          />
-                        </CardMedia>
-                        <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', md: '0 0 75%'}, flexWrap: 'wrap'}}>
-                          <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
-                          {prod.title}
-                          </Typography>
-                          <Typography align="justify" variant="body2" color="text.secondary">
-                            {prod.shortDescription}
-                          </Typography>
-                        </CardContent>
-                      </Link>
-                    </CardActionArea>
-                </Card>
-            </Grid>
-          ))
-        }
+            {
+              products.map(prod => (
+                <Grid key={prod._id} item xs={12}>
+                    <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
+                        <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%', textDecoration: 'none'} }}>
+                          <Link sx={{position: 'relative', display: 'flex', flex: 0, flexWrap: {xs: 'wrap', md: 'nowrap'} }} href={`/blog/post/${prod.slug}`} onClick={() => handleLoading(prod)}>
+                          {
+                            prod._id === selected &&
+                            <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                          }
+                            <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
+                              <Image
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                priority
+                                src={prod.images[0].image}
+                                alt={prod.title}
+                                quality={35}
+                              />
+                            </CardMedia>
+                            <CardContent sx={{display: 'flex', flex: {xs: '0 0 100%', md: '0 0 75%'}, flexWrap: 'wrap'}}>
+                              <Typography sx={{width: '100%'}} gutterBottom variant="h6" component="h3" align="left">
+                              {prod.title}
+                              </Typography>
+                              <Typography align="justify" variant="body2" color="text.secondary">
+                                {prod.shortDescription}
+                              </Typography>
+                            </CardContent>
+                          </Link>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+              ))
+            }
             <Grid item xs={12}>
               <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>

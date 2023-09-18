@@ -38,7 +38,7 @@ const Item = styled(Paper)(({ theme }) => ({
         <Grid xs={12}>
           {
             compareItems.length !== 0 ?
-            <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
+            <Item sx={{ '& a': {textDecoration: 'none'}, display: 'flex' }} elevation={0}>
               <Link noLinkStyle href="/" passHref>
                 <Button sx={{ '&:hover': {color: theme.palette.secondary.main}}} size="large" startIcon={<ReplyIcon />}>
                   Continue shoping

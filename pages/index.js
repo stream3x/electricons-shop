@@ -39,7 +39,7 @@ export default function Index(props) {
   }, [hero_products, topProducts, bestSeller]);
 
   React.useEffect(() => {
-    // The counter changed!
+    console.log(router.query.counter);
   }, [router.query.counter])
 
   return (

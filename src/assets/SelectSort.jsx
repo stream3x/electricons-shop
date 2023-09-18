@@ -7,10 +7,10 @@ import { Box, useMediaQuery } from '@mui/material';
 import { useRouter } from 'next/router';
 
 export default function SelectSort(props) {
-  const { sortHandler } = props;
+  const { sortHandler, isNotCat, sort  } = props;
   const matches = useMediaQuery('(min-width: 600px)');
   const router = useRouter();
-  const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
+  // const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
   const [value, setValue] = React.useState('')
 
   const handleChange = (event) => {

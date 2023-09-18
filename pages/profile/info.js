@@ -6,29 +6,24 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
-import Link from '../../src/Link';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import FormHelperText from '@mui/material/FormHelperText';
-import { Divider } from '@mui/material';
+import { Avatar } from '@mui/material';
 import theme from '../../src/theme';
 import { Store } from '../../src/utils/Store';
-import { FormControl, InputLabel } from '@mui/material';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ProfileLayout from "../../src/components/ProfileLayout"
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
 export default function ProfileInfo() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: {cartItems, personalInfo} } = state;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const { snack, cart: {cartItems, personalInfo} } = state;
   const [willLogin, setWillLogin] = useState(false);
   const [willRegister, setWillRegister] = useState(false);
   const [forInvoice, setForInvoice] = useState(0);
@@ -52,33 +47,51 @@ export default function ProfileInfo() {
   const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
-  const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
+  const emptyUserInfo = userInf0 !== null ? Object.keys(userInf0).length === 0 : true;
   const emptyCartItems = Object.keys(cartItems).length === 0;
-
-  function orderLoginHandler() {
-    setWillLogin(true);
-  }
-
-  function orderGestHandler() {
-    setWillLogin(false);
-  }
-
-  const handleWillRegister = (e) => {
-    if(e.target.value === '') {
-      setWillRegister(() => false);
-    }else {
-      setWillRegister(() => true);
+  const [error, setError] = React.useState(false);
+  const [imgFile, setImgFile] = React.useState({
+    image: null,
+    imageUrl: null
+  })
+  
+  function handleImageChoose(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        setImgFile({
+            ...imgFile,
+            image: file,
+            imageUrl: reader.result
+        })
+        e.target.value = ''
     }
-  };
+    reader.readAsDataURL(file);
+  }
 
-  const handleClickShowPassword = () => {
-    setConfirmPassword({
-      showPassword: !confirmPassword.showPassword,
-    });
-  };
-
-  const handleNext = () => {
-    router.push('/checkout/addresses');
+  const handleUploadImage = async (event) => {
+    event.preventDefault();
+    try {
+      const outputData = new FormData(event.currentTarget);
+      const formData = {
+        image_name: imgFile.image?.name,
+        image: imgFile?.imageUrl,
+        email: profileUser?.email
+      }
+      console.log(formData);
+      const { data } = await axios.put(`/api/users/upload_profile_images`, formData, {
+        headers: {
+          'Content-Type': "application/json", // Set the correct Content-Type header
+        },
+      });
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was uploaded', severity: 'success'}});
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
+      setErrorMessage('Error uploading image:', error)
+      setSelectedFile(null);
+      setError(true)
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -129,101 +142,6 @@ export default function ProfileInfo() {
       }
       dispatch({ type: 'PERSONAL_INFO', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
-      router.push('/checkout/addresses');
-
-  };
-
-  const handleRegister = async (event) => {
-    event.preventDefault();
-    try {
-      const formOutput = new FormData(event.currentTarget);
-      const formData = {
-        name: formOutput.get('name'),
-        email: formOutput.get('email'),
-        password: formOutput.get('password'),
-        birthday: formOutput.get('birthday'),
-        newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
-        company: formOutput.get('company'),
-        vatNumber: formOutput.get('vatNumber')
-      };
-      setErrors({ ...errors, name: false, email: false, birthday: false, password: false, company: false, vatNumber: false, address: false, city: false, country: false, postalcode: false, phone: false });
-      setConfirmPassword({
-        confirmError: false,
-      });
-      if(emptyCartItems) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
-        router.push('/');
-        return;
-      }
-      if(formOutput.get('name') === '') {
-        setErrors({ ...errors, name: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
-        return;
-      }
-      if(formOutput.get('vatNumber') !== '' && formOutput.get('vatNumber').length < 9) {
-        setErrors({ ...errors, vatNumber: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'can\'t contain less then 9 numbers', severity: 'error'}});
-        return;
-      }
-      if(formOutput.get('vatNumber') !== '' && formOutput.get('vatNumber').length > 9) {
-        setErrors({ ...errors, vatNumber: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'can\'t contain more then 9 numbers', severity: 'error'}});
-        return;
-      }
-      if(!pattern.test(formData.email)) {
-        setErrors({ ...errors, email: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
-        return;
-      }
-      if(formData.email === '') {
-        setErrors({ ...errors, email: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
-        return;
-      }
-      if(formData.password !== formOutput.get('password-confirmed')) {
-        setConfirmPassword({
-          confirmError: !confirmPassword.confirmError,
-        });
-        return;
-      }
-      if(formData.password === '') {
-        setErrors({ ...errors, password: true });
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the password is required', severity: 'error'}});
-        return;
-      }
-      const { data } = await axios.post('/api/users/register', formData);
-      dispatch({ type: 'USER_LOGIN', payload: data });
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
-      Cookies.set('userInfo', data);
-      router.push('/checkout/addresses');
-    } catch (error) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
-    }
-  };
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    setErrors({ ...errors, email: false, password: false });
-    try {
-      const formOutput = new FormData(event.currentTarget);
-      const formData = {
-        email: formOutput.get('email'),
-        password: formOutput.get('password'),
-      };
-      const { data } = await axios.post('/api/users/login', formData);
-      dispatch({ type: 'USER_LOGIN', payload: data});
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      Cookies.set('userInfo', JSON.stringify(data));
-      setWillLogin(false);
-      router.push('/checkout/addresses');
-    } catch (error) {
-      if(error.response.data.type === 'all') {
-        setErrors({ ...errors, email: error.response.data.type === 'all', password: error.response.data.type === 'all' })
-      }else {
-        setErrors({ ...errors, email: error.response.data.type === 'email', password: error.response.data.type === 'password' })
-      }
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
-    }
   };
 
   const handleEdit = () => {
@@ -237,18 +155,41 @@ export default function ProfileInfo() {
       <ThemeProvider theme={theme}>
         <Container component="div" maxWidth="xl">
           <CssBaseline />
-          {
-            emptyUserInfo && emptyPersonalInfo &&
-            <Box sx={{display: 'flex', flexWrap: 'nowrap', mt: 5 }}>
-              <Button size="small" onClick={orderGestHandler} sx={{ color: theme.palette.secondary.main }}>
-                  Order as a guest
-              </Button>
-              <Divider variant="middle" orientation="vertical" flexItem />
-              <Button size="small" onClick={orderLoginHandler} sx={{ color: theme.palette.main }}>
-                  Click here to login
-              </Button>
+          <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'left', py: 3, mt: 3}}>
+            <Box component="form" onSubmit={handleUploadImage} sx={{position: 'relative'}}>
+              <Box component="label" onChange={handleImageChoose} htmlFor="photo">
+                {
+                  imgFile.imageUrl ?
+                    <Box sx={{ borderRadius: '100%', overflow: 'hidden', boxShadow: '0 5px 20px lightGray', mt: -5, '& img': {objectFit: 'contain'}, position: 'relative', width: 100, height: 100 }}>
+                      <Image
+                        fill
+                        src={imgFile.imageUrl ? imgFile.imageUrl : userInf0.image}
+                        alt={userInf0.name}
+                      />
+                    </Box>
+                      :
+                    <IconButton sx={{ p: 0, mt: -5 }}>
+                      <Avatar sx={{ width: 100, height: 100 }} alt={userInf0 ? userInf0.name : 'Avatar'} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
+                    </IconButton>
+                }
+                {
+                  imgFile.imageUrl === null ?
+                  <Box sx={{position: 'absolute', bottom: -10, right: -10, zIndex: 1, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }} component="span">
+                    <IconButton sx={{ bgcolor: theme.palette.primary.white, zIndex: -1 }} color='dashboard' variant="outlined">
+                      <AddAPhotoIcon />
+                    </IconButton>
+                  </Box>
+                  :
+                  <Box sx={{position: 'absolute', bottom: -10, right: -10, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }}>
+                    <IconButton type='submit' sx={{ bgcolor: theme.palette.primary.white }} color='dashboard' variant="outlined">
+                      <FileUploadIcon />
+                    </IconButton>
+                  </Box>
+                }
+                <Box sx={{display: 'none'}} component="input" type="file" name="photo" id="photo"/>
+              </Box>
             </Box>
-          }
+          </Box>
           <Box
             sx={{
               marginTop: 2,
@@ -258,152 +199,23 @@ export default function ProfileInfo() {
             }}
           >
           {
-            !willLogin && emptyUserInfo &&
-            <Box component="form" onSubmit={willRegister ? handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+            emptyPersonalInfo && !emptyUserInfo &&
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
-                defaultValue={personalInfo ? personalInfo.name : ''}
-                disabled={!emptyPersonalInfo && true}
-                fullWidth
                 required
+                fullWidth
                 id="name"
                 label="Name"
                 name="name"
                 autoComplete="name"
+                autoFocus
+                error={errors.name}
               />
               {
                 errors.name && 
-                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+                <FormHelperText error>{snack.message}</FormHelperText>
               }
-              <TextField
-                margin="normal"
-                defaultValue={personalInfo ? personalInfo.email : ''}
-                disabled={!emptyPersonalInfo && true}
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-              {
-                errors.email && 
-                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
-              }
-                <TextField
-                  margin="normal"
-                  type="date"
-                  defaultValue={personalInfo ? personalInfo.birthday : ''}
-                  disabled={!emptyPersonalInfo && true}
-                  fullWidth
-                  id="birthday"
-                  label="Birthday (optional)"
-                  name="birthday"
-                  autoComplete="birthday"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <TextField
-                  margin="normal"
-                  defaultValue={personalInfo ? personalInfo.company : ''}
-                  disabled={!emptyPersonalInfo && true}
-                  fullWidth
-                  id="company"
-                  label="Company (optional)"
-                  name="company"
-                  autoComplete="company"
-                />
-                <TextField
-                  margin="normal"
-                  type="number"
-                  defaultValue={personalInfo ? personalInfo.vatNumber : ''}
-                  disabled={!emptyPersonalInfo && true}
-                  fullWidth
-                  id="vatNumber"
-                  label="VAT Number (optional)"
-                  name="vatNumber"
-                />         
-                {
-                  errors.vatNumber && 
-                  <FormHelperText error>{snack.message && snack.message}</FormHelperText>
-                }
-                {
-                  emptyPersonalInfo &&
-                  <React.Fragment>
-                    <Typography sx={{pt: 3, pb: 2}} align="left" variant='h6' component="p">
-                      Create an account (optional)
-                      <Typography variant='caption' component="p">And save time on your next order!</Typography>
-                    </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          name="password"
-                          label="Password"
-                          type="password"
-                          id="password"
-                          autoComplete="password"
-                          onChange={handleWillRegister}
-                        />
-                        {
-                          confirmPassword.confirmError &&
-                          <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
-                        }
-                        {
-                          errors.password &&
-                          <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
-                        }
-                      </Grid>
-                      <Grid item xs={12}>
-                        <FormControl sx={{ width: '100%' }} variant="outlined">
-                          <InputLabel htmlFor="outlined-adornment-password">
-                            Confirm Password
-                          </InputLabel>
-                          <OutlinedInput
-                            fullWidth
-                            name="password-confirmed"
-                            label="Confirm Password *"
-                            type={confirmPassword.showPassword ? 'text' : 'password'}
-                            id="password-confirm"
-                            endAdornment={
-                              <InputAdornment position="end">
-                                <IconButton
-                                  aria-label="toggle password visibility"
-                                  onClick={handleClickShowPassword}
-                                  edge="end"
-                                >
-                                  {confirmPassword.showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                              </InputAdornment>
-                            }
-                          />
-                          {
-                            confirmPassword.confirmError &&
-                            <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
-                          }
-                        </FormControl>
-                      </Grid>
-                    </Grid>
-                  </React.Fragment>
-                }
-                {
-                  emptyPersonalInfo && emptyUserInfo &&
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
-                  >
-                    Continue
-                  </Button>
-                }
-            </Box>
-            
-          }
-          {
-            willLogin &&
-            <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
                 required
@@ -423,82 +235,58 @@ export default function ProfileInfo() {
                 margin="normal"
                 required
                 fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                error={errors.password}
+                type="date"
+                id="birthday"
+                label="Birthday"
+                name="birthday"
+                autoComplete="birthday"
+                autoFocus
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                error={errors.birthday}
               />
               {
-                errors.password && 
+                errors.birthday && 
                 <FormHelperText error>{snack.message}</FormHelperText>
               }
-              <Grid align="left" item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Login
-              </Button>
-              <Grid container>
-                <Grid align="left" item xs>
-                  <Link href='/forgot-password' variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          }
-          {
-            !emptyUserInfo &&
-            <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
-                defaultValue={userInfo.name}
-                disabled={!emptyUserInfo && true}
                 fullWidth
-                id="name"
-                label="Name"
-                name="name"
-              />
-              <TextField
-                margin="normal"
-                defaultValue={userInfo.email}
-                disabled={!emptyUserInfo && true}
-                fullWidth
-                name="email"
-                label="Email"
-                type="email"
-                id="email"
-              />
-              <TextField
-                margin="normal"
-                defaultValue={userInfo.company}
-                disabled={!emptyUserInfo && true}
-                fullWidth
-                name="company"
-                label="Company"
                 id="company"
+                label="Company"
+                name="company"
+                autoComplete="company"
+                autoFocus
+                error={errors.company}
               />
+              {
+                errors.company && 
+                <FormHelperText error>{snack.message}</FormHelperText>
+              }
+              <TextField
+                  margin="normal"
+                  type="number"
+                  fullWidth
+                  id="vatNumber"
+                  label="VAT Number"
+                  name="vatNumber"
+                />         
+                {
+                  errors.vatNumber && 
+                  <FormHelperText error>{snack.message}</FormHelperText>
+                }
             </Box>
           }
           {
-            !emptyPersonalInfo && emptyUserInfo &&
+            emptyPersonalInfo && emptyUserInfo &&
             <Button
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={handleEdit}
+              type='submit'
             >
-              Edit
+              Save
             </Button>
           }
           {
@@ -507,9 +295,9 @@ export default function ProfileInfo() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
-              onClick={handleNext}
+              onClick={handleEdit}
             >
-              Continue Next
+              change personal info
             </Button>
           }
           </Box>

@@ -29,7 +29,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 export default function PersonalInfo() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: {cartItems, personalInfo} } = state;
+  const { snack, cart: {cartItems, personalInfo} } = state;
   const [willLogin, setWillLogin] = useState(false);
   const [willRegister, setWillRegister] = useState(false);
   const [errors, setErrors] = useState({
@@ -49,10 +49,10 @@ export default function PersonalInfo() {
     showPassword: false,
     confirmError: false
   });
-  const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
+  const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
-  const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
+  const emptyUserInfo = userInf0 !== null ? Object.keys(userInf0).length === 0 : true;
   const emptyCartItems = Object.keys(cartItems).length === 0;
 
   function orderLoginHandler() {
@@ -79,11 +79,11 @@ export default function PersonalInfo() {
 
   const handleNext = () => {
     const formData = {
-      name: userInfo ? userInfo.name : formOutput.get('name'),
-      email: userInfo ? userInfo.email : formOutput.get('email'),
-      birthday: userInfo ? userInfo.birthday : formOutput.get('birthday'),
-      company: userInfo ? userInfo.company : formOutput.get('company'),
-      vatNumber: userInfo ? userInfo.vatNumber : formOutput.get('vatNumber'),
+      name: userInf0 ? userInf0.name : formOutput.get('name'),
+      email: userInf0 ? userInf0.email : formOutput.get('email'),
+      birthday: userInf0 ? userInf0.birthday : formOutput.get('birthday'),
+      company: userInf0 ? userInf0.company : formOutput.get('company'),
+      vatNumber: userInf0 ? userInf0.vatNumber : formOutput.get('vatNumber'),
     };
     dispatch({ type: 'PERSONAL_INFO', payload: formData });
     router.push('/checkout/addresses');
@@ -199,9 +199,8 @@ export default function PersonalInfo() {
         return;
       }
       const { data } = await axios.post('/api/users/register', formData);
-      dispatch({ type: 'USER_LOGIN', payload: data });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
-      Cookies.set('userInfo', data);
+      localStorage.setItem('userInfo', JSON.stringify(data));
       router.push('/checkout/addresses');
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
@@ -218,9 +217,8 @@ export default function PersonalInfo() {
         password: formOutput.get('password'),
       };
       const { data } = await axios.post('/api/users/login', formData);
-      dispatch({ type: 'USER_LOGIN', payload: data});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      Cookies.set('userInfo', JSON.stringify(data));
+      localStorage.setItem('userInfo', JSON.stringify(data));
       setWillLogin(false);
       router.push('/checkout/addresses');
     } catch (error) {
@@ -470,7 +468,7 @@ export default function PersonalInfo() {
             <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
-                defaultValue={userInfo.name}
+                defaultValue={userInf0.name}
                 disabled={!emptyUserInfo && true}
                 fullWidth
                 id="name"
@@ -479,7 +477,7 @@ export default function PersonalInfo() {
               />
               <TextField
                 margin="normal"
-                defaultValue={userInfo.email}
+                defaultValue={userInf0.email}
                 disabled={!emptyUserInfo && true}
                 fullWidth
                 name="email"
@@ -489,7 +487,7 @@ export default function PersonalInfo() {
               />
               <TextField
                 margin="normal"
-                defaultValue={userInfo.company}
+                defaultValue={userInf0.company}
                 disabled={!emptyUserInfo && true}
                 fullWidth
                 name="company"

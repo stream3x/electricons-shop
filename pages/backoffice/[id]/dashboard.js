@@ -70,10 +70,10 @@ function Dashboard() {
 
   }, []);
 
-  dataUsers[1]?.recentFiveOrders.forEach(order => {
+  dataUsers[1]?.recentFiveOrders?.forEach(order => {
     orders.push(order.total);
   })
-  dataGuests[1]?.recentFiveGuestOrders.forEach(order => {
+  dataGuests[1]?.recentFiveGuestOrders?.forEach(order => {
     orderGuest.push(order.total);
   })
   const sumOrder = orders.reduce((total, number) => total + number, 0);
@@ -88,7 +88,7 @@ function Dashboard() {
     try {
       const res = await axios.get('/api/orders/fetch_orders');
       const orders = await res.data[0]?.orders;
-      orders && orders.forEach(order => {
+      orders && orders?.forEach(order => {
         const hour = parseInt(order.createdAt.substring(11, 13));
         const amount = order.total;
         if (hour >= 0 && hour < 3) {
@@ -120,7 +120,7 @@ function Dashboard() {
     try {
       const res = await axios.get('/api/guests/fetch_guest');
       const guest = await res.data[0]?.guest_orders;
-      guest && guest.forEach(order => {
+      guest && guest?.forEach(order => {
         const hour = parseInt(order.createdAt.substring(11, 13));
         const amount_guest = order.total;
         if (hour >= 0 && hour < 3) {

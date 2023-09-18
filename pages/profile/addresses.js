@@ -21,7 +21,7 @@ export default function ProfileAddresses() {
   const router = useRouter();
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
-  const { userInfo, cart: { personalInfo, addresses, cartItems} } = state;
+  const { cart: { personalInfo, addresses, cartItems} } = state;
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -53,9 +53,10 @@ export default function ProfileAddresses() {
     Cookies.set('forInvoice', Number(event.target.value) - 1);
   };
 
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
-  const emptyAddresses = addresses && Object.keys(addresses).length === 0;
-  const emptyUserInfo = userInfo && userInfo === null && Object.keys(userInfo).length === 0;
+  const emptyAddresses = !userInf0 && !userInf0.city;
+  const emptyUserInfo = userInf0 && userInf0 === null && Object.keys(userInf0).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
 
   const handleSubmit = async (event) => {
@@ -105,7 +106,6 @@ export default function ProfileAddresses() {
       }
       dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
-      router.push('/checkout/shipping');
       setAddNewAddress(false);
       setErrors({ 
         ...errors, 
@@ -150,9 +150,9 @@ export default function ProfileAddresses() {
               <RadioGroup name="radio-address-picker" value={!emptyAddresses ? Number(forInvoice) : 0} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                 <Grid container space={2}>
                 {
-                  !emptyAddresses ? addresses.map((address, index) => (
+                  !emptyAddresses ? (addresses.length !== 0 ? addresses : [userInf0]).map((address, index) => (
                     <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
-                      <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInfo && userInfo.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
+                      <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
                     </Grid>
                   ))
                   : null
@@ -171,121 +171,6 @@ export default function ProfileAddresses() {
               </Grid>
             }
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-            {
-              !addNewAddress && addresses.length === 0 &&
-              <Box>
-              {
-                !emptyPersonalInfo && !emptyUserInfo &&
-                <React.Fragment>
-                  <TextField
-                    margin="normal"
-                    defaultValue={userInfo && userInfo.name ? userInfo.name : personalInfo.name}
-                    disabled
-                    fullWidth
-                    required
-                    id="name"
-                    label="Name"
-                    name="name"
-                  />
-                  <TextField
-                    margin="normal"
-                    defaultValue={userInfo && userInfo.email ? userInfo.email : personalInfo.email}
-                    disabled
-                    fullWidth
-                    required
-                    id="email"
-                    label="Email"
-                    name="email"
-                    error={errors.email}
-                  />
-                </React.Fragment>
-              }
-                <TextField
-                  margin="normal"
-                  defaultValue={personalInfo ? personalInfo.country ? personalInfo.country : addresses.country : ''}
-                  disabled={!emptyAddresses && addresses.country && true}
-                  fullWidth
-                  required
-                  id="country"
-                  label="Country"
-                  name="country"
-                  error={errors.country}
-                />
-                <TextField
-                  margin="normal"
-                  defaultValue={personalInfo ? personalInfo.city ? personalInfo.city : addresses.city : ''}
-                  disabled={!emptyAddresses && addresses.city && true}
-                  fullWidth
-                  required
-                  id="city"
-                  label="city"
-                  name="city"
-                  autoComplete="address-level2"
-                  error={errors.city}
-                />
-                <TextField
-                  margin="normal"
-                  type="number"
-                  defaultValue={personalInfo ? personalInfo.postalcode ? personalInfo.postalcode : addresses.postalcode : ''}
-                  disabled={!emptyAddresses && personalInfo.postalcode && true}
-                  fullWidth
-                  required
-                  id="postalcode"
-                  label="Zip/Postal Code"
-                  name="postalcode"
-                  autoComplete="postalcode"
-                  error={errors.postalcode}
-                />        
-                <TextField
-                  margin="normal"
-                  defaultValue={personalInfo ? personalInfo.address ? personalInfo.address : personalInfo.address : ''}
-                  disabled={!emptyAddresses && userInfo.address && true}
-                  fullWidth
-                  required
-                  id="address"
-                  label="Address"
-                  name="address"
-                  autoComplete="address"
-                  error={errors.address}
-                />
-                <TextField
-                  margin="normal"
-                  type="number"
-                  defaultValue={personalInfo ? personalInfo.phone ? personalInfo.phone : addresses.phone : ''}
-                  disabled={personalInfo && personalInfo.phone && true}
-                  fullWidth
-                  required
-                  id="phone"
-                  label="Phone"
-                  name="phone"
-                  autoComplete="phone"
-                  error={errors.phone}
-                />
-                <FormControlLabel
-                  sx={{width: '100%'}}
-                  control={
-                    <Checkbox
-                      value={!emptyAddresses ? addresses.length : forInvoice}
-                      defaultChecked
-                      checked={checked}
-                      color="primary"
-                      name="invoice"
-                      id="invoice"
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Use this address for invoice too"
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
-                >
-                  Continue
-                </Button>
-              </Box>
-            }
             {
               addNewAddress &&
               <Box>
@@ -364,7 +249,7 @@ export default function ProfileAddresses() {
                   variant="contained"
                   sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
                 >
-                  Continue
+                  edit
                 </Button>
               </Box>
             }

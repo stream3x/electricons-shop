@@ -41,12 +41,23 @@ function a11yProps(index) {
 }
 
 export default function VerticalTabs({productData}) {
-  const [value, setValue] = React.useState('0');
+  const [value, setValue] = React.useState(0);
+  const [swipeValue, setSwipeValue] = React.useState(0);
+  const [isSwipe, setIsSwipe] = React.useState(false);
   const matches = useMediaQuery('(min-width: 600px)');
 
   const handleChange = (event, newValue) => {
+    setIsSwipe(false)
     setValue(newValue);
   };
+
+  const handleSwipeChange = (event, newValue) => {
+    setIsSwipe(true)
+    setValue(newValue);
+    setSwipeValue(event);
+  };
+
+  console.log(value, swipeValue, isSwipe);
 
   return (
     <Box
@@ -55,7 +66,7 @@ export default function VerticalTabs({productData}) {
       <Tabs
         orientation={matches && "vertical"}
         variant="scrollable"
-        value={value}
+        value={isSwipe ? swipeValue : value}
         onChange={handleChange}
         aria-label="Vertical tabs example"
         sx={{ borderRight: {xs: 0, sm: `thin solid ${theme.palette.secondary.borderColor}`}, minWidth: '80px' }}
@@ -69,8 +80,8 @@ export default function VerticalTabs({productData}) {
       </Tabs>
       <SwipeableViews
       axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-      index={value}
-      onChangeIndex={handleChange}
+      index={isSwipe ? swipeValue : value}
+      onChangeIndex={handleSwipeChange}
       style={{width: "100%", overflow: 'hidden'}}
       enableMouseEvents
       >

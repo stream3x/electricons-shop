@@ -148,7 +148,7 @@ export default function CompareTable(props) {
   };
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer elevation={0} component={Paper}>
       <Table sx={{ minWidth: compareItems.length > 1 ? 530 : 350 }} aria-label="custom pagination table">
         <TableBody>
           <TableRow>

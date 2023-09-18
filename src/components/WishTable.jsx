@@ -17,7 +17,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
-import ReplyIcon from '@mui/icons-material/Reply';
 import { Button, FormHelperText } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import Link from '../Link';
@@ -25,7 +24,6 @@ import { Store } from '../utils/Store';
 import { useRouter } from 'next/router';
 import theme from '../theme';
 import InputBase from '@mui/material/InputBase';
-import Cookies from 'js-cookie';
 import Image from 'next/image';
 import Slide from '@mui/material/Slide';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -430,14 +428,6 @@ export default function WishTable(props) {
     }
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
     setLoadingCompare(false)
-  }
-
-  if (cartItems) {
-    return (
-      <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
-        <Typography component="p" variant="h6">There are no items in your wishlist</Typography>
-      </Item>
-    )
   }
 
   return (

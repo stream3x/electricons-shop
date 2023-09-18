@@ -44,7 +44,8 @@ export default function CartTotal({
 }) {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { userInfo, snack, cart: {cartItems, personalInfo, shipping, addresses, payment, cupon_discount} } = state;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const { snack, cart: {cartItems, personalInfo, shipping, addresses, payment, cupon_discount} } = state;
   const subTotal = order_items ? order_items.reduce((a, c) => a + c.quantity * c.price, 0) : cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,7 +65,7 @@ export default function CartTotal({
   }, [date]);
   
   const emptyPersonalInfo = Object.keys(personalInfo).length === 0;
-  const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
+  const emptyUserInfo = userInf0 !== null ? Object.keys(userInf0).length === 0 : true;
   const emptyAddresses = Object.keys(addresses).length === 0;
   const emptyShipping = Object.keys(shipping).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
@@ -128,8 +129,6 @@ export default function CartTotal({
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'accept by checking the box', severity: 'error'}});
       return;
     }
-    console.log(personalInfo, userInfo, addresses, payment, shipping);
-
     try {
       handleLoading();
       const { data } = await axios.post('/api/orders', {

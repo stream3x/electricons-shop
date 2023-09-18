@@ -4,7 +4,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
 import { Store } from '../src/utils/Store';
-import dynamic from 'next/dynamic';
 import Link from '../src/Link';
 import theme from '../src/theme';
 import ReplyIcon from '@mui/icons-material/Reply';
@@ -20,9 +19,8 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
   }));
 
- function Wishlist() {
+ export default function Wishlist() {
   const { state } = useContext(Store);
-  const router = useRouter();
   const { cart: { cartItems }, wishlist: {wishItems} } = state;
 
   if(wishItems.length === 0) {
@@ -48,21 +46,7 @@ const Item = styled(Paper)(({ theme }) => ({
             <WishTable wishItems={wishItems} cartItems={cartItems} />
           </Item>
         </Grid>
-        {
-          wishItems.length > 0 &&
-          <Grid xs={12}>
-            <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
-              <Link noLinkStyle href="/" passHref>
-                <Button sx={{ '&:hover': {color: theme.palette.secondary.main}}} size="large" startIcon={<ReplyIcon />}>
-                  Continue shoping
-                </Button>
-              </Link>
-            </Item>
-          </Grid>
-        }
       </Grid>
     </Box>
   )
 }
-
-export default dynamic(() => Promise.resolve(Wishlist), { ssr: false });
