@@ -16,12 +16,15 @@ import AddressCard from '../../src/assets/AddressCard';
 import RadioGroup from '@mui/material/RadioGroup';
 import AddIcon from '@mui/icons-material/Add';
 import ProfileLayout from '../../src/layout/ProfileLayout';
+import axios from 'axios';
 
 export default function ProfileAddresses() {
   const router = useRouter();
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
   const { cart: { personalInfo, addresses, cartItems} } = state;
+  const [userInfo, setUserInfo] = useState([]);
+  const [error, setError] = React.useState(false);
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -30,34 +33,26 @@ export default function ProfileAddresses() {
     phone: false
   });
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
-  const [checked, setChecked] = useState(false);
-  const [forInvoice, setForInvoice] = useState(Number(Cookies.get('forInvoice')) && Cookies.get('forInvoice') !== NaN ? Number(Cookies.get('forInvoice')) : 0);
-
-  const handleNext = () => {
-    router.push('/checkout/shipping');
-  };
-
-  const handleChange = (event) => {
-    setChecked(() => event.target.checked);
-    if(!checked) {
-      setForInvoice(() => Number(event.target.value));
-      Cookies.set('forInvoice', Number(event.target.value));
-    }else {
-      setForInvoice(() => 0);
-      Cookies.set('forInvoice', 0);
-    }
-  };
-
-  const handleChangeInvoice = (event) => {
-    setForInvoice(() => Number(event.target.value))
-    Cookies.set('forInvoice', Number(event.target.value) - 1);
-  };
 
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
-  const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
-  const emptyAddresses = !userInf0 && !userInf0.city;
-  const emptyUserInfo = userInf0 && userInf0 === null && Object.keys(userInf0).length === 0;
+
+  const emptyAddresses = userInfo?.addresses && userInfo?.addresses === 0;
+  const emptyUserInfo = userInfo && userInfo === null && Object.keys(userInfo).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await axios.get('/api/users');
+        setUserInfo(data.filter(items => items._id === userInf0._id));
+      } catch (error) {
+        setError(true)
+      }
+    }
+    fetchData();
+  }, []);
+console.log(addresses, userInfo, userInf0);
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -69,11 +64,6 @@ export default function ProfileAddresses() {
         postalcode: formOutput.get('postalcode'),
         phone: formOutput.get('phone')
       };
-      if(emptyCartItems) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
-        router.push('/');
-        return;
-      }
       if(formOutput.get('address') === '') {
         setErrors({ ...errors, address: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill address', severity: 'warning'}});
@@ -104,8 +94,16 @@ export default function ProfileAddresses() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the postal code is required', severity: 'warning'}});
         return;
       }
-      dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+      const newAddress = [formData].concat(userInfo);
+      console.log(JSON.stringify(newAddress));
+      {
+        addresses.length === 0 ?
+        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...newAddress } })
+        :
+        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } })
+      }
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
+      Cookies.set('addresses', JSON.stringify(newAddress));
       setAddNewAddress(false);
       setErrors({ 
         ...errors, 
@@ -118,17 +116,17 @@ export default function ProfileAddresses() {
   };
 
   const handleEdit = (item) => {
-    Cookies.set('forInvoice', JSON.stringify(addresses.length - 1));
     dispatch({ type: 'ADDRESSES_REMOVE', payload: item});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit address', severity: 'warning'}});
+    Cookies.remove('addresses');
     setAddNewAddress(true);
   };
   const handleDelete = (item) => {
-    Cookies.set('forInvoice', JSON.stringify(addresses.length - 1));
     dispatch({ type: 'ADDRESSES_REMOVE', payload: item});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack,message: 'address successfully removed', severity: 'warning'}});
     if(emptyAddresses) {
       setAddNewAddress(true);
+      Cookies.remove('addresses');
     }
   };
 
@@ -147,18 +145,16 @@ export default function ProfileAddresses() {
           >
             {
               !emptyAddresses &&
-              <RadioGroup name="radio-address-picker" value={!emptyAddresses ? Number(forInvoice) : 0} sx={{width: "100%"}} onChange={handleChangeInvoice}>
-                <Grid container space={2}>
-                {
-                  !emptyAddresses ? (addresses.length !== 0 ? addresses : [userInf0]).map((address, index) => (
-                    <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
-                      <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
-                    </Grid>
-                  ))
-                  : null
-                }
-                </Grid>
-              </RadioGroup>
+              <Grid container space={2}>
+              {
+                !emptyAddresses ? (addresses.length !== 0 ? addresses : userInfo).map((address, index) => (
+                  <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
+                    <AddressCard index={''} addresses={address} personalInfo={personalInfo} name={userInfo && userInfo[0]?.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
+                  </Grid>
+                ))
+                : null
+              }
+              </Grid>
             }
             {
               !emptyAddresses &&
@@ -225,44 +221,15 @@ export default function ProfileAddresses() {
                   autoComplete="phone"
                   error={errors.phone}
                 />
-                {
-                  !emptyAddresses && addresses.length > 0 &&
-                  <FormControlLabel
-                    sx={{width: '100%'}}
-                    control={
-                      <Checkbox
-                        value={!emptyAddresses ? addresses.length : addresses[addresses.length - 1]}
-                        defaultChecked
-                        checked={checked}
-                        color="primary"
-                        name="invoice"
-                        id="invoice"
-                        onChange={handleChange}
-                    />
-                    }
-                    label="Use this address for invoice too"
-                  />
-                }
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
                 >
-                  edit
+                  save
                 </Button>
               </Box>
-            }
-            {
-              !emptyAddresses && !addNewAddress &&
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
-                onClick={handleNext}
-              >
-                Continue Next
-              </Button>
             }
             </Box>
           </Box>

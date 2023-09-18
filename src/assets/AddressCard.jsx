@@ -36,37 +36,33 @@ function MyFormControlLabel(props) {
 }
 
 export default function AddressCard(props) {
-  const { addresses, index, personalInfo, name, handleEdit, handleDelete } = props;
-  
+  const { addresses, index, name, handleEdit, handleDelete } = props;
+
   return (
     <Box sx={{ minWidth: '100%' }}>
       <Card variant="outlined">
         <ThemeProvider theme={theme}>
-          <CardActions>
-              <MyFormControlLabel value={index} control={<Radio />}/>
-          </CardActions>
+          {
+            index !== '' &&
+            <CardActions>
+                <MyFormControlLabel value={index} control={<Radio />}/>
+            </CardActions>
+          }
           <CardContent>
-            <Typography color="secondary" sx={{ mb: 2 }} variant="h6" component="h2">
+            <Typography color="secondary" sx={{ mb: 2, textAlign: 'center' }} variant="h6" component="h2">
               {addresses.address} <br /><Typography variant="body2" component="span">{addresses.city}</Typography>
             </Typography>
-            {
-              name ?
-              <Typography align="left" color="secondary.lightGrey">
+            <Typography align="left" color="secondary.lightGrey">
               {name}
             </Typography>
-            :
             <Typography align="left" color="secondary.lightGrey">
-              {personalInfo.name}
-            </Typography>
-            }
-            <Typography align="left" color="secondary.lightGrey">
-              {addresses.company}
+              {addresses.address}
             </Typography>
             <Typography align="left" sx={{ mb: 0.5 }} color="secondary.lightGrey">
-              {addresses.country}
+              {addresses?.postalcode} {' '} {addresses?.city}
             </Typography>
             <Typography align="left" sx={{ mb: 0.5 }} color="secondary.lightGrey">
-              {addresses.postalcode} {' '} {addresses.city}
+              {addresses?.country}
             </Typography>
           </CardContent>
           <CardActions>

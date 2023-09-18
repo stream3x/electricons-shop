@@ -54,7 +54,7 @@ export default function LogIn() {
         }else if(router.pathname === '/blog' || router.pathname === '/blog/category/[[...slug]]' || router.pathname === '/blog/post/[slug]') {
           router.back();
         }else {
-          router.back();
+          router.push('/');
         }
       }, 2000);
     }

@@ -8,7 +8,6 @@ import Link from '../src/Link';
 import theme from '../src/theme';
 import ReplyIcon from '@mui/icons-material/Reply';
 import WishTable from '../src/components/WishTable';
-import { useRouter } from 'next/router';
 import BreadcrumbNav from '../src/assets/BreadcrumbNav';
 
 const Item = styled(Paper)(({ theme }) => ({

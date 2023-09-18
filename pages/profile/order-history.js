@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import { Backdrop, Box, Button, Grid, Typography } from '@mui/material';
 import BreadcrumbNav from '../../src/assets/BreadcrumbNav';
 import CircularProgress from '@mui/material/CircularProgress';
 import styled from '@emotion/styled';
 import dynamic from 'next/dynamic';
-import { Store } from '../../src/utils/Store';
 import OrderTable from '../../src/components/OrderTable';
 import ProfileLayout from '../../src/components/ProfileLayout';
 
@@ -35,9 +33,7 @@ function reducer(state, action) {
 }
 
 function ProfileOrderHistory() {
-  const router = useRouter();
-  const { state } = useContext(Store);
-  const { userInfo } = state;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
     loading: true,
@@ -46,17 +42,11 @@ function ProfileOrderHistory() {
   });
 
   useEffect(() => {
-    if(!userInfo) {
-      router.push('/login');
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchOrders = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
         const { data } = await axios.get(`/api/orders/history`, {
-          headers: { autorization: `Bearer ${userInfo.token}`}
+          headers: { autorization: `Bearer ${userInf0.token}`}
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (error) {

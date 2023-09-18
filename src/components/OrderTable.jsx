@@ -14,7 +14,6 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { Store } from '../utils/Store';
 import { TableHead, Typography, styled } from '@mui/material';
 import Image from 'next/image';
 import theme from '../theme';
@@ -159,12 +158,11 @@ const headCells = [
 
 export default function OrderTable(props) {
   const { orders } = props;
-  const { state } = React.useContext(Store);
-  const { userInfo } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
   const [userOrders, setUserOrders] = React.useState([]);
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   React.useEffect(() => {
     async function fetchOrders() {
@@ -180,8 +178,8 @@ export default function OrderTable(props) {
 
 
   React.useEffect(() => {
-    if (userInfo) {
-      const getOrders = userOrders && userOrders.filter(order => order.personalInfo?.email === userInfo?.email);
+    if (userInf0) {
+      const getOrders = userOrders && userOrders.filter(order => order.personalInfo?.email === userInf0?.email);
       setRows(getOrders);
     }else {
       setRows([]);
@@ -245,7 +243,7 @@ export default function OrderTable(props) {
               {'$'}{row.orderItems[0].price}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {row.payment.paymantMethod}
+                {row.payment.paymentMethod}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.shipping.shippingMethod}
