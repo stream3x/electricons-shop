@@ -10,13 +10,13 @@ handler.put(async (req, res) => {
   try {
 
     db.connect();
-    const { image_name, image, email } = req.body;
+    const { image_name, cover_photo, email } = req.body;
 
-    if (!image) {
+    if (!cover_photo) {
       return res.status(400).json({ error: 'Image data is missing' });
     }
 
-    const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    const base64Data = cover_photo.replace(/^data:image\/\w+;base64,/, '');
       const buffer = Buffer.from(base64Data, 'base64');
       const filePath = path.join(process.cwd(), 'public/images/users', `${image_name}`);
       fs.writeFileSync(filePath, buffer);
@@ -25,13 +25,13 @@ handler.put(async (req, res) => {
         email
       },
       {
-        $set: { image }
+        $set: { cover_photo }
       },
       {
         new: true
       });
       const responseData = {
-        image: updatedUser.image,
+        cover_photo: updatedUser.cover_photo,
       };
       
       db.disconnect();

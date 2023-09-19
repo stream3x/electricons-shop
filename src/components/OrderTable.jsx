@@ -26,7 +26,7 @@ const MyTableContainer = styled(TableContainer)({
   height: "100%",
   '&::-webkit-scrollbar': {
     width: '3px',
-    height: '3px'
+    height: '4px',
   },
   '&::-webkit-scrollbar-track': {
     background: theme.palette.secondary.borderColor
@@ -185,7 +185,7 @@ export default function OrderTable(props) {
       setRows([]);
     }
   }, [userOrders]);
-
+console.log(userOrders.filter(order => order.personalInfo?.email === userInf0?.email));
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -223,24 +223,24 @@ export default function OrderTable(props) {
           {(rowsPerPage > 0
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
-          ).map((row) => (
-            <TableRow key={row._id}>
+          ).map((row) => row?.orderItems.map(item => (
+            <TableRow key={item._id}>
               <TableCell>
                 <Box sx={{ width: 'auto', height: '50px', position: 'relative', objectFit: 'contain','& img': {objectFit: 'contain', width: 'auto!important', height: '50px'} }}>
                   <Image
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority
-                    src={row && row.orderItems[0].images[1].image}
-                    alt={row.orderItems[0].title}
+                    src={item && item.images[1].image}
+                    alt={item.title}
                   />
                 </Box>
               </TableCell>
               <TableCell style={{ width: 200 }} align="left">
-                {row.orderItems[0].title}
+                {item.title}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-              {'$'}{row.orderItems[0].price}
+              {'$'}{item.price}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
                 {row.payment.paymentMethod}
@@ -264,20 +264,33 @@ export default function OrderTable(props) {
               {row.orderNumber}
               </TableCell>
               <TableCell style={{ width: 30 }} align="right">
-                {row.orderItems[0].quantity}
+                {item.quantity}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {'$'}{row.total.toFixed(2)}
+                {'$'}{Number(item.price * item.quantity)}
               </TableCell>
             </TableRow>
-          ))}
-
+          )))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
               <TableCell colSpan={6} />
             </TableRow>
           )}
         </TableBody>
+        <TableHead sx={{width: '100%'}}>
+          <TableRow sx={{width: '100%'}}>
+            <TableCell colSpan={10} align="right">
+              {'Total price:'}
+            </TableCell>
+           {
+            rows.map(row => (
+              <TableCell colSpan={2} align="right">
+                {'$'}{row.total.toFixed(2)}
+              </TableCell>
+            ))
+           }
+          </TableRow>
+        </TableHead>
         <TableFooter sx={{width: '100%'}}>
           <TableRow sx={{width: '100%'}}>
             <TablePagination

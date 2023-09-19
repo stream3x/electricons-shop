@@ -46,7 +46,7 @@ const handler = async (req, res) => {
     
     const productOrderCounts = products.map(product => {
       const orderCount = [...orders, ...guestOrders].reduce((count, order) => {
-        if (order.orderItems.some(orderProduct => orderProduct._id.toString() === product._id.toString())) {
+        if (order.orderItems.some(orderProduct => orderProduct.title.toString() === product.title.toString())) {
           return count + 1;
         }
         return count;

@@ -12,15 +12,13 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import Link from '../Link';
 import { Divider, Tooltip } from '@mui/material';
 import ButtonAccordion from '../assets/ButtonAccordion';
-import { Store } from '../utils/Store';
 
 const MainListItems = () => {
-  const { state } = React.useContext(Store);
-  const { session } = state;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   return (
     <React.Fragment>
-      <Link href={`/backoffice/${session?._id}/dashboard`}>
+      <Link href={`/backoffice/${userInf0?._id}/dashboard`}>
         <Tooltip title="Dashboard" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
@@ -30,7 +28,7 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link href={`/backoffice/${session?._id}/orders`}>
+      <Link href={`/backoffice/${userInf0?._id}/orders`}>
         <Tooltip title="Orders" placement="right-start">
           <ListItemButton>
               <ListItemIcon>
@@ -40,7 +38,7 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link href={`/backoffice/${session?._id}/customers`}>
+      <Link href={`/backoffice/${userInf0?._id}/customers`}>
         <Tooltip title="Customers" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
@@ -50,7 +48,7 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link href={`/backoffice/${session?._id}/statistics`}>
+      <Link href={`/backoffice/${userInf0?._id}/statistics`}>
         <Tooltip title="Statistic" placement="right-start">
           <ListItemButton>
             <ListItemIcon>
@@ -70,8 +68,8 @@ const MainListItems = () => {
       <ListSubheader component="div" inset>
         Management
       </ListSubheader>
-      <ButtonAccordion slug={session?._id} />
-      <Link href={`/backoffice/${session?._id}/test`}>
+      <ButtonAccordion slug={userInf0?._id} />
+      <Link href={`/backoffice/${userInf0?._id}/test`}>
         <Tooltip title="Test" placement="right-start">
           <ListItemButton>
             <ListItemIcon>

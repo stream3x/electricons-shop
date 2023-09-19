@@ -51,8 +51,6 @@ export default function ProfileAddresses() {
     }
     fetchData();
   }, []);
-console.log(addresses, userInfo, userInf0);
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();

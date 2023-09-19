@@ -74,10 +74,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
-  const { id } = router.query;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const { pathname } = router;
   const { state, dispatch } = React.useContext(Store);
-  const { userInfo, snack } = state;
+  const { snack } = state;
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const segments = pathname.split('/');
   const tabName = segments[segments.length - 1];
@@ -106,18 +106,17 @@ export default function DashboardLayout({ children }) {
     dispatch({ type: 'USER_LOGOUT'});
     dispatch({ type: 'REMOVE_SESSION', payload: null });
     dispatch({ type: 'PERSONAL_REMOVE'});
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
-    Cookies.remove('userInfo');
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...snack, message: 'you are successfully logged out', severity: 'warning'}});
     Cookies.remove('personalInfo');
     Cookies.remove('cartItems');
     Cookies.remove('addresses');
     Cookies.remove('payment');
     Cookies.remove('shipping');
     Cookies.remove('forInvoice');
-    Cookies.remove('session');
+    localStorage.removeItem('userInfo');
     router.push('/login');
   };  
-console.log(userInfo, id);
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
@@ -147,7 +146,7 @@ console.log(userInfo, id);
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              {pathname === '/backoffice/profile/[id]' ? `${userInfo?.email}` : capitalizeFirstLetter(tabName)}
+              {pathname === '/backoffice/profile/[id]' ? `${userInf0?.email}` : capitalizeFirstLetter(tabName)}
             </Typography>
             <Link color={theme.palette.primary.contrastText} href="/">
               <IconButton color="inherit">                
@@ -160,9 +159,9 @@ console.log(userInfo, id);
               </Badge>
             </IconButton>
             <Box sx={{ flexGrow: 0, pl: 2 }}>
-              <Tooltip title={userInfo ? `Open ${userInfo.name} menu` : 'Open menu'}>
+              <Tooltip title={userInf0 ? `Open ${userInf0.name} menu` : 'Open menu'}>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar sx={{ width: 30, height: 30 }} alt={userInfo ? userInfo.name : 'Avatar'} src={ userInfo && (userInfo.image === '' ? '/images/fake.jpg' : userInfo.image)} />
+                  <Avatar sx={{ width: 30, height: 30 }} alt={userInf0 ? userInf0.name : 'Avatar'} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -181,16 +180,16 @@ console.log(userInfo, id);
                 onClose={handleCloseUserMenu}
               >
               {
-                userInfo ?
+                userInf0 ?
                 (
                   <Box>
                     <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
-                      <Link href={`/backoffice/profile/${userInfo.email}`} passHref>
+                      <Link href={`/backoffice/profile/${userInf0.email}`} passHref>
                         {loged[0]}
                       </Link>
                     </MenuItem>
                     {
-                      userInfo.isAdmin &&
+                      userInf0.isAdmin &&
                       <MenuItem sx={{ '& a': {textDecoration: 'none' } }} onClick={handleCloseUserMenu}>
                         <Link sx={{ textDecoration: 'none' }} href={`/backoffice`} passHref>
                           {loged[1]}

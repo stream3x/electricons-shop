@@ -9,10 +9,10 @@ import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 
 const BackofficeIndex = () => {
-  const { state, dispatch} = useContext(Store);
-  const { session } = state;
   const router = useRouter();
-  const status = session?.isAdmin;
+  const { state, dispatch} = useContext(Store);
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const status = userInf0?.isAdmin;
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
 
@@ -34,20 +34,20 @@ const BackofficeIndex = () => {
     }
     if (status) {
         // User is authenticated and is an admin, continue to backoffice
-        router.push('/backoffice/[id]/dashboard', `/backoffice/${session?._id}/dashboard`);
+        router.push('/backoffice/[id]/dashboard', `/backoffice/${userInf0?._id}/dashboard`);
       }else {
         // User is authenticated but not an admin, redirect to access denied or other page
         router.push('/login'); // Create this page or use an appropriate route
         dispatch({ type: 'USER_LOGOUT'});
         dispatch({ type: 'REMOVE_SESSION', payload: null });
         dispatch({ type: 'PERSONAL_REMOVE'});
-        Cookies.remove('userInfo');
         Cookies.remove('personalInfo');
         Cookies.remove('cartItems');
         Cookies.remove('addresses');
         Cookies.remove('payment');
         Cookies.remove('shipping');
-        Cookies.remove('forInvoice');        
+        Cookies.remove('forInvoice');
+        localStorage.removeItem('userInfo');
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are denied and logged out', severity: 'warning'}});
       }
       setLoading(true);
@@ -55,11 +55,11 @@ const BackofficeIndex = () => {
         clearTimeout(timer.current);
       };
 
-  }, [status, session]);
+  }, [status, userInf0]);
 
   return (
     <DashboardLayout>
-      <Typography component='h1' variant='h6'>{`Welcome dear ${session?.name}`}</Typography>
+      <Typography component='h1' variant='h6'>{`Welcome dear ${userInf0?.name}`}</Typography>
       <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'end', height: '50vh'}}>
         <Box sx={{ m: 1, position: 'relative' }}>
           <Fab

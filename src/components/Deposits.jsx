@@ -18,7 +18,7 @@ export default function Deposits(props) {
   return (
     <React.Fragment>
       <Title>Recent Deposits</Title>
-      <Typography component='span' variant='caption' color={theme.palette.secondary.lightGrey}>in last 5 orders</Typography>
+      <Typography component='span' variant='caption' color={theme.palette.secondary.lightGrey}>in last 5 days</Typography>
       <Typography component="p" variant="h4">
         {'$'}{total && total}
       </Typography>

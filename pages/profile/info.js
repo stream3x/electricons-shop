@@ -87,7 +87,7 @@ export default function ProfileInfo() {
     }
     fetchData();
   }, []);
-console.log(userInfo, imgFile);
+
   function handleRefresh() {
     setRefresh(true);
   }
@@ -116,12 +116,12 @@ console.log(userInfo, imgFile);
         email: userInf0?.email
       }
       console.log(formData);
-      const { data } = await axios.put(`/api/users/upload_profile_images`, formData, {
+      const { data } = await axios.put(`/api/users/upload_profile_cover_photo`, formData, {
         headers: {
           'Content-Type': "application/json", // Set the correct Content-Type header
         },
       });
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was uploaded', severity: 'success'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'cover photo was uploaded', severity: 'success'}});
     } catch (error) {
       console.error('Error uploading image:', error);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
@@ -247,13 +247,15 @@ console.log(userInfo, imgFile);
             <CssBaseline />
             <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'left', py: 3, mt: 3, position: 'relative'}}>
               <Box component="form" onSubmit={handleUploadCoverImage} sx={{position: 'relative', width: '100%', height: '200px'}}>
-                {
+                <Box component="label" onChange={handleCoverImageChoose} htmlFor="cover_photo">
+                  {
                     imgCoverFile.imageUrl ?
+                    
                       <Box sx={{ overflow: 'hidden', borderRadius: '20px', boxShadow: '0 5px 20px lightGray', '& img': {objectFit: 'cover'}, position: 'relative', width: '100%', height: '200px' }}>
                         <Image
                           fill
                           src={imgCoverFile?.imageUrl !== null ? imgCoverFile?.imageUrl : userInfo[0]?.cover_photo}
-                          alt={userInfo[0]?.name}
+                          alt={imgCoverFile.image?.name}
                         />
                       </Box>
                         :
@@ -289,25 +291,21 @@ console.log(userInfo, imgFile);
                       </Box>
                   }
                   {
-                    imgCoverFile.imageUrl || userInfo[0]?.cover_photo &&
-                    <Box sx={{width: '100%', height: '100%'}} component="label" onChange={handleCoverImageChoose} htmlFor="cover_photo">
-                      {
-                        imgCoverFile.imageUrl === null ?
-                        <Box sx={{position: 'absolute', bottom: -10, right: -10, zIndex: 1, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }} component="span">
-                          <IconButton sx={{ bgcolor: theme.palette.primary.white, zIndex: -1 }} color='dashboard' variant="outlined">
-                            <PhotoSizeSelectActualIcon />
-                          </IconButton>
-                        </Box>
-                        :
-                        <Box sx={{position: 'absolute', bottom: -10, right: -10, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }}>
-                          <IconButton type='submit' sx={{ bgcolor: theme.palette.primary.white }} color='dashboard' variant="outlined">
-                            <FileUploadIcon />
-                          </IconButton>
-                        </Box>
-                      }
-                      <Box sx={{display: 'none'}} component="input" type="file" name="cover_photo" id="cover_photo"/>
+                    imgCoverFile.imageUrl === null ?
+                    <Box sx={{position: 'absolute', bottom: -10, right: -10, zIndex: 1, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }} component="span">
+                      <IconButton sx={{ bgcolor: theme.palette.primary.white, zIndex: -1 }} color='dashboard' variant="outlined">
+                        <PhotoSizeSelectActualIcon />
+                      </IconButton>
+                    </Box>
+                    :
+                    <Box sx={{position: 'absolute', bottom: -10, right: -10, width: 40, height: 40, zIndex: 1, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }}>
+                      <IconButton type='submit' sx={{ bgcolor: theme.palette.primary.white }} color='dashboard' variant="outlined">
+                        <FileUploadIcon />
+                      </IconButton>
                     </Box>
                   }
+                  <Box sx={{display: 'none'}} component="input" type="file" name="cover_photo" id="cover_photo"/>
+                </Box>
               </Box>
               <Box component="form" onSubmit={handleUploadImage} sx={{position: 'absolute', bottom: 0, left: 0}}>
                 <Box component="label" onChange={handleImageChoose} htmlFor="photo">

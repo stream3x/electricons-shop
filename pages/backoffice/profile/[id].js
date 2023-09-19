@@ -78,8 +78,9 @@ const LabelButton = styled(Button)(({ theme }) => ({
 
 function Profile(props) {
   const { user } = props;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const profileUser = user && user[0];
-  const { state, state: {session}, dispatch } = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const [error, setError] = React.useState(false);
   const [errors, setErrors] = React.useState({
     name: false,
@@ -314,7 +315,7 @@ function handleImageChoose(e) {
             </Typography>
           </LabelButton>
          : 
-        <Grid container spacing={3}>
+        <Grid sx={{pt: 3}} container spacing={3}>
           <Grid item xs={12} md={4} lg={3}>
             <Paper
               sx={{
@@ -323,7 +324,7 @@ function handleImageChoose(e) {
                 alignItems: 'center',
                 flexDirection: 'column',
                 height: 240,
-                gap: 3
+                gap: 2
               }}
             >
               <Box component="form" onSubmit={handleUploadImage} sx={{position: 'relative'}}>
@@ -365,18 +366,18 @@ function handleImageChoose(e) {
                 </Typography>
                 {
                   profileUser.company ?
-                  <Typography sx={{textAlign: 'center', opacity: .3}} component="span" variant='subtitle2'>
+                  <Typography sx={{textAlign: 'center', opacity: .3}} variant='subtitle2'>
                     {profileUser.company}
                   </Typography>
                 :
-                  <Typography sx={{opacity: .3}} component="span" variant='subtitle2'>
+                  <Typography sx={{opacity: .3}} variant='subtitle2'>
                   Company name not set
                   </Typography>
                 }
               </Box>
               <Box>
                 {
-                  session?.email === profileUser.email ?
+                  userInf0?.email === profileUser.email ?
                   <IconButton>
                     <ChatIcon />
                   </IconButton>

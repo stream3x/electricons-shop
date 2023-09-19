@@ -27,6 +27,7 @@ import AlertDialogSlide from '../../../src/assets/AlertDialogSlide';
 import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
+import Image from 'next/image';
 
 const Search = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -112,6 +113,12 @@ const headCells = [
     numeric: false,
     disablePadding: true,
     label: 'ID',
+  },
+  {
+    id: 'img',
+    numeric: false,
+    disablePadding: true,
+    label: 'Image',
   },
   {
     id: 'title',
@@ -251,7 +258,7 @@ function EnhancedTableToolbar(props) {
           id="tableTitle"
           component="div"
         >
-          Users
+          Products
         </Typography>
       )}
 
@@ -463,10 +470,21 @@ export default function ProductsListTable() {
                         }}
                       />
                     </TableCell>
-                    <TableCell color='primary' align="right">
+                    <TableCell sx={{width: '10ch'}}>
                       {row._id}
                     </TableCell>
-                    <TableCell color='primary' align="right">
+                    <TableCell>
+                      <Box sx={{ width: 'auto', height: '50px', position: 'relative','& img': {objectFit: 'contain', width: 'auto!important', m: 'auto'}}}>
+                        <Image
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          priority
+                          src={row?.images[1]?.image}
+                          alt={row.title}
+                        />
+                      </Box>
+                    </TableCell>
+                    <TableCell align="right">
                       {row.title}
                     </TableCell>
                     <TableCell color='primary' align="right">
