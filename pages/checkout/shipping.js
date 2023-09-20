@@ -34,7 +34,7 @@ const LabelButton = styled(Button)(({ theme }) => ({
 export default function Shipping() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { snack, cart, cart: {cartItems} } = state;
+  const { snack, cart, cart: {cartItems, addresses} } = state;
   const [value, setValue] = useState('Post Express');
   const [city, setCity] = useState('');
   const [store, setStore] = useState('');
@@ -61,7 +61,7 @@ export default function Shipping() {
     setValue(event.target.value);
   };
  
-  const shippingCost = 50;
+  const shippingCost = 5;
   const emptyShipping = cart.shipping && Object.keys(cart.shipping).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
 
@@ -71,7 +71,7 @@ export default function Shipping() {
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
         shippingAddress: formOutput.get('shipping-method') !== 'Electricons Store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : 'null',
-        shippingCity: formOutput.get('shipping-method') !== 'Electricons Store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].city : formOutput.get('shiping-city'),
+        shippingCity: formOutput.get('shipping-method') !== 'Electricons Store' ? addresses[Cookies.get('forInvoice')].city : formOutput.get('shiping-city'),
         store: formOutput.get('shipping-method') !== 'Electricons Store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };
@@ -80,7 +80,7 @@ export default function Shipping() {
         router.push('/');
         return;
       }
-      if(formData.shippingCity === '' && formData.shippingMethod === 'Electricons Store') {
+      if(formData.shippingMethod === 'Electricons Store' && city === '') {
         setErrors({ ...errors, city: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select city', severity: 'warning'}});
         return;
@@ -90,6 +90,7 @@ export default function Shipping() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select store', severity: 'warning'}});
         return;
       }
+      console.log(formData);
       dispatch({ type: 'SHIPPING', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added shipping', severity: 'success'}});
       Cookies.set('shipping', JSON.stringify(formData));

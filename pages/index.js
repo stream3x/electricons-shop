@@ -38,10 +38,6 @@ export default function Index(props) {
     router.push('/?counter=10', undefined, { shallow: true })
   }, [hero_products, topProducts, bestSeller]);
 
-  React.useEffect(() => {
-    console.log(router.query.counter);
-  }, [router.query.counter])
-
   return (
     <Box sx={{ my: 4 }}>
       <Box sx={{boxShadow: '0 10px 10px 5px #f4f4f4', borderRadius: '10px'}}>

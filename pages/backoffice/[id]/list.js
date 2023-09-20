@@ -19,7 +19,6 @@ import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
-import DashboardLayout from '../../../src/layout/DashboardLayout';
 import axios from 'axios';
 import { Button, Chip, InputBase, useMediaQuery } from '@mui/material';
 import theme from '../../../src/theme';
@@ -28,6 +27,8 @@ import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
 import Image from 'next/image';
+import Link from '../../../src/Link';
+import AddIcon from '@mui/icons-material/Add';
 
 const Search = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -290,6 +291,7 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function ProductsListTable() {
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
@@ -399,7 +401,7 @@ export default function ProductsListTable() {
   const usersTabs = ['All Products', 'Out of Stock', 'Zero Orders']
 
   return (
-    <DashboardLayout>
+    <Box>
       <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
           {
@@ -411,6 +413,13 @@ export default function ProductsListTable() {
               </Box>
             ))
           }
+        </Box>
+        <Box sx={{py: 1, px: 3, display: 'flex', flex: 1, justifyContent: 'right', alignItems: 'center', width: {xs: '100%', md: 'auto'}}}>
+          <Link href={`/backoffice/${userInf0._id}/create`}>
+            <Button sx={{py: 1}} color='dashboard' variant="outlined" startIcon={<AddIcon />}>
+              create new Product
+            </Button>
+          </Link>
         </Box>
         <Box sx={{py: 1, display: 'flex', justifyContent: 'left', flexWrap: 'wrap', width: {xs: '100%', md: 'auto'}}}>
           <Search component="div">
@@ -540,6 +549,6 @@ export default function ProductsListTable() {
           }
         </Paper>
       </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

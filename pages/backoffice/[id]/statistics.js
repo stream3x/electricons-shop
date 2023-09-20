@@ -1,10 +1,10 @@
 import React from 'react'
-import DashboardLayout from '../../../src/layout/DashboardLayout'
+import { Box } from '@mui/material'
 
 export default function Statistics() {
   return (
-    <DashboardLayout>
+    <Box>
       <div>Statistics</div> 
-    </DashboardLayout>
+    </Box>
   )
 }

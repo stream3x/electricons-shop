@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import DashboardLayout from '../../../src/layout/DashboardLayout';
 import TablePagination from '@mui/material/TablePagination';
 import axios from 'axios';
 import { Button, Chip, InputBase, Stack, alpha, useMediaQuery } from '@mui/material';
@@ -241,7 +240,7 @@ export default function CollapsibleTable() {
   const usersTabs = ['All Orders', 'Paid Orders', 'Delivered']
   
   return (
-    <DashboardLayout>
+    <Box>
       <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
           {
@@ -333,6 +332,6 @@ export default function CollapsibleTable() {
         onPageChange={handleChangePageGuest}
         onRowsPerPageChange={handleChangeRowsPerPageGuest}
       />
-    </DashboardLayout>
+    </Box>
   );
 }

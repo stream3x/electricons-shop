@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import DashboardLayout from '../../../src/layout/DashboardLayout'
 import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormHelperText, Grid, IconButton, Paper, Slide, TextField, Typography } from '@mui/material'
 import styled from '@emotion/styled'
 import { Store } from '../../../src/utils/Store'
@@ -301,7 +300,7 @@ function handleImageChoose(e) {
   };
 
   return (
-    <DashboardLayout>
+    <Box>
       {
         error ?
           <LabelButton sx={{width: '100%', my: 5, p: 2}}>
@@ -632,7 +631,7 @@ function handleImageChoose(e) {
         </Grid>
       }
       <AlertDialogSlide open={open} handleUploadImage={handleUploadImage} handleRemoveImage={handleRemoveImage} handleClose={handleClose} />
-    </DashboardLayout>
+    </Box>
   )
 }
 

@@ -71,14 +71,15 @@ const Item = styled(Paper)(({ theme }) => ({
 function Order(props) {
   const { params } = props;
   const orderId = params.id;
-  const { state: { userInfo } } = useContext(Store);
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const { state: { personalInfo } } = useContext(Store);
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
   const [isPayPal, setIsPayPal] = useState(false);
   const [loader, setLoader] = useState(false);
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
-  const modelNumber = `${new Date().getFullYear()}-${userInfo._id.substr(userInfo._id.length - 6)}`;
+  const modelNumber = `${new Date().getFullYear()}-${userInf0?._id.substr(userInf0._id.length - 6)}`;
 
   const buttonSx = {
     ...(success && {
@@ -112,7 +113,7 @@ function Order(props) {
   };
 
   useEffect(() => {
-    if(!userInfo) {
+    if(!userInf0) {
       return router.push('/login');
     }
     const fetchOrder = async () => {
@@ -136,7 +137,7 @@ function Order(props) {
         const {data: clientId} = await axios.get('/api/keys/paypal', {
           headers: {
             "Content-Type": "application/json",
-            autorization: `Bearer ${userInfo.token}`
+            autorization: `Bearer ${userInf0.token}`
           }
         });
         paypalDispatch({type: 'resetOptions', value: {
@@ -178,7 +179,7 @@ function Order(props) {
         const { data } = await axios.put(`/api/guest/${order._id}/pay`, details, {
           headers: {
             "Content-Type": "application/json",
-            autorization: `Bearer ${userInfo.token}`
+            autorization: `Bearer ${userInf0.token}`
           }
         })
         dispatch({ type: 'PAY_SUCCESS', payload: data });
@@ -380,7 +381,7 @@ function Order(props) {
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
                         <Typography component="span">Name:</Typography>
-                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{userInfo.name}</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{userInf0.name}</Typography>
                       </Typography>
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>

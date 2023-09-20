@@ -17,12 +17,16 @@ import CheckoutStepper from '../../src/components/CheckoutStepper';
 import AddressCard from '../../src/assets/AddressCard';
 import RadioGroup from '@mui/material/RadioGroup';
 import AddIcon from '@mui/icons-material/Add';
+import axios from 'axios';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 export default function Addresses() {
   const router = useRouter();
   const [addNewAddress, setAddNewAddress] = useState(false);
   const { state, dispatch } = useContext(Store);
   const { cart: { personalInfo, addresses, cartItems} } = state;
+  const [error, setError] = React.useState(false);
+  const [userInfo, setUserInfo] = useState([]);
   const [errors, setErrors] = useState({
     address: false,
     city: false,
@@ -43,22 +47,43 @@ export default function Addresses() {
     if(!checked) {
       setForInvoice(() => Number(event.target.value));
       Cookies.set('forInvoice', Number(event.target.value));
+      console.log('check');
     }else {
       setForInvoice(() => 0);
       Cookies.set('forInvoice', 0);
     }
-  };
+  };  
 
   const handleChangeInvoice = (event) => {
-    setForInvoice(() => Number(event.target.value))
-    Cookies.set('forInvoice', Number(event.target.value) - 1);
+    setForInvoice(() => Number(event.target.value));
+    Cookies.set('forInvoice', Number(event.target.value));
   };
 
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
-  const emptyAddresses = !userInf0?.city && !userInf0?.country && !userInf0?.phone && !userInf0?.postalcode;
-  const emptyUserInfo = userInf0 && userInf0 === null && Object.keys(userInf0).length === 0;
+  const emptyAddresses = addresses?.length === 0 || userInfo?.addresses?.length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await axios.get('/api/users');
+        setUserInfo(data.filter(items => items._id === userInf0._id));
+        const user = await data.filter(items => items._id === userInf0._id);
+        const formData = {
+          address: user.map(item => item.address).toString(),
+          city: user.map(item => item.city).toString(),
+          country: user.map(item => item.country).toString(),
+          postalcode: user.map(item => item.postalcode).toString(),
+          phone: user.map(item => item.phone).toString()
+        };
+        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+      } catch (error) {
+        setError(true)
+      }
+    }
+    fetchData();
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -105,10 +130,16 @@ export default function Addresses() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the postal code is required', severity: 'warning'}});
         return;
       }
-      dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+      {
+        addNewAddress ?
+        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } })
+        :
+        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+        !addNewAddress && router.push('/checkout/shipping');
+        setAddNewAddress(false);
+        console.log('lola');
+      }
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
-      router.push('/checkout/shipping');
-      setAddNewAddress(false);
       setErrors({ 
         ...errors, 
         address: false,
@@ -149,40 +180,41 @@ export default function Addresses() {
               }}
             >
               {
-                !emptyAddresses &&
-                <RadioGroup name="radio-address-picker" value={!emptyAddresses ? Number(forInvoice) : 0} sx={{width: "100%"}} onChange={handleChangeInvoice}>
+                !emptyAddresses ?
+                <RadioGroup name="radio-address-picker" value={forInvoice} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                   <Grid container space={2}>
                   {
-                    !emptyAddresses ? (addresses.length !== 0 ? addresses : [userInf0]).map((address, index) => (
+                    (addresses.length !== 0 ? addresses : userInfo).map((address, index) => (
                       <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
                         <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
                       </Grid>
                     ))
-                    : null
                   }
                   </Grid>
                 </RadioGroup>
+                : null
               }
               {
-                !emptyAddresses &&
+                !emptyAddresses ?
                 <Grid container space={2}>
                   <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
-                    <Button onClick={() => setAddNewAddress(true)} size="small" startIcon={<AddIcon />}>
-                      Add new address
+                    <Button onClick={() => setAddNewAddress(!addNewAddress)} size="small" startIcon={!addNewAddress ? <AddIcon /> : <RemoveIcon />}>
+                     { addNewAddress ? 'cancel' : 'Add new address'}
                     </Button>
                   </Grid>
                 </Grid>
+                : null
               }
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               {
                 !addNewAddress && emptyAddresses &&
                 <Box>
                 {
-                  !emptyPersonalInfo && !emptyUserInfo &&
+                  !emptyPersonalInfo &&
                   <React.Fragment>
                     <TextField
                       margin="normal"
-                      defaultValue={userInf0 && userInf0.name ? userInf0.name : personalInfo.name}
+                      defaultValue={userInfo && userInfo?.name}
                       disabled
                       fullWidth
                       required
@@ -192,7 +224,7 @@ export default function Addresses() {
                     />
                     <TextField
                       margin="normal"
-                      defaultValue={userInf0 && userInf0.email ? userInf0.email : personalInfo.email}
+                      defaultValue={userInfo && userInfo?.email}
                       disabled
                       fullWidth
                       required
@@ -285,7 +317,7 @@ export default function Addresses() {
                     variant="contained"
                     sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
                   >
-                    Continue
+                    Continue next
                   </Button>
                 </Box>
               }
@@ -344,7 +376,7 @@ export default function Addresses() {
                     error={errors.phone}
                   />
                   {
-                    !emptyAddresses && emptyAddresses &&
+                    !emptyAddresses &&
                     <FormControlLabel
                       sx={{width: '100%'}}
                       control={
@@ -355,19 +387,19 @@ export default function Addresses() {
                           color="primary"
                           name="invoice"
                           id="invoice"
-                          onChange={handleChange}
+                          onChange={(e) => handleChange(e)}
                       />
                       }
                       label="Use this address for invoice too"
                     />
                   }
                   <Button
-                    type="submit"
+                    type='submit'
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
                   >
-                    Continue
+                    save
                   </Button>
                 </Box>
               }

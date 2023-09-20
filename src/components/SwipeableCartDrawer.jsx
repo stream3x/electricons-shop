@@ -20,7 +20,7 @@ export default function SwipeableCartDrawer() {
   });
   const match = useMediaQuery('(max-width: 600px)');
   const { state, dispatch } = React.useContext(Store);
-  const { cart, cart: {shipping} } = state;
+  const { cart, cart: {shipping, cartItems} } = state;
 
   function removeItemHandler(item) {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item});
@@ -28,14 +28,13 @@ export default function SwipeableCartDrawer() {
   }
 
   const subTotal = cart.cartItems.length !== 0 ? cart.cartItems.reduce((a, c) => a + c.quantity * c.price, 0) : 0;
-  const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : Cookies.get('shipping') ? JSON.parse(Cookies.get('shipping')) : '') : 0;
+  const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'DHL' ? 5 * 2.8 : 5) : 0;
+  
   let taxCost;
   let taxCount;
 
-
-
-  if(cart.cartItems.length !== 0 && cart.cartItems.length < 3) {
-    taxCost = '33.33%';
+  if(cartItems.map(item => item.quantity < 3)[0]) {
+    taxCost = '20%';
     taxCount = 1.3333;
   }else {
     taxCost = '12%';

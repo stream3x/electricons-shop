@@ -5,7 +5,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Checkbox, Divider, FormControlLabel, FormHelperText, Grid } from '@mui/material';
+import { Checkbox, Divider, FormControlLabel, FormHelperText, Grid, Chip, Tooltip } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import Link from '../Link';
 import { useRouter } from 'next/router';
@@ -80,11 +80,12 @@ export default function CartTotal({
     setExpanded(!expanded);
   };
 
-  const shippingCost = shipping.shippingMethod !== 'store' ? (shipping.shippingMethod === 'dhl' ? 50 * 1.8 : 50) : 0;
+  const shippingCost = shipping.shippingMethod !== 'Electricons Store' ? (shipping.shippingMethod === 'DHL' ? 5 * 2.8 : 5) : 0;
   let taxCost;
   let taxCount;
-  if(cartItems.length < 3) {
-    taxCost = '33.33%'
+
+  if(cartItems?.map(item => item.quantity).reduce((total, number) => total + number, 0) < 3) {
+    taxCost = '20%'
     taxCount = 1.3333
   }else {
     taxCost = '12%'
@@ -215,7 +216,7 @@ export default function CartTotal({
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});
     }
   }
-
+  console.log(shipping);
   return (
     <Box sx={{ minWidth: 275 }}>
     {
@@ -232,11 +233,11 @@ export default function CartTotal({
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
           {
-            shippingMethod && 
+            shipping.shippingMethod && 
             <React.Fragment>
-              <Typography component="span">shipping method: </Typography>
+              <Typography component="span">shipping method: {<Tooltip title={shippingCost > 0 ? shipping.shippingAddress : shipping.store}><Chip color='primary' size='small' sx={{p: .5, ml: 1}} label={shippingCost > 0 ? 'delivery' : 'in store'} /></Tooltip>} </Typography>
               <Typography variant="h6" component="span">
-              {shippingMethod}
+              {shipping.shippingMethod}
               </Typography>
             </React.Fragment>
           }
@@ -281,7 +282,7 @@ export default function CartTotal({
             }
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">tax: {`(< 3 diff. products )`} </Typography>
+            <Typography component="span">tax: {<Tooltip title="for more than 3 products you get a discount"><Chip color='secondary' size='small' sx={{p: .5, ml: 1}} label='CHEAPSKATE' /></Tooltip>} </Typography>
             {
               taxToPaid ?
               <Typography variant="h6" component="span">{taxToPaid}</Typography>
@@ -358,20 +359,20 @@ export default function CartTotal({
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Shipping method: </Typography>
-            <Typography variant="h6" component="span">{shipping.shippingMethod === 'store' ? 'pick up in-store' : 'delivery'}</Typography>
+            <Typography variant="h6" component="span">{shipping.shippingMethod === 'Electricons Store' ? 'pick up in-store' : 'delivery'}</Typography>
           </Typography>
           {
-            shipping.shippingMethod === 'store' &&
+            shipping.shippingMethod === 'Electricons Store' &&
             <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
               <Typography align="left" component="span">Store address: </Typography>
               <Typography align="right" variant="h6" component="span">{`${shipping.store}, ${shipping.shippingCity}`}</Typography>
             </Typography>
           }
           {
-            shipping.shippingMethod !== 'store' &&
+            shipping.shippingMethod !== 'Electricons Store' &&
             <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
               <Typography align="left" component="span">Shipping address: </Typography>
-              <Typography align="right" variant="h6" component="span">{!emptyAddresses && addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].city + ', ' + addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address}</Typography>
+              <Typography align="right" variant="h6" component="span">{shipping.shippingMethod === 'Electricons Store' ? shipping.shippingCity + ', ' + shipping.store : shipping.shippingCity + ', ' + shipping.shippingAddress }</Typography>
             </Typography>
           }
           <Divider />
@@ -384,7 +385,7 @@ export default function CartTotal({
             <Typography variant="h6" component="span">{shippingCost ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-            <Typography component="span">tax: {`(< 3 diff. products )`} </Typography>
+            <Typography component="span">tax: {<Tooltip title="for more than 3 products you get a discount"><Chip size='small' color='secondary' sx={{p: .5, ml: 1}} label='CHEAPSKATE' /></Tooltip>} </Typography>
             <Typography variant="h6" component="span">{taxCost ? taxCost : '_'}</Typography>
           </Typography>
           <Divider />

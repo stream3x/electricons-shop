@@ -11,13 +11,19 @@ import '../src/globals.css';
 import { StoreProvider } from '../src/utils/Store';
 import { Analytics } from '@vercel/analytics/react';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { useRouter } from 'next/router';
+import DashboardLayout from '../src/layout/DashboardLayout';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
+  const router = useRouter();
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const [isSSR, setIsSsr] = React.useState(true);
+
+  const isBackoffice = router.pathname.replace(/\/\w+$/,'/') === '/backoffice/[id]/' || router.pathname === '/backoffice';
+  const isBackofficeProfile = router.pathname === '/backoffice/profile/[id]'
 
   React.useEffect(() => {
     setIsSsr(false);
@@ -44,7 +50,7 @@ export default function MyApp(props) {
       </div>
     )
   }
-
+console.log(isBackoffice, isBackofficeProfile);
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -54,10 +60,18 @@ export default function MyApp(props) {
         <CssBaseline />
         <StoreProvider>
           <PayPalScriptProvider deferLoading={true}>
-            <Layout>
-              <Component {...pageProps} />
-              <Analytics />
-            </Layout>
+            {
+              isBackoffice || isBackofficeProfile ?
+              <DashboardLayout>
+                <Component {...pageProps} />
+                <Analytics />
+              </DashboardLayout>
+              :
+              <Layout>
+                <Component {...pageProps} />
+                <Analytics />
+              </Layout>
+            }
           </PayPalScriptProvider>
         </StoreProvider>
       </ThemeProvider>

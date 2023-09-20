@@ -20,7 +20,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import DashboardLayout from '../../../src/layout/DashboardLayout';
 import axios from 'axios';
 import { Button, Chip, InputBase, Stack, useMediaQuery } from '@mui/material';
 import theme from '../../../src/theme';
@@ -433,7 +432,7 @@ export default function EnhancedTable() {
   const guestTabs = ['All Customers', 'Subscribers']
 
   return (
-    <DashboardLayout>
+    <Box>
       <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
           {
@@ -668,6 +667,6 @@ export default function EnhancedTable() {
           />
         </Paper>
       </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import DashboardLayout from '../../src/layout/DashboardLayout';
 import { Box, CircularProgress, Fab, Typography } from '@mui/material';
 import theme from '../../src/theme';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -58,7 +57,7 @@ const BackofficeIndex = () => {
   }, [status, userInf0]);
 
   return (
-    <DashboardLayout>
+    <Box>
       <Typography component='h1' variant='h6'>{`Welcome dear ${userInf0?.name}`}</Typography>
       <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'end', height: '50vh'}}>
         <Box sx={{ m: 1, position: 'relative' }}>
@@ -83,7 +82,7 @@ const BackofficeIndex = () => {
           )}
         </Box>
       </Box>
-    </DashboardLayout>
+    </Box>
   );
 };
 

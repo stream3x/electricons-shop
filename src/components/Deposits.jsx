@@ -20,7 +20,7 @@ export default function Deposits(props) {
       <Title>Recent Deposits</Title>
       <Typography component='span' variant='caption' color={theme.palette.secondary.lightGrey}>in last 5 days</Typography>
       <Typography component="p" variant="h4">
-        {'$'}{total && total}
+        {'$'}{total && total.toFixed(2)}
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1 }}>
         {convertDate()}

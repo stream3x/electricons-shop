@@ -19,7 +19,6 @@ import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
-import DashboardLayout from '../../../src/layout/DashboardLayout';
 import axios from 'axios';
 import { Avatar, Button, Chip, InputBase, Stack, useMediaQuery } from '@mui/material';
 import theme from '../../../src/theme';
@@ -379,7 +378,7 @@ export default function EnhancedTable() {
   const usersTabs = ['All Customers', 'Administrators', 'Subscribers']
 
   return (
-    <DashboardLayout>
+    <Box>
       <Box component='nav' sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
         <Box sx={{listStyle: 'none', display: 'flex', flexWrap: 'wrap', p: 0}} component="ul">
           {
@@ -509,6 +508,6 @@ export default function EnhancedTable() {
         </Paper>
       </Box>
       <GuestCustomerTable />
-    </DashboardLayout>
+    </Box>
   );
 }

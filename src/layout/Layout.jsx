@@ -16,8 +16,6 @@ export default function Layout({ children }) {
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
-  const isBackoffice = router.pathname.replace(/\/\w+$/,'/') === '/backoffice/[id]/';
-  const isBackofficeProfile = router.pathname === '/backoffice/profile/[id]'
   const isLogin = router.pathname === '/login' || router.pathname === '/signin';
 
   if(isLogin) {
@@ -43,24 +41,6 @@ export default function Layout({ children }) {
         </Box>
       </Box>
 
-    )
-  }
-
-  if(isBackoffice) {
-    return (
-      <Box component="main">
-        {children}
-        <Snackbars />
-      </Box>
-    )
-  }
-
-  if (isBackofficeProfile) {
-    return (
-      <Box component="main">
-        {children}
-        <Snackbars />
-      </Box>
     )
   }
 

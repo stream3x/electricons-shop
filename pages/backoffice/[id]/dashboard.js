@@ -1,6 +1,5 @@
 import React from 'react'
-import DashboardLayout from '../../../src/layout/DashboardLayout'
-import { Button, Grid, Paper, Typography } from '@mui/material'
+import { Box, Button, Grid, Paper, Typography } from '@mui/material'
 import Orders from '../../../src/components/Orders'
 import Deposits from '../../../src/components/Deposits'
 import styled from '@emotion/styled'
@@ -107,7 +106,7 @@ function Dashboard() {
   data[8].amount_guest = dataGuests[0]?.guest_orders.filter(order => parseInt(order.updatedAt.substring(11, 13)) === 24)?.map(item => item.total).reduce((total, number) => total + number, 0).toFixed(2);
 
   return (
-    <DashboardLayout>
+    <Box>
       {
         error ?
           <LabelButton sx={{width: '100%', my: 5, p: 2}}>
@@ -208,7 +207,7 @@ function Dashboard() {
           </Grid>
         </Grid>
       }
-    </DashboardLayout>
+    </Box>
   )
 }
 
