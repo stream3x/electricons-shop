@@ -34,15 +34,15 @@ function CreateNewItems() {
          : 
         <Grid container spacing={3}>
           <Grid item xs={12} md={8} lg={9}>
-            <Box sx={{display: 'flex', py: 3}}>
-              <Box sx={{flex: 1}}>
+            <Box sx={{display: 'flex', flexWrap: 'wrap', py: 3}}>
+              <Box sx={{flex: 1, order: {xs: 2, md: 1}}}>
                 <Typography component="h2" variant='h6'>Add new product</Typography>
                 <Typography variant='caption'>
                   Fill in the fields below to create a new product
                 </Typography>
               </Box>
-              <Box>
-                <Link href={`/backoffice/${userInf0._id}/list`}>
+              <Box sx={{order: {xs: 1, md: 2}, mb: {xs: 3, md: 0}}}>
+                <Link href={`/backoffice/${userInf0?._id}/list`}>
                   <Button variant="outlined" startIcon={<KeyboardBackspaceIcon />}>
                     go to All Products
                   </Button>

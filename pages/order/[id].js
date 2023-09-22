@@ -20,6 +20,7 @@ import { PayPalButtons } from '@paypal/react-paypal-js';
 import { LoadingButton } from '@mui/lab';
 import OrderItems from '../../src/components/OrderItems';
 import CartTotal from '../../src/components/CartTotal';
+import PaymentDialog from '../../src/assets/PaymentDialog';
 
 const bull = (
   <Box
@@ -79,6 +80,7 @@ function Order(props) {
   const [success, setSuccess] = useState(false);
   const timer = useRef();
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
   const modelNumber = `${new Date().getFullYear()}-${userInf0?._id.substr(userInf0._id.length - 6)}`;
 
   const buttonSx = {
@@ -200,6 +202,10 @@ function Order(props) {
     setIsPayPal(payment === "PayPal");
   }
 
+  function handlePaymentDialog() {
+    setOpen(true);
+  }
+
   return (
     <Box sx={{ my: 5, '& a': {textDecoration: 'none' }, '&:hover a': {textDecoration: 'none' } }}>
     {
@@ -301,7 +307,7 @@ function Order(props) {
                   onError={onError}
                   ></PayPalButtons>
                 : 
-                <PaymentButton fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
+                <PaymentButton onClick={handlePaymentDialog} fullWidth loading={isPending} loadingPosition="start">Pay By Dina Card</PaymentButton>
               }
               </Item>
             </Grid>
@@ -431,6 +437,7 @@ function Order(props) {
           </Button>
         </Link>
       </Item>
+      <PaymentDialog setOpen={setOpen} open={open} />
     </Box>
   );
 }

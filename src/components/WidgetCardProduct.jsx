@@ -87,7 +87,7 @@ export default function WidgetCardProduct(props) {
           :
           products.slice(steps * (cardsToShow), (cardsToShow * (steps + 1))).map((product, index) => (
             <Grid key={product.title} item xs={6}>
-                <Card sx={{ width: "100%", height: "100%" }}>
+                <Card elevation={0} sx={{ width: "100%", height: "100%", zIndex: 0, '&:before': {content: '""', position: 'absolute', height: '50%', width: '1px', backgroundColor: 'lightGrey', top: '20%', ml: -1, zIndex: 1} }}>
                     <CardActionArea sx={{position: 'relative'}}>
                       <Link href={`/product/${product.slug}`} onClick={() => handleLoading(product)}>
                       {

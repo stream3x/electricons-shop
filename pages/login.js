@@ -187,7 +187,6 @@ export default function LogIn() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
               error={errors.email}
               onChange={handleChangeEmail}
               value={updateEmail}

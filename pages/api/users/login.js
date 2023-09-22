@@ -25,11 +25,7 @@ handler.post(async (req, res) => {
       isAdmin: user.isAdmin,
       image: user.image,
       birthday: user.birthday,
-      addresses: user.addresses,
-      phone: user.phone,
-      country: user.country,
-      city: user.city,
-      postalcode: user.postalcode,
+      addresses: [{address: user.address, city: user.city, country: user.country, postalcode: user.postalcode, phone: user.phone}],
       company: user.company,
       vatNumber: user.vatNumber,
       newsletter: user.newsletter

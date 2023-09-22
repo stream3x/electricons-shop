@@ -354,8 +354,8 @@ console.log(router.pathname);
                   </Grid>
                 ))
               }
-              <Grid item xs={12}>
-                <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+              <Grid sx={{py: 5, my: 5}} item xs={12}>
+                <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                   <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                     <SelectPages values={['6', '12', '24']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                     {
@@ -415,7 +415,7 @@ console.log(router.pathname);
               blogs.map(blog => (
                 blog.category === 'Laptop computers' &&
                 <Grid key={blog._id} item xs={12}>
-                  <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none'} }}>
+                  <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none', width: '100%'} }}>
                     <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle onClick={() => handleLoading(blog)}>
                         {
                           blog._id === selected &&
@@ -446,8 +446,8 @@ console.log(router.pathname);
                 </Grid>
               ))
             }
-            <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+            <Grid sx={{py: 5, my: 5}} item xs={12}>
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages values={['6', '12', '24']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
@@ -538,8 +538,8 @@ console.log(router.pathname);
                 </Grid>
               ))
             }
-            <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+            <Grid sx={{py: 5, my: 5}} item xs={12}>
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages values={['6', '12', '24']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {

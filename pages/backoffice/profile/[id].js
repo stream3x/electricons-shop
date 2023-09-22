@@ -139,7 +139,6 @@ function handleImageChoose(e) {
   const handleUploadImage = async (event) => {
     event.preventDefault();
     try {
-      const outputData = new FormData(event.currentTarget);
       const formData = {
         image_name: imgFile.image?.name,
         image: imgFile?.imageUrl,
@@ -164,21 +163,22 @@ function handleImageChoose(e) {
   const handleRemoveImage = async () => {
     setSelectedFile(null);
     setOpen(false);
-    console.log('Image removed');
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      console.log(formData);
-      await axios.put('/api/upload', formData, {
+      const formData = {
+        image_name: '',
+        image: '',
+        email: profileUser?.email
+      }
+      await axios.put('/api/users/upload_profile_images', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Set the correct Content-Type header
         },
       });
       console.log(data);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was uploaded', severity: 'success'}});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was removed', severity: 'success'}});
     } catch (error) {
-      console.error('Error uploading image:', error);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
+      console.error('Error remove image:', error);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error remove image ${error}`, severity: 'error'}});
       setSelectedFile(null);
       setError(true);
     }
@@ -228,7 +228,7 @@ function handleImageChoose(e) {
         return;
       }
       try {
-        const { data } = await axios.put('/api/upload', formData);
+        const { data } = await axios.put('/api/users/upload', formData);
         console.log('Updated user:', formData);
         dispatch({ type: 'PERSONAL_INFO', payload: data });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'Profile was edited', severity: 'success'}});
@@ -251,11 +251,15 @@ function handleImageChoose(e) {
         birthday: profileUser.birthday,
         company: profileUser.company,
         vatNumber: profileUser.vatNumber,
-        address: formOutput.get('address'),
-        city: formOutput.get('city'),
-        country: formOutput.get('country'),
-        postalcode: formOutput.get('postalcode'),
-        phone: formOutput.get('phone')
+        addresses: [
+          {
+            address: formOutput.get('address'),
+            city: formOutput.get('city'),
+            country: formOutput.get('country'),
+            postalcode: formOutput.get('postalcode'),
+            phone: formOutput.get('phone')
+          }
+        ]
       };
       if(!pattern_phone.test(formData.phone) && formData.phone !== '') {
         setErrors({ ...errors, phone: true });
@@ -263,7 +267,7 @@ function handleImageChoose(e) {
         return;
       }
       try {
-        const { data } = await axios.put('/api/upload', formData);
+        const { data } = await axios.put('/api/users/upload', formData);
         console.log('Updated user:', data);
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
         setError(false);
@@ -286,7 +290,7 @@ function handleImageChoose(e) {
 
   const handleEditInfo = () => {
     dispatch({ type: 'PERSONAL_REMOVE' });
-    // dispatch({ type: 'ADDRESSES_REMOVE' });
+    dispatch({ type: 'ADDRESSES_REMOVE' });
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit Profile', severity: 'warning'}});
     localStorage.removeItem('personalInfo');
     localStorage.removeItem('userInfo');

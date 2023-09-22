@@ -247,7 +247,6 @@ export default function SignIn() {
                   fullWidth
                   id="name"
                   label="Name"
-                  autoFocus
                 />
                 {
                   errors.name && 

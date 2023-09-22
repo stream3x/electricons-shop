@@ -50,7 +50,7 @@ export default function MyApp(props) {
       </div>
     )
   }
-console.log(isBackoffice, isBackofficeProfile);
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>

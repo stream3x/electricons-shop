@@ -212,7 +212,6 @@ export default function BlogComments({ slug }) {
                     label="Email Address"
                     name="email"
                     autoComplete="email"
-                    autoFocus
                     error={errors.email}
                     onChange={handleChangeEmail}
                     value={session.email}
@@ -250,7 +249,6 @@ export default function BlogComments({ slug }) {
                       label="Email Address"
                       name="email"
                       autoComplete="email"
-                      autoFocus
                       error={errors.email}
                       onChange={handleChangeEmail}
                       value={updateEmail}
@@ -339,7 +337,6 @@ export default function BlogComments({ slug }) {
                               label="Email Address"
                               name="email"
                               autoComplete="email"
-                              autoFocus
                               error={errors.email}
                               onChange={handleChangeEmail}
                               value={session.email}
@@ -377,7 +374,6 @@ export default function BlogComments({ slug }) {
                                 label="Email Address"
                                 name="email"
                                 autoComplete="email"
-                                autoFocus
                                 error={errors.email}
                                 onChange={handleChangeEmail}
                                 value={updateEmail}
@@ -471,7 +467,6 @@ export default function BlogComments({ slug }) {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  autoFocus
                   error={errors.email}
                   onChange={handleChangeEmail}
                   value={session.email}
@@ -509,7 +504,6 @@ export default function BlogComments({ slug }) {
                     label="Email Address"
                     name="email"
                     autoComplete="email"
-                    autoFocus
                     error={errors.email}
                     onChange={handleChangeEmail}
                     value={updateEmail}

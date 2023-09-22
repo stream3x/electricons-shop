@@ -35,7 +35,6 @@ export default function ProfileInfo() {
   const { state, dispatch } = useContext(Store);
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const { snack, cart: {cartItems, personalInfo} } = state;
-  const [selectedFile, setSelectedFile] = React.useState(null);
   const [errors, setErrors] = useState({
     name: false,
     email: false,
@@ -49,10 +48,7 @@ export default function ProfileInfo() {
     postalcode: false,
     phone: false
   });
-  const [confirmPassword, setConfirmPassword] = useState({
-    showPassword: false,
-    confirmError: false
-  });
+
   const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
@@ -72,7 +68,6 @@ export default function ProfileInfo() {
   })
 
   React.useEffect(() => {
-    setSelectedFile(null);
     setError(false);
   }, [refresh])
 
@@ -126,7 +121,6 @@ export default function ProfileInfo() {
       console.error('Error uploading image:', error);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
       setErrorMessage('Error uploading image:', error)
-      setSelectedFile(null);
       setError(true)
     }
   };
@@ -165,7 +159,6 @@ export default function ProfileInfo() {
       console.error('Error uploading image:', error);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
       setErrorMessage('Error uploading image:', error)
-      setSelectedFile(null);
       setError(true)
     }
   };
@@ -180,10 +173,6 @@ export default function ProfileInfo() {
         company: formOutput.get('company'),
         vatNumber: formOutput.get('vatNumber'),
       };
-
-      setConfirmPassword({
-        confirmError: false,
-      });
 
       setErrors({ ...errors, name: false, email: false, birthday: false, password: false, company: false, vatNumber: false });
       if(emptyCartItems) {
@@ -439,7 +428,6 @@ export default function ProfileInfo() {
                   label="Name"
                   name="name"
                   autoComplete="name"
-                  autoFocus
                   error={errors.name}
                 />
                 {
@@ -454,7 +442,6 @@ export default function ProfileInfo() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  autoFocus
                   error={errors.email}
                 />
                 {
@@ -470,7 +457,6 @@ export default function ProfileInfo() {
                   label="Birthday"
                   name="birthday"
                   autoComplete="birthday"
-                  autoFocus
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -487,7 +473,6 @@ export default function ProfileInfo() {
                   label="Company"
                   name="company"
                   autoComplete="company"
-                  autoFocus
                   error={errors.company}
                 />
                 {

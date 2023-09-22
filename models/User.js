@@ -6,6 +6,7 @@ const addressesSchema = new mongoose.Schema(
     country: {type: String, required: false},
     city: {type: String, required: false},
     postalcode: {type: String, required: false},
+    phone: {type: String, required: false},
   },
   {
     timestamps: true
@@ -22,11 +23,6 @@ const userSchema = new mongoose.Schema(
     cover_photo: {type: String, required: false},
     birthday: {type: String, required: false},
     addresses: [addressesSchema],
-    address: {type: String, required: false},
-    country: {type: String, required: false},
-    city: {type: String, required: false},
-    postalcode: {type: String, required: false},
-    phone: {type: String, required: false},
     company: {type: String, required: false},
     vatNumber: {type: String, required: false},
     newsletter: {type: String, required: false},

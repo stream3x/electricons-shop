@@ -216,7 +216,7 @@ export default function CartTotal({
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});
     }
   }
-  console.log(shipping);
+
   return (
     <Box sx={{ minWidth: 275 }}>
     {
@@ -229,19 +229,20 @@ export default function CartTotal({
           <Divider />
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">subtotal: </Typography>
-            <Typography variant="h6" component="span">${subTotal} </Typography>
+            <Typography variant="h6" component="span">${subTotal}</Typography>
           </Typography>
-          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
           {
-            shipping.shippingMethod && 
-            <React.Fragment>
-              <Typography component="span">shipping method: {<Tooltip title={shippingCost > 0 ? shipping.shippingAddress : shipping.store}><Chip color='primary' size='small' sx={{p: .5, ml: 1}} label={shippingCost > 0 ? 'delivery' : 'in store'} /></Tooltip>} </Typography>
-              <Typography variant="h6" component="span">
+          shipping.shippingMethod && 
+          <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
+              <Typography sx={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}} component="span">
+                <Typography sx={{textAlign: 'left'}} component="span">shipping method: </Typography>
+                <Tooltip title={shippingCost > 0 ? shipping.shippingAddress : shipping.store}><Chip color='primary' size='small' sx={{p: .5, ml: 1}} label={shippingCost > 0 ? 'delivery' : 'in store'} /></Tooltip>
+              </Typography>
+              <Typography sx={{textAlign: 'right'}} variant="h6" component="span">
               {shipping.shippingMethod}
               </Typography>
-            </React.Fragment>
-          }
           </Typography>
+          }
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
             <Typography component="span">shipping: </Typography>
             {
@@ -251,13 +252,6 @@ export default function CartTotal({
               <Typography variant="h6" component="span">{!emptyShipping ? shippingCost === 0 ? 'free' : `$${shippingCost}` : '_'}</Typography>
             }
           </Typography>
-          {
-            shippingMethod &&
-            <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
-              <Typography component="span">shipping status: </Typography>
-              <Typography variant="h6" component="span">{delivered ? "deliverd" : "not deliverd"}</Typography>
-            </Typography>
-          }
           {
             paid &&
             <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>

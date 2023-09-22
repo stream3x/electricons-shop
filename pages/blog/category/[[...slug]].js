@@ -332,7 +332,7 @@ export default function CategoryProducts(props) {
         <Grid item xs={12} lg={9}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
                     <Typography sx={{paddingBottom: {xs: '1rem', md: '0'} }} color="secondary.lightGrey" component="h2" variant="p">
@@ -388,7 +388,7 @@ export default function CategoryProducts(props) {
               ))
             }
             <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages values={['6', '12', '24', '36']} sx={{order: 2}} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {

@@ -148,7 +148,6 @@ export default function SingleProduct(props) {
     setRatings(onlyReviews.map(item => item.rating))
     setNumReviews(onlyReviews.map(item => item.rating).length);
     setSumReviews(sum);
-    console.log('show review');
   }
 
   React.useEffect(() => {

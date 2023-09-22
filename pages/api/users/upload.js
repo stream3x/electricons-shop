@@ -1,19 +1,25 @@
 import nc from 'next-connect';
-import User from '../../models/User';
-import db from '../../src/utils/db';
+import User from '../../../models/User';
+import db from '../../../src/utils/db';
 
 const handler = nc();
 
 handler.put(async (req, res) => {
+
   try {
     await db.connect();
-    const { name, email, company, vatNumber, birthday, address, country, city, postalcode, phone } = req.body;
+    const { name, email, company, vatNumber, birthday, addresses } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email cannot be empty' });
+    }
 
     const updatedUser = await User.findOneAndUpdate({
       email
     },
     {
-      $set: { name, email, company, vatNumber, birthday, address, country, city, postalcode, phone }
+      $set: { name, email, company, vatNumber, birthday },
+      $push: { addresses: addresses }
     },
     {
       new: true
@@ -24,17 +30,14 @@ handler.put(async (req, res) => {
       company: updatedUser.company,
       vatNumber: updatedUser.vatNumber,
       birthday: updatedUser.birthday,
-      address: updatedUser.address,
-      city: updatedUser.city,
-      country: updatedUser.country,
-      postalcode: updatedUser.postalcode,
-      phone: updatedUser.phone,
+      addresses: updatedUser.addresses
     };
     
     await db.disconnect();
     res.status(200).json(responseData);
   } catch (error) {
     console.log('Upload to MongoDB', error);
+    res.status(500).json({ error: error });
   }
 });
 

@@ -56,10 +56,13 @@ function a11yProps(index) {
 
 export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
-  const { userInfo, snack, session } = state;
+  const { snack } = state;
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const [userInfo, setUserInfo] = useState([]);
   const [value, setValue] = React.useState(0);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
   const [showForm, setShowForm] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const [anchor, setAnchor] = React.useState(0);
   const [updateEmail, setUpdateEmail] = React.useState('');
   const [updateName, setUpdateName] = React.useState('');
@@ -76,6 +79,18 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await axios.get('/api/users');
+        setUserInfo(data.filter(items => items._id === userInf0._id));
+      } catch (error) {
+        setError(true)
+      }
+    }
+    fetchData();
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -129,7 +144,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         return;
       }
 
-      if (session) {
+      if (userInf0?.token) {
         if (hasPurchased && formData.rating === 0 && formData.replyCommentId !== 'false') {
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
@@ -181,13 +196,12 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "name is required", severity: "error" }});
           return;
         }
-        if(formData.replyCommentId !== 'false' || !session) {
+        if(formData.replyCommentId !== 'false' || !userInf0?.token) {
           console.log(formData);
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
       }
-      console.log('send comment');
       setUpdateEmail('');
       setUpdateName('');
       setUpdateReplay('');
@@ -215,11 +229,11 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
 
   React.useEffect(() => {
     const fetchUserOrders = async () => {
-      if (session) {
+      if (userInf0?.token) {
         try {
           const response = await axios.get('/api/orders/history', {
             headers: {
-              Authorization: `Bearer ${session.token}`,
+              Authorization: `Bearer ${userInf0?.token}`,
             },
           });
 
@@ -236,13 +250,12 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
     };
 
     fetchUserOrders();
-  }, [session, product.slug]);
+  }, [userInf0?.token, product.slug]);
 
   const fetchComments = async () => {
     try {
       const { data } = await axios.get(`/api/products/getComments/${slug}`);
       setComments(data);
-      console.log('fetch comment');
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
@@ -254,7 +267,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   }, [slug]);
 
   React.useEffect(() => {
-    // Fetch existing comments from the server on page load
     if (isSubmitting) {
       setTimeout(() => {
         fetchComments();
@@ -310,6 +322,10 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
           }
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
+          {
+            error &&
+            <Typography color="red">Can't get user data</Typography>
+          }
           <Box>
           {
             comments && comments.length !== 0 && 
@@ -338,7 +354,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                   <CommentIcon color='primary' sx={{ cursor: 'pointer' }} onClick={() => handleShowForm(comment._id, index)} />                  
                   {
                     showForm && anchor === index && (
-                      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                     {
                       hasPurchased &&
                       <Box sx={{ mt: 5, display: 'none' }}>
@@ -361,7 +377,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                           label="Email Address"
                           name="email"
                           autoComplete="email"
-                          autoFocus
                           error={errors.email}
                           onChange={handleChangeEmail}
                           value={userInfo.email}
@@ -399,7 +414,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                             label="Email Address"
                             name="email"
                             autoComplete="email"
-                            autoFocus
                             error={errors.email}
                             onChange={handleChangeEmail}
                             value={updateEmail}
@@ -498,7 +512,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
-                                    autoFocus
                                     error={errors.email}
                                     onChange={handleChangeEmail}
                                     value={userInfo.email}
@@ -536,7 +549,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                                       label="Email Address"
                                       name="email"
                                       autoComplete="email"
-                                      autoFocus
                                       error={errors.email}
                                       onChange={handleChangeEmail}
                                       value={updateEmail}
@@ -641,7 +653,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                         label="Email Address"
                         name="email"
                         autoComplete="email"
-                        autoFocus
                         error={errors.email}
                         onChange={handleChangeEmail}
                         value={userInfo.email}
@@ -679,7 +690,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                           label="Email Address"
                           name="email"
                           autoComplete="email"
-                          autoFocus
                           error={errors.email}
                           onChange={handleChangeEmail}
                           value={updateEmail}

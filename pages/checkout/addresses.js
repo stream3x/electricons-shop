@@ -42,6 +42,18 @@ export default function Addresses() {
     router.push('/checkout/shipping');
   };
 
+  const handleTop = (event) => {
+    const anchor = (event.target.ownerDocument || document).querySelector(
+      '#back-to-top-anchor',
+    );
+
+    if (anchor) {
+      anchor.scrollIntoView({
+        block: 'center',
+      });
+    }
+  };
+
   const handleChange = (event) => {
     setChecked(() => event.target.checked);
     if(!checked) {
@@ -78,6 +90,7 @@ export default function Addresses() {
           phone: user.map(item => item.phone).toString()
         };
         dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+        Cookies.set('forInvoice', 0);
       } catch (error) {
         setError(true)
       }
@@ -137,8 +150,8 @@ export default function Addresses() {
         dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
         !addNewAddress && router.push('/checkout/shipping');
         setAddNewAddress(false);
-        console.log('lola');
       }
+      handleTop(event);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
       setErrors({ 
         ...errors, 
@@ -169,7 +182,7 @@ export default function Addresses() {
     <CheckoutLayout>
       <CheckoutStepper activeStep={1} />
         <ThemeProvider theme={theme}>
-          <Container component="div" maxWidth="xl">
+          <Container id='back-to-top-anchor' component="div" maxWidth="xl">
             <CssBaseline />
             <Box
               sx={{

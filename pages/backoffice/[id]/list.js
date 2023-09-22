@@ -414,8 +414,8 @@ export default function ProductsListTable() {
             ))
           }
         </Box>
-        <Box sx={{py: 1, px: 3, display: 'flex', flex: 1, justifyContent: 'right', alignItems: 'center', width: {xs: '100%', md: 'auto'}}}>
-          <Link href={`/backoffice/${userInf0._id}/create`}>
+        <Box sx={{py: 1, px: {xs: 0, md: 3}, display: 'flex', flex: 1, justifyContent: {xs: 'center', md: 'right'}, alignItems: 'center', width: {xs: '100%', md: 'auto'}}}>
+          <Link href={`/backoffice/${userInf0?._id}/create`}>
             <Button sx={{py: 1}} color='dashboard' variant="outlined" startIcon={<AddIcon />}>
               create new Product
             </Button>
@@ -479,7 +479,7 @@ export default function ProductsListTable() {
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{width: '10ch'}}>
+                    <TableCell sx={{minWidth: '10px', maxWidth: '100px', overflowX: 'scroll', '&::-webkit-scrollbar': {display: 'none'}}}>
                       {row._id}
                     </TableCell>
                     <TableCell>
