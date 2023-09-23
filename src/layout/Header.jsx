@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -163,7 +163,7 @@ export default function Header() {
   const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { comparasion: { compareItems }, wishlist: { wishItems } } = state;
+  const { comparasion: { compareItems }, wishlist: { wishItems }, uploadImage } = state;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -174,12 +174,26 @@ export default function Header() {
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const [userInfo, setUserInfo] = useState(null);
 
   function toggleVisibility() {
     const visibleBtn = window.scrollY;
     visibleBtn > 50 ? setIsVisible(() => true) : setIsVisible(() => false);
   }
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await axios.get('/api/users');
+        const user = await data.filter(items => items._id === userInf0._id);
+        setUserInfo(user[0]);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, [uploadImage?.change])
+  
   React.useEffect(() => {
     window.addEventListener('scroll', toggleVisibility);
     return () => {
@@ -253,7 +267,12 @@ export default function Header() {
 
   const handleLogout = () => {
     setAnchorElUser(null);
-    dispatch({ type: 'PERSONAL_REMOVE'});
+    setUserInfo(null);
+    dispatch({ type: 'PERSONAL_INFO', payload: {}});
+    dispatch({ type: 'CART_CLEAR' });
+    dispatch({ type: 'ADDRESSES_CLEAR' });
+    dispatch({ type: 'SHIPPING_REMOVE' });
+    dispatch({ type: 'PAYMENT', payload: {}});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'you are successfully logged out', severity: 'warning'}});
     Cookies.remove('personalInfo');
     Cookies.remove('cartItems');
@@ -352,7 +371,7 @@ export default function Header() {
               <Box sx={{ flexGrow: 0, display: { xs: 'flex', sm: 'flex'} }}>
                 <Tooltip title={userInf0 ? `Open ${userInf0.name} menu` : 'Open menu'}>
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar sx={{ width: 30, height: 30 }} alt={userInf0 ? userInf0.name : 'Avatar'} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
+                    <Avatar sx={{ width: 30, height: 30 }} alt={userInf0 ? userInf0?.name : 'Avatar'} src={ !userInfo ? (userInf0?.image === '' ? '/images/fake.jpg' : userInf0?.image) : userInfo?.image} />
                   </IconButton>
                 </Tooltip>
                 <Menu

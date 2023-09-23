@@ -12,7 +12,6 @@ import theme from '../theme';
 import CartIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Link from '../Link';
 import { Store } from '../utils/Store';
-import Cookies from 'js-cookie';
 
 export default function SwipeableCartDrawer() {
   const [drawerState, setDrawerState] = React.useState({

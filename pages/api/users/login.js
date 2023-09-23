@@ -14,7 +14,7 @@ const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 handler.post(async (req, res) => {
   await db.connect();
   const user = await User.findOne({ email: req.body.email });
-
+console.log(bcrypt.hashSync(req.body.password));
   if(user && bcrypt.compareSync(req.body.password, user.password)) {
     const token = signToken(user);
     res.send({

@@ -70,7 +70,7 @@ export default function Shipping() {
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
-        shippingAddress: formOutput.get('shipping-method') !== 'Electricons Store' ? cart.addresses[Cookies.get('forInvoice') ? Cookies.get('forInvoice') : 0].address : 'null',
+        shippingAddress: formOutput.get('shipping-method') !== 'Electricons Store' ? addresses[Cookies.get('forInvoice')].address : 'null',
         shippingCity: formOutput.get('shipping-method') !== 'Electricons Store' ? addresses[Cookies.get('forInvoice')].city : formOutput.get('shiping-city'),
         store: formOutput.get('shipping-method') !== 'Electricons Store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
@@ -90,7 +90,6 @@ export default function Shipping() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please select store', severity: 'warning'}});
         return;
       }
-      console.log(formData);
       dispatch({ type: 'SHIPPING', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added shipping', severity: 'success'}});
       Cookies.set('shipping', JSON.stringify(formData));

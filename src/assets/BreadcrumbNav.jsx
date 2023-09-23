@@ -163,7 +163,7 @@ export default function BreadcrumbNav({productData, categoryData, blogData, blog
       {
         productData && productData.slug &&
         <Typography
-          sx={{ display: 'flex', alignItems: 'center', fontSize: {xs: 12, sm: 'inherit'} }}
+          sx={{ display: 'flex', alignItems: 'center', fontSize: {xs: 12, sm: 'inherit'}, py: 1 }}
           color="text.primary"
         >
           {productData.title}

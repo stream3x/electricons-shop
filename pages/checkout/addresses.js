@@ -26,6 +26,7 @@ export default function Addresses() {
   const { state, dispatch } = useContext(Store);
   const { cart: { personalInfo, addresses, cartItems} } = state;
   const [error, setError] = React.useState(false);
+  const [addressIndex, setAddressIndex] = useState(0);
   const [userInfo, setUserInfo] = useState([]);
   const [errors, setErrors] = useState({
     address: false,
@@ -80,16 +81,9 @@ export default function Addresses() {
     async function fetchData() {
       try {
         const { data } = await axios.get('/api/users');
-        setUserInfo(data.filter(items => items._id === userInf0._id));
         const user = await data.filter(items => items._id === userInf0._id);
-        const formData = {
-          address: user.map(item => item.address).toString(),
-          city: user.map(item => item.city).toString(),
-          country: user.map(item => item.country).toString(),
-          postalcode: user.map(item => item.postalcode).toString(),
-          phone: user.map(item => item.phone).toString()
-        };
-        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+        setUserInfo(user);
+        dispatch({ type: 'ADDRESSES', payload: [...user[0].addresses[0]] });
         Cookies.set('forInvoice', 0);
       } catch (error) {
         setError(true)
@@ -143,14 +137,8 @@ export default function Addresses() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the postal code is required', severity: 'warning'}});
         return;
       }
-      {
-        addNewAddress ?
-        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } })
-        :
-        dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
-        !addNewAddress && router.push('/checkout/shipping');
-        setAddNewAddress(false);
-      }
+      dispatch({ type: 'ADDRESSES', payload: { ...addresses, ...formData } });
+      setAddNewAddress(false);
       handleTop(event);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
       setErrors({ 
@@ -163,7 +151,8 @@ export default function Addresses() {
       });
   };
 
-  const handleEdit = (item) => {
+  const handleEdit = (item, index) => {
+    setAddressIndex(index);
     Cookies.set('forInvoice', JSON.stringify(addresses.length - 1));
     dispatch({ type: 'ADDRESSES_REMOVE', payload: item});
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit address', severity: 'warning'}});
@@ -197,9 +186,9 @@ export default function Addresses() {
                 <RadioGroup name="radio-address-picker" value={forInvoice} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                   <Grid container space={2}>
                   {
-                    (addresses.length !== 0 ? addresses : userInfo).map((address, index) => (
+                    (addresses.length !== 0 ? addresses : userInfo[0]?.addresses[0]).map((address, index) => (
                       <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
-                        <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address)} handleDelete={() => handleDelete(address)} />  
+                        <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address, index)} handleDelete={() => handleDelete(address)} />  
                       </Grid>
                     ))
                   }
@@ -227,7 +216,7 @@ export default function Addresses() {
                   <React.Fragment>
                     <TextField
                       margin="normal"
-                      defaultValue={userInfo && userInfo?.name}
+                      defaultValue={personalInfo && personalInfo?.name}
                       disabled
                       fullWidth
                       required
@@ -237,7 +226,7 @@ export default function Addresses() {
                     />
                     <TextField
                       margin="normal"
-                      defaultValue={userInfo && userInfo?.email}
+                      defaultValue={personalInfo && personalInfo?.email}
                       disabled
                       fullWidth
                       required
@@ -250,8 +239,6 @@ export default function Addresses() {
                 }
                   <TextField
                     margin="normal"
-                    defaultValue={personalInfo ? personalInfo.country ? personalInfo.country : addresses.country : ''}
-                    disabled={!emptyAddresses && addresses.country && true}
                     fullWidth
                     required
                     id="country"
@@ -261,8 +248,6 @@ export default function Addresses() {
                   />
                   <TextField
                     margin="normal"
-                    defaultValue={personalInfo ? personalInfo.city ? personalInfo.city : addresses.city : ''}
-                    disabled={!emptyAddresses && addresses.city && true}
                     fullWidth
                     required
                     id="city"
@@ -274,8 +259,6 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     type="number"
-                    defaultValue={personalInfo ? personalInfo.postalcode ? personalInfo.postalcode : addresses.postalcode : ''}
-                    disabled={!emptyAddresses && personalInfo.postalcode && true}
                     fullWidth
                     required
                     id="postalcode"
@@ -286,8 +269,6 @@ export default function Addresses() {
                   />        
                   <TextField
                     margin="normal"
-                    defaultValue={personalInfo ? personalInfo.address ? personalInfo.address : personalInfo.address : ''}
-                    disabled={!emptyAddresses && userInf0.address && true}
                     fullWidth
                     required
                     id="address"
@@ -299,8 +280,6 @@ export default function Addresses() {
                   <TextField
                     margin="normal"
                     type="number"
-                    defaultValue={personalInfo ? personalInfo.phone ? personalInfo.phone : addresses.phone : ''}
-                    disabled={personalInfo && personalInfo.phone && true}
                     fullWidth
                     required
                     id="phone"
@@ -330,7 +309,7 @@ export default function Addresses() {
                     variant="contained"
                     sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
                   >
-                    Continue next
+                    save
                   </Button>
                 </Box>
               }

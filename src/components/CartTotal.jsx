@@ -353,7 +353,7 @@ export default function CartTotal({
           </Typography>
           <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary.lightGrey" gutterBottom>
             <Typography component="span">Shipping method: </Typography>
-            <Typography variant="h6" component="span">{shipping.shippingMethod === 'Electricons Store' ? 'pick up in-store' : 'delivery'}</Typography>
+            <Tooltip title={`${shipping.shippingAddress}`}><Typography variant="h6" component="span">{shipping.shippingMethod === 'Electricons Store' ? 'pick up in-store' : 'delivery'}</Typography></Tooltip>
           </Typography>
           {
             shipping.shippingMethod === 'Electricons Store' &&

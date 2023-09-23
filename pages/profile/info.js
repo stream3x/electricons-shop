@@ -34,7 +34,7 @@ export default function ProfileInfo() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
-  const { snack, cart: {cartItems, personalInfo} } = state;
+  const { snack, cart: {cartItems, personalInfo}, uploadImage } = state;
   const [errors, setErrors] = useState({
     name: false,
     email: false,
@@ -58,6 +58,7 @@ export default function ProfileInfo() {
   const [refresh, setRefresh] = React.useState(false);
   const [userInfo, setUserInfo] = useState({});
   const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
+  const [changeUserInfo, setChangeUserInfo] = useState(false);
   const [imgFile, setImgFile] = React.useState({
     image: null,
     imageUrl: null
@@ -75,13 +76,15 @@ export default function ProfileInfo() {
     async function fetchData() {
       try {
         const { data } = await axios.get('/api/users');
-        setUserInfo(data.filter(items => items._id === userInf0._id));
+        const user = await data.filter(items => items._id === userInf0._id);
+        setUserInfo(user[0]);
       } catch (error) {
+        console.log(error);
         setError(true)
       }
     }
     fetchData();
-  }, []);
+  }, [uploadImage?.change]);
 
   function handleRefresh() {
     setRefresh(true);
@@ -117,12 +120,17 @@ export default function ProfileInfo() {
         },
       });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'cover photo was uploaded', severity: 'success'}});
+      dispatch({ type: 'UPLOAD_IMAGE', payload: {...state.uploadImage, uploadImage: {change: true}} });
     } catch (error) {
       console.error('Error uploading image:', error);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
       setErrorMessage('Error uploading image:', error)
       setError(true)
     }
+    setImgCoverFile({
+      image: null,
+      imageUrl: null
+    })
   };
   
   function handleImageChoose(e) {
@@ -148,19 +156,23 @@ export default function ProfileInfo() {
         image: imgFile?.imageUrl,
         email: userInf0?.email
       }
-      console.log(formData);
       const { data } = await axios.put(`/api/users/upload_profile_images`, formData, {
         headers: {
           'Content-Type': "application/json", // Set the correct Content-Type header
         },
       });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was uploaded', severity: 'success'}});
+      dispatch({ type: 'UPLOAD_IMAGE', payload: {...state.uploadImage, uploadImage: {change: true}} });
     } catch (error) {
       console.error('Error uploading image:', error);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});
       setErrorMessage('Error uploading image:', error)
       setError(true)
     }
+    setImgFile({
+      image: null,
+      imageUrl: null
+    })
   };
 
   const handleSubmit = async (event) => {
@@ -205,14 +217,16 @@ export default function ProfileInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the email is not valid', severity: 'error'}});
         return;
       }
+      const { data } = await axios.put('/api/users/upload', formData);
       dispatch({ type: 'PERSONAL_INFO', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
+      setChangeUserInfo(false);
   };
 
   const handleEdit = () => {
       dispatch({ type: 'PERSONAL_REMOVE' });
       Cookies.remove('personalInfo');
-      setUserInfo({});
+      setChangeUserInfo(true);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
   };
 
@@ -239,23 +253,22 @@ export default function ProfileInfo() {
                 <Box component="label" onChange={handleCoverImageChoose} htmlFor="cover_photo">
                   {
                     imgCoverFile.imageUrl ?
-                    
                       <Box sx={{ overflow: 'hidden', borderRadius: '20px', boxShadow: '0 5px 20px lightGray', '& img': {objectFit: 'cover'}, position: 'relative', width: '100%', height: '200px' }}>
                         <Image
                           fill
-                          src={imgCoverFile?.imageUrl !== null ? imgCoverFile?.imageUrl : userInfo[0]?.cover_photo}
+                          src={imgCoverFile?.imageUrl !== null ? imgCoverFile?.imageUrl : userInfo?.cover_photo}
                           alt={imgCoverFile.image?.name}
                         />
                       </Box>
                         :
                       <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '20px', position: 'relative', overflow: 'hidden', border: 'thin dashed lightGrey', width: '100%', height: '200px', '& img': {objectFit: 'cover'}}}>
                         {
-                          userInfo[0]?.cover_photo ?
+                          userInfo?.cover_photo ?
                           <Box sx={{ overflow: 'hidden', boxShadow: '0 5px 20px lightGray', '& img': {objectFit: 'cover'}, position: 'relative', width: '100%', height: '200px' }}>
                             <Image
                               fill
-                              src={userInfo[0]?.cover_photo}
-                              alt={userInfo[0]?.name}
+                              src={userInfo?.cover_photo}
+                              alt={userInfo?.name}
                             />
                           </Box>
                           :
@@ -281,13 +294,13 @@ export default function ProfileInfo() {
                   }
                   {
                     imgCoverFile.imageUrl === null ?
-                    <Box sx={{position: 'absolute', bottom: -10, right: -10, zIndex: 1, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }} component="span">
+                    <Box sx={{position: 'absolute', bottom: 10, right: 10, zIndex: 1, width: 40, height: 40, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }} component="span">
                       <IconButton sx={{ bgcolor: theme.palette.primary.white, zIndex: -1 }} color='dashboard' variant="outlined">
                         <PhotoSizeSelectActualIcon />
                       </IconButton>
                     </Box>
                     :
-                    <Box sx={{position: 'absolute', bottom: -10, right: -10, width: 40, height: 40, zIndex: 1, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }}>
+                    <Box sx={{position: 'absolute', bottom: 10, right: 10, width: 40, height: 40, zIndex: 1, '&:hover button': {bgcolor: theme.palette.primary.bgdLight}, cursor: 'pointer' }}>
                       <IconButton type='submit' sx={{ bgcolor: theme.palette.primary.white }} color='dashboard' variant="outlined">
                         <FileUploadIcon />
                       </IconButton>
@@ -303,13 +316,13 @@ export default function ProfileInfo() {
                       <Box sx={{ borderRadius: '100%', overflow: 'hidden', boxShadow: '0 5px 20px lightGray', '& img': {objectFit: 'cover'}, position: 'relative', width: 100, height: 100 }}>
                         <Image
                           fill
-                          src={imgFile.imageUrl ? imgFile.imageUrl : userInf0.image}
-                          alt={userInf0.name}
+                          src={imgFile.imageUrl !== null ? imgFile.imageUrl : userInfo.image}
+                          alt={userInfo.name}
                         />
                       </Box>
                         :
                       <IconButton sx={{ p: 0 }}>
-                        <Avatar sx={{ width: 100, height: 100 }} alt={userInf0 ? userInf0.name : 'Avatar'} src={ userInf0 && (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image)} />
+                        <Avatar sx={{ width: 100, height: 100 }} alt={userInf0 ? userInfo.name : 'Avatar'} src={ !userInfo ? (userInf0.image === '' ? '/images/fake.jpg' : userInf0.image) : userInfo?.image } />
                       </IconButton>
                   }
                   {
@@ -338,15 +351,15 @@ export default function ProfileInfo() {
                 alignItems: 'center',
               }}
             >
-              {
+            {
               !emptyUserInfo &&
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                 <TextField
                   margin="normal"
                   required
                   fullWidth
-                  defaultValue={userInf0?.name}
-                  disabled={!emptyUserInfo}
+                  defaultValue={userInfo?.name}
+                  disabled={!changeUserInfo && !emptyUserInfo}
                   id="name"
                   label="Name"
                   name="name"
@@ -361,7 +374,7 @@ export default function ProfileInfo() {
                   required
                   fullWidth
                   defaultValue={userInf0?.email}
-                  disabled={!emptyUserInfo}
+                  disabled={!changeUserInfo && !emptyUserInfo}
                   id="email"
                   label="Email Address"
                   name="email"
@@ -380,7 +393,7 @@ export default function ProfileInfo() {
                   label="Birthday"
                   name="birthday"
                   defaultValue={userInf0?.birthday}
-                  disabled={!emptyUserInfo}
+                  disabled={!changeUserInfo && !emptyUserInfo}
                   error={errors.birthday}
                 />
                 {
@@ -394,7 +407,7 @@ export default function ProfileInfo() {
                   label="Company"
                   name="company"
                   defaultValue={userInf0?.company}
-                  disabled={!emptyUserInfo}
+                  disabled={!changeUserInfo && !emptyUserInfo}
                   error={errors.company}
                 />
                 {
@@ -406,7 +419,7 @@ export default function ProfileInfo() {
                     type="number"
                     fullWidth
                     defaultValue={userInf0 ? userInf0.vatNumber : ''}
-                    disabled={!emptyUserInfo}
+                    disabled={!changeUserInfo && !emptyUserInfo}
                     id="vatNumber"
                     label="VAT Number"
                     name="vatNumber"
@@ -415,97 +428,21 @@ export default function ProfileInfo() {
                     errors.vatNumber && 
                     <FormHelperText error>{snack.message}</FormHelperText>
                   }
-              </Box>
-            }
-            {
-              emptyPersonalInfo && emptyUserInfo &&
-              <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  name="name"
-                  autoComplete="name"
-                  error={errors.name}
-                />
-                {
-                  errors.name && 
-                  <FormHelperText error>{snack.message}</FormHelperText>
-                }
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  error={errors.email}
-                />
-                {
-                  errors.email && 
-                  <FormHelperText error>{snack.message}</FormHelperText>
-                }
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  type="date"
-                  id="birthday"
-                  label="Birthday"
-                  name="birthday"
-                  autoComplete="birthday"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={errors.birthday}
-                />
-                {
-                  errors.birthday && 
-                  <FormHelperText error>{snack.message}</FormHelperText>
-                }
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  id="company"
-                  label="Company"
-                  name="company"
-                  autoComplete="company"
-                  error={errors.company}
-                />
-                {
-                  errors.company && 
-                  <FormHelperText error>{snack.message}</FormHelperText>
-                }
-                <TextField
-                    margin="normal"
-                    type="number"
-                    fullWidth
-                    id="vatNumber"
-                    label="VAT Number"
-                    name="vatNumber"
-                  />         
                   {
-                    errors.vatNumber && 
-                    <FormHelperText error>{snack.message}</FormHelperText>
+                    changeUserInfo &&
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 3, mb: 2 }}
+                      type='submit'
+                    >
+                      Save
+                    </Button>
                   }
               </Box>
             }
             {
-              emptyPersonalInfo && emptyUserInfo &&
-              <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                type='submit'
-              >
-                Save
-              </Button>
-            }
-            {
-              !emptyUserInfo &&
+              !changeUserInfo && !emptyUserInfo &&
               <Button
                 fullWidth
                 variant="contained"

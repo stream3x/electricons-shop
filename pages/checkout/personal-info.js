@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -30,8 +30,10 @@ export default function PersonalInfo() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
   const { snack, cart: {cartItems, personalInfo} } = state;
+  const [userInfo, setUserInfo] = useState([]);
   const [willLogin, setWillLogin] = useState(false);
   const [willRegister, setWillRegister] = useState(false);
+  const [error, setError] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
     email: false,
@@ -54,6 +56,20 @@ export default function PersonalInfo() {
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
   const emptyUserInfo = userInf0 !== null ? Object.keys(userInf0).length === 0 : true;
   const emptyCartItems = Object.keys(cartItems).length === 0;
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await axios.get('/api/users');
+        const user = await data.filter(items => items._id === userInf0._id);
+        setUserInfo(user);
+        dispatch({ type: 'PERSONAL_INFO', payload: user[0] });
+      } catch (error) {
+        setError(true)
+      }
+    }
+    fetchData();
+  }, []);
 
   function orderLoginHandler() {
     setWillLogin(true);
@@ -86,6 +102,7 @@ export default function PersonalInfo() {
       vatNumber: userInf0 ? userInf0.vatNumber : formOutput.get('vatNumber'),
     };
     dispatch({ type: 'PERSONAL_INFO', payload: formData });
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
     router.push('/checkout/addresses');
   };
 
@@ -137,7 +154,6 @@ export default function PersonalInfo() {
       }
       dispatch({ type: 'PERSONAL_INFO', payload: formData });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
-      router.push('/checkout/addresses');
   };
 
   const handleRegister = async (event) => {
@@ -231,7 +247,7 @@ export default function PersonalInfo() {
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = (item) => {
       dispatch({ type: 'PERSONAL_REMOVE' });
       Cookies.remove('personalInfo');
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
@@ -264,7 +280,139 @@ export default function PersonalInfo() {
             }}
           >
           {
-            !willLogin && emptyUserInfo &&
+          !willLogin && !emptyPersonalInfo &&
+          <Box component="form" onSubmit={willRegister ? handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+            <TextField
+              margin="normal"
+              defaultValue={personalInfo ? personalInfo.name : ''}
+              disabled={!emptyPersonalInfo && true}
+              fullWidth
+              required
+              id="name"
+              label="Name"
+              name="name"
+              autoComplete="name"
+            />
+            {
+              errors.name && 
+              <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+            }
+            <TextField
+              margin="normal"
+              defaultValue={personalInfo ? personalInfo.email : ''}
+              disabled={!emptyPersonalInfo && true}
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+            />
+            {
+              errors.email && 
+              <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+            }
+              <TextField
+                margin="normal"
+                type="date"
+                defaultValue={personalInfo ? personalInfo.birthday : ''}
+                disabled={!emptyPersonalInfo && true}
+                fullWidth
+                id="birthday"
+                label="Birthday (optional)"
+                name="birthday"
+                autoComplete="birthday"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <TextField
+                margin="normal"
+                defaultValue={personalInfo ? personalInfo.company : ''}
+                disabled={!emptyPersonalInfo && true}
+                fullWidth
+                id="company"
+                label="Company (optional)"
+                name="company"
+                autoComplete="company"
+              />
+              <TextField
+                margin="normal"
+                type="number"
+                defaultValue={personalInfo ? personalInfo.vatNumber : ''}
+                disabled={!emptyPersonalInfo && true}
+                fullWidth
+                id="vatNumber"
+                label="VAT Number (optional)"
+                name="vatNumber"
+              />         
+              {
+                errors.vatNumber && 
+                <FormHelperText error>{snack.message && snack.message}</FormHelperText>
+              }
+              {
+                emptyPersonalInfo &&
+                <React.Fragment>
+                  <Typography sx={{pt: 3, pb: 2}} align="left" variant='h6' component="p">
+                    Create an account (optional)
+                    <Typography variant='caption' component="p">And save time on your next order!</Typography>
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        name="password"
+                        label="Password"
+                        type="password"
+                        id="password"
+                        autoComplete="false"
+                        onChange={handleWillRegister}
+                      />
+                      {
+                        confirmPassword.confirmError &&
+                        <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                      }
+                      {
+                        errors.password &&
+                        <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
+                      }
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormControl sx={{ width: '100%' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password">
+                          Confirm Password
+                        </InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          name="password-confirmed"
+                          label="Confirm Password *"
+                          type={confirmPassword.showPassword ? 'text' : 'password'}
+                          id="password-confirm"
+                          endAdornment={
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                edge="end"
+                              >
+                                {confirmPassword.showPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                        />
+                        {
+                          confirmPassword.confirmError &&
+                          <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                        }
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </React.Fragment>
+              }
+          </Box>
+          }
+          {
+            !willLogin && emptyPersonalInfo &&
             <Box component="form" onSubmit={willRegister ? handleRegister : handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
@@ -394,14 +542,14 @@ export default function PersonalInfo() {
                   </React.Fragment>
                 }
                 {
-                  emptyPersonalInfo && emptyUserInfo &&
+                  emptyPersonalInfo &&
                   <Button
                     type="submit"
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
                   >
-                    Continue
+                    save
                   </Button>
                 }
             </Box>
@@ -464,59 +612,24 @@ export default function PersonalInfo() {
             </Box>
           }
           {
-            !emptyUserInfo &&
-            <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1, width: '100%' }}>
-              <TextField
-                margin="normal"
-                defaultValue={userInf0.name}
-                disabled={!emptyUserInfo && true}
+            !emptyPersonalInfo &&
+            <Box sx={{display: 'flex', width: '100%'}}>
+              <Button
+                variant="outlined"
+                sx={{ mt: 3, mb: 2, mr: 1, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
+                onClick={handleEdit}
+              >
+                edit
+              </Button>
+              <Button
                 fullWidth
-                id="name"
-                label="Name"
-                name="name"
-              />
-              <TextField
-                margin="normal"
-                defaultValue={userInf0.email}
-                disabled={!emptyUserInfo && true}
-                fullWidth
-                name="email"
-                label="Email"
-                type="email"
-                id="email"
-              />
-              <TextField
-                margin="normal"
-                defaultValue={userInf0.company}
-                disabled={!emptyUserInfo && true}
-                fullWidth
-                name="company"
-                label="Company"
-                id="company"
-              />
+                variant="contained"
+                sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
+                onClick={handleNext}
+              >
+                Continue Next
+              </Button>
             </Box>
-          }
-          {
-            !emptyPersonalInfo && emptyUserInfo &&
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              onClick={handleEdit}
-            >
-              Edit
-            </Button>
-          }
-          {
-            !emptyUserInfo &&
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
-              onClick={handleNext}
-            >
-              Continue Next
-            </Button>
           }
           </Box>
         </Container>

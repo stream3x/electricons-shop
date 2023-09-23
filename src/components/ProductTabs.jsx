@@ -58,7 +58,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
   const { snack } = state;
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
-  const [userInfo, setUserInfo] = useState([]);
+  const [userInfo, setUserInfo] = React.useState([]);
   const [value, setValue] = React.useState(0);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
   const [showForm, setShowForm] = React.useState(false);
@@ -80,7 +80,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
-  useEffect(() => {
+  React.useEffect(() => {
     async function fetchData() {
       try {
         const { data } = await axios.get('/api/users');

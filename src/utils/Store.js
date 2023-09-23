@@ -18,6 +18,7 @@ const initialState = {
   wishlist: {
     wishItems: Cookies.get('wishItems') ? JSON.parse(Cookies.get('wishItems')) : []
   },
+  uploadImage: {change: false},
   snack: {
     message: '',
     severity: ''
@@ -89,6 +90,8 @@ function reducer(state, action) {
     case 'PERSONAL_INFO': {
       return { ...state, cart: { ...state.cart, personalInfo: action.payload } };
     }
+    case 'PERSONAL_REMOVE':
+    return { ...state, cart: { ...state.cart, personalInfo: {} } };
     case 'CUPON_DISCOUNT': {
       return { ...state, cart: { ...state.cart, cupon_discount: action.payload } };
     }
@@ -115,6 +118,8 @@ function reducer(state, action) {
     }
     case 'CART_CLEAR':
       return { ...state, cart: { ...state.cart, cartItems: [] } };
+    case 'ADDRESSES_CLEAR':
+    return { ...state, cart: { ...state.cart, addresses: [] } };
     case 'SHIPPING': {
       return { ...state, cart: { ...state.cart, shipping: action.payload } };
     }
@@ -126,6 +131,9 @@ function reducer(state, action) {
     }
     case 'SNACK_MESSAGE': {
       return { ...state, snack: action.payload };
+    }
+    case 'UPLOAD_IMAGE': {
+      return { ...state, uploadImage: action.payload };
     }
     default:
       return { ...state, snack: {message: '', severity: ''} };

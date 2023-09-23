@@ -161,8 +161,13 @@ export default function OrderTable(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
+  const [totalPrice, setTotalPrice] = React.useState(null);
   const [userOrders, setUserOrders] = React.useState([]);
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+
+    const total = [];
+    rows?.map((row) => row?.orderItems.map(item => total.push(Number(item?.price * item?.quantity))));
+    const total_price = total.reduce((total, number) => total + number, 0);
 
   React.useEffect(() => {
     async function fetchOrders() {
@@ -176,7 +181,6 @@ export default function OrderTable(props) {
     fetchOrders();
   }, [])
 
-
   React.useEffect(() => {
     if (userInf0) {
       const getOrders = userOrders && userOrders.filter(order => order.personalInfo?.email === userInf0?.email);
@@ -185,7 +189,7 @@ export default function OrderTable(props) {
       setRows([]);
     }
   }, [userOrders]);
-console.log(userOrders.filter(order => order.personalInfo?.email === userInf0?.email));
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -282,13 +286,9 @@ console.log(userOrders.filter(order => order.personalInfo?.email === userInf0?.e
             <TableCell colSpan={10} align="right">
               {'Total price:'}
             </TableCell>
-           {
-            rows.map(row => (
               <TableCell colSpan={2} align="right">
-                {'$'}{row.total.toFixed(2)}
+                {'$'}{total_price}
               </TableCell>
-            ))
-           }
           </TableRow>
         </TableHead>
         <TableFooter sx={{width: '100%'}}>
