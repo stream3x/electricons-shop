@@ -196,7 +196,7 @@ export default function BlogPages(props) {
       query: query
     })
   }
-console.log(router.pathname);
+
   React.useEffect(() => {
     // Always do navigations after the first render
     if (query) {
@@ -315,6 +315,14 @@ console.log(router.pathname);
         </Search>
       </Box>
       {
+        blogs.length === 0 &&
+          <LabelButton sx={{width: '100%', my: 5, p: 2}}>
+            <Typography sx={{m: 0, p: 1, fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h5" component="h1" gutterBottom>
+            We looked everywhere but couldn't find it. Search results for term: <strong>{query}</strong>
+            </Typography>
+          </LabelButton>
+      }
+      {
         blogs.filter(blog => blog.category === 'Desktop computers').length !== 0 &&
         <Box component="section" sx={{mt: 5}}>
           <Container maxWidth="xl">
@@ -385,7 +393,7 @@ console.log(router.pathname);
       {
       blogs.filter(blog => blog.category === 'Laptop computers').length !== 0 &&
         <Box component="section" sx={{mt: 3}}>
-          <Box sx={{bgcolor: theme.palette.badge.bgdLight, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', mt: {xs: '-35rem', sm: '-25rem'}}}>
+          <Box sx={{bgcolor: theme.palette.badge.bgdLight, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', mt: {xs: '-44rem', sm: '-25rem'} }}>
             <Container maxWidth="xl">
               <Grid container spacing={0}>
                 <Grid item xs={12} sm={8} sx={{py: '2rem', pl: 5,order: {xs: 1, sm: 2}}}>
@@ -393,7 +401,7 @@ console.log(router.pathname);
                   <Typography sx={{color: theme.palette.secondary.lightGrey, py: '2rem'}}>Donec id malesuada elit. Donec tempor sit amet est ac blandit. Phasellus ac sem nisl. Vestibulum aliquam, ligula in pretium congue, massa felis ultrices metus, nec mattis elit diam lobortis justo. Ut dapibus gravida eros ac bibendum. Phasellus ac tempus libero. Mauris eleifend, mi at viverra scelerisque, dolor leo luctus justo, id fermentum tellus nisl eget est.</Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <Box sx={{ position: 'relative', width: {xs: '300px', sm: '500px'}, height: {xs: '250px', sm: '350px'}, mt: '-2rem' }}>
+                  <Box sx={{ position: 'relative', width: {xs: '300px', sm: '500px'}, height: {xs: '200px', sm: '333.33px'}, mt: '-2rem' }}>
                     <Image
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -407,9 +415,9 @@ console.log(router.pathname);
                 </Grid>
               </Grid>
             </Container>
-            <Box sx={{display: {xs: 'none', sm: 'block'}, width: '50px', height: '50px', bgcolor: theme.palette.badge.bgdLight, position: 'absolute', bottom: -20, left: 100, transform: 'rotate(45deg)'}}></Box>
+            <Box sx={{display: {xs: 'none', sm: 'block'}, width: '50px', height: '50px', bgcolor: theme.palette.badge.bgdLight, position: 'absolute', bottom: -20, zIndex: -1, left: 100, transform: 'rotate(45deg)'}}></Box>
         </Box>
-        <Container maxWidth="xl" sx={{mt: {xs: '40rem!important', sm: '30rem!important'}}}>
+        <Container maxWidth="xl" sx={{mt: {xs: '50rem!important', sm: '30rem!important'}}}>
           <Grid container spacing={3}>
             {
               blogs.map(blog => (
@@ -417,10 +425,10 @@ console.log(router.pathname);
                 <Grid key={blog._id} item xs={12}>
                   <Card sx={{ width: "100%!important", height: "100%", display: 'flex', boxShadow: 'none!important', '& > a': {textDecoration: 'none', width: '100%'} }}>
                     <Link sx={{position: 'relative', color: theme.palette.primary.main, display: 'flex', flex: 0, width: '100%' }} href={`/blog/post/${blog.slug}`} noLinkStyle onClick={() => handleLoading(blog)}>
-                        {
-                          blog._id === selected &&
-                          <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
-                        }
+                      {
+                        blog._id === selected &&
+                        <CircularProgress sx={{position: 'absolute', left: '45%', top: '20%', zIndex: 1, transform: 'translateX(-50%)'}} size={50} />
+                      }
                       <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', flexWrap: 'wrap', '& > .MuiCardMedia-root': { width: {xs: '100%',sm: '25%'}} }}>
                         <CardMedia sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }} component="div">
                           <Image
@@ -477,7 +485,7 @@ console.log(router.pathname);
       {
         blogs.filter(blog => blog.category === 'Smartphones').length !== 0 &&
       <Box component="section" sx={{mt: 5}}>
-        <Box sx={{bgcolor: theme.palette.badge.bgdLight, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', mt: {xs: '-35rem', sm: '-25rem'}}}>
+        <Box sx={{bgcolor: theme.palette.badge.bgdLight, position: 'absolute', width: '100%', left: '-50%', marginLeft: '50%', mt: {xs: '-44rem', sm: '-25rem'}}}>
           <Container maxWidth="xl">
             <Grid container spacing={0}>
               <Grid item xs={12} sm={8} sx={{py: '2rem', pl: 5,order: {xs: 1, sm: 2}}}>
@@ -499,9 +507,9 @@ console.log(router.pathname);
               </Grid>
             </Grid>
           </Container>
-          <Box sx={{display: {xs: 'none', sm: 'block'}, width: '50px', height: '50px', bgcolor: theme.palette.badge.bgdLight, position: 'absolute', bottom: -20, left: 100, transform: 'rotate(45deg)'}}></Box>
+          <Box sx={{display: {xs: 'none', sm: 'block'}, width: '50px', height: '50px', bgcolor: theme.palette.badge.bgdLight, position: 'absolute', bottom: -20, zIndex: -1, left: 100, transform: 'rotate(45deg)'}}></Box>
         </Box>
-        <Container maxWidth="xl" sx={{mt: {xs: '40rem!important', sm: '30rem!important'}}}>
+        <Container maxWidth="xl" sx={{mt: {xs: '50rem!important', sm: '30rem!important'}}}>
           <Grid container spacing={3}>
             {
               blogs.map(blog => (

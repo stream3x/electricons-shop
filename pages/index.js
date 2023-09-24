@@ -40,7 +40,7 @@ export default function Index(props) {
 
   return (
     <Box sx={{ my: 4 }}>
-      <Box sx={{boxShadow: '0 10px 10px 5px #f4f4f4', borderRadius: '10px'}}>
+      <Box sx={{borderRadius: '10px'}}>
         <HeroCarousel hero_products={hero_products && hero_products} />
       </Box>
       <WidgetCarousels title="Top Products" widgetProducts={topProducts && topProducts} />

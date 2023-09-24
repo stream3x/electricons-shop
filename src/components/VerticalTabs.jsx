@@ -57,8 +57,6 @@ export default function VerticalTabs({productData}) {
     setSwipeValue(event);
   };
 
-  console.log(value, swipeValue, isSwipe);
-
   return (
     <Box
       sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 240,  width: '100%', flexWrap: {xs: 'wrap', sm: 'nowrap'}}}

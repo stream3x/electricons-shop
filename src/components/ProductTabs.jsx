@@ -11,6 +11,16 @@ import { Store } from '../utils/Store';
 import axios from 'axios';
 import theme from '../theme';
 import CommentIcon from '@mui/icons-material/Comment';
+import styled from '@emotion/styled';
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.default,
+  border: 'thin solid lightGrey',
+  borderLeft: `5px solid ${theme.palette.secondary.main}`,
+  marginLeft: '10px',
+}));
 
 const bull = (
   <Box
@@ -84,9 +94,11 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
     async function fetchData() {
       try {
         const { data } = await axios.get('/api/users');
-        setUserInfo(data.filter(items => items._id === userInf0._id));
+        const user = data.filter(items => items?._id === userInf0?._id)
+        setUserInfo(user[0]);
+        setError(false);
       } catch (error) {
-        setError(true)
+        setError(true);
       }
     }
     fetchData();
@@ -206,7 +218,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
       setUpdateName('');
       setUpdateReplay('');
       setUpdateRating('');
-      console.log(formData);
     } catch (error) {
       console.log(error);
     }finally {
@@ -324,7 +335,13 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         <TabPanel value={value} index={2} dir={theme.direction}>
           {
             error &&
-            <Typography color="red">Can't get user data</Typography>
+            <Typography color="primary">Create an account or login to receive special discounts</Typography>
+          }
+          {
+            comments?.length === 0 &&
+            <LabelButton>
+              <Typography>be the first to leave a review for this product</Typography>
+            </LabelButton>
           }
           <Box>
           {

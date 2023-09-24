@@ -94,15 +94,6 @@ export default function PersonalInfo() {
   };
 
   const handleNext = () => {
-    const formData = {
-      name: userInf0 ? userInf0.name : formOutput.get('name'),
-      email: userInf0 ? userInf0.email : formOutput.get('email'),
-      birthday: userInf0 ? userInf0.birthday : formOutput.get('birthday'),
-      company: userInf0 ? userInf0.company : formOutput.get('company'),
-      vatNumber: userInf0 ? userInf0.vatNumber : formOutput.get('vatNumber'),
-    };
-    dispatch({ type: 'PERSONAL_INFO', payload: formData });
-    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
     router.push('/checkout/addresses');
   };
 
@@ -365,7 +356,6 @@ export default function PersonalInfo() {
                         label="Password"
                         type="password"
                         id="password"
-                        autoComplete="false"
                         onChange={handleWillRegister}
                       />
                       {

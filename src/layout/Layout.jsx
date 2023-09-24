@@ -16,13 +16,13 @@ export default function Layout({ children }) {
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
-  const isLogin = router.pathname === '/login' || router.pathname === '/signin';
+  const isLogin = router.pathname === '/login' || router.pathname === '/signin' || router.pathname === '/forgot-password';
 
   if(isLogin) {
     return (
       <Box sx={{pb: 5, background: 'linear-gradient(360deg, rgb(238, 242, 246) 1.09%, rgb(255, 255, 255) 100%)', minHeight: '100vh'}}>
         <Box sx={{py: 5, display: 'flex', justifyContent: {xs: 'center', md: 'left'}}}>
-          <Link href="/blog?counter=10">
+          <Link href="/?counter=10">
             <Image
               width= {matches ? 280 : 300}
               height= {matches ? 50 : 60}

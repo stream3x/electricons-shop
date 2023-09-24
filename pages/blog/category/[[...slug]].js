@@ -356,7 +356,7 @@ export default function CategoryProducts(props) {
             {
               products.map(prod => (
                 <Grid key={prod._id} item xs={12}>
-                    <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
+                    <Card elevation={0} sx={{ width: "100%", height: "100%", display: 'flex' }}>
                         <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%', textDecoration: 'none'} }}>
                           <Link sx={{position: 'relative', display: 'flex', flex: 0, flexWrap: {xs: 'wrap', md: 'nowrap'} }} href={`/blog/post/${prod.slug}`} onClick={() => handleLoading(prod)}>
                           {
