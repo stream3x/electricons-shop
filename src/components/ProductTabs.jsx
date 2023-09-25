@@ -66,7 +66,7 @@ function a11yProps(index) {
 
 export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
-  const { snack, review: {hasReview} } = state;
+  const { snack, review: {hasReview, orderId} } = state;
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [userInfo, setUserInfo] = React.useState([]);
   const [value, setValue] = React.useState(0);
@@ -151,6 +151,11 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         isAdminReply: formOutput.get('isAdminReply') === 'true',
         replyCommentId: formOutput.get('replyCommentId')
       };
+      const updateOrder = {
+        isPaid: false,
+        isDeliverd: false,
+        hasRated: hasPurchased,
+      }
 
       if (!hasPurchased && formData.rating === 0 && formData.content === '') {
         setErrors({
@@ -178,6 +183,8 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
           return;
         } else {
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
+          const res = await axios.put(`/api/orders/${orderId}/update_order`, updateOrder);
+          dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: true, orderId: id} });
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
       } else {
@@ -216,7 +223,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
           return;
         }
         if(formData.replyCommentId !== 'false' || !userInf0?.token) {
-          console.log(formData);
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send comment', severity: 'success'}});
         }

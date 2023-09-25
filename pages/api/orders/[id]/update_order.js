@@ -10,8 +10,9 @@ handler.put(async (req, res) => {
     await db.connect();
     const { isPaid, isDeliverd, hasRated } = req.body;
     const id = req.query.id;
+
     const updatedOrder = await Order.findOneAndUpdate({
-      id
+      _id: id
     },
     {
       $set: { isPaid, isDeliverd, hasRated },
@@ -19,7 +20,12 @@ handler.put(async (req, res) => {
     {
       new: true
     });
-    
+    console.log(updatedOrder, id, hasRated);
+    if (updatedOrder) {
+      res.status(404).json({ error: 'Order not found' });
+      return;
+    }
+
     const responseData = {
       isPaid: updatedOrder.isPaid,
       isDeliverd: updatedOrder.isDeliverd,

@@ -98,6 +98,7 @@ export default function CartTotal({
     ...item,
     slug: item.slug // Make sure 'slug' property exists in each cart item
   }));
+  const address_invoice = userInf0 ? addresses[0][Cookies.get('forInvoice')] : addresses[Cookies.get('forInvoice')];
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
@@ -135,7 +136,7 @@ export default function CartTotal({
       const { data } = await axios.post('/api/orders', {
         orderItems: cartItemsWithSlug,
         personalInfo,
-        addresses: addresses[Cookies.get('forInvoice') ? JSON.parse(Cookies.get('forInvoice')) : 0],
+        addresses: address_invoice,
         shipping,
         payment,
         total,

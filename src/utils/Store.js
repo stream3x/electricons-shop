@@ -23,7 +23,8 @@ const initialState = {
   },
   review: {
     hasReview: false,
-    hasRated: false
+    hasRated: false,
+    orderId: null
   },
   snack: {
     message: '',

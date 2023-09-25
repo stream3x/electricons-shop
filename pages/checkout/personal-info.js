@@ -205,19 +205,18 @@ export default function PersonalInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the password is required', severity: 'error'}});
         return;
       }
-      const { data } = await axios.post('/api/users/register', formData);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
-      localStorage.setItem('userInfo', JSON.stringify(data));
       dispatch({ type: 'PERSONAL_INFO', payload: {}});
-      dispatch({ type: 'CART_CLEAR' });
       dispatch({ type: 'ADDRESSES_CLEAR' });
       dispatch({ type: 'SHIPPING_REMOVE' });
       dispatch({ type: 'PAYMENT', payload: {}});
-      Cookies.remove('cartItems');
       Cookies.remove('payment');
       Cookies.remove('forInvoice');
       Cookies.remove('shipping');
       Cookies.remove('addresses');
+
+      const { data } = await axios.post('/api/users/register', formData);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
+      localStorage.setItem('userInfo', JSON.stringify(data));
       router.push('/checkout/addresses');
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
@@ -233,19 +232,18 @@ export default function PersonalInfo() {
         email: formOutput.get('email'),
         password: formOutput.get('password'),
       };
-      const { data } = await axios.post('/api/users/login', formData);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      localStorage.setItem('userInfo', JSON.stringify(data));
       dispatch({ type: 'PERSONAL_INFO', payload: {}});
-      dispatch({ type: 'CART_CLEAR' });
       dispatch({ type: 'ADDRESSES_CLEAR' });
       dispatch({ type: 'SHIPPING_REMOVE' });
       dispatch({ type: 'PAYMENT', payload: {}});
-      Cookies.remove('cartItems');
       Cookies.remove('payment');
       Cookies.remove('forInvoice');
       Cookies.remove('shipping');
       Cookies.remove('addresses');
+
+      const { data } = await axios.post('/api/users/login', formData);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
+      localStorage.setItem('userInfo', JSON.stringify(data));
       setWillLogin(false);
       router.push('/checkout/addresses');
     } catch (error) {

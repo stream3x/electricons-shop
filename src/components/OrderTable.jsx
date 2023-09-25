@@ -17,7 +17,6 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { Button, TableHead, Typography, styled } from '@mui/material';
 import Image from 'next/image';
 import theme from '../theme';
-import Link from '../Link';
 import { useRouter } from 'next/router';
 import { Store } from '../utils/Store';
 
@@ -167,7 +166,7 @@ export default function OrderTable(props) {
   const { orders } = props;
   const router = useRouter()
   const { state, dispatch } = React.useContext(Store);
-  const { review: {hasReview} } = state;
+  const { review: {hasReview, hasRated, orderId} } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
@@ -220,9 +219,9 @@ export default function OrderTable(props) {
     )
   }
 
-  function handleReview(params) {
-    dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false } });
-    router.push(`/product/${params}/#reviews`);
+  function handleReview(slug, id) {
+    dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false, orderId: id} });
+    router.push(`/product/${slug}/#reviews`);
   }
 
   return (
@@ -288,9 +287,16 @@ export default function OrderTable(props) {
                 {'$'}{Number(item.price * item.quantity)}
               </TableCell>
               <TableCell style={{ minWidth: 160 }} align="right">
-                <Button onClick={() => handleReview(item.slug)} variant='outlined' size='small'>
-                  review
-                </Button>
+                {
+                  row.hasRated ?
+                  <Button onClick={() => handleReview(item.slug, row._id)} color='secondary' variant='outlined' size='small'>
+                    rated
+                  </Button>
+                :
+                  <Button onClick={() => handleReview(item.slug, row._id)} variant='outlined' size='small'>
+                    review
+                  </Button>
+                }
               </TableCell>
             </TableRow>
           )))}
