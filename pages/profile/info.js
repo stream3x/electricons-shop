@@ -162,7 +162,7 @@ export default function ProfileInfo() {
         },
       });
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'image was uploaded', severity: 'success'}});
-      dispatch({ type: 'UPLOAD_IMAGE', payload: {...state.uploadImage, uploadImage: {change: true}} });
+      dispatch({ type: 'UPLOAD_IMAGE', payload: {...state.uploadImage, change: true} });
     } catch (error) {
       console.error('Error uploading image:', error);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: `Error uploading image ${error}`, severity: 'error'}});

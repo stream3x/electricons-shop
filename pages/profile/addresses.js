@@ -51,7 +51,7 @@ export default function ProfileAddresses() {
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   const emptyAddresses = userInfo?.addresses && userInfo?.addresses === 0;
-  const emptyUserInfo = Object.keys(userInf0).length === 0;
+  const emptyUserInfo = userInf0 && Object.keys(userInf0).length === 0;
 
   useEffect(() => {
     async function fetchData() {

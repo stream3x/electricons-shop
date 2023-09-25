@@ -18,7 +18,13 @@ const initialState = {
   wishlist: {
     wishItems: Cookies.get('wishItems') ? JSON.parse(Cookies.get('wishItems')) : []
   },
-  uploadImage: {change: false},
+  uploadImage: {
+    change: false
+  },
+  review: {
+    hasReview: false,
+    hasRated: false
+  },
   snack: {
     message: '',
     severity: ''
@@ -134,6 +140,9 @@ function reducer(state, action) {
     }
     case 'UPLOAD_IMAGE': {
       return { ...state, uploadImage: action.payload };
+    }
+    case 'REVIEW': {
+      return { ...state, review: action.payload };
     }
     default:
       return { ...state, snack: {message: '', severity: ''} };

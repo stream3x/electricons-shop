@@ -40,6 +40,7 @@ export default function Addresses() {
   const [forInvoice, setForInvoice] = useState(Number(Cookies.get('forInvoice')) && Cookies.get('forInvoice') !== NaN ? Number(Cookies.get('forInvoice')) : 0);
 
   const handleNext = () => {
+    Cookies.set('forInvoice', forInvoice);
     router.push('/checkout/shipping');
   };
 
@@ -74,16 +75,16 @@ export default function Addresses() {
 
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo && Object.keys(personalInfo).length === 0;
-  const emptyAddresses = addresses?.length === 0 || userInfo?.addresses?.length === 0;
+  const emptyAddresses = addresses?.length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
 
   useEffect(() => {
     async function fetchData() {
       try {
         const { data } = await axios.get('/api/users');
-        const user = await data.filter(items => items._id === userInf0._id);
+        const user = await data.find(items => items._id === userInf0._id);
         setUserInfo(user);
-        dispatch({ type: 'ADDRESSES', payload: [...user[0].addresses[0]] });
+        dispatch({ type: 'ADDRESSES', payload: [...user.addresses] });
         Cookies.set('forInvoice', 0);
       } catch (error) {
         setError(true)
@@ -104,6 +105,16 @@ export default function Addresses() {
       };
       if(emptyCartItems) {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        dispatch({ type: 'PERSONAL_INFO', payload: {}});
+        dispatch({ type: 'CART_CLEAR' });
+        dispatch({ type: 'ADDRESSES_CLEAR' });
+        dispatch({ type: 'SHIPPING_REMOVE' });
+        dispatch({ type: 'PAYMENT', payload: {}});
+        Cookies.remove('cartItems');
+        Cookies.remove('payment');
+        Cookies.remove('forInvoice');
+        Cookies.remove('shipping');
+        Cookies.remove('addresses');
         router.push('/');
         return;
       }
@@ -141,6 +152,7 @@ export default function Addresses() {
       setAddNewAddress(false);
       handleTop(event);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added address', severity: 'success' } });
+      Cookies.set('forInvoice', forInvoice);
       setErrors({ 
         ...errors, 
         address: false,
@@ -186,7 +198,7 @@ export default function Addresses() {
                 <RadioGroup name="radio-address-picker" value={forInvoice} sx={{width: "100%"}} onChange={handleChangeInvoice}>
                   <Grid container space={2}>
                   {
-                    (addresses.length !== 0 ? addresses : userInfo[0]?.addresses[0]).map((address, index) => (
+                    (userInfo?.length !== 0 ? addresses[0] : addresses).map((address, index) => (
                       <Grid sx={{p: 2}} key={index} item xs={12} sm={6} md={4}>
                         <AddressCard index={index} addresses={address} personalInfo={personalInfo} name={userInf0 && userInf0.name} handleEdit={() => handleEdit(address, index)} handleDelete={() => handleDelete(address)} />  
                       </Grid>

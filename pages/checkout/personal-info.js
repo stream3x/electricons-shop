@@ -154,7 +154,7 @@ export default function PersonalInfo() {
       const formData = {
         name: formOutput.get('name'),
         email: formOutput.get('email'),
-        password: formOutput.get('password'),
+        password: formOutput.get('__password'),
         birthday: formOutput.get('birthday'),
         newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
         company: formOutput.get('company'),
@@ -208,6 +208,16 @@ export default function PersonalInfo() {
       const { data } = await axios.post('/api/users/register', formData);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
       localStorage.setItem('userInfo', JSON.stringify(data));
+      dispatch({ type: 'PERSONAL_INFO', payload: {}});
+      dispatch({ type: 'CART_CLEAR' });
+      dispatch({ type: 'ADDRESSES_CLEAR' });
+      dispatch({ type: 'SHIPPING_REMOVE' });
+      dispatch({ type: 'PAYMENT', payload: {}});
+      Cookies.remove('cartItems');
+      Cookies.remove('payment');
+      Cookies.remove('forInvoice');
+      Cookies.remove('shipping');
+      Cookies.remove('addresses');
       router.push('/checkout/addresses');
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
@@ -226,6 +236,16 @@ export default function PersonalInfo() {
       const { data } = await axios.post('/api/users/login', formData);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
       localStorage.setItem('userInfo', JSON.stringify(data));
+      dispatch({ type: 'PERSONAL_INFO', payload: {}});
+      dispatch({ type: 'CART_CLEAR' });
+      dispatch({ type: 'ADDRESSES_CLEAR' });
+      dispatch({ type: 'SHIPPING_REMOVE' });
+      dispatch({ type: 'PAYMENT', payload: {}});
+      Cookies.remove('cartItems');
+      Cookies.remove('payment');
+      Cookies.remove('forInvoice');
+      Cookies.remove('shipping');
+      Cookies.remove('addresses');
       setWillLogin(false);
       router.push('/checkout/addresses');
     } catch (error) {
@@ -350,22 +370,27 @@ export default function PersonalInfo() {
                   </Typography>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        onChange={handleWillRegister}
-                      />
-                      {
-                        confirmPassword.confirmError &&
-                        <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
-                      }
-                      {
-                        errors.password &&
-                        <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
-                      }
+                      <FormControl sx={{ width: '100%' }} variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password">
+                          Password
+                        </InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          name="__password"
+                          label="Password *"
+                          type={!confirmPassword.showPassword ? 'text' : 'password'}
+                          id="password"
+                          onChange={handleWillRegister}
+                        />
+                        {
+                          confirmPassword.confirmError &&
+                          <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                        }
+                        {
+                          errors.password &&
+                          <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
+                        }
+                      </FormControl>                      
                     </Grid>
                     <Grid item xs={12}>
                       <FormControl sx={{ width: '100%' }} variant="outlined">
@@ -376,7 +401,7 @@ export default function PersonalInfo() {
                           fullWidth
                           name="password-confirmed"
                           label="Confirm Password *"
-                          type={confirmPassword.showPassword ? 'text' : 'password'}
+                          type={!confirmPassword.showPassword ? 'text' : 'password'}
                           id="password-confirm"
                           endAdornment={
                             <InputAdornment position="end">
@@ -481,23 +506,27 @@ export default function PersonalInfo() {
                     </Typography>
                     <Grid container spacing={2}>
                       <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          name="password"
-                          label="Password"
-                          type="password"
-                          id="password"
-                          autoComplete="false"
-                          onChange={handleWillRegister}
-                        />
-                        {
-                          confirmPassword.confirmError &&
-                          <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
-                        }
-                        {
-                          errors.password &&
-                          <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
-                        }
+                        <FormControl sx={{ width: '100%' }} variant="outlined">
+                          <InputLabel htmlFor="outlined-adornment-password">
+                            Password
+                          </InputLabel>
+                          <OutlinedInput
+                            fullWidth
+                            name="password"
+                            label="Password *"
+                            type={!confirmPassword.showPassword ? 'text' : 'password'}
+                            id="password"
+                            onChange={handleWillRegister}
+                          />
+                          {
+                            confirmPassword.confirmError &&
+                            <FormHelperText sx={{color: 'red'}} id="error-text">Passwords don't match</FormHelperText>
+                          }
+                          {
+                            errors.password &&
+                            <FormHelperText sx={{color: 'red'}} id="error-text">{snack.message}</FormHelperText>
+                          }
+                        </FormControl>
                       </Grid>
                       <Grid item xs={12}>
                         <FormControl sx={{ width: '100%' }} variant="outlined">
@@ -508,7 +537,7 @@ export default function PersonalInfo() {
                             fullWidth
                             name="password-confirmed"
                             label="Confirm Password *"
-                            type={confirmPassword.showPassword ? 'text' : 'password'}
+                            type={!confirmPassword.showPassword ? 'text' : 'password'}
                             id="password-confirm"
                             endAdornment={
                               <InputAdornment position="end">

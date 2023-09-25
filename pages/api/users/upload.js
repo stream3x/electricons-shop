@@ -24,6 +24,7 @@ handler.put(async (req, res) => {
     {
       new: true
     });
+    
     const responseData = {
       name: updatedUser.name,
       email: updatedUser.email,

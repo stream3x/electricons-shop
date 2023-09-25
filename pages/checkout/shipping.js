@@ -77,6 +77,16 @@ export default function Shipping() {
       };
       if(emptyCartItems) {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        dispatch({ type: 'PERSONAL_INFO', payload: {}});
+        dispatch({ type: 'CART_CLEAR' });
+        dispatch({ type: 'ADDRESSES_CLEAR' });
+        dispatch({ type: 'SHIPPING_REMOVE' });
+        dispatch({ type: 'PAYMENT', payload: {}});
+        Cookies.remove('cartItems');
+        Cookies.remove('payment');
+        Cookies.remove('forInvoice');
+        Cookies.remove('shipping');
+        Cookies.remove('addresses');
         router.push('/');
         return;
       }

@@ -30,10 +30,11 @@ const LabelButton = styled(Button)(({ theme }) => ({
 export default function Payment() {
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { cart: {payment} } = state;
+  const { cart: {payment, cartItems} } = state;
   const [value, setValue] = useState('');
 
   const emptyPayment = payment && Object.keys(payment).length === 0;
+  const emptyCartItems = Object.keys(cartItems).length === 0;
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -49,6 +50,21 @@ export default function Payment() {
       const formData = {
         paymentMethod: formOutput.get('payment-method')
       };
+      if(emptyCartItems) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+        dispatch({ type: 'PERSONAL_INFO', payload: {}});
+        dispatch({ type: 'CART_CLEAR' });
+        dispatch({ type: 'ADDRESSES_CLEAR' });
+        dispatch({ type: 'SHIPPING_REMOVE' });
+        dispatch({ type: 'PAYMENT', payload: {}});
+        Cookies.remove('cartItems');
+        Cookies.remove('payment');
+        Cookies.remove('forInvoice');
+        Cookies.remove('shipping');
+        Cookies.remove('addresses');
+        router.push('/');
+        return;
+      }
       dispatch({ type: 'PAYMENT', payload: formData});
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added payment method', severity: 'success'}});
       Cookies.set('payment', JSON.stringify(formData));

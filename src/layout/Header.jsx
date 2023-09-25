@@ -163,7 +163,7 @@ export default function Header() {
   const matches = useMediaQuery('(min-width: 1200px)');
   const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const { comparasion: { compareItems }, wishlist: { wishItems }, uploadImage } = state;
+  const { comparasion: { compareItems }, wishlist: { wishItems }, uploadImage: {change} } = state;
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -191,8 +191,12 @@ export default function Header() {
         console.log(error);
       }
     }
-    fetchData();
-  }, [uploadImage?.change])
+    
+    if (change) {
+      fetchData();
+    }
+
+  }, [change])
   
   React.useEffect(() => {
     window.addEventListener('scroll', toggleVisibility);

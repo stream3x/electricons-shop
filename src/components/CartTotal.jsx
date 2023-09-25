@@ -161,6 +161,11 @@ export default function CartTotal({
   async function placeGuestOrderHandler() {
     if(emptyCartItems) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
+      dispatch({ type: 'PERSONAL_INFO', payload: {}});
+      dispatch({ type: 'CART_CLEAR' });
+      dispatch({ type: 'ADDRESSES_CLEAR' });
+      dispatch({ type: 'SHIPPING_REMOVE' });
+      dispatch({ type: 'PAYMENT', payload: {}});
       router.push('/');
       return;
     }
@@ -210,7 +215,16 @@ export default function CartTotal({
       router.push(`/order_guest/${data._id}`);
       setLoading(false);
       dispatch({ type: 'CART_CLEAR' });
+      dispatch({ type: 'PERSONAL_INFO', payload: {}});
+      dispatch({ type: 'CART_CLEAR' });
+      dispatch({ type: 'ADDRESSES_CLEAR' });
+      dispatch({ type: 'SHIPPING_REMOVE' });
+      dispatch({ type: 'PAYMENT', payload: {}});
       Cookies.remove('cartItems');
+      Cookies.remove('payment');
+      Cookies.remove('forInvoice');
+      Cookies.remove('shipping');
+      Cookies.remove('addresses');
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});

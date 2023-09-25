@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { func } from 'prop-types';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,9 +14,12 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
-import { TableHead, Typography, styled } from '@mui/material';
+import { Button, TableHead, Typography, styled } from '@mui/material';
 import Image from 'next/image';
 import theme from '../theme';
+import Link from '../Link';
+import { useRouter } from 'next/router';
+import { Store } from '../utils/Store';
 
 const MyTableContainer = styled(TableContainer)({
   overflowY: "auto",
@@ -154,14 +157,20 @@ const headCells = [
     id: 'total',
     label: 'Total',
   },
+  {
+    id: 'review',
+    label: 'Leave Review',
+  },
 ];
 
 export default function OrderTable(props) {
   const { orders } = props;
+  const router = useRouter()
+  const { state, dispatch } = React.useContext(Store);
+  const { review: {hasReview} } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
-  const [totalPrice, setTotalPrice] = React.useState(null);
   const [userOrders, setUserOrders] = React.useState([]);
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
@@ -211,6 +220,11 @@ export default function OrderTable(props) {
     )
   }
 
+  function handleReview(params) {
+    dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false } });
+    router.push(`/product/${params}/#reviews`);
+  }
+
   return (
     <MyTableContainer>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
@@ -240,38 +254,43 @@ export default function OrderTable(props) {
                   />
                 </Box>
               </TableCell>
-              <TableCell style={{ width: 200 }} align="left">
+              <TableCell style={{ minWidth: 160 }} align="left">
                 {item.title}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 100 }} align="right">
               {'$'}{item.price}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 160 }} align="right">
                 {row.payment.paymentMethod}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 160 }} align="right">
                 {row.shipping.shippingMethod}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 160 }} align="right">
               {'$'}{row.shippingCost}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 100 }} align="right">
               {row.taxCost}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 160 }} align="right">
               {row.isDelevered ? 'delevered' : 'not delevered'}
               </TableCell>
-              <TableCell style={{ width: 100 }} align="right">
+              <TableCell style={{ minWidth: 100 }} align="right">
               {row.isPaid ? 'paid' : 'not paid'}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 160 }} align="right">
               {row.orderNumber}
               </TableCell>
-              <TableCell style={{ width: 30 }} align="right">
+              <TableCell style={{ minWidth: 30 }} align="right">
                 {item.quantity}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ minWidth: 160 }} align="right">
                 {'$'}{Number(item.price * item.quantity)}
+              </TableCell>
+              <TableCell style={{ minWidth: 160 }} align="right">
+                <Button onClick={() => handleReview(item.slug)} variant='outlined' size='small'>
+                  review
+                </Button>
               </TableCell>
             </TableRow>
           )))}

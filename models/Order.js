@@ -50,6 +50,7 @@ const orderSchema = new mongoose.Schema(
     paymentResult: { id: String, status: String, email_address: String },
     isPaid: {type: Boolean, required: true, default: false},
     isDelivered: {type: Boolean, required: true, default: false},
+    hasRated: {type: Boolean, required: false, default: false},
     paidAt: {type: Date},
     deleveredAt: {type: Date},
   },

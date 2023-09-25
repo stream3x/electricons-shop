@@ -66,7 +66,7 @@ function a11yProps(index) {
 
 export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
-  const { snack } = state;
+  const { snack, review: {hasReview} } = state;
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [userInfo, setUserInfo] = React.useState([]);
   const [value, setValue] = React.useState(0);
@@ -89,6 +89,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const hasRated = comments.some(item => item.rating > 0);
 
   React.useEffect(() => {
     async function fetchData() {
@@ -103,6 +104,12 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
     }
     fetchData();
   }, []);
+
+  React.useEffect(() => {
+    if (hasReview) {
+      setValue(2)
+    }
+  }, [hasReview]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -159,7 +166,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
       if (userInf0?.token) {
         if (hasPurchased && formData.rating === 0 && formData.replyCommentId !== 'false') {
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
-          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send comment', severity: 'success'}});
         }else if (hasPurchased && formData.rating === 0 && formData.replyCommentId === 'false') {
           setErrors({
             email: false,
@@ -211,7 +218,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         if(formData.replyCommentId !== 'false' || !userInf0?.token) {
           console.log(formData);
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
-          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
+          dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send comment', severity: 'success'}});
         }
       }
       setUpdateEmail('');
@@ -649,7 +656,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
                   <Divider />
                   <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                   {
-                    hasPurchased &&
+                    hasPurchased && !hasRated &&
                     <Box sx={{ mt: 5 }}>
                       <Typography component="legend">Rating</Typography>
                       <Rating
