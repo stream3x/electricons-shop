@@ -8,29 +8,43 @@ handler.put(async (req, res) => {
 
   try {
     await db.connect();
-    const { isPaid, isDeliverd, hasRated } = req.body;
-    const id = req.query.id;
+    const { isPaid, isDeliverd, hasRated, slug } = req.body;
+    const { id } = req.query;
+
+    console.log(slug, id);
+
 
     const updatedOrder = await Order.findOneAndUpdate({
       _id: id
     },
     {
-      $set: { isPaid, isDeliverd, hasRated },
+      $set: { isPaid, isDeliverd },
     },
     {
       new: true
     });
-    console.log(updatedOrder, id, hasRated);
-    if (updatedOrder) {
+
+    if (!updatedOrder) {
       res.status(404).json({ error: 'Order not found' });
       return;
     }
 
+    const productOrdered = updatedOrder?.orderItems.find((order) => order.slug === slug);
+
+    if (!updatedOrder) {
+      res.status(404).json({ error: 'Order not found' });
+      return;
+    }
+
+    productOrdered.hasRated = hasRated;
+    console.log(productOrdered);
+
     const responseData = {
       isPaid: updatedOrder.isPaid,
       isDeliverd: updatedOrder.isDeliverd,
-      hasRated: updatedOrder.hasRated,
     };
+
+    await updatedOrder.save();
 
     await db.disconnect();    
     res.status(200).json(responseData);

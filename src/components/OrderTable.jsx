@@ -166,7 +166,6 @@ export default function OrderTable(props) {
   const { orders } = props;
   const router = useRouter()
   const { state, dispatch } = React.useContext(Store);
-  const { review: {hasReview, hasRated, orderId} } = state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState([]);
@@ -223,7 +222,7 @@ export default function OrderTable(props) {
     dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false, orderId: id} });
     router.push(`/product/${slug}/#reviews`);
   }
-
+console.log(rows);
   return (
     <MyTableContainer>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
@@ -288,7 +287,7 @@ export default function OrderTable(props) {
               </TableCell>
               <TableCell style={{ minWidth: 160 }} align="right">
                 {
-                  row.hasRated ?
+                  item.hasRated ?
                   <Button onClick={() => handleReview(item.slug, row._id)} color='secondary' variant='outlined' size='small'>
                     rated
                   </Button>

@@ -155,6 +155,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         isPaid: false,
         isDeliverd: false,
         hasRated: hasPurchased,
+        slug
       }
 
       if (!hasPurchased && formData.rating === 0 && formData.content === '') {
@@ -184,7 +185,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         } else {
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
           const res = await axios.put(`/api/orders/${orderId}/update_order`, updateOrder);
-          dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: true, orderId: id} });
+          dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: true, orderId: orderId} });
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
       } else {
@@ -265,7 +266,10 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
           const purchasedProduct = userOrders.some((order) =>
             order.orderItems.some((item) => item.slug === product.slug)
           );
-
+          const orderedProduct = userOrders.find((order) =>
+            order.orderItems.some((item) => item.slug === product.slug)
+          );
+          dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false, orderId: orderedProduct._id} });
           setHasPurchased(purchasedProduct);
         } catch (error) {
           console.error('Error fetching user orders:', error);
