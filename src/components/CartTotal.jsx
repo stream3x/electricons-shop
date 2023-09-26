@@ -98,7 +98,7 @@ export default function CartTotal({
     ...item,
     slug: item.slug // Make sure 'slug' property exists in each cart item
   }));
-  const address_invoice = userInf0 ? addresses[0][Cookies.get('forInvoice')] : addresses[Cookies.get('forInvoice')];
+  const address_invoice = userInf0 && addresses.length !== 0 ? addresses[0][Cookies.get('forInvoice')] : addresses[Cookies.get('forInvoice')];
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
