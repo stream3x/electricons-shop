@@ -222,7 +222,7 @@ export default function OrderTable(props) {
     dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false, orderId: id} });
     router.push(`/product/${slug}/#reviews`);
   }
-console.log(rows);
+
   return (
     <MyTableContainer>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">

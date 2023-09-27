@@ -7,6 +7,7 @@ const handler = nc();
 handler.get( async (req, res) => {
     await db.connect();
     const orders = await Order.find({ user: req.userId });
+    await db.disconnect();
     res.send(orders);
 });
 

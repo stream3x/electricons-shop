@@ -66,7 +66,7 @@ function a11yProps(index) {
 
 export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
-  const { snack, review: {hasReview, orderId} } = state;
+  const { snack, review: {hasReview, orderId, hasRated} } = state;
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [userInfo, setUserInfo] = React.useState([]);
   const [value, setValue] = React.useState(0);
@@ -89,7 +89,6 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  const hasRated = comments.some(item => item.rating > 0);
 
   React.useEffect(() => {
     async function fetchData() {
@@ -152,10 +151,9 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
         replyCommentId: formOutput.get('replyCommentId')
       };
       const updateOrder = {
-        isPaid: false,
-        isDeliverd: false,
-        hasRated: hasPurchased,
-        slug
+        hasRated: true,
+        slug,
+        orderId: orderId?.orderID
       }
 
       if (!hasPurchased && formData.rating === 0 && formData.content === '') {
@@ -178,13 +176,13 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
             email: false,
             authorName: false,
             content: false,
-            rating: true
+            rating: true,
           });
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: "please leave a rating", severity: "error" }});
           return;
         } else {
           const { data } = await axios.post(`/api/products/postComments/${slug}`, formData);
-          const res = await axios.put(`/api/orders/${orderId}/update_order`, updateOrder);
+          const res = await axios.put(`/api/orders/update_order`, updateOrder);
           dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: true, orderId: orderId} });
           dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully send review', severity: 'success'}});
         }
@@ -256,21 +254,34 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
     const fetchUserOrders = async () => {
       if (userInf0?.token) {
         try {
-          const response = await axios.get('/api/orders/history', {
-            headers: {
-              Authorization: `Bearer ${userInf0?.token}`,
-            },
-          });
+          const { data } = await axios.get(`/api/orders/history`);
 
-          const userOrders = response.data;
-          const purchasedProduct = userOrders.some((order) =>
-            order.orderItems.some((item) => item.slug === product.slug)
+          const orders = data;
+          const orderedProduct = orders.filter((order) =>
+            order?.personalInfo?.email === userInf0?.email
           );
-          const orderedProduct = userOrders.find((order) =>
-            order.orderItems.some((item) => item.slug === product.slug)
+          const purchasedProduct = orderedProduct.map(product => {
+            const currentProduct = product.orderItems.filter(item => item.slug === slug);
+            if (currentProduct.length !== 0) {
+              const info = {
+                order: [...currentProduct],
+                orderID: product?._id
+              }
+              return info; 
+            }
+            return currentProduct;
+          })
+          const isPurchased = purchasedProduct.filter(product => product !== null && product.orderID);
+          const orderID = isPurchased?.find(item => item.order.some(item => item.hasRated !== true));
+
+          const hasRatedValues = isPurchased.map((order) =>
+            order.order?.find((item) => item.slug === slug)?.hasRated || false
           );
-          dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: false, orderId: orderedProduct._id} });
-          setHasPurchased(purchasedProduct);
+          const hasUserRated = hasRatedValues.some((hasRated) => hasRated);
+
+          dispatch({ type: 'REVIEW', payload: {...state.review, hasReview: true, hasRated: hasUserRated, orderId: orderID} });
+          setHasPurchased(isPurchased.length !== 0);
+
         } catch (error) {
           console.error('Error fetching user orders:', error);
         }
@@ -278,7 +289,7 @@ export default function ProductTabs({ product, slug, comments, setComments }) {
     };
 
     fetchUserOrders();
-  }, [userInf0?.token, product.slug]);
+  }, []);
 
   const fetchComments = async () => {
     try {

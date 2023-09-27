@@ -39,6 +39,7 @@ import FmdGoodIcon from '@mui/icons-material/FmdGood';
 export async function getServerSideProps(context) {
   const { params } = context;
   const { slug } = params;
+
   await db.connect();
   const product = await Product.findOne({slug}).lean();
   await db.disconnect();

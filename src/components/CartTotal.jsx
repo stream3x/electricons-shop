@@ -96,9 +96,10 @@ export default function CartTotal({
 
   const cartItemsWithSlug = cartItems.map((item) => ({
     ...item,
-    slug: item.slug // Make sure 'slug' property exists in each cart item
+    slug: item.slug,
+    hasRated: false // Make sure 'slug' property exists in each cart item
   }));
-  const address_invoice = userInf0 && addresses.length !== 0 ? addresses[0][Cookies.get('forInvoice')] : addresses[Cookies.get('forInvoice')];
+  const address_invoice = userInf0 && addresses?.length !== 0 && addresses[0][Cookies.get('forInvoice')];
 
   async function placeOrderHandler() {
     if(emptyCartItems) {
@@ -112,9 +113,11 @@ export default function CartTotal({
       return;
     }
     if(emptyAddresses) {
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the address step has not been completed', severity: 'warning'}});
-      router.push('/checkout/addresses');
-      return;
+      if (address_invoice?.address && address_invoice?.city && address_invoice?.phone && address_invoice?.postalcode && address_invoice?.country) {
+        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the address step has not been completed', severity: 'warning'}});
+        router.push('/checkout/addresses');
+        return;
+      }
     }
     if(emptyShipping) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the shipping method step has not been completed', severity: 'warning'}});
@@ -131,12 +134,17 @@ export default function CartTotal({
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'accept by checking the box', severity: 'error'}});
       return;
     }
+    if(!total && !shippingCost && !taxCost && !orderNumber) {
+      setErrors({ ...errors, policy: true});
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the order has not been completed', severity: 'error'}});
+      return;
+    }
     try {
       handleLoading();
       const { data } = await axios.post('/api/orders', {
         orderItems: cartItemsWithSlug,
         personalInfo,
-        addresses: address_invoice,
+        addresses: addresses[0][Cookies.get('forInvoice') ? JSON.parse(Cookies.get('forInvoice')) : 0],
         shipping,
         payment,
         total,
@@ -152,7 +160,12 @@ export default function CartTotal({
       router.push(`/order/${data._id}`);
       setLoading(false);
       dispatch({ type: 'CART_CLEAR' });
+      dispatch({ type: 'SHIPPING_REMOVE' });
+      dispatch({ type: 'PAYMENT', payload: {}});
       Cookies.remove('cartItems');
+      Cookies.remove('payment');
+      Cookies.remove('forInvoice');
+      Cookies.remove('shipping');
     } catch (error) {
       setLoading(false);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error.message === '' ? 'Server Error' : error.message, severity: 'error' }});

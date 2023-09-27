@@ -62,8 +62,15 @@ export default function PersonalInfo() {
       try {
         const { data } = await axios.get('/api/users');
         const user = await data.filter(items => items._id === userInf0._id);
-        setUserInfo(user);
-        dispatch({ type: 'PERSONAL_INFO', payload: user[0] });
+        setUserInfo(user[0]);
+        const formData = {
+          email: user[0]?.email,
+          name: user[0]?.name,
+          birthday: user[0]?.birthday,
+          company: user[0]?.company,
+          vatNumber: user[0]?.vatNumber
+        }
+        dispatch({ type: 'PERSONAL_INFO', payload: formData });
       } catch (error) {
         setError(true)
       }
@@ -78,7 +85,7 @@ export default function PersonalInfo() {
   function orderGestHandler() {
     setWillLogin(false);
   }
-
+console.log(userInfo);
   const handleWillRegister = (e) => {
     if(e.target.value === '') {
       setWillRegister(() => false);
@@ -154,7 +161,7 @@ export default function PersonalInfo() {
       const formData = {
         name: formOutput.get('name'),
         email: formOutput.get('email'),
-        password: formOutput.get('__password'),
+        password: formOutput.get('password'),
         birthday: formOutput.get('birthday'),
         newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
         company: formOutput.get('company'),
@@ -374,7 +381,7 @@ export default function PersonalInfo() {
                         </InputLabel>
                         <OutlinedInput
                           fullWidth
-                          name="__password"
+                          name="password"
                           label="Password *"
                           type={!confirmPassword.showPassword ? 'text' : 'password'}
                           id="password"
