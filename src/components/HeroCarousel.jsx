@@ -111,16 +111,21 @@ function HeroCarousel({ hero_products }) {
       <Grid sx={{display: {xs: 'block', md: 'none'}}} item xs={12}>
         <Grid sx={{height: 'auto'}} container spacing={3}>
           <Grid sx={{height: {xs: 'auto', sm: 'auto'}}} item xs={12}>
-            <Box>
-              <Slider {...settings}>
-                {
-                  carouselPoroduct.map((product, index) => (
-                    product.category === 'Smartphones' &&
-                      <CardProduct key={index} loading product={product} cardHeight="450px" imgWidth={'100%!important'} marginTop={'0px'} imgHeight={'auto!important'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
-                  ))
-                }
-              </Slider>
-            </Box>
+            {
+              loading ?
+              <Skeleton variant="rectangular" height={414} />
+              :
+              <Box>
+                <Slider {...settings}>
+                  {
+                    carouselPoroduct.map((product, index) => (
+                      product.category === 'Smartphones' &&
+                        <CardProduct key={index} loading product={product} cardHeight="450px" imgWidth={'100%!important'} marginTop={'0px'} imgHeight={'auto!important'} variantSubtitle="caption" variantTitle="h6" moveContent="translateX(0px)" />
+                    ))
+                  }
+                </Slider>
+              </Box>
+            }
           </Grid>
         </Grid>
       </Grid>
