@@ -38,10 +38,21 @@ export default function NavTabs(props) {
       console.log(error);
     }
   }
+  
+  const desktopPromo = storePromo && storePromo.filter(promo => promo.category === 'Desktop computers');
 
   const laptopPromo = storePromo && storePromo.filter(promo => promo.category === 'Laptop computers');
 
-  const handleClick = (event) => {
+  const mobilePromo = storePromo && storePromo.filter(promo => promo.category === 'Smartphones');
+
+  const uniqueBrands = [...new Set(storePromo.map(product => product.brand))];
+
+  const uniqueBrandObjects = uniqueBrands.map(brand => {
+    return storePromo.find(product => product.brand === brand);
+});
+
+  const handleClick = (event, index) => {
+    console.log(event.currentTarget);
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -49,11 +60,8 @@ export default function NavTabs(props) {
   };
 
   const handleChange = (event, newValue) => {
+    console.log(newValue);
     setValue(newValue);
-  };
-
-  const handleChangeIndex = (index) => {
-    setValue(index);
   };
 
   return (
@@ -72,9 +80,9 @@ export default function NavTabs(props) {
           aria-label="scrollable auto tabs example"
         >
           <Tab label="Laptops" onClick={handleClick} />
-          <Tab label="Item Two" onClick={handleClick} />
-          <Tab label="Item Three" onClick={handleClick} />
-          <Tab label="Item Four" onClick={handleClick} />
+          <Tab label="Desktop" onClick={handleClick} />
+          <Tab label="Smartphones" onClick={handleClick} />
+          <Tab label="Brands" onClick={handleClick} />
           <Tab label="Item Five" onClick={handleClick} />
           <Tab label="Item Six" onClick={handleClick} />
           <Tab label="Item Seven" onClick={handleClick} />
@@ -84,70 +92,209 @@ export default function NavTabs(props) {
          style={{ transformOrigin: '0 0 0' }}
           {...(open ? { timeout: 1000 } : {})}
         >
-          <Menu
-            id="mouse-over-popover-1"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <MenuItem onClick={handleClose}>
-              <TabPanel sx={{px: 0}} value={value} index={0} dir={theme.direction}>
-                <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
-                {
-                  laptopPromo && laptopPromo.map(laptop => (
-                    <Grid key={laptop._id} sx={{pr: '1rem'}} item xs={4}>
-                      <Link passHref noLinkStyle href={`/product/${laptop.slug}`}>
-                        <List
-                          sx={{ border: `thin solid ${theme.palette.badge.bgd}`, borderRadius: '3px' }}
-                          subheader={
-                            <ListSubheader sx={{ bgcolor: theme.palette.badge.bgdLight }} component="div" id="nested-list-subheader">
-                              {laptop.brand}
-                            </ListSubheader>
-                          }
-                        >
-                          <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgdLight, overflow: 'hidden'}}>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '120px!important', position: 'relative!important'}, p: 2 }}>
-                              <Image
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                priority
-                                src={laptop.images.length > 1 ? laptop.images[1].image : '/images/no-image.jpg'}
-                                alt={laptop.title}
-                                quality={35}
-                              />
+          {
+            value === 0 &&
+            <TabPanel sx={{px: 0}} value={value} index={0} dir={theme.direction}>
+              <Menu
+                id="mouse-over-popover-1"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                
+                <MenuItem onClick={handleClose}>
+                  <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
+                  {
+                    laptopPromo && laptopPromo.map(laptop => (
+                      <Grid key={laptop._id} sx={{pr: '1rem'}} item xs={Math.ceil(12 / laptopPromo.length)}>
+                        <Link passHref noLinkStyle href={`/product/${laptop.slug}`}>
+                          <List
+                            sx={{ border: `thin solid ${theme.palette.badge.bgd}`, borderRadius: '3px' }}
+                            subheader={
+                              <ListSubheader sx={{ bgcolor: theme.palette.badge.bgdLight }} component="div" id="nested-list-subheader">
+                                {laptop.brand}
+                              </ListSubheader>
+                            }
+                          >
+                            <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgdLight, overflow: 'hidden'}}>
+                              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '120px!important', position: 'relative!important'}, p: 2 }}>
+                                <Image
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                  priority
+                                  src={laptop.images.length > 1 ? laptop.images[1].image : '/images/no-image.jpg'}
+                                  alt={laptop.title}
+                                  quality={35}
+                                />
+                              </Box>
                             </Box>
-                          </Box>
-                          <ListItem disablePadding>
-                            <ListItemText sx={{'& span': { fontSize: '.75rem', fontWeight: 'bold', color: 'secondary.main', px: 2} }} primary={laptop.title} />
-                          </ListItem>
-                          <ListItem disablePadding>
-                            <ListItemText sx={{'& span': {color: 'primary.main', px: 2} }} primary={`$${laptop.price}`} />
-                          </ListItem>
-                        </List>
-                      </Link>
-                    </Grid>
+                            <ListItem disablePadding>
+                              <ListItemText sx={{'& span': { fontSize: '.75rem', fontWeight: 'bold', color: 'secondary.main', px: 2} }} primary={laptop.title} />
+                            </ListItem>
+                            <ListItem disablePadding>
+                              <ListItemText sx={{'& span': {color: 'primary.main', px: 2} }} primary={`$${laptop.price}`} />
+                            </ListItem>
+                          </List>
+                        </Link>
+                      </Grid>
+                    ))
+                  }
+                  </Grid>
+                </MenuItem>
+              </Menu>    
+            </TabPanel>
+          }
+          {
+            value === 1 &&
+            <TabPanel sx={{px: 0}} value={value} index={1} dir={theme.direction}>
+              <Menu
+                id="mouse-over-popover-1"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={handleClose}>
+                  <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
+                    {
+                      desktopPromo && desktopPromo.map(desktop => (
+                        <Grid key={desktop._id} sx={{pr: '1rem'}} item xs={Math.ceil(12 / desktopPromo.length)}>
+                          <Link passHref noLinkStyle href={`/product/${desktop.slug}`}>
+                            <List
+                              sx={{ border: `thin solid ${theme.palette.badge.bgd}`, borderRadius: '3px' }}
+                              subheader={
+                                <ListSubheader sx={{ bgcolor: theme.palette.badge.bgdLight }} component="div" id="nested-list-subheader">
+                                  {desktop.brand}
+                                </ListSubheader>
+                              }
+                            >
+                              <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgdLight, overflow: 'hidden'}}>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '120px!important', position: 'relative!important'}, p: 2 }}>
+                                  <Image
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    priority
+                                    src={desktop.images.length > 1 ? desktop.images[1].image : '/images/no-image.jpg'}
+                                    alt={desktop.title}
+                                    quality={35}
+                                  />
+                                </Box>
+                              </Box>
+                              <ListItem disablePadding>
+                                <ListItemText sx={{'& span': { fontSize: '.75rem', fontWeight: 'bold', color: 'secondary.main', px: 2} }} primary={desktop.title} />
+                              </ListItem>
+                              <ListItem disablePadding>
+                                <ListItemText sx={{'& span': {color: 'primary.main', px: 2} }} primary={`$${desktop.price}`} />
+                              </ListItem>
+                            </List>
+                          </Link>
+                        </Grid>
 
-                  ))
-                }
-                  {/*<Grid item xs={4}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '168px!important', position: 'relative!important', p: 2} }}>
-                      <Image
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        priority
-                        src='/images/acer-laptop.png'
-                        alt='acer laptop'
-                        quality={35}
-                      />
-                    </Box>
-              </Grid>*/}
-                </Grid>
-              </TabPanel>
-            </MenuItem>
-          </Menu>
+                      ))
+                    }
+                  </Grid>
+                </MenuItem>
+              </Menu>    
+            </TabPanel>
+          }
+          {
+            value === 2 &&
+            <TabPanel sx={{px: 0}} value={value} index={2} dir={theme.direction}>
+              <Menu
+                id="mouse-over-popover-1"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={handleClose}>
+                  <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
+                    {
+                      mobilePromo && mobilePromo?.map(desktop => (
+                        <Grid key={desktop._id} sx={{pr: '1rem'}} item xs={mobilePromo.length < 4 ? Math.ceil(12 / mobilePromo.length) : 3}>
+                          <Link passHref noLinkStyle href={`/product/${desktop.slug}`}>
+                            <List
+                              sx={{ border: `thin solid ${theme.palette.badge.bgd}`, borderRadius: '3px' }}
+                              subheader={
+                                <ListSubheader sx={{ bgcolor: theme.palette.badge.bgdLight }} component="div" id="nested-list-subheader">
+                                  {desktop.brand}
+                                </ListSubheader>
+                              }
+                            >
+                              <Box sx={{p: 2, mb: 3, bgcolor: theme.palette.badge.bgdLight, overflow: 'hidden'}}>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'unset!important', height: '120px!important', position: 'relative!important'}, p: 2 }}>
+                                  <Image
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    priority
+                                    src={desktop.images.length > 1 ? desktop.images[1].image : '/images/no-image.jpg'}
+                                    alt={desktop.title}
+                                    quality={35}
+                                  />
+                                </Box>
+                              </Box>
+                              <ListItem disablePadding>
+                                <ListItemText sx={{'& span': { fontSize: '.75rem', fontWeight: 'bold', color: 'secondary.main', px: 2} }} primary={desktop.title} />
+                              </ListItem>
+                              <ListItem disablePadding>
+                                <ListItemText sx={{'& span': {color: 'primary.main', px: 2} }} primary={`$${desktop.price}`} />
+                              </ListItem>
+                            </List>
+                          </Link>
+                        </Grid>
+
+                      ))
+                    }
+                  </Grid>
+                </MenuItem>
+              </Menu>    
+            </TabPanel>
+          }
+          {
+            value === 3 &&
+            <TabPanel sx={{px: 0}} value={value} index={3} dir={theme.direction}>
+              <Menu
+                id="mouse-over-popover-1"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                <MenuItem onClick={handleClose}>
+                  <Grid sx={{width: 500, '& a': {textDecoration: 'none'}}} container spacing={2}>
+                    {
+                      uniqueBrandObjects?.map(store => (
+                        <Grid key={store._id} item xs={4}>
+                          <Link passHref noLinkStyle href={`/product/${store.slug}`}>
+                            <Box sx={{p: 1}}>
+                              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center','& img': {objectFit: 'contain', width: 'auto!important', height: '40px!important', position: 'relative!important'} }}>
+                                <Image
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                  src={store.brandImg ? store.brandImg : '/images/no-image.jpg'}
+                                  alt={store.title}
+                                  quality={35}
+                                />
+                              </Box>
+                            </Box>
+                          </Link>
+                        </Grid>
+                      ))
+                    }
+                  </Grid>
+                </MenuItem>
+              </Menu>    
+            </TabPanel>
+          }
         </Collapse>
       </TabContext>
     </Box>

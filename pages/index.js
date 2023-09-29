@@ -39,7 +39,7 @@ export default function Index(props) {
   }, [hero_products, topProducts, bestSeller]);
 
   return (
-    <Box sx={{ my: 4 }}>
+    <Box sx={{ my: 4 }}>        
       <Box sx={{borderRadius: '10px'}}>
         <HeroCarousel hero_products={hero_products && hero_products} />
       </Box>

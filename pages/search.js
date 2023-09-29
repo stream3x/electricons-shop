@@ -429,7 +429,7 @@ export default function Search(props) {
         <Grid item sx={{display: {xs: 'none', lg: 'block'}}} lg={3}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar>
                   <Typography sx={{width: '100%', m: 0}} color="secondary" gutterBottom variant="h6" component="h2" textAlign="center">
                     Filters
@@ -497,7 +497,7 @@ export default function Search(props) {
         <Grid item xs={12} lg={9}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <Box sx={{width: {xs: '100%', sm: 'auto'}, flexGrow: 1, display: 'flex', alignItems: 'center'}}>
                     <Typography color="secondary.lightGrey" component="h2" variant="p">Search</Typography>
@@ -561,7 +561,7 @@ export default function Search(props) {
               view === 'module' &&
               products.map(prod => (
                 <Grid key={prod._id} item xs={12} sm={4} md={3}>
-                    <Card sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
+                    <Card elevation={0} sx={{ width: "100%", height: "100%", '&:hover .hover-buttons': {opacity: 1, transform: 'translateX(0px)', transition: 'all .5s'} }}>
                         <CardActionArea sx={{position: 'relative'}}>
                           <Link href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
                           {
@@ -624,7 +624,7 @@ export default function Search(props) {
               view === 'list' &&
               products.map(prod => (
                 <Grid sx={{display: {xs: 'none', md: 'block'}}} key={prod._id} item xs={12}>
-                    <Card sx={{ width: "100%", height: "100%", display: 'flex' }}>
+                    <Card elevation={0} sx={{ width: "100%", height: "100%", display: 'flex' }}>
                         <CardActionArea sx={{position: 'relative', width: '100%', display: 'flex', '& a': { width: '100%'} }}>
                           <Link sx={{position: 'relative', display: 'flex', flex: 0}} href={`/product/${prod.slug}`} onClick={() => handleLoading(prod)}>
                           {
@@ -636,7 +636,7 @@ export default function Search(props) {
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 priority
-                                src={prod.images[0].image}
+                                src={prod.images.length > 1 ? prod.images[1].image : '/images/no-image.jpg'}
                                 alt={prod.title}
                                 quality={35}
                               />
@@ -683,7 +683,7 @@ export default function Search(props) {
               ))
             }
            <Grid item xs={12}>
-              <AppBar elevation={1} sx={{bgcolor: theme.palette.primary.white}} position="static">
+              <AppBar elevation={0} sx={{bgcolor: theme.palette.primary.white}} position="static">
                 <Toolbar sx={{display: 'flex', flexWrap: 'wrap'}}>
                   <SelectPages values={['6', '12', '24', '36']} pageSize={pageSize} pageSizeHandler={pageSizeHandler}  />
                   {
