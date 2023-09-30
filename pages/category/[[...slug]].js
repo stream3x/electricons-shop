@@ -125,10 +125,10 @@ export default function Categories(props) {
 
   const memoPrice = React.useMemo(() => getAllPrice(products), [products])
 
-  function getAllPrice(prodz) {
+  function getAllPrice(prod) {
     const allPrices = [];
-    for (const key in prodz) {
-      const element = prodz[key].price;
+    for (const key in prod) {
+      const element = prod[key].price;
       allPrices.push(element)
     }
     return allPrices;
@@ -269,11 +269,9 @@ export default function Categories(props) {
   }
 
   const pageSizeHandler = (num) => {
-    console.log(num);
     filterSearch({ pageSize: num });
   };
   const pageHandler = (page) => {
-    console.log(page);
     filterSearch({ page });
   };
   const brandHandler = (item) => {
@@ -622,8 +620,7 @@ export async function getServerSideProps({ query, params }) {
       ...categoryFilter,
       ...brandFilter,
       ...priceFilter
-    })
-    .sort(order).skip((parseInt(page) - 1) * parseInt(pageSize)).limit(parseInt(pageSize)).lean();
+    }).sort(order).skip((parseInt(page) - 1) * parseInt(pageSize)).limit(parseInt(pageSize)).lean();
 
     await db.disconnect();
     const products = productDocs.map(db.convertDocToObject);

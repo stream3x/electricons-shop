@@ -214,7 +214,7 @@ export default function Header() {
 
     (async () => {
       const { data } = await axios.get('/api/products');
-
+console.log(data);
       if(active) {
         setOptions([...data.products]);
       }
@@ -224,7 +224,7 @@ export default function Header() {
       active = false;
     };
   }, [loading]);
-
+console.log(options);
   React.useEffect(() => {
     let active = true;
 

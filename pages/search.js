@@ -89,7 +89,7 @@ export default function Search(props) {
     brand = '',
     price = '',
     sort = '',
-    pageSize = 40,
+    pageSize = 12,
     page = 1
   } = router.query;
 
@@ -97,7 +97,7 @@ export default function Search(props) {
 
   const filterSearch = ({
     page,
-    pageSize = 12,
+    pageSize,
     category,
     subCategory,
     brand,
@@ -109,7 +109,7 @@ export default function Search(props) {
   }) => {
     const { query } = router;
     if(page) query.page = page;
-    if(pageSize) query.pageSize = pageSize || PAGE_SIZE;
+    if(pageSize) query.pageSize = pageSize || 12;
     if(searchQueary) query.searchQueary = searchQueary;
     if(category) query.category = category;
     if(subCategory) query.subCategory = subCategory;
@@ -267,8 +267,7 @@ export default function Search(props) {
     }else {
       removeDuplicates.push(Object.keys(item)[0])
     }
-    // brandHandler(brandArry = brandArry.filter(val => !removeDuplicates.includes(val)));
-    console.log(item, removeDuplicates, brandFilter);
+    brandHandler(brandArry = brandArry.filter(val => !removeDuplicates.includes(val)));
   };
 
   const handleDelete = () => {
