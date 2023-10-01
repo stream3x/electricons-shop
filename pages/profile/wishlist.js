@@ -1,12 +1,11 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import ProfileLayout from "../../src/components/ProfileLayout"
 import WishTable from "../../src/components/WishTable"
 import { Store } from "../../src/utils/Store";
 import BreadcrumbNav from "../../src/assets/BreadcrumbNav";
 import styled from "@emotion/styled";
 import { Paper, Typography } from "@mui/material";
-import theme from '../../src/theme';
-import ReplyIcon from '@mui/icons-material/Reply';
+import axios from "axios";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -19,6 +18,19 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function ProfileWishlist() {
   const { state } = useContext(Store);
   const { cart: { cartItems }, wishlist: {wishItems} } = state;
+  const [userWishlist, setUserWishlist] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data } = await axios.get('/api/wishlist/get_wishlist');
+        setUserWishlist(data);
+      } catch (error) {
+        console.log(error);
+      } 
+    }
+    fetchData()
+  }, [])
 
   if(wishItems.length === 0) {
     return (
@@ -30,11 +42,11 @@ export default function ProfileWishlist() {
       </ProfileLayout>
     )
   }
-console.log(wishItems, cartItems);
+
   return (
     <ProfileLayout>
       <BreadcrumbNav />
-      <WishTable wishItems={wishItems} cartItems={cartItems} />
+      <WishTable wishItems={userWishlist.length !== 0 ? userWishlist : wishItems} cartItems={cartItems} />
     </ProfileLayout>
   )
 }

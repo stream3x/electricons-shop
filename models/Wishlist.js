@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 
 const wishlistSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     title: {type: String, required: true},
-    images: {type: String, required: true},
+    image: {type: String, required: true},
     price: {type: Number, required: true},
     oldPrice: {type: Number, required: true},
     slug: {type: String, required: true, unique: true},
