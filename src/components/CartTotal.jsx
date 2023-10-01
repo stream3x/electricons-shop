@@ -26,11 +26,13 @@ const bull = (
 );
 
 const randomNumber = getRandomInt(1, 999999);
-    function getRandomInt(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min) + min);
-    }
+
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+  }
+
 const date = new Date().getFullYear();
 
 export default function CartTotal({

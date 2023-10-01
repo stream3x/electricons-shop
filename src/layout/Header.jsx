@@ -224,7 +224,7 @@ console.log(data);
       active = false;
     };
   }, [loading]);
-console.log(options);
+
   React.useEffect(() => {
     let active = true;
 

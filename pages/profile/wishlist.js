@@ -30,7 +30,7 @@ export default function ProfileWishlist() {
       </ProfileLayout>
     )
   }
-
+console.log(wishItems, cartItems);
   return (
     <ProfileLayout>
       <BreadcrumbNav />

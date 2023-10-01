@@ -5,12 +5,25 @@ import TabPanel from '@mui/lab/TabPanel';
 import Box from '@mui/material/Box';
 import Link from '../Link';
 import { useRouter } from 'next/router';
-import { Collapse, Divider, Grid, IconButton, Menu, MenuItem, Typography, useMediaQuery } from '@mui/material';
+import { Button, Collapse, Grid, IconButton, Menu, MenuItem, Typography, useMediaQuery } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import theme from '../theme';
 import Image from 'next/image';
 import { TabContext } from '@mui/lab';
 import axios from 'axios';
+import styled from '@emotion/styled';
+import Countdown from '../assets/Countdown';
+
+const LabelButton = styled(Button)(({ theme }) => ({
+  color: theme.palette.primary.white,
+  '&:hover': {
+    backgroundColor: theme.palette.error.dark,
+  },
+  textTransform: 'capitalize',
+  backgroundColor: theme.palette.error.main,
+  border: 'thin solid lightGrey',
+  borderLeft: '3px solid black',
+}));
 
 export default function NavTabs(props) {
   const router = useRouter();
@@ -92,7 +105,7 @@ export default function NavTabs(props) {
             value === 0 &&
             <TabPanel sx={{px: 0}} value={value} index={0} dir={theme.direction}>
               <Menu
-                id="mouse-over-popover-1"
+                id="laptops"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
@@ -100,7 +113,18 @@ export default function NavTabs(props) {
                   'aria-labelledby': 'basic-button',
                 }}
               >
-                  <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
+                <Grid sx={{width: '100%', '& a': {textDecoration: 'none'}}} container spacing={0}>
+                  <Grid sx={{px: 2}} item xs={12}>
+                    <LabelButton sx={{width: '100%', display: 'flex', justifyContent: 'space-between', bgcolor: 'red'}}>
+                      <Typography sx={{fontWeight: '600'}}>
+                       SuperDeals 50% off
+                      </Typography>
+                      <Typography sx={{display: 'flex'}}>
+                        <Typography component="span">Ends:</Typography> 
+                        <Countdown />
+                      </Typography>
+                    </LabelButton>
+                  </Grid>
                   {
                     laptopPromo && laptopPromo.map(laptop => (
                       <Grid key={laptop._id} item xs={Math.ceil(12 / laptopPromo.length)}>
@@ -138,7 +162,7 @@ export default function NavTabs(props) {
             <TabPanel sx={{px: 0}} value={value} index={1} dir={theme.direction}>
               <Menu
                 sx={{display: 'flex', justifyContent: 'center'}}
-                id="mouse-over-popover-1"
+                id="desktop"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
@@ -146,7 +170,18 @@ export default function NavTabs(props) {
                   'aria-labelledby': 'basic-button',
                 }}
               >
-                <Grid sx={{width: '100%', '& a': {textDecoration: 'none'}}} container spacing={2}>                  
+                <Grid sx={{width: '100%', '& a': {textDecoration: 'none'}}} container spacing={0}>
+                  <Grid sx={{px: 2}} item xs={12}>
+                    <LabelButton sx={{width: '100%', display: 'flex', justifyContent: 'space-between', bgcolor: 'red', color: 'white'}}>
+                      <Typography sx={{fontWeight: '600'}}>
+                        SuperDeals FreeShipping
+                      </Typography>
+                      <Typography sx={{display: 'flex'}}>
+                        <Typography component="span">Ends:</Typography> 
+                        <Countdown />
+                      </Typography>
+                    </LabelButton>
+                  </Grid>             
                   {
                     desktopPromo && desktopPromo.map(desktop => (
                       <Grid key={desktop._id} item xs={Math.ceil(12 / desktopPromo.length)}>
@@ -184,7 +219,7 @@ export default function NavTabs(props) {
             <TabPanel sx={{px: 0}} value={value} index={2} dir={theme.direction}>
               <Menu
               sx={{display: 'flex', justifyContent: 'center'}}
-                id="mouse-over-popover-1"
+                id="smartphones"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
@@ -192,7 +227,14 @@ export default function NavTabs(props) {
                   'aria-labelledby': 'basic-button',
                 }}
               >
-                <Grid sx={{width: '100%', mr: '1rem', '& a': {textDecoration: 'none'}}} container spacing={2}>
+                <Grid sx={{width: '100%', '& a': {textDecoration: 'none'}}} container spacing={0}>
+                  <Grid sx={{px: 2}} item xs={12}>
+                    <LabelButton sx={{width: '100%', display: 'flex', justifyContent: 'center', bgcolor: 'red'}}>
+                      <Typography sx={{fontWeight: '600'}}>
+                        95.2% Positive Feedback
+                      </Typography>
+                    </LabelButton>
+                  </Grid>
                   {
                     mobilePromo && mobilePromo?.map(desktop => (
                       <Grid key={desktop._id} sx={{pr: '1rem'}} item xs={mobilePromo.length < 4 ? Math.ceil(12 / mobilePromo.length) : 4}>
@@ -227,10 +269,10 @@ export default function NavTabs(props) {
           }
           {
             value === 3 &&
-            <TabPanel sx={{px: 0}} value={value} index={3} dir={theme.direction}>
+            <TabPanel sx={{px: 0}} value={value} index={3}>
               <Menu
                 sx={{display: 'flex', justifyContent: 'center'}}
-                id="mouse-over-popover-1"
+                id="brands"
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
@@ -238,7 +280,7 @@ export default function NavTabs(props) {
                   'aria-labelledby': 'basic-button',
                 }}
               >
-                <Grid sx={{'& a': {textDecoration: 'none'}}} container spacing={2}>
+                <Grid sx={{'& a': {textDecoration: 'none'}}} container spacing={0}>
                   {
                     uniqueBrandObjects?.map(store => (
                       <Grid key={store._id} item xs={4}>
