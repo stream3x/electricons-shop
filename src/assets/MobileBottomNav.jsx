@@ -12,6 +12,7 @@ import { Badge } from '@mui/material';
 import Link from '../Link';
 
 export default function MobileBottomNav({ isVisible }) {
+  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const ref = React.useRef(null);
   const { state } = React.useContext(Store);
   const { cart, comparasion:{compareItems}, wishlist: {wishItems} } = state;
@@ -25,7 +26,7 @@ export default function MobileBottomNav({ isVisible }) {
           sx={{justifyContent: 'space-between'}}
         >
             <BottomNavigationAction label="Comparasion" icon={<Link sx={{width: '100%', height: '100%', '& span': {opacity: 1}}} href={'/compare'}><Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={compareItems.length > 0 ? compareItems.length : "0"} color="secondary"><CompareIcon color="secondary" /></Badge></Link>} />
-            <BottomNavigationAction label="Wishlist" icon={<Link sx={{width: '100%', height: '100%', '& span': {opacity: 1} }} href={'/wishlist'}><Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={wishItems.length > 0 ? wishItems.length : "0"} color="secondary"><Wishlist color="secondary"/></Badge></Link>} />
+            <BottomNavigationAction label="Wishlist" icon={<Link sx={{width: '100%', height: '100%', '& span': {opacity: 1} }} href={userInf0 ? "/profile/wishlist" : '/wishlist'}><Badge sx={{ 'span': {top:'50%', right:'-50%'} }} badgeContent={wishItems.length > 0 ? wishItems.length : "0"} color="secondary"><Wishlist color="secondary"/></Badge></Link>} />
           <BottomNavigationAction label="Cart" icon={<SwipeableCartDrawer cart={cart}/>} />
         </BottomNavigation>
       </Paper>

@@ -182,10 +182,28 @@ const headCells = [
     label: 'Name',
   },
   {
+    id: 'brand',
+    numeric: false,
+    disablePadding: false,
+    label: 'Brand',
+  },
+  {
+    id: 'inStock',
+    numeric: false,
+    disablePadding: false,
+    label: 'Stock',
+  },
+  {
     id: 'price',
     numeric: false,
     disablePadding: false,
     label: 'Price',
+  },
+  {
+    id: 'oldPrice',
+    numeric: false,
+    disablePadding: false,
+    label: 'Old Price',
   },
   {
     id: 'compare',
@@ -324,7 +342,7 @@ const icon = (
 );
 
 export default function WishTable(props) {
-  const { cartItems } = props;
+  const { cartItems, wishlist } = props;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
@@ -333,7 +351,7 @@ export default function WishTable(props) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const { state, dispatch } = React.useContext(Store);
-  const { comparasion: { compareItems }, wishlist: { wishItems }, snack } = state;
+  const { comparasion: { compareItems }, snack } = state;
   const router = useRouter();
   const [loadingCompare, setLoadingCompare] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -452,10 +470,10 @@ export default function WishTable(props) {
                 orderBy={orderBy}
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
-                rowCount={wishItems && wishItems.length}
+                rowCount={wishlist && wishlist.length}
               />
               <TableBody>
-                {wishItems && stableSort(wishItems, getComparator(order, orderBy))
+                {wishlist && stableSort(wishlist, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     const isItemSelected = isSelected(row.title);
@@ -488,7 +506,7 @@ export default function WishTable(props) {
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               priority
-                              src={row.images[1].image ? row.images[1].image : row.images[0].image}
+                              src={row.image ? row.image : '/images/no-image.jpg'}
                               alt={row.title}
                             />
                           </Box>
@@ -505,8 +523,17 @@ export default function WishTable(props) {
                             {row.title}
                           </Link>
                         </TableCell>
-                        <TableCell color='primary' align="right">
+                        <TableCell align="right">
+                          {row.brand}
+                        </TableCell>
+                        <TableCell sx={{color: row.inStock > 0 ? 'dashboard.main' : 'red'}} align="right">
+                          {row.inStock > 0 ? 'in stock' : 'out of stock'}
+                        </TableCell>
+                        <TableCell align="right">
                         {'$'}{row.price}
+                        </TableCell>
+                        <TableCell sx={{color: 'secondary.lightGrey'}} align="right">
+                        {'$'}{row.oldPrice}
                         </TableCell>
                         <TableCell align="right">
                           <Box sx={{ flex: {xs: '0 0 100%', lg: '0 0 35%'}, my: 1, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'right', '& > a': {textDecoration: 'none', width: {xs:'100%', sm: 'auto'}} }}>
@@ -569,7 +596,7 @@ export default function WishTable(props) {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={wishItems && wishItems.length}
+            count={wishlist && wishlist.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

@@ -6,8 +6,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Typography } from '@mui/material';
 import theme from '../theme';
 import { Store } from '../utils/Store';
+import { useRouter } from 'next/router';
 
 export default function Snackbars() {
+  const router = useRouter();
+  const basePath = router.pathname === '/backoffice/profile/[id]' || router.pathname === '/backoffice/';
   const { state, dispatch } = useContext(Store);
   const { snack, snack: {message, severity} } = state;
   const [open, setOpen] = useState(false);
@@ -28,7 +31,7 @@ export default function Snackbars() {
 
   const messageSnack = (
     <Typography variant="p" color={severity === 'success' ? theme.palette.success.main : severity === 'error' ? theme.palette.error.main : severity === 'warning' ? theme.palette.warning.main : severity}>
-      {message ? message : 'Welcome to our Store'}
+      {message ? message : basePath ? 'Welcome to backoffice' : 'Welcome to our Store'}
     </Typography>
   )
 

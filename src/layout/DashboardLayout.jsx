@@ -22,6 +22,7 @@ import { useRouter } from 'next/router';
 import { Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
+import Snackbars from '../assets/Snackbars';
 
 const drawerWidth = 240;
 const loged = ['Profile', 'Backoffice', 'Logout'];
@@ -242,9 +243,9 @@ export default function DashboardLayout({ children }) {
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            theme.palette.mode === 'light'
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
@@ -253,6 +254,7 @@ export default function DashboardLayout({ children }) {
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             {children}
+            <Snackbars />
           </Container>
         </Box>
       </Box>

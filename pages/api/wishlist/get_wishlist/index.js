@@ -5,11 +5,12 @@ import Wishlist from '../../../../models/Wishlist';
 const handler = nc();
 
 handler.get( async (req, res) => {
-console.log(req.body);
+  const dataId = req.headers.id;
+
   try {
     await db.connect();
 
-    const products = await Wishlist.find({});
+    const products = await Wishlist.find({userId: dataId});
 
     if (!products) {
       return res.status(404).json({ message: 'Product not found' });

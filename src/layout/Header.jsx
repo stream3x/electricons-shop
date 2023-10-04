@@ -727,7 +727,7 @@ console.log(data);
                         </Badge>
                       </IconButton>
                     </Link>
-                    <Link sx={{width: '100%', height: '100%'}} href={'/wishlist'}>
+                    <Link sx={{width: '100%', height: '100%'}} href={userInf0 ? "/profile/wishlist" : '/wishlist'}>
                       <IconButton
                         size="large"
                         aria-label="show wishlist items"

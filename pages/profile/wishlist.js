@@ -22,17 +22,23 @@ export default function ProfileWishlist() {
 
   useEffect(() => {
     async function fetchData() {
+      const dataId = JSON.parse(localStorage.getItem('userInfo'))._id;
       try {
-        const { data } = await axios.get('/api/wishlist/get_wishlist');
+        const { data } = await axios.get('/api/wishlist/get_wishlist', {
+          headers: {
+            "Content-Type": "application/json",
+            id: dataId
+          }
+      });
         setUserWishlist(data);
       } catch (error) {
         console.log(error);
       } 
     }
     fetchData()
-  }, [])
+  }, []);
 
-  if(wishItems.length === 0) {
+  if(wishItems.length === 0 && userWishlist.length === 0) {
     return (
       <ProfileLayout>
         <Item sx={{ '& a': {textDecoration: 'none' } }} elevation={0}>
@@ -46,7 +52,7 @@ export default function ProfileWishlist() {
   return (
     <ProfileLayout>
       <BreadcrumbNav />
-      <WishTable wishItems={userWishlist.length !== 0 ? userWishlist : wishItems} cartItems={cartItems} />
+      <WishTable wishlist={userWishlist.length !== 0 ? userWishlist : wishItems} cartItems={cartItems} />
     </ProfileLayout>
   )
 }
