@@ -556,7 +556,7 @@ export default function Profile(props) {
                 p: 2,
                 display: 'flex',
                 flexDirection: 'column',
-                height: 'auto',
+                height: {xs: 'auto', md: 240},
               }}
             >
               <UserActivities orders={{total_orders: [{orders: orders, guest: guest_orders}]}} favorites={favorites} reviews={reviews} />
