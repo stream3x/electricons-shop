@@ -556,7 +556,7 @@ export default function Profile(props) {
                 p: 2,
                 display: 'flex',
                 flexDirection: 'column',
-                height: 240,
+                height: 'auto',
               }}
             >
               <UserActivities orders={{total_orders: [{orders: orders, guest: guest_orders}]}} favorites={favorites} reviews={reviews} />
@@ -564,7 +564,7 @@ export default function Profile(props) {
           </Grid>
           {/* Recent Orders */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', overflow: 'auto', overflow: 'hidden' }}>
+            <Paper sx={{ p: 1, display: 'flex', flexDirection: 'column', overflow: 'auto', overflow: 'hidden' }}>
               <Typography variant="h6" gutterBottom component="div">
                 Saved Cards
               </Typography>
@@ -635,7 +635,7 @@ export default function Profile(props) {
             </Paper>
           </Grid>
           <Grid item xs={12}>
-          <Box sx={{ width: '100%', typography: 'body1' }}>
+            <Box sx={{ width: '100%', typography: 'body1' }}>
               <TabContext value={activeTab}>
                 <Box>
                   <TabList variant="scrollable" onChange={handleTab} aria-label="lab API tabs example">
@@ -645,12 +645,12 @@ export default function Profile(props) {
                     <Tab label="Security" value="4" />
                   </TabList>
                 </Box>
-                <TabPanel value="1">
+                <TabPanel sx={{p: 0, pt: 3}} value="1">
                   <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                     <SingleUserOrders rows={orders} rowsGuest={guest_orders} />
                   </Paper>
                 </TabPanel>
-                <TabPanel sx={{px: {xs: 1}}} value="2">
+                <TabPanel sx={{p: 0, pt: 3}} value="2">
                   <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                     <Box sx={{width: '100%', mb: 1, p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                       <Typography variant='subtitle1' component='h2'>
@@ -822,9 +822,6 @@ export default function Profile(props) {
                               variant="standard"
                             />
                             <Box sx={{width: '100%', mb: 1, p: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                              <Typography variant='subtitle1' component='h2'>
-                                Edit address {`${item.address}, ${item.city}`}
-                              </Typography>
                               {
                                 editAddress.addressId !== item._id &&
                                 <Box sx={{display: 'flex'}}>
@@ -852,14 +849,14 @@ export default function Profile(props) {
                                 </Box>
                               } 
                               {
-                                 editAddress.addressId == item._id &&
-                                 <Button
-                                   type='submit'
-                                   variant="contained"
-                                   sx={{ '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
-                                 >
-                                   Save
-                                 </Button>
+                                editAddress.addressId == item._id &&
+                                <Button
+                                  type='submit'
+                                  variant="contained"
+                                  sx={{ '&:hover': { backgroundColor: theme.palette.secondary.main, textDecoration: 'none' } }}
+                                >
+                                  Save
+                                </Button>
                               }
                             </Box>
                           </Box>
@@ -868,88 +865,88 @@ export default function Profile(props) {
                     </Box>
                     {/* New Address */}
                     <Grid container space={2}>
-                        <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
-                          <Button onClick={handleNewAddress} size="small" startIcon={!addNewAddress ? <AddIcon /> : <RemoveIcon />}>
-                          { addNewAddress ? 'cancel' : 'Add new address'}
-                          </Button>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Box component="form" onSubmit={submitNewAddress} noValidate sx={{ mt: 1, width: '100%' }}>
-                          {
-                            addNewAddress &&
-                            <Box>
-                              <TextField
-                                margin="normal"
-                                fullWidth
-                                required
-                                id="address"
-                                label="Address"
-                                name="address"
-                                autoComplete="address"
-                                error={errors.address}
-                              />
-                              <TextField
-                                margin="normal"
-                                fullWidth
-                                required
-                                id="city"
-                                label="city"
-                                name="city"
-                                autoComplete="address-level2"
-                                error={errors.city}
-                              />
-                              <TextField
-                                margin="normal"
-                                fullWidth
-                                required
-                                id="country"
-                                label="Country"
-                                name="country"
-                                error={errors.country}
-                              />
-                              <TextField
-                                margin="normal"
-                                type="number"
-                                fullWidth
-                                required
-                                id="postalcode"
-                                label="Zip/Postal Code"
-                                name="postalcode"
-                                autoComplete="postalcode"
-                                error={errors.postalcode}
-                              />
-                              <TextField
-                                margin="normal"
-                                type="number"
-                                fullWidth
-                                required
-                                id="phone"
-                                label="Phone"
-                                name="phone"
-                                autoComplete="phone"
-                                error={errors.phone}
-                              />
-                              <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
-                              >
-                                save
-                              </Button>
-                            </Box>
-                          }
-                          </Box>
-                        </Grid>
+                      <Grid sx={{p: 2, textAlign: 'left'}} item xs={12} sm={6}>
+                        <Button onClick={handleNewAddress} size="small" startIcon={!addNewAddress ? <AddIcon /> : <RemoveIcon />}>
+                        { addNewAddress ? 'cancel' : 'Add new address'}
+                        </Button>
                       </Grid>
+                      <Grid item xs={12}>
+                        <Box component="form" onSubmit={submitNewAddress} noValidate sx={{ mt: 1, width: '100%' }}>
+                        {
+                          addNewAddress &&
+                          <Box>
+                            <TextField
+                              margin="normal"
+                              fullWidth
+                              required
+                              id="address"
+                              label="Address"
+                              name="address"
+                              autoComplete="address"
+                              error={errors.address}
+                            />
+                            <TextField
+                              margin="normal"
+                              fullWidth
+                              required
+                              id="city"
+                              label="city"
+                              name="city"
+                              autoComplete="address-level2"
+                              error={errors.city}
+                            />
+                            <TextField
+                              margin="normal"
+                              fullWidth
+                              required
+                              id="country"
+                              label="Country"
+                              name="country"
+                              error={errors.country}
+                            />
+                            <TextField
+                              margin="normal"
+                              type="number"
+                              fullWidth
+                              required
+                              id="postalcode"
+                              label="Zip/Postal Code"
+                              name="postalcode"
+                              autoComplete="postalcode"
+                              error={errors.postalcode}
+                            />
+                            <TextField
+                              margin="normal"
+                              type="number"
+                              fullWidth
+                              required
+                              id="phone"
+                              label="Phone"
+                              name="phone"
+                              autoComplete="phone"
+                              error={errors.phone}
+                            />
+                            <Button
+                              type="submit"
+                              fullWidth
+                              variant="contained"
+                              sx={{ mt: 3, mb: 2, '&:hover': { backgroundColor: theme.palette.secondary.main } }}
+                            >
+                              save
+                            </Button>
+                          </Box>
+                        }
+                        </Box>
+                      </Grid>
+                    </Grid>
                   </Paper>
                 </TabPanel>
-                <TabPanel value="3">
+                <TabPanel sx={{p: 0, pt: 3}} value="3">
                   <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                     Notification
                   </Paper>
                 </TabPanel>
-                <TabPanel value="4">
+                <TabPanel sx={{p: 0, pt: 3}} value="4">
                   <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
                     Security
                   </Paper>

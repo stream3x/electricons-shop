@@ -41,7 +41,7 @@ export default function UserActivities(props) {
     <Grid container spacing={3} sx={{height: '100%'}}>
       <Grid item xs={12} md={4}>
         <LabelBox sx={{display: 'flex', p: 3}}>
-          <Box sx={{width: 50, height: 50, borderRadius: '100%', bgcolor: theme.palette.primary.bgdLight, display: 'flex', justifyContent: 'center', alignItems: 'center', flex: '0 0 20%'}}>
+          <Box sx={{width: 50, height: 50, borderRadius: '100%', bgcolor: theme.palette.primary.bgdLight, display: 'flex', justifyContent: 'center', alignItems: 'center', flex: {xs: '0 0 25%', md: '0 0 20%'}}}>
             <ShoppingBasketIcon color='primary' />
           </Box>
           <Box sx={{display: 'flex', flexWrap: 'wrap', pl: 3}}>
