@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Grid, Paper, TextField, TextareaAutosize, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid, Paper, Stack, TextField, TextareaAutosize, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
@@ -8,43 +8,26 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Link from '../../../src/Link';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import 'quill-mention';
-import 'quill-mention/dist/quill.mention.css';
-import 'quill-better-table';
-import Quill from 'quill';
-import Mention from 'quill-mention';
-import BetterTable from 'quill-better-table';
+import ChipsImages from '../../../src/components/ChipsImages';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-Quill.register('modules/mention', Mention);
-Quill.register('modules/better-table', BetterTable);
 
 const modules = {
   toolbar: [
     [{ 'header': [1, 2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike'],
     [{'list': 'ordered'}, {'list': 'bullet'}],
-    ['link', 'image', 'video'],
-    ['blockquote', 'code-block'],
+    ['link'],
+    ['blockquote'],
     [{ 'align': [] }],
     [{ 'color': [] }, { 'background': [] }],
     ['clean'],
-    ['table'],
-  ],
-  mention: {
-    allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-    mentionDenotationChars: ['@'],
-    source: function (searchTerm, renderList, mentionChar) {
-      // Implement mention source logic here
-      // For example, fetch users based on the searchTerm from your database
-    },
-  },
+  ]
 };
 
 const formats = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'link', 'image', 'video',
-  'blockquote', 'code-block', 'align', 'color', 'background',
-  'table',
+  'list', 'bullet', 'link', 'blockquote', 'align', 'color', 'background'
 ];
 
 const LabelButton = styled(Button)(({ theme }) => ({
@@ -55,10 +38,20 @@ const LabelButton = styled(Button)(({ theme }) => ({
   borderLeft: '5px solid black',
 }));
 
+const QuillStyled = styled(ReactQuill)(({ theme }) => ({
+  '& .ql-toolbar.ql-snow': {
+    borderRadius: '3px 3px 0 0'
+  },
+  '& .ql-container.ql-snow': {
+    borderRadius: '0 0 3px 3px'
+  }
+}))
+
 function CreateNewItems() {
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [description, setDescription] = React.useState('');
   const [error, setError] = React.useState('');
+  const [imgFile, setImgFile] = React.useState([]);
 
   const formatText = () => {
     // Formatiranje teksta prema potrebama
@@ -69,10 +62,21 @@ function CreateNewItems() {
     return <div dangerouslySetInnerHTML={{ __html: formattedText }} />;
   };
 
-  React.useEffect(() => {
-    // Ponovo registrujemo better-table modul kako bi mogao biti učitan nakon prvog renderovanja
-    Quill.register('modules/better-table', BetterTable);
-  }, []);
+  function handleImageChoose(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        setImgFile([
+          ...imgFile,
+          {            
+            image: file,
+            imageUrl: reader.result
+          }
+        ]);
+        e.target.value = ''
+    }
+    reader.readAsDataURL(file);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,18 +85,18 @@ function CreateNewItems() {
     const formData = {
       title: formOutput.get('title'),
       shortDescription: formOutput.get('short-description'),
-      description: formOutput.get('description')
+      description: description,
+      images: imgFile.map(item => item.imageUrl),
     }
+   
+
+    try {
     console.log(formData);
-  }
-
-  const saveToDatabase = () => {
-    console.log('Description saved:', description);
-
-    // Implementirajte logiku za čuvanje u MongoDB ovde
-  };
-
-  
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }  
 
   return (
     <Box>
@@ -132,31 +136,32 @@ function CreateNewItems() {
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 0 }}>
                 <TextField
                   name="title"
-                  required
                   fullWidth
                   id="title"
-                  label="Naziv proizvoda unesite ovde"
-                  sx={{mb: 1}}
+                  label="Product title here..."
+                  sx={{mb: 1, pb: 3}}
                 />
                 <TextareaAutosize
                   name="short-description"
                   required
                   fullWidth
                   id="short"
-                  placeholder="Kratak opis proizvoda"
+                  placeholder="Short description here..."
                   maxRows={10}
                   minRows={4}
                   aria-label="empty textarea"
                   style={{ width: '100%', resize: 'vertical', padding: '8px' }}
-                  sx={{my: 1}}
                 />
-                <ReactQuill
-                 modules={modules}
-                 formats={formats}
-                  value={description}
-                  onChange={(value) => setDescription(value)}
-                />
-                <Button onClick={saveToDatabase}>Save</Button>
+                <Box sx={{py: 3, }}>
+                  <Typography component="label">Detail Description</Typography>
+                  <QuillStyled
+                    modules={modules}
+                    formats={formats}
+                    value={description}
+                    onChange={(value) => setDescription(value)}
+                  />
+                </Box>
+                <Button type='submit'>Submit</Button>
               </Box>
             </Paper>
           </Grid>
@@ -164,12 +169,22 @@ function CreateNewItems() {
           <Grid item xs={12} md={4} lg={3}>
             <Paper
               sx={{
-                p: 2,
+                py: 2,
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              <Box dangerouslySetInnerHTML={{ __html: description }} />
+              <Typography component="p" variant='p' sx={{px: 2, py: 1, fontWeight: 'bold'}}>Product Images</Typography>
+              <Divider />
+              <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                <Box sx={{width: '100%', p: 2}}>
+                  <Button component="label" onChange={handleImageChoose} htmlFor="file" sx={{border: 'thin dashed grey', width: '100%', height: '100px', display: 'flex', justifyContent: 'center'}} startIcon={<CloudUploadIcon />}>
+                    Upload
+                  <Box sx={{display: 'none'}} accept="image/jpg image/png image/jpeg" component="input" type="file" name="file" id="file"/>
+                  </Button>
+                </Box>
+              </Stack>
+              <ChipsImages selectedFile={imgFile} setImgFile={setImgFile} />
             </Paper>
           </Grid>
           {/* Recent Orders */}
