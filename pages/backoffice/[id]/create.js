@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Button, Divider, Grid, Paper, Stack, TextField, TextareaAutosize, Typography } from '@mui/material';
 import styled from '@emotion/styled';
 import dynamic from 'next/dynamic';
@@ -38,20 +38,21 @@ const LabelButton = styled(Button)(({ theme }) => ({
   borderLeft: '5px solid black',
 }));
 
-const QuillStyled = styled(ReactQuill)(({ theme }) => ({
-  '& .ql-toolbar.ql-snow': {
-    borderRadius: '3px 3px 0 0'
-  },
-  '& .ql-container.ql-snow': {
-    borderRadius: '0 0 3px 3px'
-  }
-}))
-
 function CreateNewItems() {
   const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [description, setDescription] = React.useState('');
   const [error, setError] = React.useState('');
   const [imgFile, setImgFile] = React.useState([]);
+  const Quill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
+
+  const QuillStyled = styled(Quill)(({ theme }) => ({
+    '& .ql-toolbar.ql-snow': {
+      borderRadius: '3px 3px 0 0'
+    },
+    '& .ql-container.ql-snow': {
+      borderRadius: '0 0 3px 3px'
+    }
+  }))
 
   const formatText = () => {
     // Formatiranje teksta prema potrebama
@@ -155,10 +156,11 @@ function CreateNewItems() {
                 <Box sx={{py: 3, }}>
                   <Typography component="label">Detail Description</Typography>
                   <QuillStyled
+                    theme="snow"
                     modules={modules}
                     formats={formats}
                     value={description}
-                    onChange={(value) => setDescription(value)}
+                    onChange={(values) => setDescription(values)}
                   />
                 </Box>
                 <Button type='submit'>Submit</Button>
