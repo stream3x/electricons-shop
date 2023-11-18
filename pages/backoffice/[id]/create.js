@@ -6,11 +6,10 @@ import axios from 'axios';
 import theme from '../../../src/theme';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Link from '../../../src/Link';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ChipsImages from '../../../src/components/ChipsImages';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-
+const Quill = dynamic(() => import('react-quill'), { ssr: false });
 
 const modules = {
   toolbar: [
@@ -30,6 +29,15 @@ const formats = [
   'list', 'bullet', 'link', 'blockquote', 'align', 'color', 'background'
 ];
 
+const QuillStyled = styled(Quill)(({ theme }) => ({
+  '& .ql-toolbar.ql-snow': {
+    borderRadius: '3px 3px 0 0'
+  },
+  '& .ql-container.ql-snow': {
+    borderRadius: '0 0 3px 3px'
+  }
+}))
+
 const LabelButton = styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.main,
   textTransform: 'capitalize',
@@ -43,16 +51,8 @@ function CreateNewItems() {
   const [description, setDescription] = React.useState('');
   const [error, setError] = React.useState('');
   const [imgFile, setImgFile] = React.useState([]);
-  const Quill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
 
-  const QuillStyled = styled(Quill)(({ theme }) => ({
-    '& .ql-toolbar.ql-snow': {
-      borderRadius: '3px 3px 0 0'
-    },
-    '& .ql-container.ql-snow': {
-      borderRadius: '0 0 3px 3px'
-    }
-  }))
+  const isQuill = typeof window !== 'undefined' ? require('quill') : null;
 
   const formatText = () => {
     // Formatiranje teksta prema potrebama
@@ -155,13 +155,18 @@ function CreateNewItems() {
                 />
                 <Box sx={{py: 3, }}>
                   <Typography component="label">Detail Description</Typography>
-                  <QuillStyled
-                    theme="snow"
-                    modules={modules}
-                    formats={formats}
-                    value={description}
-                    onChange={(values) => setDescription(values)}
-                  />
+                  {
+                    isQuill ?
+                    <QuillStyled
+                      theme="snow"
+                      modules={modules}
+                      formats={formats}
+                      value={description}
+                      onChange={(values) => setDescription(values)}
+                    />
+                    :
+                    null
+                  }
                 </Box>
                 <Button type='submit'>Submit</Button>
               </Box>
