@@ -6,7 +6,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
-// import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
@@ -214,7 +213,6 @@ export default function Header() {
 
     (async () => {
       const { data } = await axios.get('/api/products');
-console.log(data);
       if(active) {
         setOptions([...data.products]);
       }
@@ -342,7 +340,7 @@ console.log(data);
                 </Box>
                 :
                 <React.Fragment>
-                  <Link href="/blog?counter=10">
+                  <Link href="/blog">
                     <Image
                       width= {matches ? 280 : 130}
                       height= {50}

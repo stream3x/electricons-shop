@@ -20,7 +20,7 @@ import theme from '../src/theme';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Fab from '@mui/material/Fab';
-import { Alert } from '@mui/material';
+import { Alert, Divider } from '@mui/material';
 
 export default function LogIn() {
   const router = useRouter();
@@ -169,6 +169,7 @@ export default function LogIn() {
                 <Button color='indigo' value="Sinana123" onClick={copyPassword}>
                   password: Sinana123
                 </Button>
+                <Divider />
               </Box>
               <Box>
                 <Button color='indigo' value="super.admin@gmail.com" onClick={copyEmail}>
@@ -178,14 +179,14 @@ export default function LogIn() {
                   password: Dmdevelo123
                 </Button>
               </Box>
-              <Box>
+              {/* <Box>
                 <Button color='indigo' value="zokac.pokac@gmail.com" onClick={copyEmail}>
                   email: zokac.pokac@gmail.com
                 </Button>
                 <Button color='indigo' value="Z@kula03" onClick={copyPassword}>
                   password: Z@kula03
                 </Button>
-              </Box>
+              </Box> */}
             </Alert>
           </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>

@@ -42,9 +42,9 @@ export default function MyApp(props) {
 
     const handleComplete = () => {
       // Postavlja loading na false nakon kratkog kašnjenja (500 ms)
-      loadingTimeout = setTimeout(() => {
-        setLoading(false);
-      }, 500);
+        loadingTimeout = setTimeout(() => {
+          setLoading(false);
+        }, 500);
     };
 
     const handleError = () => {
@@ -86,7 +86,7 @@ export default function MyApp(props) {
     )
   }
 
-  if (router.pathname !== '/' && loading) {
+  if (isSSR && loading) {
     return (
       <Box sx={{bgcolor: 'white', position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 2}}>
         <Loader />

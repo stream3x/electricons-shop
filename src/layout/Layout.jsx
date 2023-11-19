@@ -7,7 +7,7 @@ import Snackbars from '../assets/Snackbars';
 import Footer from './Footer';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mui/material';
-import Loader from './Loader';
+import Logo from '../assets/Logo';
 
 export default function Layout({ children }) {
   const router = useRouter();
@@ -20,8 +20,10 @@ export default function Layout({ children }) {
   if(isLogin) {
     return (
       <Box sx={{pb: 5, background: 'linear-gradient(360deg, rgb(238, 242, 246) 1.09%, rgb(255, 255, 255) 100%)', minHeight: '100vh'}}>
-        <Loader />
-        <Box component="main" sx={{ height: '100%', mt: {xs: isNotPost && isNotBlog && isNotCat ? '5rem' : matches ? '5rem' : '2rem', sm: isNotPost && isNotBlog && isNotCat ? '10rem' : '2rem'} }}>
+        <Box sx={{m: 5}}>
+          <Logo />
+        </Box>
+        <Box sx={{ height: '100%', mt: 10 }}>
           {children}
           <Snackbars />
         </Box>
