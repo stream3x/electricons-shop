@@ -7,8 +7,7 @@ import Snackbars from '../assets/Snackbars';
 import Footer from './Footer';
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mui/material';
-import Link from '../Link';
-import Image from 'next/image';
+import Loader from './Loader';
 
 export default function Layout({ children }) {
   const router = useRouter();
@@ -21,21 +20,8 @@ export default function Layout({ children }) {
   if(isLogin) {
     return (
       <Box sx={{pb: 5, background: 'linear-gradient(360deg, rgb(238, 242, 246) 1.09%, rgb(255, 255, 255) 100%)', minHeight: '100vh'}}>
-        <Box sx={{py: 5, display: 'flex', justifyContent: {xs: 'center', md: 'left'}}}>
-          <Link href="/?counter=10">
-            <Image
-              width= {matches ? 280 : 300}
-              height= {matches ? 50 : 60}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority
-              src='/logo/electricons_logo.svg'
-              alt="logo"
-              quality={100}
-              loading="eager"
-            />
-          </Link>
-        </Box>
-        <Box component="main">
+        <Loader />
+        <Box component="main" sx={{ height: '100%', mt: {xs: isNotPost && isNotBlog && isNotCat ? '5rem' : matches ? '5rem' : '2rem', sm: isNotPost && isNotBlog && isNotCat ? '10rem' : '2rem'} }}>
           {children}
           <Snackbars />
         </Box>

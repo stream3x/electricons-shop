@@ -13,12 +13,15 @@ import { Analytics } from '@vercel/analytics/react';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { useRouter } from 'next/router';
 import DashboardLayout from '../src/layout/DashboardLayout';
+import Loader from '../src/layout/Loader';
+import { Box } from '@mui/material';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const [isSSR, setIsSsr] = React.useState(true);
 
@@ -28,6 +31,38 @@ export default function MyApp(props) {
   React.useEffect(() => {
     setIsSsr(false);
   }, []);
+
+  React.useEffect(() => {
+    let loadingTimeout;
+
+    const handleStart = () => {
+      clearTimeout(loadingTimeout); // Poništava postojeći timeout
+      setLoading(true);
+    };
+
+    const handleComplete = () => {
+      // Postavlja loading na false nakon kratkog kašnjenja (500 ms)
+      loadingTimeout = setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    };
+
+    const handleError = () => {
+      // Ako se pojavi greška, takođe postavlja loading na false
+      setLoading(false);
+    };
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleError);
+
+    return () => {
+      clearTimeout(loadingTimeout); // Očisti timeout prilikom unmounting-a
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleError);
+    };
+  }, [router]);
 
   if(isSSR) {
     return (
@@ -48,6 +83,14 @@ export default function MyApp(props) {
           <path d="M57.8954 26.4814C43.5196 23.6806 18.2396 18.6471 11.937 27.9812C11.3738 29.6305 10.9042 31.1642 10.5 32.5C10.5975 30.7143 11.0998 29.221 11.937 27.9812C16.443 14.7859 26.9414 -5.80326 57.8954 8.4467C70.3692 14.0577 72.4482 20.8042 71.9285 23.476C71.7552 25.4796 68.7061 28.8858 57.8954 26.4814Z" fill="#1CB7DD"/>
           </svg>
       </div>
+    )
+  }
+
+  if (router.pathname !== '/' && loading) {
+    return (
+      <Box sx={{bgcolor: 'white', position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 2}}>
+        <Loader />
+      </Box>
     )
   }
 
