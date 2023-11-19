@@ -172,7 +172,7 @@ export default function Header() {
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [userInfo, setUserInfo] = useState(null);
 
   function toggleVisibility() {

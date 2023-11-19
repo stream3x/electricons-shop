@@ -142,11 +142,6 @@ function SinglePost(props) {
   const [searchQueary, setSearchQuery] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    // Always do navigations after the first render
-    router.push(`/blog/post/${slug}?counter=10`, undefined, { shallow: true })
-  }, []);
-
   const filterSearch = ({
     category,
     subCategory,

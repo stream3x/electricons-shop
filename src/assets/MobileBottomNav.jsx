@@ -12,7 +12,7 @@ import { Badge } from '@mui/material';
 import Link from '../Link';
 
 export default function MobileBottomNav({ isVisible }) {
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const ref = React.useRef(null);
   const { state } = React.useContext(Store);
   const { cart, comparasion:{compareItems}, wishlist: {wishItems} } = state;

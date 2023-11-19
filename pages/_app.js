@@ -24,6 +24,7 @@ export default function MyApp(props) {
   const [loading, setLoading] = React.useState(false);
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const [isSSR, setIsSsr] = React.useState(true);
+  const exceptRouter = router.pathname !== '/blog' && router.pathname !== '/blog/post/[slug]' && router.pathname !== '/blog/category/[[...slug]]';
 
   const isBackoffice = router.pathname.replace(/\/\w+$/,'/') === '/backoffice/[id]/' || router.pathname === '/backoffice';
   const isBackofficeProfile = router.pathname === '/backoffice/profile/[id]'
@@ -86,7 +87,7 @@ export default function MyApp(props) {
     )
   }
 
-  if (isSSR && loading) {
+  if (exceptRouter && loading) {
     return (
       <Box sx={{bgcolor: 'white', position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 2}}>
         <Loader />

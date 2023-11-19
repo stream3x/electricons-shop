@@ -134,11 +134,6 @@ export default function SingleProduct(props) {
   };
 
   React.useEffect(() => {
-    // Always do navigations after the first render
-    router.push(`/product/${product.slug}?counter=10`, undefined, { shallow: true })
-  }, []);
-
-  React.useEffect(() => {
     fetchStoreInfo();
   }, []);
 
