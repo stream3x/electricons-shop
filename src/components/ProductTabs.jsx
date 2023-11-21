@@ -67,7 +67,7 @@ function a11yProps(index) {
 export default function ProductTabs({ product, slug, comments, setComments }) {
   const { state, dispatch } = React.useContext(Store);
   const { snack, review: {hasReview, orderId, hasRated} } = state;
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [userInfo, setUserInfo] = React.useState([]);
   const [value, setValue] = React.useState(0);
   const [replyCommentId, setReplyCommentId] = React.useState('false');
