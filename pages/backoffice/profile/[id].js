@@ -107,7 +107,7 @@ const LabelBox = styled(Box)(({ theme }) => ({
 export default function Profile(props) {
   const { user, orders, guest_orders, favorites, reviews } = props;
   const router = useRouter();
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [profileUser, setProfileUser] = useState({});
   const { state, dispatch } = useContext(Store);
   const [error, setError] = useState(false);

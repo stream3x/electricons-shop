@@ -75,7 +75,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const { pathname } = router;
   const { state, dispatch } = React.useContext(Store);
   const { snack } = state;

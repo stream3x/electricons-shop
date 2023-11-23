@@ -52,7 +52,7 @@ const LabelButton = styled(Button)(({ theme }) => ({
 }));
 
 function CreateNewItems() {
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [description, setDescription] = React.useState('');
   const [error, setError] = React.useState('');
   const [imgFile, setImgFile] = React.useState([]);

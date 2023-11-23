@@ -272,9 +272,7 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable() {
-  const { state, dispatch } = React.useContext(Store);
   const router = useRouter();
-  const { id } = router.query;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);

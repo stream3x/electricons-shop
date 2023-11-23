@@ -52,7 +52,7 @@ export default function PersonalInfo() {
     confirmError: false
   });
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
   const emptyUserInfo = userInf0 !== null ? Object.keys(userInf0).length === 0 : true;
   const emptyCartItems = Object.keys(cartItems).length === 0;
