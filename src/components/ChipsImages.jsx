@@ -43,7 +43,7 @@ export default function ChipsImages({ selectedFile, setImgFile }) {
             :
             <ListItem key={item?.image?.lastModified} sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
               <Chip
-                avatar={<Avatar variant="square" alt={item?.image?.name} src={item?.imageUrl} />}
+                avatar={<Avatar alt={item?.image?.name} src={item?.imageUrl} />}
                 label={item?.image?.name.slice(0, 15)}
                 onDelete={handleDelete(item)}
               />

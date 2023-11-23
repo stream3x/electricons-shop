@@ -78,7 +78,6 @@ export default function MyApp(props) {
   const isBackoffice = router.pathname.replace(/\/\w+$/,'/') === '/backoffice/[id]/' || router.pathname === '/backoffice';
   const isBackofficeProfile = router.pathname === '/backoffice/profile/[id]'
 
-console.log(loading);
   React.useEffect(() => {
     let loadingTimeout;
 
