@@ -64,7 +64,7 @@ export default function Shipping() {
   const shippingCost = 5;
   const emptyShipping = cart.shipping && Object.keys(cart.shipping).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();

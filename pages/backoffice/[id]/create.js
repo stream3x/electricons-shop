@@ -57,7 +57,6 @@ function CreateNewItems() {
   const [error, setError] = React.useState('');
   const [imgFile, setImgFile] = React.useState([]);
   const [imgWidgetFile, setImgWidgetFile] = React.useState([]);
-  const [addSpecifications, setAddSpecifications] = React.useState([NaN]);
   const [specifications, setSpecifications] = React.useState([{ attribute: '', detail: '' }]);
 
   const isQuill = typeof window !== 'undefined' ? require('quill') : null;
@@ -149,14 +148,6 @@ function CreateNewItems() {
     }
   }
 
-  // const handleAddSpecification = (e) => {
-   
-  //   setAddSpecifications((e, i) => [
-  //     ...addSpecifications,
-  //     i++
-  //   ])
-  // }
-
   const handleAddSpecification = () => {
     setSpecifications([...specifications, { attribute: '', detail: '' }]);
   };
@@ -166,8 +157,7 @@ function CreateNewItems() {
     updatedSpecifications[index][field] = value;
     setSpecifications(updatedSpecifications);
   };
-
-console.log(specifications, addSpecifications);
+  
   return (
     <Box>
       {
