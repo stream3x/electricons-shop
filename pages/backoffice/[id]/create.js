@@ -58,6 +58,7 @@ function CreateNewItems() {
   const [imgFile, setImgFile] = React.useState([]);
   const [imgWidgetFile, setImgWidgetFile] = React.useState([]);
   const [specifications, setSpecifications] = React.useState([{ attribute: '', detail: '' }]);
+  const [open, setOpen] = React.useState(false);
 
   const isQuill = typeof window !== 'undefined' ? require('quill') : null;
 
@@ -156,6 +157,10 @@ function CreateNewItems() {
     const updatedSpecifications = [...specifications];
     updatedSpecifications[index][field] = value;
     setSpecifications(updatedSpecifications);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
   };
   
   return (
@@ -338,10 +343,13 @@ function CreateNewItems() {
                     flexDirection: 'column',
                   }}
                 >
-                  <Typography component="p" variant='p' sx={{px: 2, py: 1, fontWeight: 'bold'}}>Categories</Typography>
+                  <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Typography component="p" variant='p' sx={{px: 2, py: 1, fontWeight: 'bold'}}>Categories</Typography>
+                    <Button onClick={handleClickOpen} size='small' sx={{mr: 3}}>+ add categories</Button>
+                  </Box>
                   <Divider />
                   <Box sx={{p: 3}}>
-                    <CategoryCreate />
+                    <CategoryCreate open={open} setOpen={setOpen} />
                   </Box>
                 </Paper>
               </Grid>

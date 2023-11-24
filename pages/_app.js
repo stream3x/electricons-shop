@@ -116,7 +116,7 @@ export default function MyApp(props) {
   return (
     <React.Fragment>
       {
-        exceptRouter && loading &&
+        !isBackoffice && exceptRouter && loading &&
         <LoaderAnimation loading={slideOut}>
           <Loader />
         </LoaderAnimation>
