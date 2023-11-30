@@ -21,6 +21,7 @@ export default function CategoryCreate(props) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [imgAvatarFile, setImgAvatarFile] = React.useState([]);
   const [chipData, setChipData] = React.useState([]);
+  const [error, setError] = React.useState('');
 
   React.useEffect(() => {
     setChipData(imgAvatarFile);
@@ -91,20 +92,27 @@ export default function CategoryCreate(props) {
     const formOutput = new FormData(e.currentTarget);
     const formData = {
       categoryName: formOutput.get('category'),
-      avatar: '',
-      slug: '',
+      avatar: {image: imgAvatarFile?.map(item => item.image.name), imageUrl: imgAvatarFile?.map(item => item.imageUrl)},
+      slug: formOutput.get('slug'),
       subCategory: [
         {
-          url: '',
-          subCategoryName: '',
-          topCategoryName: '',
-          topCategoryUrl: ''
+          url: formOutput.get('subcategory-slug'),
+          subCategoryName: formOutput.get('subcategory'),
+          topCategoryName: formOutput.get('category'),
+          topCategoryUrl: formOutput.get('slug')
         }
       ]
     }
     console.log(formData);
+    try {
+      const { data } = axios.post('/api/category/create_category', formData);
+      setError('');
+    } catch (error) {
+      console.log(error, error.data);
+      setError(`error: ${error}`);
+    }
   }
-console.log(imgAvatarFile);
+
   return (
     <div>
       {
@@ -191,10 +199,10 @@ console.log(imgAvatarFile);
               <Box sx={{px: 3, py: 0, display: 'flex', justifyContent: 'flex-end'}}>  
                 {
                   <Box sx={{width: '200px'}} component="form" method='POST' onSubmit={handleAvatarSubmit}>
-                    <InputLabel sx={{textAlign: 'center'}} htmlFor="category">Brand Image</InputLabel>
+                    <InputLabel sx={{textAlign: 'center', mb: 5}} htmlFor="category">Cetegory Image</InputLabel>
                     <Stack sx={{display: chipData.length > 0 && 'none'}} direction="row" justifyContent="center" alignItems="center" spacing={2}>
                       <Box sx={{width: '100%', p: 2}}>
-                        <Button component="label" onChange={handleAvatarChoose} htmlFor="file-avatar" sx={{border: 'thin dashed grey', width: '100%', height: '100px', display: 'flex', justifyContent: 'center'}} startIcon={<CloudUploadIcon />}>
+                        <Button component="label" onChange={handleAvatarChoose} htmlFor="file-avatar" sx={{border: 'thin dashed grey', width: '100%', height: '100px', display: 'flex', justifyContent: 'center', px: 3}} startIcon={<CloudUploadIcon />}>
                           Upload
                         <Box sx={{display: 'none'}} accept="image/jpg image/png image/jpeg" component="input" type="file" name="file-avatar" id="file-avatar"/>
                         </Button>
@@ -203,10 +211,10 @@ console.log(imgAvatarFile);
                     {
                       chipData.map(item => (
                         <Box sx={{position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap'}} key={item?.image?.lastModified}>
-                          <IconButton sx={{position: 'absolute', top: -25, right: -20, zIndex: 1}} size='small' onClick={handleDelete(item)}>
+                          <IconButton sx={{position: 'absolute', top: -20, right: -20, zIndex: 10, backgroundColor: '#fff', width: '30px', height: '30px', borderRadius: '100%'}} size='small' onClick={handleDelete(item)}>
                             <HighlightOffIcon />
                           </IconButton>
-                          <Box sx={{width: '150px', height: '100px', position: 'relative'}}>
+                          <Box sx={{width: '150px', height: '100px', position: 'relative', zIndex: 0}}>
                             <Image
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
