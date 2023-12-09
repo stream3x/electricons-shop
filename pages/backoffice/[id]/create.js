@@ -14,6 +14,7 @@ import 'react-quill/dist/quill.snow.css';
 import ChipsImages from '../../../src/components/ChipsImages';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CategoryCreate from '../../../src/assets/CategoryCreate';
+import BrandCreate from '../../../src/assets/BrandCreate';
 const Quill = dynamic(() => import('react-quill'), { ssr: false });
 
 const modules = {
@@ -59,6 +60,7 @@ function CreateNewItems() {
   const [imgWidgetFile, setImgWidgetFile] = React.useState([]);
   const [specifications, setSpecifications] = React.useState([{ attribute: '', detail: '' }]);
   const [open, setOpen] = React.useState(false);
+  const [openBrand, setOpenBrand] = React.useState(false);
 
   const isQuill = typeof window !== 'undefined' ? require('quill') : null;
 
@@ -109,6 +111,7 @@ function CreateNewItems() {
     const formOutput = new FormData(e.currentTarget);
     const formData = {
       title: formOutput.get('title'),
+      slug: formOutput.get('slug'),
       shortDescription: formOutput.get('short-description'),
       description: description,
       details: specifications
@@ -162,6 +165,10 @@ function CreateNewItems() {
   const handleClickOpen = () => {
     setOpen(true);
   };
+
+  const handleClickOpenBrand = () => {
+    setOpenBrand(true);
+  };
   
   return (
     <Box>
@@ -206,6 +213,13 @@ function CreateNewItems() {
                       fullWidth
                       id="title"
                       label="Product title here..."
+                      sx={{mb: 1, pb: 3}}
+                    />
+                    <TextField
+                      name="slug"
+                      fullWidth
+                      id="slug"
+                      label="Product slug here..."
                       sx={{mb: 1, pb: 3}}
                     />
                     <Typography component="label">Short Description</Typography>
@@ -265,7 +279,7 @@ function CreateNewItems() {
                         ))
                       }
                     </Box>
-                    <Button type='submit'>Submit</Button>
+                    <Button variant='contained' type='submit'>Submit</Button>
                   </Box>
                 </Paper>
               </Grid>
@@ -332,6 +346,25 @@ function CreateNewItems() {
                     <Button type='submit' size='small'>submit</Button>
                   </Box>
                   <ChipsImages selectedFile={imgWidgetFile} setImgFile={setImgWidgetFile} />
+                </Paper>
+              </Grid>
+              {/* Upload Widget Images */}
+              <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    py: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Typography component="p" variant='p' sx={{px: 2, py: 1, fontWeight: 'bold'}}>Brands</Typography>
+                    <Button onClick={handleClickOpenBrand} size='small' sx={{mr: 3}}>+ add brand</Button>
+                  </Box>
+                  <Divider />
+                  <Box sx={{p: 3}}>
+                    <BrandCreate open={openBrand} setOpen={setOpenBrand} />
+                  </Box>
                 </Paper>
               </Grid>
               {/* Upload Widget Images */}

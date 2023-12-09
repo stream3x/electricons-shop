@@ -4,24 +4,38 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
-import { Button, FormControl, Grid, IconButton, Input, InputAdornment, InputLabel, Stack, useMediaQuery } from '@mui/material';
+import { Button, FormControl, Grid, IconButton, Input, InputAdornment, InputLabel, Select, Stack, Typography, useMediaQuery } from '@mui/material';
 import theme from '../theme';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Image from 'next/image';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import MenuItem from '@mui/material/MenuItem';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 export default function CategoryCreate(props) {
   const { open, setOpen } = props;
   const [checked, setChecked] = React.useState([]);
+  const [children, setChildren] = React.useState([]);
   const [category, setCategory] = React.useState([]);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [imgAvatarFile, setImgAvatarFile] = React.useState([]);
   const [chipData, setChipData] = React.useState([]);
+  const [parentCatName, setParentCatName] = React.useState("New Category");
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     setChipData(imgAvatarFile);
@@ -34,15 +48,19 @@ export default function CategoryCreate(props) {
   };
 
   React.useEffect(() => {
-    const fetchCategories = async ()=> {
-      const { data } = await axios.get('/api/category');
-      setCategory(data);
-    }
     fetchCategories();
-  }, [])
+  }, [loading]);
+
+  const fetchCategories = async ()=> {
+    const { data } = await axios.get('/api/category');
+    setCategory(data);
+    setLoading(false);
+    handleClose();
+  }
   
   const handleClose = () => {
     setOpen(false);
+    setError('');
   };
 
   const handleChange1 = (event, index) => {
@@ -51,10 +69,12 @@ export default function CategoryCreate(props) {
     setChecked(newChecked);
   };
 
-  const handleChange2 = (event, index) => {
+  const handleChange2 = (event, index, i) => {
+    console.log(event, index, i);
     const newChecked = [...checked];
     newChecked[index] = event.target.checked;
     setChecked(newChecked);
+    setChildren(index ? i : false);
   };
 
   function handleAvatarChoose(e) {
@@ -103,27 +123,53 @@ export default function CategoryCreate(props) {
         }
       ]
     }
-    console.log(formData);
+    if (parentCatName.toString() === "New Category" && formData.categoryName === '') {
+      return setError('please enter category name');
+    }
+    if (parentCatName.toString() === "New Category" && formData.slug === '') {
+      return setError('please enter category slug');
+    }
+    if (parentCatName.toString() !== "New Category" && formData.subCategory[0].subCategoryName === '') {
+      return setError('please enter sub category name');
+    }
+    if (parentCatName.toString() !== "New Category" && formData.subCategory[0].url === '') {
+      return setError('please enter sub category url');
+    }
+    if (formData.avatar.image.length === 0) {
+      return setError('please upload category icon');
+    }
     try {
       const { data } = axios.post('/api/category/create_category', formData);
       setError('');
+      setLoading(true);
     } catch (error) {
       console.log(error, error.data);
       setError(`error: ${error}`);
+      setLoading(false);
     }
   }
 
+  const handleChangeParentCat = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setParentCatName(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
+
   return (
-    <div>
+    <Box>
       {
-        category?.map(item => (
+        category?.map((item, index) => (
           <Box key={item._id}>
             <FormControlLabel
               label={item?.categoryName}
               control={
                 <Checkbox
-                  checked={checked[0] && checked[1]}
-                  indeterminate={checked[0] !== checked[1]}
+                  checked={index === children ? true : checked[0]}
+                  indeterminate={index === children ? true : checked[0]}
                   onChange={handleChange1}
                 />
               }
@@ -133,7 +179,7 @@ export default function CategoryCreate(props) {
                 <Box key={subItem._id} sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
                   <FormControlLabel
                     label={subItem?.subCategoryName}
-                    control={<Checkbox checked={checked[0]} onChange={handleChange2} />}
+                    control={<Checkbox checked={checked[0]} onChange={(e, i)=> handleChange2(e, i, index)} />}
                   />
                 </Box>
               ))
@@ -147,29 +193,71 @@ export default function CategoryCreate(props) {
         onClose={handleClose}
         aria-labelledby="dialog-title"
       >
-        <DialogTitle id="dialog-title">
-          {"Create New Category for this Product"}
-        </DialogTitle>
+        {
+          error ? 
+          <DialogTitle color="red" id="dialog-title">
+          {error}
+          </DialogTitle>
+          :
+          <DialogTitle id="dialog-title">
+            {"Create Category for this Product"}
+          </DialogTitle>
+        }
         <DialogActions sx={{flexWrap: 'wrap'}}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={8}>
               <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 0 }}>
-                <FormControl fullWidth sx={{ p: 1 }} variant="standard">
-                  <InputLabel htmlFor="category"></InputLabel>
-                  <Input
-                    id="category"
-                    name='category'
-                    startAdornment={<InputAdornment position="start">Category Name:</InputAdornment>}
-                  />
+                <FormControl sx={{ m: 1, width: 300, mt: 3 }}>
+                  <Select
+                    displayEmpty
+                    value={parentCatName}
+                    onChange={handleChangeParentCat}
+                    input={<OutlinedInput />}
+                    renderValue={(selected) => {
+                      if (selected.length === 0) {
+                        return <em>Parent Category</em>;
+                      }
+
+                      return selected;
+                    }}
+                    MenuProps={MenuProps}
+                    inputProps={{ 'aria-label': 'Without label' }}
+                  >
+                    <MenuItem value="New Category">
+                      <em>New Category</em>
+                    </MenuItem>
+                    {category?.map((name) => (
+                      <MenuItem
+                        key={name?.categoryName}
+                        value={name?.categoryName}
+                      >
+                        {name?.categoryName}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
-                <FormControl fullWidth sx={{ p: 1 }} variant="standard">
-                  <InputLabel htmlFor="slug"></InputLabel>
-                  <Input
-                    id="slug"
-                    name="slug"
-                    startAdornment={<InputAdornment position="start">Category Slug:</InputAdornment>}
-                  />
-                </FormControl>
+                {
+                  parentCatName.toString() === "New Category" &&
+                  <FormControl fullWidth sx={{ p: 1 }} variant="standard">
+                    <InputLabel htmlFor="category"></InputLabel>
+                    <Input
+                      id="category"
+                      name='category'
+                      startAdornment={<InputAdornment position="start">Category Name:</InputAdornment>}
+                    />
+                  </FormControl>
+                }
+                {
+                  parentCatName.toString() === "New Category" &&
+                  <FormControl fullWidth sx={{ p: 1 }} variant="standard">
+                    <InputLabel htmlFor="slug"></InputLabel>
+                    <Input
+                      id="slug"
+                      name="slug"
+                      startAdornment={<InputAdornment position="start">Category Slug:</InputAdornment>}
+                    />
+                  </FormControl>
+                }
                 <FormControl fullWidth sx={{ p: 1 }} variant="standard">
                   <InputLabel htmlFor="subcategory"></InputLabel>
                   <Input
@@ -186,55 +274,76 @@ export default function CategoryCreate(props) {
                     startAdornment={<InputAdornment position="start">Subcategory Slug:</InputAdornment>}
                   />
                 </FormControl>
-                
-                <Button fullWidth size='small' type='submit' autoFocus>
-                  submit categories
-                </Button>
+                <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                  <Button size='small' type='submit' autoFocus>
+                    submit categories
+                  </Button>
+                </Box>
               </Box>
               <Button sx={{mt: 5}} autoFocus onClick={handleClose}>
                 Close
               </Button>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Box sx={{px: 3, py: 0, display: 'flex', justifyContent: 'flex-end'}}>  
-                {
-                  <Box sx={{width: '200px'}} component="form" method='POST' onSubmit={handleAvatarSubmit}>
-                    <InputLabel sx={{textAlign: 'center', mb: 5}} htmlFor="category">Cetegory Image</InputLabel>
-                    <Stack sx={{display: chipData.length > 0 && 'none'}} direction="row" justifyContent="center" alignItems="center" spacing={2}>
-                      <Box sx={{width: '100%', p: 2}}>
-                        <Button component="label" onChange={handleAvatarChoose} htmlFor="file-avatar" sx={{border: 'thin dashed grey', width: '100%', height: '100px', display: 'flex', justifyContent: 'center', px: 3}} startIcon={<CloudUploadIcon />}>
-                          Upload
-                        <Box sx={{display: 'none'}} accept="image/jpg image/png image/jpeg" component="input" type="file" name="file-avatar" id="file-avatar"/>
-                        </Button>
-                      </Box>
-                    </Stack>
+              {
+                parentCatName.toString() !== "New Category" ?
+                <Box sx={{px: 3, py: 0, display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end'}}>
+                  <Typography sx={{width: '100%', py: 3}}>Category Icon</Typography>
+                  <Box sx={{width: '150px', height: '100px', position: 'relative', zIndex: 0}}>
                     {
-                      chipData.map(item => (
-                        <Box sx={{position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap'}} key={item?.image?.lastModified}>
-                          <IconButton sx={{position: 'absolute', top: -20, right: -20, zIndex: 10, backgroundColor: '#fff', width: '30px', height: '30px', borderRadius: '100%'}} size='small' onClick={handleDelete(item)}>
-                            <HighlightOffIcon />
-                          </IconButton>
-                          <Box sx={{width: '150px', height: '100px', position: 'relative', zIndex: 0}}>
-                            <Image
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              src={item?.imageUrl}
-                              alt={item?.image?.name}
-                            />
-                          </Box>
-                        </Box>
+                      category.map(item => (
+                        parentCatName.toString() === item.categoryName &&
+                        <Image
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          src={item?.avatar}
+                          alt={item?.categoryName}
+                        />
                       ))
                     }
-                    <Button fullWidth type='submit' size='small'>
-                      submit image
-                    </Button>
                   </Box>
-                }
-              </Box>
+                </Box>
+                :
+                <Box sx={{px: 3, py: 0, display: 'flex', justifyContent: 'flex-end'}}>  
+                  {
+                    <Box sx={{width: '200px'}} component="form" method='POST' onSubmit={handleAvatarSubmit}>
+                      <InputLabel sx={{textAlign: 'center', mb: 5}} htmlFor="category">Cetegory Icon:</InputLabel>
+                      <Stack sx={{display: chipData.length > 0 && 'none'}} direction="row" justifyContent="center" alignItems="center" spacing={2}>
+                        <Box sx={{width: '100%', p: 2}}>
+                          <Button component="label" onChange={handleAvatarChoose} htmlFor="file-avatar" sx={{border: 'thin dashed grey', width: '100%', height: '100px', display: 'flex', justifyContent: 'center', px: 3}} startIcon={<CloudUploadIcon />}>
+                            Upload
+                          <Box sx={{display: 'none'}} accept="image/jpg image/png image/jpeg" component="input" type="file" name="file-avatar" id="file-avatar"/>
+                          </Button>
+                        </Box>
+                      </Stack>
+                      {
+                        chipData.map(item => (
+                          <Box sx={{position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'flex-end', flexWrap: 'wrap'}} key={item?.image?.lastModified}>
+                            <IconButton sx={{position: 'absolute', top: -20, right: -20, zIndex: 10, backgroundColor: '#fff', width: '30px', height: '30px', borderRadius: '100%'}} size='small' onClick={handleDelete(item)}>
+                              <HighlightOffIcon />
+                            </IconButton>
+                            <Box sx={{width: '150px', height: '100px', position: 'relative', zIndex: 0}}>
+                              <Image
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                src={item?.imageUrl}
+                                alt={item?.image?.name}
+                              />
+                            </Box>
+                          </Box>
+                        ))
+                      }
+                      <Button fullWidth type='submit' size='small'>
+                        add icon
+                      </Button>
+                    </Box>
+                  }
+                </Box>
+              }
             </Grid>
           </Grid>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }

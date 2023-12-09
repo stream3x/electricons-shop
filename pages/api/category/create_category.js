@@ -13,10 +13,10 @@ handler.post(async (req, res) => {
 
     const category = await Category.findOne({slug: slug});
 
-    // if (!category) {
-    //   // Handle the case where the order is not found.
-    //   return res.status(404).json({ error: 'Category not found' });
-    // }
+    if (category.categoryName === categoryName) {
+      // Handle the case where the order is not found.
+      return res.status(404).json({ error: 'Category already exist' });
+    }
 
     const base64Data = avatar.imageUrl[0].replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
