@@ -11,5 +11,4 @@ handler.get(async (req, res) => {
   res.send(order);
 });
 
-
 export default handler;

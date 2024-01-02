@@ -27,8 +27,6 @@ import styled from '@emotion/styled';
 import SearchIcon from '@mui/icons-material/Search';
 import GuestCustomerTable from '../../../src/components/GuestCustomerTable';
 import Link from '../../../src/Link';
-import { useRouter } from 'next/router';
-import { Store } from '../../../src/utils/Store';
 
 const Search = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -91,10 +89,6 @@ function getComparator(order, orderBy) {
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
@@ -272,9 +266,6 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function EnhancedTable() {
-  const { state, dispatch } = React.useContext(Store);
-  const router = useRouter();
-  const { id } = router.query;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);

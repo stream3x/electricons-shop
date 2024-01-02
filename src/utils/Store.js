@@ -23,7 +23,8 @@ const initialState = {
   },
   review: {
     hasReview: false,
-    hasRated: false
+    hasRated: false,
+    orderId: null
   },
   snack: {
     message: '',
@@ -94,6 +95,7 @@ function reducer(state, action) {
       }
     }
     case 'PERSONAL_INFO': {
+      Cookies.set('personalInfo', JSON.stringify(action.payload));
       return { ...state, cart: { ...state.cart, personalInfo: action.payload } };
     }
     case 'PERSONAL_REMOVE':

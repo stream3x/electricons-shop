@@ -48,7 +48,7 @@ export default function ProfileAddresses() {
   });
   const pattern = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/i;
 
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   const emptyAddresses = userInfo?.addresses && userInfo?.addresses === 0;
   const emptyUserInfo = userInf0 && Object.keys(userInf0).length === 0;
@@ -203,7 +203,6 @@ export default function ProfileAddresses() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the postal code is required', severity: 'warning'}});
         return;
       }
-      console.log(formData, `/api/users/edit_address`);
       const { data } = await axios.put(`/api/users/edit_address`, formData);
       setIsSubmit(true);
       setAddressId('');
@@ -241,13 +240,13 @@ export default function ProfileAddresses() {
   }
   
   const handleEdit = (item, index) => {
-    console.log(item._id, index);
     setAddressId(item._id);
     setIsEdit(true);
     setAddressIndex(index);
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit address', severity: 'warning'}});
     setAddNewAddress(true);
   };
+  
   const handleDelete = async (item) => {
     const formData = {
       email: userInf0.email,

@@ -60,7 +60,6 @@ const productSchema = new mongoose.Schema(
     inWidget: {type: String, required: true},
     online: {type: Boolean, required: true},
     stores: [storeSchema],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductComment' }]
   },
   {
     timestamps: true

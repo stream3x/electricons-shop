@@ -52,7 +52,7 @@ export default function PersonalInfo() {
     confirmError: false
   });
   const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
   const emptyUserInfo = userInf0 !== null ? Object.keys(userInf0).length === 0 : true;
   const emptyCartItems = Object.keys(cartItems).length === 0;
@@ -62,8 +62,15 @@ export default function PersonalInfo() {
       try {
         const { data } = await axios.get('/api/users');
         const user = await data.filter(items => items._id === userInf0._id);
-        setUserInfo(user);
-        dispatch({ type: 'PERSONAL_INFO', payload: user[0] });
+        setUserInfo(user[0]);
+        const formData = {
+          email: user[0]?.email,
+          name: user[0]?.name,
+          birthday: user[0]?.birthday,
+          company: user[0]?.company,
+          vatNumber: user[0]?.vatNumber
+        }
+        dispatch({ type: 'PERSONAL_INFO', payload: formData });
       } catch (error) {
         setError(true)
       }
@@ -78,7 +85,7 @@ export default function PersonalInfo() {
   function orderGestHandler() {
     setWillLogin(false);
   }
-
+console.log(userInfo);
   const handleWillRegister = (e) => {
     if(e.target.value === '') {
       setWillRegister(() => false);
@@ -154,7 +161,7 @@ export default function PersonalInfo() {
       const formData = {
         name: formOutput.get('name'),
         email: formOutput.get('email'),
-        password: formOutput.get('__password'),
+        password: formOutput.get('password'),
         birthday: formOutput.get('birthday'),
         newsletter: formOutput.get('newsletter') !== null ? formOutput.get('newsletter') : '',
         company: formOutput.get('company'),
@@ -205,19 +212,18 @@ export default function PersonalInfo() {
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'the password is required', severity: 'error'}});
         return;
       }
-      const { data } = await axios.post('/api/users/register', formData);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
-      localStorage.setItem('userInfo', JSON.stringify(data));
       dispatch({ type: 'PERSONAL_INFO', payload: {}});
-      dispatch({ type: 'CART_CLEAR' });
       dispatch({ type: 'ADDRESSES_CLEAR' });
       dispatch({ type: 'SHIPPING_REMOVE' });
       dispatch({ type: 'PAYMENT', payload: {}});
-      Cookies.remove('cartItems');
       Cookies.remove('payment');
       Cookies.remove('forInvoice');
       Cookies.remove('shipping');
       Cookies.remove('addresses');
+
+      const { data } = await axios.post('/api/users/register', formData);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully register', severity: 'success'}});
+      localStorage.setItem('userInfo', JSON.stringify(data));
       router.push('/checkout/addresses');
     } catch (error) {
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: error ? error.response.data.message : error, severity: error.response.data.severity }});
@@ -233,19 +239,18 @@ export default function PersonalInfo() {
         email: formOutput.get('email'),
         password: formOutput.get('password'),
       };
-      const { data } = await axios.post('/api/users/login', formData);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
-      localStorage.setItem('userInfo', JSON.stringify(data));
       dispatch({ type: 'PERSONAL_INFO', payload: {}});
-      dispatch({ type: 'CART_CLEAR' });
       dispatch({ type: 'ADDRESSES_CLEAR' });
       dispatch({ type: 'SHIPPING_REMOVE' });
       dispatch({ type: 'PAYMENT', payload: {}});
-      Cookies.remove('cartItems');
       Cookies.remove('payment');
       Cookies.remove('forInvoice');
       Cookies.remove('shipping');
       Cookies.remove('addresses');
+
+      const { data } = await axios.post('/api/users/login', formData);
+      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully logedin', severity: 'success'}});
+      localStorage.setItem('userInfo', JSON.stringify(data));
       setWillLogin(false);
       router.push('/checkout/addresses');
     } catch (error) {
@@ -376,7 +381,7 @@ export default function PersonalInfo() {
                         </InputLabel>
                         <OutlinedInput
                           fullWidth
-                          name="__password"
+                          name="password"
                           label="Password *"
                           type={!confirmPassword.showPassword ? 'text' : 'password'}
                           id="password"

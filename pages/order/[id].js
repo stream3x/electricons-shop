@@ -387,38 +387,38 @@ function Order(props) {
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }} color="secondary" gutterBottom>
                         <Typography component="span">Name:</Typography>
-                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{userInf0.name}</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{userInf0?.name}</Typography>
                       </Typography>
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                       <Typography component="span">Address:</Typography>
                         <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                          {addresses && addresses.address}
+                          {addresses && addresses?.address}
                         </Typography>
                       </Typography>
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                       <Typography component="span">City:</Typography>
                         <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                        {addresses && addresses.city}
+                        {addresses && addresses?.city}
                         </Typography>
                       </Typography>
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                       <Typography component="span">Postal Code:</Typography>
                         <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">
-                        {addresses && addresses.postalcode}
+                        {addresses && addresses?.postalcode}
                         </Typography>
                       </Typography>
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                       <Typography component="span">Country:</Typography>
-                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{addresses && addresses.country}</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{addresses && addresses?.country}</Typography>
                       </Typography>
                       <Divider />
                       <Typography sx={{ fontSize: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} color="secondary" gutterBottom>
                       <Typography component="span">Phone:</Typography>
-                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{addresses && addresses.phone}</Typography>
+                        <Typography sx={{fontSize: {xs: '.875rem', sm: '1.25rem'}}} variant="h6" component="span">{addresses && addresses?.phone}</Typography>
                       </Typography>
                     </CardContent>
                   </Card>

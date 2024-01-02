@@ -16,7 +16,7 @@ const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
   textAlign: 'center',
   color: theme.palette.text.secondary,
-  }));
+}));
 
  export default function Wishlist() {
   const { state } = useContext(Store);

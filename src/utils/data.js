@@ -79,7 +79,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}],
-      comments: [],
       details: [{attribute: 'Type', detail: 'AMD Ryzen 53500 CNE-HWC2'}, {attribute: 'Color', detail: 'Black'}],
     },
     {
@@ -103,7 +102,6 @@ const data = {
       inWidget: "top-product",
       online: 'true',
       stores: [{store: 'Electricons store'}],
-      comments: [],
       details: []
     },
     {
@@ -127,7 +125,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: [{attribute: 'Type', detail: 'AMD Dell Inspiron G5 5000'}, {attribute: 'Color', detail: 'Black'}],
     },
     {
@@ -151,7 +148,6 @@ const data = {
       inWidget: "best-seller",
       online: 'true',
       stores: [{store: 'Electricons store'}],
-      comments: [],
       details: []
     },
     {
@@ -175,7 +171,6 @@ const data = {
       inWidget: "top-product",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -199,7 +194,6 @@ const data = {
       inWidget: "top-product",
       online: 'true',
       stores: [{store: 'Electricons store'}],
-      comments: [],
       details: []
     },
     {
@@ -223,7 +217,6 @@ const data = {
       inWidget: "top-product",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -247,7 +240,6 @@ const data = {
       inWidget: "best-seller",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -271,7 +263,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -295,7 +286,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -320,7 +310,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -344,7 +333,6 @@ const data = {
       inWidget: "top-product",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -368,7 +356,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -392,7 +379,6 @@ const data = {
       inWidget: "top-product",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -416,7 +402,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     },
     {
@@ -440,7 +425,6 @@ const data = {
       inWidget: "hero",
       online: 'true',
       stores: [{store: 'Electricons store'}, {store: 'Електриконс - 2'}],
-      comments: [],
       details: []
     }
   ]

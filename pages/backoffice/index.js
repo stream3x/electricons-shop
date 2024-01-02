@@ -10,7 +10,7 @@ import Cookies from 'js-cookie';
 const BackofficeIndex = () => {
   const router = useRouter();
   const { state, dispatch} = useContext(Store);
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const status = userInf0?.isAdmin;
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);

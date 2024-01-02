@@ -39,6 +39,7 @@ import FmdGoodIcon from '@mui/icons-material/FmdGood';
 export async function getServerSideProps(context) {
   const { params } = context;
   const { slug } = params;
+
   await db.connect();
   const product = await Product.findOne({slug}).lean();
   await db.disconnect();
@@ -116,7 +117,7 @@ color: theme.palette.text.secondary,
 export default function SingleProduct(props) {
   const { product } = props;
   const { state, dispatch } = useContext(Store);
-  const { cart: {cartItems}, comparation } = state;
+  const { cart: {cartItems}, wishlist: {wishItems}, comparation } = state;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { slug } = router.query;
@@ -126,15 +127,11 @@ export default function SingleProduct(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [productWithStoreInfo, setProductWithStoreInfo] = React.useState([]);
   const [comments, setComments] = React.useState([]);
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
-  React.useEffect(() => {
-    // Always do navigations after the first render
-    router.push(`/product/${product.slug}?counter=10`, undefined, { shallow: true })
-  }, []);
 
   React.useEffect(() => {
     fetchStoreInfo();
@@ -235,6 +232,20 @@ export default function SingleProduct(props) {
       setLoading(false);
       return;
     }
+    if (wishItems) {
+      const formData = {
+        userId: userInf0._id,
+        title: wishItems[0]?.title,
+        image: wishItems[0]?.images[1].image,
+        price: wishItems[0]?.price,
+        oldPrice: wishItems[0]?.oldPrice,
+        slug: wishItems[0]?.slug,
+        brand: wishItems[0]?.brand,
+        inStock: wishItems[0]?.inStock,
+      }
+      const { data } = await axios.post(`/api/wishlist/post_wishlist`, formData);
+    }
+    
     dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'item successfully added', severity: 'success' } });
   }
 

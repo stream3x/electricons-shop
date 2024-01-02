@@ -64,14 +64,15 @@ export default function Shipping() {
   const shippingCost = 5;
   const emptyShipping = cart.shipping && Object.keys(cart.shipping).length === 0;
   const emptyCartItems = Object.keys(cartItems).length === 0;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
       const formOutput = new FormData(event.currentTarget);
       const formData = {
         shippingMethod: formOutput.get('shipping-method'),
-        shippingAddress: formOutput.get('shipping-method') !== 'Electricons Store' ? addresses[Cookies.get('forInvoice')].address : 'null',
-        shippingCity: formOutput.get('shipping-method') !== 'Electricons Store' ? addresses[Cookies.get('forInvoice')].city : formOutput.get('shiping-city'),
+        shippingAddress: formOutput.get('shipping-method') !== 'Electricons Store' ? userInf0 ? addresses[0][Cookies.get('forInvoice')].address : addresses[Cookies.get('forInvoice')].address : 'null',
+        shippingCity: formOutput.get('shipping-method') !== 'Electricons Store' ? userInf0 ? addresses[0][Cookies.get('forInvoice')].city : addresses[Cookies.get('forInvoice')].city : formOutput.get('shiping-city'),
         store: formOutput.get('shipping-method') !== 'Electricons Store' ? 'null' : formOutput.get('shiping-store'),
         comment: formOutput.get('shiping-comment') !== null ? formOutput.get('shiping-comment') : ''
       };

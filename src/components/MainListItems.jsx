@@ -14,7 +14,7 @@ import { Divider, Tooltip } from '@mui/material';
 import ButtonAccordion from '../assets/ButtonAccordion';
 
 const MainListItems = () => {
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
 
   return (
     <React.Fragment>

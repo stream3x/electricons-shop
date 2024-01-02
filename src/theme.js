@@ -6,6 +6,7 @@ const theme = createTheme({
   palette: {
     primary: {
       main: cyan[500],
+      dark: cyan[700],
       contrastText: grey[50],
       borderColor: cyan[500],
       white: '#fff',
@@ -41,6 +42,7 @@ const theme = createTheme({
     },
     error: {
       main: red.A400,
+      dark: red[700],
     },
     warning: {
       main: yellow.A400,

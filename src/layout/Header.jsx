@@ -6,7 +6,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
-// import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
@@ -173,7 +172,7 @@ export default function Header() {
   const isNotBlog = router.pathname !== '/blog';
   const isNotPost = router.pathname !== '/blog/post/[slug]';
   const isNotCat = router.pathname !== '/blog/category/[[...slug]]';
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const [userInfo, setUserInfo] = useState(null);
 
   function toggleVisibility() {
@@ -214,7 +213,6 @@ export default function Header() {
 
     (async () => {
       const { data } = await axios.get('/api/products');
-
       if(active) {
         setOptions([...data.products]);
       }
@@ -342,7 +340,7 @@ export default function Header() {
                 </Box>
                 :
                 <React.Fragment>
-                  <Link href="/blog?counter=10">
+                  <Link href="/blog">
                     <Image
                       width= {matches ? 280 : 130}
                       height= {50}
@@ -727,7 +725,7 @@ export default function Header() {
                         </Badge>
                       </IconButton>
                     </Link>
-                    <Link sx={{width: '100%', height: '100%'}} href={'/wishlist'}>
+                    <Link sx={{width: '100%', height: '100%'}} href={userInf0 ? "/profile/wishlist" : '/wishlist'}>
                       <IconButton
                         size="large"
                         aria-label="show wishlist items"

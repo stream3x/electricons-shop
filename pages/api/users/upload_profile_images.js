@@ -17,9 +17,9 @@ handler.put(async (req, res) => {
     }
 
     const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-      const buffer = Buffer.from(base64Data, 'base64');
-      const filePath = path.join(process.cwd(), 'public/images/users', `${image_name}`);
-      fs.writeFileSync(filePath, buffer);
+    const buffer = Buffer.from(base64Data, 'base64');
+    const filePath = path.join(process.cwd(), 'public/images/users', `${image_name}`);
+    fs.writeFileSync(filePath, buffer);
       
       const updatedUser = await User.findOneAndUpdate({
         email

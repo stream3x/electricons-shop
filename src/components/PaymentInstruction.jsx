@@ -19,17 +19,7 @@ export default function PaymentInstruction() {
   const { state } = useContext(Store);
   const { cart: {cartItems, personalInfo, addresses, shipping, payment}, userInfo } = state;
   const subTotal = cartItems.reduce((a, c) => a + c.quantity * c.price, 0);
-
-  const emptyShipping = Object.keys(shipping).length === 0;
-  const total = subTotal + (!emptyShipping && shipping.shippingMethod !== 'store' ? 50 : 0);
-  // const randomNumber = getRandomInt(1, 999999);
   const modelNumber = `${new Date().getFullYear()}-${userInfo._id.substr(userInfo._id.length - 6)}`;
-
-  // function getRandomInt(min, max) {
-  //   min = Math.ceil(min);
-  //   max = Math.floor(max);
-  //   return Math.floor(Math.random() * (max - min) + min);
-  // }
 
   return (
     <Box sx={{ minWidth: 275 }}>

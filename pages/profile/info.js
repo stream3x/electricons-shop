@@ -31,9 +31,8 @@ const LabelButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function ProfileInfo() {
-  const router = useRouter();
   const { state, dispatch } = useContext(Store);
-  const userInf0 = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
+  const userInf0 = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('userInfo')) : null;
   const { snack, cart: {cartItems, personalInfo}, uploadImage } = state;
   const [errors, setErrors] = useState({
     name: false,
@@ -51,14 +50,13 @@ export default function ProfileInfo() {
 
   const pattern= /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-  const emptyPersonalInfo = personalInfo !== null ? Object.keys(personalInfo).length === 0 : true;
-  const emptyCartItems = Object.keys(cartItems).length === 0;
   const [error, setError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [refresh, setRefresh] = React.useState(false);
   const [userInfo, setUserInfo] = useState({});
   const emptyUserInfo = userInfo !== null ? Object.keys(userInfo).length === 0 : true;
   const [changeUserInfo, setChangeUserInfo] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [imgFile, setImgFile] = React.useState({
     image: null,
     imageUrl: null
@@ -84,7 +82,7 @@ export default function ProfileInfo() {
       }
     }
     fetchData();
-  }, [uploadImage?.change]);
+  }, [uploadImage?.change, loading]);
 
   function handleRefresh() {
     setRefresh(true);
@@ -107,7 +105,6 @@ export default function ProfileInfo() {
   const handleUploadCoverImage = async (event) => {
     event.preventDefault();
     try {
-      const outputData = new FormData(event.currentTarget);
       const formData = {
         image_name: imgCoverFile.image?.name,
         cover_photo: imgCoverFile?.imageUrl,
@@ -185,13 +182,8 @@ export default function ProfileInfo() {
         company: formOutput.get('company'),
         vatNumber: formOutput.get('vatNumber'),
       };
-
+      setLoading(false);
       setErrors({ ...errors, name: false, email: false, birthday: false, password: false, company: false, vatNumber: false });
-      if(emptyCartItems) {
-        dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'sorry, first you must select product', severity: 'warning'}});
-        router.push('/');
-        return;
-      }
       if(formOutput.get('name') === '') {
         setErrors({ ...errors, firstName: true });
         dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'please fill name', severity: 'error'}});
@@ -218,16 +210,16 @@ export default function ProfileInfo() {
         return;
       }
       const { data } = await axios.put('/api/users/upload', formData);
-      dispatch({ type: 'PERSONAL_INFO', payload: formData });
+      setLoading(true);
       dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'successfully added personal info', severity: 'success'}});
       setChangeUserInfo(false);
   };
 
   const handleEdit = () => {
-      dispatch({ type: 'PERSONAL_REMOVE' });
-      Cookies.remove('personalInfo');
-      setChangeUserInfo(true);
-      dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
+    dispatch({ type: 'PERSONAL_REMOVE' });
+    Cookies.remove('personalInfo');
+    setChangeUserInfo(true);
+    dispatch({ type: 'SNACK_MESSAGE', payload: { ...state.snack, message: 'now you can edit personal info', severity: 'warning'}});
   };
 
   return (
@@ -373,7 +365,7 @@ export default function ProfileInfo() {
                   margin="normal"
                   required
                   fullWidth
-                  defaultValue={userInf0?.email}
+                  defaultValue={userInfo?.email}
                   disabled={!changeUserInfo && !emptyUserInfo}
                   id="email"
                   label="Email Address"
@@ -386,13 +378,12 @@ export default function ProfileInfo() {
                 }
                 <TextField
                   margin="normal"
-                  required
                   fullWidth
                   type="text"
                   id="birthday"
                   label="Birthday"
                   name="birthday"
-                  defaultValue={userInf0?.birthday}
+                  defaultValue={userInfo?.birthday}
                   disabled={!changeUserInfo && !emptyUserInfo}
                   error={errors.birthday}
                 />
@@ -406,7 +397,7 @@ export default function ProfileInfo() {
                   id="company"
                   label="Company"
                   name="company"
-                  defaultValue={userInf0?.company}
+                  defaultValue={userInfo?.company}
                   disabled={!changeUserInfo && !emptyUserInfo}
                   error={errors.company}
                 />
@@ -418,7 +409,7 @@ export default function ProfileInfo() {
                     margin="normal"
                     type="number"
                     fullWidth
-                    defaultValue={userInf0 ? userInf0.vatNumber : ''}
+                    defaultValue={userInfo ? userInfo.vatNumber : ''}
                     disabled={!changeUserInfo && !emptyUserInfo}
                     id="vatNumber"
                     label="VAT Number"

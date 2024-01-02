@@ -40,7 +40,7 @@ const Item = styled(Paper)(({ theme }) => ({
             compareItems.length !== 0 ?
             <Item sx={{ '& a': {textDecoration: 'none'}, display: 'flex' }} elevation={0}>
               <Link noLinkStyle href="/" passHref>
-                <Button sx={{ '&:hover': {color: theme.palette.secondary.main}}} size="large" startIcon={<ReplyIcon />}>
+                <Button sx={{color: theme.palette.primary.main, backgroundColor: theme.palette.secondary.main, border: `thin solid transparent`, borderRadius: theme.palette.addToCartButtonShape.borderRadius, '&:hover': {backgroundColor: theme.palette.secondary.contrastText, border: `thin solid ${theme.palette.secondary.main}`}}} size="large" startIcon={<ReplyIcon />}>
                   Continue shoping
                 </Button>
               </Link>
